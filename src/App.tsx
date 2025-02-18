@@ -1,38 +1,54 @@
-import { useState } from 'react'
-import UpdateElectron from '@/components/update'
-import logoVite from './assets/logo-vite.svg'
-import logoElectron from './assets/logo-electron.svg'
-import './App.css'
+import React, { useState } from "react";
+import {
+  Menu,
+  FileText,
+  Sun,
+  Moon,
+  ChevronLeft,
+  ChevronRight,
+  ArrowLeftCircle,
+} from "lucide-react";
+import BlessedMusic from "./components/BlessedMusic";
+import EditSong from "./components/EditForm";
+import WorkspaceSelector from "./components/Welcome";
+import CreateSong from "./components/Form";
+import SongPresentation from "./components/PresentationMode";
+import { useBmusicContext } from "./Provider/Bmusic";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const { currentScreen, setCurrentScreen } = useBmusicContext();
+
+  // Mock song data for demonstration
+  // const allSongs: Song[] = new Array(100).fill(null).map((_, index) => ({
+  //   id: index + 1,
+  //   title: `Song ${index + 1}`,
+  // }));
+
   return (
-    <div className='App'>
-      <div className='logo-box'>
-        <a href='https://github.com/electron-vite/electron-vite-react' target='_blank'>
-          <img src={logoVite} className='logo vite' alt='Electron + Vite logo' />
-          <img src={logoElectron} className='logo electron' alt='Electron + Vite logo' />
-        </a>
-      </div>
-      <h1>Electron + Vite + React</h1>
-      <div className='card'>
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className='read-the-docs'>
-        Click on the Electron + Vite logo to learn more
-      </p>
-      <div className='flex-center'>
-        Place static files into the<code>/public</code> folder <img style={{ width: '5em' }} src='./node.svg' alt='Node logo' />
-      </div>
-
-      <UpdateElectron />
+    <div
+      className={`flex flex-col h-screen w-screen thin-scrollbar no-scrollbar bg-[#292a2d]`}
+    >
+      {/* <BlessedMusic /> */}
+      {currentScreen === "Home" ? (
+        <WorkspaceSelector />
+      ) : currentScreen === "create" ? (
+        <CreateSong/>
+      ) : currentScreen === "Songs" ? (
+        <BlessedMusic />
+      ) : currentScreen === "edit" ? (
+        <EditSong />
+      ) : currentScreen === "Presentation" ? (
+        <SongPresentation/>) 
+        :
+      (
+        <ArrowLeftCircle
+          className="size-6 text-white"
+          onClick={() => setCurrentScreen("Home")}
+        />
+      )}
+      {/* <SongPresentation/> */}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

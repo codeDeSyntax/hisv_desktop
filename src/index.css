@@ -2,11 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
+  
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
@@ -16,8 +17,36 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+} */
+
+body {
+  margin: 0;
+  padding: 0;
+  /* box-sizing: border-box; */
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+}
+.wqoute {
+  font-family: "Brush Script MT", "Cursive", "Pacifico", cursive;
+}
+.bod {
+  border-width: 10px;
 }
 
+.dottedb {
+  background: radial-gradient(circle, lightblue 1px, white 0); /* Dots */
+  background-size: 20px 20px; /* Adjust the size of the background pattern */
+}
+.gridb {
+  background: linear-gradient(to right, #e6f4ff 1px, transparent 1px),
+    linear-gradient(to bottom, white 1px, #fafafa 1px);
+  background-size: 20px 20px; /* Adjust the size of the grid */
+}
+.gridb1 {
+  background: linear-gradient(to right, #fffdd5 1px, transparent 1px),
+    linear-gradient(to bottom, #fffdd5 1px, #faeed1 1px);
+  background-size: 20px 20px; /* Adjust the size of the grid */
+}
 a {
   font-weight: 500;
   color: #646cff;
@@ -25,14 +54,6 @@ a {
 }
 a:hover {
   color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
@@ -51,33 +72,29 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+/* button:hover {
   border-color: #646cff;
-}
+} */
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-code {
+/* code {
   background-color: #1a1a1a;
   padding: 2px 4px;
   margin: 0 4px;
   border-radius: 4px;
-}
+} */
 
-.card {
-  padding: 2em;
-}
-
-#app {
+/* #app {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-}
+} */
 
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
@@ -91,4 +108,4 @@ code {
   code {
     background-color: #f9f9f9;
   }
-}
+} */

@@ -1,4 +1,5 @@
-import { ipcRenderer, contextBridge } from 'electron'
+
+import { ipcRenderer, contextBridge ,dialog} from 'electron'
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', {
@@ -22,6 +23,23 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   // You can expose other APTs you need here.
   // ...
 })
+
+contextBridge.exposeInMainWorld('api', {
+  minimizeApp: () => ipcRenderer.send('minimizeApp'),
+  maximizeApp: () => ipcRenderer.send('maximizeApp'),
+  closeApp: () => ipcRenderer.send('closeApp'),
+  selectDirectory: () => ipcRenderer.invoke("select-directory"),
+  saveSong: (directory: string, title: string, content: string) =>
+    ipcRenderer.invoke("save-song", { directory, title, content }),
+  editSong: (songData: any) => ipcRenderer.invoke('edit-song', songData),
+  fetchSongs: (directory:string) => ipcRenderer.invoke("fetch-songs", directory),
+  deleteSong: (filePath:string) => ipcRenderer.invoke('delete-song', filePath),
+  searchSong: (directory:string, query:string) => ipcRenderer.invoke('search-songs', directory, query),
+  onSongsLoaded: (callback: (event: Electron.IpcRendererEvent, ...args: any[]) => void) => ipcRenderer.on("songs-loaded", callback),
+  getPresentationImages: (directory:string) => ipcRenderer.invoke('get-presentation-images', directory),
+});
+
+
 
 // --------- Preload scripts loading ---------
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
@@ -58,20 +76,20 @@ const safeDOM = {
  * https://matejkustec.github.io/SpinThatShit
  */
 function useLoading() {
-  const className = `loaders-css__square-spin`
+  const className = `loaders-css__image-spin`;
   const styleContent = `
-@keyframes square-spin {
-  25% { transform: perspective(100px) rotateX(180deg) rotateY(0); }
-  50% { transform: perspective(100px) rotateX(180deg) rotateY(180deg); }
-  75% { transform: perspective(100px) rotateX(0) rotateY(180deg); }
-  100% { transform: perspective(100px) rotateX(0) rotateY(0); }
+@keyframes image-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
-.${className} > div {
-  animation-fill-mode: both;
+.${className} > img {
+  animation: image-spin 2s linear infinite;
   width: 50px;
   height: 50px;
-  background: #fff;
-  animation: square-spin 3s 0s cubic-bezier(0.09, 0.57, 0.49, 0.9) infinite;
 }
 .app-loading-wrap {
   position: fixed;
@@ -85,34 +103,34 @@ function useLoading() {
   background: #282c34;
   z-index: 9;
 }
-    `
-  const oStyle = document.createElement('style')
-  const oDiv = document.createElement('div')
+    `;
+  const oStyle = document.createElement('style');
+  const oDiv = document.createElement('div');
 
-  oStyle.id = 'app-loading-style'
-  oStyle.innerHTML = styleContent
-  oDiv.className = 'app-loading-wrap'
-  oDiv.innerHTML = `<div class="${className}"><div></div></div>`
+  oStyle.id = 'app-loading-style';
+  oStyle.innerHTML = styleContent;
+  oDiv.className = 'app-loading-wrap';
+  oDiv.innerHTML = `<div class="${className}"><img src="./pic1.jpg" alt="Loading..." /></div>`;
 
   return {
     appendLoading() {
-      safeDOM.append(document.head, oStyle)
-      safeDOM.append(document.body, oDiv)
+      safeDOM.append(document.head, oStyle);
+      safeDOM.append(document.body, oDiv);
     },
     removeLoading() {
-      safeDOM.remove(document.head, oStyle)
-      safeDOM.remove(document.body, oDiv)
+      safeDOM.remove(document.head, oStyle);
+      safeDOM.remove(document.body, oDiv);
     },
-  }
+  };
 }
 
 // ----------------------------------------------------------------------
 
-const { appendLoading, removeLoading } = useLoading()
-domReady().then(appendLoading)
+const { appendLoading, removeLoading } = useLoading();
+domReady().then(appendLoading);
 
 window.onmessage = (ev) => {
-  ev.data.payload === 'removeLoading' && removeLoading()
-}
+  ev.data.payload === 'removeLoading' && removeLoading();
+};
 
-setTimeout(removeLoading, 4999)
+setTimeout(removeLoading, 4999);

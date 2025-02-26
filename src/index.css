@@ -80,6 +80,12 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.inputcontrol {
+  caret-color: white; /* Customize the caret color */
+  font-size: 15px; /* Adjust font size to modify caret size */
+  animation: caret-blink 1s infinite step-end; /* Control blinking rate */
+}
+
 /* code {
   background-color: #1a1a1a;
   padding: 2px 4px;

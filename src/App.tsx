@@ -14,6 +14,8 @@ import WorkspaceSelector from "./components/Welcome";
 import CreateSong from "./components/Form";
 import SongPresentation from "./components/PresentationMode";
 import { useBmusicContext } from "./Provider/Bmusic";
+import InstrumentShowroom from "./components/InstrumentShowRoom";
+import SongCollectionManager from "./components/Categorize";
 
 const App = () => {
   const { currentScreen, setCurrentScreen } = useBmusicContext();
@@ -32,15 +34,18 @@ const App = () => {
       {currentScreen === "Home" ? (
         <WorkspaceSelector />
       ) : currentScreen === "create" ? (
-        <CreateSong/>
+        <CreateSong />
       ) : currentScreen === "Songs" ? (
         <BlessedMusic />
       ) : currentScreen === "edit" ? (
         <EditSong />
       ) : currentScreen === "Presentation" ? (
-        <SongPresentation/>) 
-        :
-      (
+        <SongPresentation />
+      ) : currentScreen === "instRoom" ? (
+        <InstrumentShowroom />
+      ) : currentScreen === "categorize" ? (
+        <SongCollectionManager />
+      ) : (
         <ArrowLeftCircle
           className="size-6 text-white"
           onClick={() => setCurrentScreen("Home")}

@@ -1,21 +1,11 @@
 import re
-import os
 import fitz
 from pathlib import Path
 import logging
-import pdfkit
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Manually configure the path to the wkhtmltopdf executable
-# Update this path to the location where wkhtmltopdf is installed on your system
-WKHTMLTOPDF_PATH = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'  # Example for Windows
-# WKHTMLTOPDF_PATH = '/usr/local/bin/wkhtmltopdf'  # Example for macOS/Linux
-
-# Configure pdfkit to use the specified wkhtmltopdf executable
-pdfkit_config = pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_PATH)
 
 class SongExtractor:
     def __init__(self, input_pdf: str, output_dir: str):
@@ -71,7 +61,7 @@ class SongExtractor:
         return songs
 
     def _format_song_content(self, content: str) -> str:
-        """Formats song content with proper verse/chorus delimiters and p tags."""
+        """Formats song content with proper verse/chorus delimiters and <p> tags."""
         try:
             # Split content into lines
             lines = [line.strip() for line in content.split('\n') if line.strip()]
@@ -94,7 +84,7 @@ class SongExtractor:
                 if 'CHORUS' in line.upper() or (i > 0 and any(chorus_word in line.upper() for chorus_word in ['REFRAIN', 'CHORUS:', 'CHOR.'])):
                     if verse_started:
                         formatted_parts.append('<p></p>')
-                    formatted_parts.append('<p>&lt;!-- Chorus --&gt;</p>')
+                    formatted_parts.append('<!-- Chorus -->')
                     in_chorus = True
                     verse_started = True
                     i += 1
@@ -104,11 +94,11 @@ class SongExtractor:
                 if (i == 0 or not lines[i-1].strip()) and not in_chorus:
                     if verse_started:
                         formatted_parts.append('<p></p>')
-                    formatted_parts.append(f'<p>&lt;!-- Verse {current_verse} --&gt;</p>')
+                    formatted_parts.append(f'<!-- Verse {current_verse} -->')
                     current_verse += 1
                     verse_started = True
                 
-                # Add the line content
+                # Add the line content wrapped in <p> tags
                 formatted_parts.append(f'<p>{line}</p>')
                 
                 # Check if next line starts a new section
@@ -119,20 +109,21 @@ class SongExtractor:
                 
                 i += 1
             
-            return ''.join(formatted_parts)
+            return '\n'.join(formatted_parts)
             
         except Exception as e:
             logger.error(f"Error formatting song content: {e}")
             return ""
 
     def save_raw_content(self, content: str, title: str) -> bool:
-        """Saves the raw content directly to a file."""
+        """Saves the raw content directly to a text file."""
         try:
             self.output_dir.mkdir(parents=True, exist_ok=True)
-            output_path = self.output_dir / f"{title}.pdf"
+            output_path = self.output_dir / f"{title}.txt"
             
-            # Convert HTML content to PDF using pdfkit with the configured executable
-            pdfkit.from_string(content, str(output_path), configuration=pdfkit_config)
+            # Write the formatted content to a text file
+            with open(output_path, 'w', encoding='utf-8') as file:
+                file.write(content)
             
             logger.info(f"Successfully created file: {output_path}")
             return True

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import TitleBar from "./TitleBar";
 import CustomEditor from "./SongCreator";
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion";
 import { useBmusicContext } from "@/Provider/Bmusic";
 
 interface CreateSong {
@@ -60,7 +60,15 @@ export default function CreateSong() {
   });
 
   const [isSaving, setIsSaving] = useState(false);
-  const {setCurrentScreen,songRepo,setSongRepo,songs,setSongs,selectedSong,refetch}= useBmusicContext()
+  const {
+    setCurrentScreen,
+    songRepo,
+    setSongRepo,
+    songs,
+    setSongs,
+    selectedSong,
+    refetch,
+  } = useBmusicContext();
   const [notification, setNotification] = useState<{
     show: boolean;
     message: string;
@@ -141,10 +149,12 @@ export default function CreateSong() {
       setSongs([
         ...songs,
         {
+          id: selectedSong?.id || "",
           title: formData.title,
           path: selectedSong?.path || "",
           content: formData.message,
           dateModified: selectedSong?.dateModified || "",
+          categories: selectedSong?.categories || [],
         },
       ]);
       setFormData({ title: "", message: "" });
@@ -158,7 +168,7 @@ export default function CreateSong() {
 
   return (
     <div className="w-screen min-h-screen bg-[#faeed1] overflow-hidden">
-      <TitleBar/>
+      <TitleBar />
 
       <AnimatePresence>
         {notification.show && (
@@ -177,7 +187,7 @@ export default function CreateSong() {
           >
             <div className="flex h-full">
               <div className="p-6 w-[30%] border-b lg:border-b-0 lg:border-r border-[#9a674a]/10">
-              <ArrowLeftCircle
+                <ArrowLeftCircle
                   className="w-6 h-6 text-[#9a674a] hover:scale-105 hover:cursor-pointer"
                   onClick={() => setCurrentScreen("Songs")}
                 />

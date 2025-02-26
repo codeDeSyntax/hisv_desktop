@@ -30,11 +30,16 @@ type BmusicContextType = {
   setfetching: React.Dispatch<React.SetStateAction<boolean>>;
   songs: Song[];
   setSongs: React.Dispatch<React.SetStateAction<Song[]>>;
+  favorites: Song[];
+  setFavorites: React.Dispatch<React.SetStateAction<Song[]>>;
   refetch: () => void;
   selectedHymnBackground: string;
   setSelectedHymnBackground: React.Dispatch<React.SetStateAction<string>>;
   presentationImgs: string[];
   setPresentationImgs: React.Dispatch<React.SetStateAction<string[]>>;
+  handleClose: () => void;
+  handleMaximize: () => void;
+  handleMinimize: () => void;
 };
 
 const BmusicContext = createContext<BmusicContextType | undefined>(undefined);
@@ -57,11 +62,15 @@ export const BmusicProvider = ({ children }: BmusicProviderProps) => {
   const [fetching, setfetching] = useState(false);
   const [songs, setSongs] = useState<Song[]>([]);
   const [presentationImgs, setPresentationImgs] = useState<string[]>([]);
+  const [favorites, setFavorites] = useState<Song[]>([]);
 
   useEffect(() => {
     const savedDirectory = localStorage.getItem("bmusicsongdir");
     const savedTheme = localStorage.getItem("bmusictheme");
     const savedPresentationBg = localStorage.getItem("bmusicpresentationbg");
+    const savedFavorites = JSON.parse(
+      localStorage.getItem("bmusicfavorites") || "[]"
+    );
 
     if (savedTheme) {
       setTheme(savedTheme);
@@ -75,9 +84,24 @@ export const BmusicProvider = ({ children }: BmusicProviderProps) => {
       setSelectedHymnBackground(savedPresentationBg);
       console.log("Saved presentation background:", savedPresentationBg);
     }
+
+    if (savedFavorites) {
+      setFavorites(savedFavorites);
+      console.log("saved favorites", favorites);
+    }
   }, []);
 
-  // useEffect(() => {
+  const handleMinimize = () => {
+    window.api.minimizeApp();
+  };
+
+  const handleMaximize = () => {
+    window.api.maximizeApp();
+  };
+
+  const handleClose = () => {
+    window.api.closeApp();
+  };
   //   // Ensure imageRepo is defined and not empty
   //   if (!imageRepo) {
   //     console.log("Choose a directory to load images from");
@@ -123,7 +147,7 @@ export const BmusicProvider = ({ children }: BmusicProviderProps) => {
           });
           // console.log("fetchedSongs", fetchedSongs);
 
-          setSongs(fetchedSongs);
+          setSongs(fetchedSongs as Song[]);
           // if (songs.length === 0) {
           //   setFetchError("No songs found in the selected directory");
           // }
@@ -135,7 +159,7 @@ export const BmusicProvider = ({ children }: BmusicProviderProps) => {
             setFetchError("An unknown error occurred");
           }
           console.error("Failed to fetch songs:", error);
-          setSongs([]);
+          setSongs([] as Song[]);
         }
       }
     };
@@ -155,7 +179,7 @@ export const BmusicProvider = ({ children }: BmusicProviderProps) => {
         });
         // console.log("fetchedSongs", fetchedSongs);
 
-        setSongs(fetchedSongs);
+        setSongs(fetchedSongs as Song[]);
         if (songs.length === 0) {
           setFetchError("No songs found in the selected directory");
         }
@@ -196,6 +220,11 @@ export const BmusicProvider = ({ children }: BmusicProviderProps) => {
         setPresentationImgs,
         selectedHymnBackground,
         setSelectedHymnBackground,
+        favorites,
+        setFavorites,
+        handleClose,
+        handleMaximize,
+        handleMinimize,
       }}
     >
       {children}

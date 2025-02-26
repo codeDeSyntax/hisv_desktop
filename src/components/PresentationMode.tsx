@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, AudioLines } from "lucide-react";
 import { useBmusicContext } from "@/Provider/Bmusic";
 
 interface SongSection {
@@ -13,6 +13,7 @@ interface SongSection {
 const SongPresentation = () => {
   const [fontSize, setFontSize] = useState<string>("");
   const [fontFamily, setFontFamily] = useState<string>("serif");
+  const [presentationBg, setPresentationBg] = useState<string>("");
   const [displayCount, setDisplayCount] = useState<number>(6);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [songPages, setSongPages] = useState<
@@ -33,9 +34,11 @@ const SongPresentation = () => {
     const fontFamily = localStorage.getItem("fontFamily");
     const layout = localStorage.getItem("layout");
     const displayCount = localStorage.getItem("displayCount");
+    const backgroundImg = localStorage.getItem("bmusicpresentationbg");
     if (fontSize) setFontSize(fontSize);
     if (fontFamily) setFontFamily(fontFamily);
     if (displayCount) setDisplayCount(parseInt(displayCount));
+    if (backgroundImg) setPresentationBg(backgroundImg);
   }, []);
 
   useEffect(() => {
@@ -188,6 +191,9 @@ const SongPresentation = () => {
         className={`absolute inset-0 ${selectedHymnBackground} bg-cover bg-center`}
         style={{
           backgroundBlendMode: "overlay",
+          backgroundImage: `url(${presentationBg})`,
+          fontFamily: fontFamily,
+          fontSize: fontSize,
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-blue-900/30" />
@@ -197,12 +203,14 @@ const SongPresentation = () => {
         {/* Title Section */}
         <div className="p-4 text-center">
           <motion.h2
-            className="text-2xl md:text-3xl font-bold text-shadow"
+            className="text-2xl md:text-3xl font-bold text-shadow skew-x-12 italic underline flex text-center justify-center items-center "
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             key={sectionTitle}
           >
             {sectionTitle}
+            {fontSize}
+            <AudioLines className="h-10 w-20 animate-pulse" />
           </motion.h2>
         </div>
 
@@ -223,7 +231,7 @@ const SongPresentation = () => {
               className="w-full max-w-7xl mx-auto "
             >
               <div
-                className={`overflow-y-scroll no-scrollbar ${fontSize} text-nowrap  flex flex-col justify-center items-center  `}
+                className={`overflow-y-scroll no-scrollbar text-nowrap  flex flex-col justify-center items-center  `}
               >
                 {currentPage.content.map((line, i) => (
                   <motion.p
@@ -231,7 +239,11 @@ const SongPresentation = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className={`my-3 font-bold text-shadow-lg leading-normal text-nowrap text-ellipsis ${fontSize} text-center font-serif  tracking-wide`}
+                    className={`my-3 font-bold text-shadow-lg leading-normal text-nowrap text-ellipsis  text-center font-serif  tracking-wide`}
+                    style={{
+                      fontSize: fontSize,
+                      fontFamily: fontFamily,
+                    }}
                   >
                     {line}
                   </motion.p>
@@ -254,11 +266,13 @@ const SongPresentation = () => {
                 }}
                 className={`h-1 transition-all duration-300 rounded-full ${
                   index === currentIndex
-                    ? "w-3 bg-blue-400"
+                    ? "w-3 bg-white/50"
                     : "w-1 bg-white/30 hover:bg-white/50"
                 }`}
                 aria-label={`Go to page ${index + 1}`}
-              />
+              >
+                {/* {index + 1} */}
+              </button>
             ))}
           </div>
 
@@ -276,7 +290,7 @@ const SongPresentation = () => {
               }`}
               aria-label="Previous page"
             >
-              <ChevronLeft className="w-3 h-3" />
+              <ChevronLeft className="w-3 h-3 text-white" />
             </motion.button>
 
             <motion.button
@@ -291,7 +305,7 @@ const SongPresentation = () => {
               }`}
               aria-label="Next page"
             >
-              <ChevronRight className="w-3 h-3" />
+              <ChevronRight className="w-3 h-3 text-white" />
             </motion.button>
           </div>
         </div>

@@ -1,26 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
-  Menu,
-  BookOpen,
-  ChevronLeft,
-  ChevronRight,
-  BookText,
   Monitor,
   Search,
-  Grid,
   List,
   Table,
   PlusIcon,
-  Edit,
   TvIcon,
   X,
   RefreshCcw,
   Folder,
-  Loader2,
-  LoaderCircle,
 } from "lucide-react";
 import TitleBar from "./TitleBar";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, StarFilled } from "@ant-design/icons";
 import Sidebar from "./Sidebar";
 import DeletePopup from "./DeletePopup";
 import { useBmusicContext } from "@/Provider/Bmusic";
@@ -28,11 +19,13 @@ import { Song } from "@/types";
 
 const BlessedMusic = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  // const [fetching, setfetching] = useState(false);
+  const [activeTab, setActiveTab] = useState("collections");
   const [deleting, setDeleting] = useState(false);
   const [showDeleting, setShowDeleting] = useState(false);
   // const [fetchError, setFetchError] = useState("");
-  const [viewMode, setViewMode] = useState<"table" | "list">("table");
+  const [viewMode, setViewMode] = useState(
+    localStorage.getItem("layout") || "table"
+  );
   const {
     songRepo,
     setSongRepo,
@@ -42,27 +35,14 @@ const BlessedMusic = () => {
     selectedSong,
     setSelectedSong,
     fetching,
-    setfetching,
+    favorites,
     fetchError,
-    setFetchError,
+    setFavorites,
     songs,
     setSongs,
     refetch,
   } = useBmusicContext();
-
-  // const allSongs: Song[] = new Array(2000).fill(null).map((_, index) => ({
-  //   title: `Hymn ${index + 1}`,
-  //   path: `/path/to/hymn${index + 1}.pdf`,
-  //   content: "",
-  // }));
-
-  // window.api.onSongsLoaded((songs: Song[]) => {
-  //   // console.log("Songs loaded:", songs);
-  //   setSongs(songs);
-  //   // setFetchError("");
-  //   // Once the songs are loaded, you can update your UI with the loaded songs
-  //   // You can now update your UI with the loaded songs
-  // });
+  const [savedFavorites, setSavedFavorites] = useState<Song[]>(favorites);
 
   useEffect(() => {
     const savedDirectory = localStorage.getItem("bmusic");
@@ -76,8 +56,25 @@ const BlessedMusic = () => {
     }
   }, []);
 
-  const toggleRenderView = () => {
-    
+  const onSingleClick = (song: Song) => {
+    setSelectedSong(song);
+  };
+
+  const onDoubleClick = (song: Song) => {
+    if (selectedSong) {
+      setCurrentScreen("Presentation");
+      localStorage.setItem("selectedSong", JSON.stringify(song));
+    }
+  };
+
+  const presentSong = () => {
+    if (selectedSong) {
+      window.api.projectSong(selectedSong);
+      window.api.onDisplaySong((selectedSong: any) => {
+        // handle songData
+        alert(`songData: ${selectedSong.title}`);
+      });
+    }
   };
 
   // function to search for song directly from directory
@@ -111,9 +108,9 @@ const BlessedMusic = () => {
     const path = await window.api.selectDirectory();
     if (typeof path === "string") {
       setSongRepo(path);
-      localStorage.setItem("songRepoDirectory", path);
+      localStorage.setItem("bmusicsongdir", path);
     }
-    const savedDirectory = localStorage.getItem("songRepoDirectory");
+    const savedDirectory = localStorage.getItem("bmusicsongdir");
     if (savedDirectory) {
       setSongRepo(savedDirectory);
     }
@@ -161,12 +158,11 @@ const BlessedMusic = () => {
                   className="border-b z-40 border-stone-200 shadow-inner flex justify-between hover:bg-stone-100 transition-colors cursor-pointer"
                   style={{ borderWidth: "10px", borderColor: "#9a674a" }}
                   title={song.path}
-                  onClick={() => setSelectedSong(song)}
+                  onClick={() => onSingleClick(song)}
                   onDoubleClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    // setSelectedSong(song);
-                    setCurrentScreen("Presentation");
+                    onDoubleClick(song);
                   }}
                 >
                   <td className="px-4 py-2   flex items-center text-stone-800 text-[12px] font-serif ">
@@ -243,7 +239,12 @@ const BlessedMusic = () => {
         } `}
       >
         {/* Sidebar */}
-        <Sidebar />
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          savedFavorites={savedFavorites}
+          setSavedFavorites={setSavedFavorites}
+        />
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto h-full no-scrollbar">
           <div className="backdrop-blur-lg p-6 ">
@@ -266,26 +267,35 @@ const BlessedMusic = () => {
                     selectedSong ? "flex" : "hidden"
                   }`}
                 >
-                  <div className="flex  justify-center gap-1">
-                    <EditOutlined
-                      className="w-4 h-4 hover:scale-110 hover:cursor-pointer text-[#9a674a]"
-                      onClick={() => {
-                        // setSelectedSong(song)
-                        setCurrentScreen("edit");
-                      }}
-                    />
-                    <TvIcon
-                      className="w-4 h-4 hover:scale-110 hover:cursor-pointer text-[#9a674a]"
-                      onClick={() => setCurrentScreen("Presentation")}
-                    />
-                    <DeleteOutlined
-                      className="w-4 h-4 hover:scale-110 hover:cursor-pointer text-[#9a674a]"
-                      onClick={() => setShowDeleting(true)}
-                    />
-                    <X
-                      className="w-4 h-4 hover:scale-110 hover:cursor-pointer text-[#9a674a]"
-                      onClick={() => setSelectedSong(null)}
-                    />
+                  <div className="flex items-center justify-center gap-1">
+                    <span title="edit song">
+                      <EditOutlined
+                        className="w-4 h-4 hover:scale-110 hover:cursor-pointer text-[#9a674a]"
+                        onClick={() => {
+                          // setSelectedSong(song)
+                          setCurrentScreen("edit");
+                        }}
+                      />
+                    </span>
+                    <span title="Present here">
+                      <TvIcon
+                        className="w-4 h-4 hover:scale-110 hover:cursor-pointer text-[#9a674a]"
+                        onClick={() => setCurrentScreen("Presentation")}
+                      />
+                    </span>
+
+                    <span title="Delete song">
+                      <DeleteOutlined
+                        className="w-4 h-4 hover:scale-110 hover:cursor-pointer text-[#9a674a]"
+                        onClick={() => setShowDeleting(true)}
+                      />
+                    </span>
+                    <span title="deselect song">
+                      <X
+                        className="w-4 h-4 hover:scale-110 hover:cursor-pointer text-[#9a674a]"
+                        onClick={() => setSelectedSong(null)}
+                      />
+                    </span>
                   </div>
                 </div>
               </div>
@@ -332,11 +342,15 @@ const BlessedMusic = () => {
                     <PlusIcon className="w-3 h-3" />
                   </button>
                   <button
-                    onClick={() => setCurrentScreen("Presentation")}
+                    // onClick={() => setCurrentScreen("Presentation")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      presentSong();
+                    }}
                     className={`p-1 px-2 rounded-lg bg-stone-100 text-stone-500 hover:bg-[#9a674a] hover:text-white transition-colors ${
                       selectedSong ? "block" : "hidden"
                     }`}
-                    title="Present"
+                    title="External screen"
                   >
                     <Monitor className="w-3 h-3" />
                   </button>
@@ -355,7 +369,7 @@ const BlessedMusic = () => {
                     <Folder className="w-3 h-3" />
                   </button>
                   <button
-                    onClick={changeDirectory}
+                    // onClick={changeDirectory}
                     className={`p-1 px-2 rounded-lg font-thin text-[12px] bg-stone-100 text-stone-500 hover:bg-[#9a674a] hover:text-white transition-colors`}
                     title={songRepo}
                   >

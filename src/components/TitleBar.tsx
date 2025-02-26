@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Minus, Square, SwitchCamera, X } from "lucide-react";
+import {
+  ArrowLeftFromLine,
+  GalleryThumbnails,
+  Group,
+  Minus,
+  Square,
+  SwitchCamera,
+  X,
+} from "lucide-react";
 import { HomeFilled } from "@ant-design/icons";
 import { Switch } from "antd";
 import { useEffect } from "react";
@@ -42,7 +50,7 @@ const TitleBar = () => {
 
   return (
     <div
-      className="h-6 w-screen  fixed w-100 flex z-50 bg-white/20 bg-opacity-sm backdrop-blur-sm  items-center justify-between px-2 select-none"
+      className="h-6 w-screen  fixed w-100 flex z-50 top-0 bg-white/20 bg-opacity-sm backdrop-blur-sm  items-center justify-between px-2 select-none"
       style={{ WebkitAppRegion: "drag" } as any} // Make the entire title bar draggable
     >
       <div className="flex items-center space-x-2 ml-2">
@@ -90,10 +98,35 @@ const TitleBar = () => {
             onClick={setThemeChoice}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
               items-center justify-center ${
-              currentScreen === "Songs" ? "flex" : "hidden"
-            }`}
+                currentScreen === "Songs" ? "flex" : "hidden"
+              }`}
           >
             <SwitchCamera className="text-white z-20 size-3" />
+          </div>
+          <div
+            onClick={() => setCurrentScreen("instRoom")}
+            className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
+              items-center justify-center ${
+                currentScreen === "Songs" ? "flex" : "hidden"
+              }`}
+          >
+            <GalleryThumbnails className="text-white z-20 size-3" />
+          </div>
+          <div
+            onClick={() => setCurrentScreen("Songs")}
+            className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
+              items-center justify-center ${
+                currentScreen === "instRoom" ? "flex" : "hidden"
+              }`}
+          >
+            <ArrowLeftFromLine className="text-white z-20 size-3" />
+          </div>
+          <div
+            onClick={() => setCurrentScreen("categorize")}
+            className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
+              items-center justify-center flex `}
+          >
+            <Group className="text-white z-20 size-3" />
           </div>
         </div>
       </div>

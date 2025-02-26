@@ -1,73 +1,92 @@
-
-import { ipcRenderer, contextBridge ,dialog} from 'electron'
+import { ipcRenderer, contextBridge, dialog } from "electron";
 
 // --------- Expose some API to the Renderer process ---------
-contextBridge.exposeInMainWorld('ipcRenderer', {
+contextBridge.exposeInMainWorld("ipcRenderer", {
   on(...args: Parameters<typeof ipcRenderer.on>) {
-    const [channel, listener] = args
-    return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args))
+    const [channel, listener] = args;
+    return ipcRenderer.on(channel, (event, ...args) =>
+      listener(event, ...args)
+    );
   },
   off(...args: Parameters<typeof ipcRenderer.off>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.off(channel, ...omit)
+    const [channel, ...omit] = args;
+    return ipcRenderer.off(channel, ...omit);
   },
   send(...args: Parameters<typeof ipcRenderer.send>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.send(channel, ...omit)
+    const [channel, ...omit] = args;
+    return ipcRenderer.send(channel, ...omit);
   },
   invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.invoke(channel, ...omit)
+    const [channel, ...omit] = args;
+    return ipcRenderer.invoke(channel, ...omit);
   },
 
   // You can expose other APTs you need here.
   // ...
-})
+});
 
-contextBridge.exposeInMainWorld('api', {
-  minimizeApp: () => ipcRenderer.send('minimizeApp'),
-  maximizeApp: () => ipcRenderer.send('maximizeApp'),
-  closeApp: () => ipcRenderer.send('closeApp'),
+contextBridge.exposeInMainWorld("api", {
+  maximizeApp: () => ipcRenderer.send("maximizeApp"),
+  minimizeApp: () => {
+    console.log("Minimize action triggered");
+    ipcRenderer.send("minimizeApp");
+  },
+  closeApp: () => {
+    console.log("Close action triggered");
+    ipcRenderer.send("closeApp");
+  },
   selectDirectory: () => ipcRenderer.invoke("select-directory"),
   saveSong: (directory: string, title: string, content: string) =>
     ipcRenderer.invoke("save-song", { directory, title, content }),
-  editSong: (songData: any) => ipcRenderer.invoke('edit-song', songData),
-  fetchSongs: (directory:string) => ipcRenderer.invoke("fetch-songs", directory),
-  deleteSong: (filePath:string) => ipcRenderer.invoke('delete-song', filePath),
-  searchSong: (directory:string, query:string) => ipcRenderer.invoke('search-songs', directory, query),
-  onSongsLoaded: (callback: (event: Electron.IpcRendererEvent, ...args: any[]) => void) => ipcRenderer.on("songs-loaded", callback),
-  getPresentationImages: (directory:string) => ipcRenderer.invoke('get-presentation-images', directory),
+  editSong: (songData: any) => ipcRenderer.invoke("edit-song", songData),
+  fetchSongs: (directory: string) =>
+    ipcRenderer.invoke("fetch-songs", directory),
+  deleteSong: (filePath: string) => ipcRenderer.invoke("delete-song", filePath),
+  searchSong: (directory: string, query: string) =>
+    ipcRenderer.invoke("search-songs", directory, query),
+  onSongsLoaded: (
+    callback: (event: Electron.IpcRendererEvent, ...args: any[]) => void
+  ) => ipcRenderer.on("songs-loaded", callback),
+  getPresentationImages: (directory: string) =>
+    ipcRenderer.invoke("get-presentation-images", directory),
+  projectSong: (song: Song) => ipcRenderer.invoke("project-song", song),
+  onDisplaySong: (callback: (songData: any) => void) => {
+    ipcRenderer.on("display-song", (event, songData) => callback(songData));
+    return () => {
+      ipcRenderer.removeAllListeners("display-song");
+    };
+  },
 });
 
-
-
 // --------- Preload scripts loading ---------
-function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
-  return new Promise(resolve => {
+function domReady(
+  condition: DocumentReadyState[] = ["complete", "interactive"]
+) {
+  return new Promise((resolve) => {
     if (condition.includes(document.readyState)) {
-      resolve(true)
+      resolve(true);
     } else {
-      document.addEventListener('readystatechange', () => {
+      document.addEventListener("readystatechange", () => {
         if (condition.includes(document.readyState)) {
-          resolve(true)
+          resolve(true);
         }
-      })
+      });
     }
-  })
+  });
 }
 
 const safeDOM = {
   append(parent: HTMLElement, child: HTMLElement) {
-    if (!Array.from(parent.children).find(e => e === child)) {
-      return parent.appendChild(child)
+    if (!Array.from(parent.children).find((e) => e === child)) {
+      return parent.appendChild(child);
     }
   },
   remove(parent: HTMLElement, child: HTMLElement) {
-    if (Array.from(parent.children).find(e => e === child)) {
-      return parent.removeChild(child)
+    if (Array.from(parent.children).find((e) => e === child)) {
+      return parent.removeChild(child);
     }
   },
-}
+};
 
 /**
  * https://tobiasahlin.com/spinkit
@@ -100,17 +119,17 @@ function useLoading() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #282c34;
+  background: #faeed1;
   z-index: 9;
 }
     `;
-  const oStyle = document.createElement('style');
-  const oDiv = document.createElement('div');
+  const oStyle = document.createElement("style");
+  const oDiv = document.createElement("div");
 
-  oStyle.id = 'app-loading-style';
+  oStyle.id = "app-loading-style";
   oStyle.innerHTML = styleContent;
-  oDiv.className = 'app-loading-wrap';
-  oDiv.innerHTML = `<div class="${className}"><img src="./pic1.jpg" alt="Loading..." /></div>`;
+  oDiv.className = "app-loading-wrap";
+  oDiv.innerHTML = `<div class="${className}"><img src="./music1.png" alt="Loading..." /></div>`;
 
   return {
     appendLoading() {
@@ -130,7 +149,7 @@ const { appendLoading, removeLoading } = useLoading();
 domReady().then(appendLoading);
 
 window.onmessage = (ev) => {
-  ev.data.payload === 'removeLoading' && removeLoading();
+  ev.data.payload === "removeLoading" && removeLoading();
 };
 
 setTimeout(removeLoading, 4999);

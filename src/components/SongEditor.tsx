@@ -19,11 +19,11 @@ import { useBmusicContext } from "@/Provider/Bmusic";
 import { Song } from "@/types";
 
 interface SongEditorProps {
-    formData: any;
-    setFormData: (data: any) => void;
-  }
-const SongEditor = ({formData,setFormData}:SongEditorProps) => {
-    const {selectedSong, setSelectedSong } = useBmusicContext()
+  formData: any;
+  setFormData: (data: any) => void;
+}
+const SongEditor = ({ formData, setFormData }: SongEditorProps) => {
+  const { selectedSong, setSelectedSong } = useBmusicContext();
 
   const editor = useEditor({
     extensions: [
@@ -38,7 +38,7 @@ const SongEditor = ({formData,setFormData}:SongEditorProps) => {
           "before:content-[attr(data-placeholder)] before:text-gray-300 dark:before:text-gray-600 before:float-left before:pointer-events-none before:h-0",
       }),
     ],
-    content: formData.message,
+    content: `<p></p>${formData.message}`,
     editorProps: {
       attributes: {
         class:
@@ -145,10 +145,10 @@ const SongEditor = ({formData,setFormData}:SongEditorProps) => {
             onClick={() => editor.chain().focus().toggleBold().run()}
             // disabled={!editor.can().chain().focus().toggleBold().run()}
           >
-            <BoldIcon className="h-4 w-4 text-white"/>
+            <BoldIcon className="h-4 w-4 text-white" />
           </MenuButton>
-          <VersePaste editor={editor}/>
-          <ChorusPaste editor={editor}/>
+          <VersePaste editor={editor} />
+          <ChorusPaste editor={editor} />
         </div>
 
         {/* Editor Content */}

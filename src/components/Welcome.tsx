@@ -19,28 +19,38 @@ declare global {
       closeApp: () => void;
       selectDirectory: () => void;
       saveSong: (directory: string, title: string, content: string) => void;
-      editSong: (directory: string, newTitle: string, content: string, originalPath: string) => void;
-      searchSong:(directory:string,searchTerm:string) =>  Promise<Song[]>,
-      fetchSongs : (directory:string) => Promise<Song[]>;
+      editSong: (
+        directory: string,
+        newTitle: string,
+        content: string,
+        originalPath: string
+      ) => void;
+      searchSong: (directory: string, searchTerm: string) => Promise<Song[]>;
+      fetchSongs: (directory: string) => Promise<Song[]>;
       deleteSong: (filePath: string) => void;
       onSongsLoaded: (callback: (songs: Song[]) => void) => void;
       getPresentationImages: (directory: string) => Promise<string[]>;
+      projectSong: (songs: any) => void;
+      onDisplaySong: (callback: (songData: Song) => void) => void;
     };
   }
 }
-
 
 const WorkspaceSelector = () => {
   const [isHovered, setIsHovered] = useState<string | null>(null);
   const [currentBg, setCurrentBg] = useState<string>("./wood6.jpg");
   const [currentTiltedBg, setCurrentTiltedBg] = useState<string>("./wood6.jpg");
-  const { currentScreen, setCurrentScreen} = useBmusicContext()
+  const { currentScreen, setCurrentScreen } = useBmusicContext();
 
   // Auto background switching effect
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentBg((prev) => (prev === "./wood2.jpg" ? "./wood6.jpg" : "./wood2.jpg"));
-      setCurrentTiltedBg((prev) => (prev === "./wood2.jpg" ? "./wood6.jpg" : "./wood2.jpg"));
+      setCurrentBg((prev) =>
+        prev === "./wood2.jpg" ? "./wood6.jpg" : "./wood2.jpg"
+      );
+      setCurrentTiltedBg((prev) =>
+        prev === "./wood2.jpg" ? "./wood6.jpg" : "./wood2.jpg"
+      );
     }, 60000); // Switch every 60 seconds
 
     return () => clearInterval(interval);
@@ -59,8 +69,10 @@ const WorkspaceSelector = () => {
   };
 
   // Determine colors based on the current background
-  const hdColor = currentTiltedBg === "./wood2.jpg" ? "bg-[#0188a7]" : "bg-[#694a3f]";
-  const hdButton = currentTiltedBg === "./wood2.jpg" ? "bg-[#1b9ebc]" : "bg-[#c77c5d]";
+  const hdColor =
+    currentTiltedBg === "./wood2.jpg" ? "bg-[#0188a7]" : "bg-[#694a3f]";
+  const hdButton =
+    currentTiltedBg === "./wood2.jpg" ? "bg-[#1b9ebc]" : "bg-[#c77c5d]";
 
   return (
     <div
@@ -125,7 +137,9 @@ const WorkspaceSelector = () => {
 
         {/* Workspace Item */}
         <div className="space-y-3 relative z-10">
-          <div className={`flex items-center justify-between px-4 py-2 ${hdColor} border border-white rounded-lg duration-200`}>
+          <div
+            className={`flex items-center justify-between px-4 py-2 ${hdColor} border border-white rounded-lg duration-200`}
+          >
             <div className="flex items-center gap-3">
               <div
                 className={`w-10 h-10 ${hdButton} rounded-lg flex items-center justify-center text-white font-semibold`}
@@ -148,8 +162,8 @@ const WorkspaceSelector = () => {
 
         {/* Add Song Button */}
         <button
-        onClick={() => setCurrentScreen("create")}
-          className={`mt-6 w-full p-4 flex items-center justify-center gap-2 border border-white bg-transparent rounded-lg hover:bg-[#c77c5d] transition-colors duration-200 text-white relative z-10`}
+          onClick={() => setCurrentScreen("create")}
+          className={`mt-6 w-full p-4 flex items-center justify-center gap-2 border border-white bg-transparent rounded-lg hover:${hdButton} transition-colors duration-200 text-white relative z-10`}
         >
           <Plus size={20} />
           Add a song

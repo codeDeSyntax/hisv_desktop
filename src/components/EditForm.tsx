@@ -153,10 +153,12 @@ export default function EditSong() {
       setSongs([
         ...songs,
         {
+          id: selectedSong?.id || "",
           title: formData.title,
           path: selectedSong?.path || "",
           content: formData.message,
           dateModified: selectedSong?.dateModified || "",
+          categories:selectedSong?.categories || [],
         },
       ]);
       refetch();

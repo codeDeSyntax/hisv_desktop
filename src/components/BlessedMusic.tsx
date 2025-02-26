@@ -58,6 +58,7 @@ const BlessedMusic = () => {
 
   const onSingleClick = (song: Song) => {
     setSelectedSong(song);
+    setActiveTab("Song");
   };
 
   const onDoubleClick = (song: Song) => {

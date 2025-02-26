@@ -408,16 +408,22 @@ const Sidebar = ({
       case "collections":
         return (
           <div className="space-y-2">
+            {collections.length === 0 && (
+              <img src="./nosong.png" alt="" className="h-40" />
+            )}
+
             {collections.map((collection, index) => (
               <div
                 key={index}
-                className="p-3 bg-white/30 rounded-lg backdrop-blur-sm transition-all hover:bg-white/40"
+                className="px-3 bg-gradient-to-r from-[#f1e0b8] via-[#efccb6] to-[#faeed1] shadow rounded-lg backdrop-blur-sm transition-all hover:bg-white/40"
               >
                 <div className="flex flex-col justify-between items-start">
                   <div>
-                    <h4 className="font-normal">{collection.name}</h4>
+                    <h4 className="font-normal font-serif text-[12px]">
+                      {collection.name}
+                    </h4>
                     <p className="text-sm text-stone-600">
-                      {collection.songIds.length}songs
+                      {collection.songIds.length} songs
                     </p>
                   </div>
                 </div>

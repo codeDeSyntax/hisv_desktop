@@ -78,7 +78,15 @@
 
     <script>
       // Listen for song data from the main process
+
       window.api.onDisplaySong((songData) => {
+        const main = document.getElementById("backgroundImage");
+        const mainImg = localStorage.getItem("bmusicpresentationbg");
+        if (mainImg) {
+          main.style.backgroundImage = `url(${mainImg})`;
+        } else {
+          main.style.backgroundImage = "url(./wood7.png)";
+        }
         const parseSongContent = (content) => {
           const sections = [];
           const parser = new DOMParser();
@@ -175,8 +183,8 @@
             const p = document.createElement("p");
             p.textContent = line;
             p.style.animation = `fadeInUp ${i * 0.1 + 0.2}s ease forwards`;
-            p.style.fontSize = localStorage?.getItem("fontSize");
-            p.style.fontFamily = localStorage?.getItem("fontFamily");
+            p.style.fontSize = `${localStorage.getItem("fontSize")}rem`;
+            p.style.fontFamily = localStorage?.getItem("fontFamily") || "serif";
             container.appendChild(p);
           });
 
@@ -241,7 +249,7 @@
 
       // Load settings from localStorage
       document.addEventListener("DOMContentLoaded", () => {
-        const fontSize = localStorage.getItem("fontSize");
+        const fontSize = `${localStorage.getItem("fontSize")}rem`;
         const fontFamily = localStorage.getItem("fontFamily");
         const main = document.getElementById("backgroundImage");
         const mainImg = localStorage.getItem("bmusicpresentationbg");
@@ -254,6 +262,8 @@
         }
         if (mainImg) {
           main.style.backgroundImage = `url(${mainImg})`;
+        } else {
+          main.style.backgroundImage = "url(./wood7.png)";
         }
       });
     </script>

@@ -128,10 +128,10 @@ const Sidebar = ({
     theme,
   } = useBmusicContext();
   const [fontSize, setFontSize] = useState(
-    localStorage.getItem("fontSize") || "16"
+    localStorage.getItem("fontSize") || "1.5"
   );
   const [fontFamily, setFontFamily] = useState(
-    localStorage.getItem("fontFamily") || "serif"
+    localStorage.getItem("fontFamily") || "'Georgia', serif"
   );
   const [displayCount, setDisplayCount] = useState(
     localStorage.getItem("displayCount") || "6"
@@ -184,9 +184,9 @@ const Sidebar = ({
   ];
 
   const fontSizeOptions = [
-    { value: "1.3rem", label: "Small" },
-    { value: "1.5rem", label: "Medium" },
-    { value: "1.8rem", label: "Large" },
+    { value: "1.3", label: "Small" },
+    { value: "1.5", label: "Medium" },
+    { value: "1.8", label: "Large" },
   ];
 
   const fontFamilyOptions = [

@@ -53,7 +53,7 @@ export const BmusicProvider = ({ children }: BmusicProviderProps) => {
     name: "John Doe",
     email: "",
   });
-  const [currentScreen, setCurrentScreen] = useState("Songs");
+  const [currentScreen, setCurrentScreen] = useState("Home");
   const [songRepo, setSongRepo] = useState("");
   const [selectedHymnBackground, setSelectedHymnBackground] = useState("");
   const [theme, setTheme] = useState("creamy");

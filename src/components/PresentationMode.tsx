@@ -13,7 +13,8 @@ interface SongSection {
 const SongPresentation = () => {
   const [fontSize, setFontSize] = useState<string>("");
   const [fontFamily, setFontFamily] = useState<string>("serif");
-  const [presentationBg, setPresentationBg] = useState<string>("");
+  const [presentationBg, setPresentationBg] =
+    useState<string>("url(wood7.png)");
   const [displayCount, setDisplayCount] = useState<number>(6);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [songPages, setSongPages] = useState<
@@ -188,12 +189,12 @@ const SongPresentation = () => {
     <div className="h-screen relative overflow-hidden">
       {/* Background with gradient overlay */}
       <div
-        className={`absolute inset-0 ${selectedHymnBackground} bg-cover bg-center`}
+        className={`absolute inset-0 ${selectedHymnBackground} bg-cover bg-center bg-gradient-to-r from-blue-900 to-purple-900`}
         style={{
           backgroundBlendMode: "overlay",
           backgroundImage: `url(${presentationBg})`,
           fontFamily: fontFamily,
-          fontSize: fontSize,
+          fontSize: `${0.5 + fontSize}rem`,
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-blue-900/30" />
@@ -209,7 +210,7 @@ const SongPresentation = () => {
             key={sectionTitle}
           >
             {sectionTitle}
-            {fontSize}
+
             <AudioLines className="h-10 w-20 animate-pulse" />
           </motion.h2>
         </div>
@@ -241,7 +242,7 @@ const SongPresentation = () => {
                     transition={{ delay: i * 0.1 }}
                     className={`my-3 font-bold text-shadow-lg leading-normal text-nowrap text-ellipsis  text-center font-serif  tracking-wide`}
                     style={{
-                      fontSize: fontSize,
+                      fontSize: `${1.5 + Number(fontSize)}rem`,
                       fontFamily: fontFamily,
                     }}
                   >

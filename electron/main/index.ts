@@ -71,6 +71,17 @@ async function createMainWindow() {
     mainWin.loadFile(indexHtml);
   }
 
+  mainWin.webContents.on("before-input-event", (event, input) => {
+    if (
+      input.key === "F12" || // Disable F12 for dev tools
+      (input.key === "I" && input.control && input.shift) || // Disable Ctrl+Shift+I or Cmd+Opt+I
+      (input.key === "R" && input.control) || // Disable Ctrl+R for reload
+      (input.key === "R" && input.meta) // Disable Cmd+R for reload on macOS
+    ) {
+      event.preventDefault();
+    }
+  });
+
   ipcMain.on("minimizeApp", () => {
     mainWin?.minimize();
   });
@@ -94,6 +105,8 @@ async function createProjectionWindow() {
     projectionWin = new BrowserWindow({
       title: "Projection",
       frame: false,
+      modal: true, // Optional: makes the child window modal
+      show: true,
       fullscreen: true,
       icon: path.join(process.env.VITE_PUBLIC, "music2.png"),
       webPreferences: {

@@ -106,7 +106,6 @@ function useLoading() {
   }
 }
 .${className} > img {
-  animation: image-spin 2s linear infinite;
   width: 50px;
   height: 50px;
 }

@@ -15,6 +15,8 @@ import {
   Minus,
   Square,
   ArrowLeftCircle,
+  Monitor,
+  ExternalLinkIcon,
 } from "lucide-react";
 import { useBmusicContext } from "@/Provider/Bmusic";
 import TitleBar from "./TitleBar";
@@ -44,6 +46,8 @@ const SongCollectionManager: React.FC = () => {
     handleMinimize,
     handleMaximize,
     setCurrentScreen,
+    selectedSong,
+    setSelectedSong,
   } = useBmusicContext();
   const [allMusic, setAllMusic] = useState<Song[]>(songs);
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -304,6 +308,16 @@ const SongCollectionManager: React.FC = () => {
       } else {
         addSongToCollection(song.id, selectedCollection);
       }
+    }
+  };
+
+  const presentSong = (song: Song) => {
+    if (song) {
+      window.api.projectSong(song);
+      window.api.onDisplaySong((song: any) => {
+        // handle songData
+        alert(`songData: ${song.title}`);
+      });
     }
   };
 
@@ -653,7 +667,7 @@ const SongCollectionManager: React.FC = () => {
                                         {song.title}
                                       </span>
                                     </div>
-                                    <div>
+                                    <div className="flex items-center">
                                       <button
                                         className="opacity-0 group-hover:opacity-100 group-hover:bg-gradient-to-r from-[#9a674a] to-[#b8805c] p-1 h-6 w-6 text-gray-100 flex items-center hover:text-red-500 rounded-full hover:bg-red-50 "
                                         onClick={(e) => {
@@ -665,6 +679,27 @@ const SongCollectionManager: React.FC = () => {
                                         }}
                                       >
                                         <X size={14} />
+                                      </button>
+                                      <button
+                                        className="opacity-0 group-hover:opacity-100 group-hover:bg-gradient-to-r from-[#9a674a] to-[#b8805c] p-1 h-6 w-6 text-gray-100 flex items-center hover:text-red-500 rounded-full hover:bg-red-50 "
+                                        title="present here📩"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedSong(song);
+                                          setCurrentScreen("Presentation");
+                                        }}
+                                      >
+                                        <Monitor size={14} />
+                                      </button>
+                                      <button
+                                        className="opacity-0 group-hover:opacity-100 group-hover:bg-gradient-to-r from-[#9a674a] to-[#b8805c] p-1 h-6 w-6 text-gray-100 flex items-center hover:text-red-500 rounded-full hover:bg-red-50 "
+                                        title="external screen ↗️"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          presentSong(song);
+                                        }}
+                                      >
+                                        <ExternalLinkIcon size={14} />
                                       </button>
                                     </div>
                                   </div>

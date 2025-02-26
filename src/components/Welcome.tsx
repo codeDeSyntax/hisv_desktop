@@ -325,7 +325,6 @@ const WorkspaceSelector = () => {
                 className="w-64 h-64 object-cover rounded-full border-4 border-[#8c6e63] shadow-xl"
                 width="256"
                 height="256"
-                fetchPriority="high"
                 loading="eager"
               />
               <div className="absolute bottom-0 right-0 transform translate-x-1/4">

@@ -56,6 +56,7 @@ async function createMainWindow() {
     icon: path.join(process.env.VITE_PUBLIC, "music2.png"),
     webPreferences: {
       preload,
+      devTools: false,
       nodeIntegration: false,
       contextIsolation: true,
     },
@@ -65,7 +66,7 @@ async function createMainWindow() {
     mainWin.loadURL(VITE_DEV_SERVER_URL);
     mainWin.maximize();
     mainWin.setMenuBarVisibility(false);
-    mainWin.webContents.openDevTools();
+    // mainWin.webContents.openDevTools();
   } else {
     mainWin.maximize();
     mainWin.setMenuBarVisibility(false);
@@ -112,6 +113,7 @@ async function createProjectionWindow() {
       icon: path.join("./dist/", "music2.png"),
       webPreferences: {
         preload,
+        devTools: false,
         nodeIntegration: true,
         contextIsolation: true,
       },
@@ -123,6 +125,17 @@ async function createProjectionWindow() {
       projectionWin.loadFile(projectionHtml);
     }
   }
+
+  projectionWin.webContents.on("before-input-event", (event, input) => {
+    if (
+      input.key === "F12" || // Disable F12 for dev tools
+      (input.key === "I" && input.control && input.shift) || // Disable Ctrl+Shift+I or Cmd+Opt+I
+      (input.key === "R" && input.control) || // Disable Ctrl+R for reload
+      (input.key === "R" && input.meta) // Disable Cmd+R for reload on macOS
+    ) {
+      event.preventDefault();
+    }
+  });
 
   return projectionWin;
 }

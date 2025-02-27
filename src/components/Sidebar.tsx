@@ -7,6 +7,7 @@ import {
   Check,
   ChevronDown,
   Monitor,
+  ExternalLink,
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { FolderOpen } from "lucide-react";
@@ -65,14 +66,14 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   return (
     <div className="relative " ref={dropdownRef}>
       {label && (
-        <label className="text-sm font-thin skew-x-12 italic mb-1 block">
+        <label className="text-sm font-thin  skew-x-12 italic mb-1 block">
           {label}
         </label>
       )}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full p-2 rounded-lg ${
-          theme === "creamy" ? "bg-[#9a674a]/20" : "bg-white"
+          theme === "creamy" ? "bg-[#9a674a]/20 " : "bg-white"
         } text-[12px] border border-stone-200 flex items-center justify-between hover:bg-white/60 transition-colors`}
       >
         <span>{displayValue as string}</span>
@@ -97,7 +98,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
               }}
               className={`w-[90%] px-3 py-2 text-left  text-[12px] shadow-inner  hover:[#9a674a]/40 hover:text-black  transition-colors ${
                 (option.value || option) === value
-                  ? "bg-white/20 "
+                  ? "bg-white/20 text-orange-400"
                   : theme === "creamy"
                   ? "bg-[#9a674a]/20 text-white"
                   : "bg-transparent border text-stone-500"
@@ -118,7 +119,7 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
     songRepo,
     setSongRepo,
     selectedSong,
-    favorites,
+    setCurrentScreen,
     setSelectedHymnBackground,
     theme,
   } = useBmusicContext();
@@ -167,7 +168,7 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
     {
       id: "bg5",
       name: "Forest Calm",
-      thumbnail: "./pic5.jpg",
+      thumbnail: "./pi8.jpg",
       gradient: "bg-gradient-to-r from-green-100 to-emerald-100",
     },
     {
@@ -418,8 +419,14 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
               >
                 <div className="flex flex-col justify-between items-start">
                   <div>
-                    <h4 className="font-normal font-serif text-[12px]">
-                      {collection.name}
+                    <h4 className="font-normal flex items-center gap-3 font-serif text-[12px]">
+                      {collection.name}{" "}
+                      <span>
+                        <ExternalLink
+                          className="h-4 w-4 text-[#9a674a] hover:scale-105 hover:cursor-pointer"
+                          onClick={() => setCurrentScreen("categorize")}
+                        />
+                      </span>
                     </h4>
                     <p className="text-sm text-stone-600">
                       {collection.songIds.length} songs

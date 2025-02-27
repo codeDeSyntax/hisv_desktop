@@ -274,7 +274,7 @@ const WorkspaceSelector = () => {
                 <Book size={24} />
               </div>
               <div>
-                <h3 className="font-medium text-white text-lg">Create New</h3>
+                <h3 className="font-medium text-white text-lg">Add song</h3>
                 <p className="text-sm text-white opacity-80">
                   Add a new hymn or song
                 </p>

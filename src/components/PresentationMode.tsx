@@ -194,7 +194,7 @@ const SongPresentation = () => {
           backgroundBlendMode: "overlay",
           backgroundImage: `url(${presentationBg})`,
           fontFamily: fontFamily,
-          fontSize: `${0.5 + fontSize}rem`,
+          // fontSize: `${0.5 + fontSize}rem`,
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-blue-900/30" />
@@ -242,7 +242,7 @@ const SongPresentation = () => {
                     transition={{ delay: i * 0.1 }}
                     className={`my-1 font-bold text-shadow-lg leading-normal mx-auto text-nowrap text-ellipsis   font-serif  tracking-wide`}
                     style={{
-                      fontSize: `${1.5 + Number(fontSize)}rem`,
+                      fontSize: `${1 + Number(fontSize)}rem`,
                       fontFamily: fontFamily,
                     }}
                   >

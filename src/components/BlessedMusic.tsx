@@ -59,6 +59,7 @@ const BlessedMusic = () => {
   const onSingleClick = (song: Song) => {
     setSelectedSong(song);
     setActiveTab("Song");
+    localStorage.setItem("selectedSong", JSON.stringify(song));
   };
 
   const onDoubleClick = (song: Song) => {
@@ -68,10 +69,11 @@ const BlessedMusic = () => {
     }
   };
 
-  const presentSong = () => {
+  const presentSong = (selectedSong: any) => {
     if (selectedSong) {
+      localStorage.setItem("selectedSong", JSON.stringify(selectedSong));
       window.api.projectSong(selectedSong);
-      window.api.onDisplaySong((selectedSong: any) => {
+      window.api.onDisplaySong((selectedSong) => {
         // handle songData
         alert(`songData: ${selectedSong.title}`);
       });
@@ -346,7 +348,7 @@ const BlessedMusic = () => {
                     // onClick={() => setCurrentScreen("Presentation")}
                     onClick={(e) => {
                       e.preventDefault();
-                      presentSong();
+                      presentSong(selectedSong);
                     }}
                     className={`p-1 px-2 rounded-lg bg-stone-100 text-stone-500 hover:bg-[#9a674a] hover:text-white transition-colors ${
                       selectedSong ? "block" : "hidden"

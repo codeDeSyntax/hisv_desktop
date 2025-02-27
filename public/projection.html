@@ -161,8 +161,7 @@
         };
 
         // State management
-        // get json song from local storage
-        // const selectedSong = JSON.parse(localStorage.getItem("selectedSong"));
+
         // console.log("saved music", selectedSong);
         let currentIndex = 0;
         let songPages = parseSongContent(songData.content);
@@ -179,12 +178,16 @@
           const container = document.getElementById("contentContainer");
           container.innerHTML = "";
 
+          const savedSize = localStorage.getItem("fontSize");
+          const textSize = savedSize ? `${savedSize}rem` : "3rem";
+
           page.content.forEach((line, i) => {
             const p = document.createElement("p");
             p.textContent = line;
             p.style.animation = `fadeInUp ${i * 0.1 + 0.2}s ease forwards`;
-            p.style.fontSize = `${localStorage.getItem("fontSize")}rem`;
+            p.style.fontSize = textSize;
             p.style.fontFamily = localStorage?.getItem("fontFamily") || "serif";
+            // text.style.textAlign = "left";
             container.appendChild(p);
           });
 
@@ -253,9 +256,19 @@
         const fontFamily = localStorage.getItem("fontFamily");
         const main = document.getElementById("backgroundImage");
         const mainImg = localStorage.getItem("bmusicpresentationbg");
+        const container = document.getElementById("contentContainer");
 
-        if (fontSize) {
-          document.documentElement.style.setProperty("font-size", fontSize);
+        // if (fontSize) {
+        //   document.documentElement.style.setProperty("font-size", fontSize);
+        // }
+        // get json song from local storage
+        const selectedSong = JSON.parse(localStorage.getItem("selectedSong"));
+        if (container.innerHTML === "Blessed Music") {
+          window.api.projectSong(selectedSong);
+          window.api.onDisplaySong((selectedSong) => {
+            // handle songData
+            // alert(`songData: ${selectedSong.title}`);
+          });
         }
         if (fontFamily) {
           document.documentElement.style.setProperty("font-family", fontFamily);

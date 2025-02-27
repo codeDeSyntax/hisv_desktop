@@ -3,6 +3,7 @@ import {
   ArrowLeftFromLine,
   GalleryThumbnails,
   Group,
+  Guitar,
   Minus,
   Square,
   SwitchCamera,
@@ -100,6 +101,7 @@ const TitleBar = () => {
               items-center justify-center ${
                 currentScreen === "Songs" ? "flex" : "hidden"
               }`}
+            title="Mild theme 🟤"
           >
             <SwitchCamera className="text-white z-20 size-3" />
           </div>
@@ -109,8 +111,9 @@ const TitleBar = () => {
               items-center justify-center ${
                 currentScreen === "Songs" ? "flex" : "hidden"
               }`}
+            title="Instrument showroom 🎸"
           >
-            <GalleryThumbnails className="text-white z-20 size-3" />
+            <Guitar className="text-white z-20 size-3" />
           </div>
           <div
             onClick={() => setCurrentScreen("Songs")}
@@ -118,6 +121,7 @@ const TitleBar = () => {
               items-center justify-center ${
                 currentScreen === "instRoom" ? "flex" : "hidden"
               }`}
+            title="back"
           >
             <ArrowLeftFromLine className="text-white z-20 size-3" />
           </div>
@@ -125,6 +129,7 @@ const TitleBar = () => {
             onClick={() => setCurrentScreen("categorize")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
               items-center justify-center flex `}
+            title="Music categories"
           >
             <Group className="text-white z-20 size-3" />
           </div>

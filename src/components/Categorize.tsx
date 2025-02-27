@@ -205,6 +205,13 @@ const SongCollectionManager: React.FC = () => {
         setShowCollectionPanel(false);
       }
     }
+    // delete from local storage too
+    setCollections(collections.filter((c) => c.id !== collectionId));
+    localStorage.setItem(
+      "collections",
+      JSON.stringify(collections.filter((c) => c.id !== collectionId))
+    );
+    // update collection state after deletetion
   };
 
   // Add a song to a collectionnn
@@ -554,7 +561,7 @@ const SongCollectionManager: React.FC = () => {
                           placeholder="Collection name..."
                           value={newCollectionName}
                           onChange={(e) => setNewCollectionName(e.target.value)}
-                          className="flex-1 inputcontrol bg-gradient-to-r from-[#9a674a] to-[#b8805c] p-2 shadow border-none rounded-l-lg focus:outline-none focus:ring-1 focus:ring-[#9a674a] placeholder:text-white/60"
+                          className="flex-1 inputcontrol bg-gradient-to-r from-[#9a674a] to-[#b8805c] p-2 shadow border-none rounded-l-lg focus:outline-none text-gray-100 font-serif  focus:ring-1 focus:ring-[#9a674a] placeholder:text-white/60"
                           autoFocus
                         />
                         <button

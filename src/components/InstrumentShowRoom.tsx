@@ -56,6 +56,38 @@ const instruments: Instrument[] = [
     imageUrl: "./grandp2.png",
     audioSample: "saxophone-sample.mp3",
   },
+  {
+    id: 5,
+    name: "Vector Instrument set",
+    type: "Woodwind",
+    description: "All music set",
+    imageUrl: "./inst2.png",
+    audioSample: "saxophone-sample.mp3",
+  },
+  {
+    id: 6,
+    name: "Music",
+    type: "Brass",
+    description: "All music set",
+    imageUrl: "./grandp3.jpg",
+    audioSample: "saxophone-sample.mp3",
+  },
+  {
+    id: 7,
+    name: "Vector Instrument set",
+    type: "Electric Guitar",
+    description: "All music set",
+    imageUrl: "./guitar2.png",
+    audioSample: "saxophone-sample.mp3",
+  },
+  {
+    id: 8,
+    name: "Vector Instrument set",
+    type: "Electric Guitar",
+    description: "All music set",
+    imageUrl: "./guitar1.png",
+    audioSample: "saxophone-sample.mp3",
+  },
 ];
 
 const InstrumentShowroom: React.FC = () => {

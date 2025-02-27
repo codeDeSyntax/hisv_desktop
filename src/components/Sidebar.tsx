@@ -180,6 +180,8 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
   ];
 
   const fontSizeOptions = [
+    { value: "0.8", label: "xxs" },
+    { value: "1", label: "xs" },
     { value: "1.3", label: "Small" },
     { value: "1.5", label: "Medium" },
     { value: "1.8", label: "Large" },

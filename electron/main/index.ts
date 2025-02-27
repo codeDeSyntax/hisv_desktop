@@ -47,7 +47,6 @@ const indexHtml = path.join(RENDERER_DIST, "index.html");
 const projectionHtml = path.join(RENDERER_DIST, "projection.html");
 
 async function createMainWindow() {
-  console.log(projectionHtml);
   mainWin = new BrowserWindow({
     title: "Main window",
     frame: false,
@@ -56,7 +55,7 @@ async function createMainWindow() {
     icon: path.join(process.env.VITE_PUBLIC, "music2.png"),
     webPreferences: {
       preload,
-      devTools: false,
+      // devTools: false,
       nodeIntegration: false,
       contextIsolation: true,
     },
@@ -66,7 +65,7 @@ async function createMainWindow() {
     mainWin.loadURL(VITE_DEV_SERVER_URL);
     mainWin.maximize();
     mainWin.setMenuBarVisibility(false);
-    // mainWin.webContents.openDevTools();
+    mainWin.webContents.openDevTools();
   } else {
     mainWin.maximize();
     mainWin.setMenuBarVisibility(false);

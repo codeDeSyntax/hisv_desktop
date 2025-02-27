@@ -542,7 +542,7 @@ const SongCollectionManager: React.FC = () => {
                     </h2>
                     <button
                       onClick={() => setIsAddingCollection(true)}
-                      className="p-2  bg-gradient-to-r from-[#b8805c] to-[#9a674a] shadow h-8 w-8 text-white rounded-full hover:bg-[#85583f] transition-colors"
+                      className="p-2 flex items-center justify-center  bg-gradient-to-r from-[#b8805c] to-[#9a674a] shadow h-8 w-8 text-white rounded-full hover:bg-[#85583f] transition-colors"
                     >
                       <FolderPlus size={18} />
                     </button>
@@ -577,8 +577,13 @@ const SongCollectionManager: React.FC = () => {
 
                 <div className="space-y-3 mb-4 max-h-[calc(100vh-280px)] overflow-y-auto no-scrollbar">
                   {collections.length === 0 ? (
-                    <p className="text-gray-500 p-4 text-center">
+                    <p className="text-white flex flex-col items-center italic font-thin skew-x-12  p-4 text-center">
                       No collections yet
+                      <img
+                        src="./nosong.png"
+                        alt=""
+                        className="h-40 -skew-x-12"
+                      />
                     </p>
                   ) : (
                     collections.map((collection) => (
@@ -641,7 +646,7 @@ const SongCollectionManager: React.FC = () => {
                           </div>
 
                           <button
-                            className="p-1 h-8 w-8 text-yellow-500 bg-gradient-to-r from-[#b8805c] to-[#9a674a] shadow transition-colors hover:text-red-500 rounded-full hover:bg-red-50"
+                            className="p-1 h-8 w-8 z-30 text-yellow-500 bg-gradient-to-r from-[#b8805c] to-[#9a674a] shadow transition-colors hover:text-red-500 rounded-full hover:bg-red-50"
                             onClick={(e) => {
                               e.stopPropagation();
                               deleteCollection(collection.id);

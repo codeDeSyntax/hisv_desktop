@@ -178,8 +178,8 @@
           const container = document.getElementById("contentContainer");
           container.innerHTML = "";
 
-          const savedSize = localStorage.getItem("fontSize");
-          const textSize = savedSize ? `${savedSize}rem` : "3rem";
+          const savedSize = Number(localStorage.getItem("fontSize"));
+          const textSize = savedSize ? `${1.5 + savedSize}rem` : "2.5rem";
 
           page.content.forEach((line, i) => {
             const p = document.createElement("p");

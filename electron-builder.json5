@@ -2,7 +2,7 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-  appId: "YourAppID",
+  appId: "com.bmusic.myapp",
   asar: true,
   directories: {
     output: "release/${version}",
@@ -20,7 +20,6 @@
       },
     ],
     artifactName: "${productName}_${version}.${ext}",
-    sign: false,
   },
   nsis: {
     oneClick: false,

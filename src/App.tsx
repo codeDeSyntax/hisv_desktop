@@ -16,6 +16,7 @@ import SongPresentation from "./components/PresentationMode";
 import { useBmusicContext } from "./Provider/Bmusic";
 import InstrumentShowroom from "./components/InstrumentShowRoom";
 import SongCollectionManager from "./components/Categorize";
+import UserGuidePage from "./components/Userguide";
 
 const App = () => {
   const { currentScreen, setCurrentScreen } = useBmusicContext();
@@ -45,6 +46,8 @@ const App = () => {
         <InstrumentShowroom />
       ) : currentScreen === "categorize" ? (
         <SongCollectionManager />
+      ) : currentScreen === "userguide" ? (
+        <UserGuidePage />
       ) : (
         <ArrowLeftCircle
           className="size-6 text-white"

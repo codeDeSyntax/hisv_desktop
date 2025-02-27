@@ -7,6 +7,7 @@ import {
   Minus,
   Square,
   SwitchCamera,
+  User2Icon,
   X,
 } from "lucide-react";
 import { HomeFilled } from "@ant-design/icons";
@@ -132,6 +133,14 @@ const TitleBar = () => {
             title="Music categories"
           >
             <Group className="text-white z-20 size-3" />
+          </div>
+          <div
+            onClick={() => setCurrentScreen("userguide")}
+            className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
+              items-center justify-center flex `}
+            title="Music categories"
+          >
+            <User2Icon className="text-white z-20 size-3" />
           </div>
         </div>
       </div>

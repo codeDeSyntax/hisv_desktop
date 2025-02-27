@@ -204,7 +204,7 @@ const SongPresentation = () => {
         {/* Title Section */}
         <div className="p-4 text-center">
           <motion.h2
-            className="text-2xl md:text-3xl font-bold text-shadow skew-x-12 italic underline flex text-center justify-center items-center "
+            className="text-2xl md:text-3xl font- text-shadow -skew-x-12 font-thin underline flex text-center justify-center items-center "
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             key={sectionTitle}
@@ -232,7 +232,7 @@ const SongPresentation = () => {
               className="w-full max-w-7xl mx-auto "
             >
               <div
-                className={`overflow-y-scroll no-scrollbar text-nowrap  flex flex-col justify-center items-center  `}
+                className={`overflow-y-scroll no-scrollbar text-nowrap  flex flex-col justify-start items-start  `}
               >
                 {currentPage.content.map((line, i) => (
                   <motion.p
@@ -240,7 +240,7 @@ const SongPresentation = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className={`my-3 font-bold text-shadow-lg leading-normal text-nowrap text-ellipsis  text-center font-serif  tracking-wide`}
+                    className={`my-1 font-bold text-shadow-lg leading-normal mx-auto text-nowrap text-ellipsis   font-serif  tracking-wide`}
                     style={{
                       fontSize: `${1.5 + Number(fontSize)}rem`,
                       fontFamily: fontFamily,

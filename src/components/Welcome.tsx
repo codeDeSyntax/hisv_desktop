@@ -291,7 +291,7 @@ const WorkspaceSelector = () => {
 
         {/* Testimonial - Styled with vintage elements */}
         <div className="mt-8 px-6 py-4 rounded-lg text-white relative z-10 border border-[#c77c5d] bg-[#00000040]">
-          <p className="text-2xl leading-relaxed font-serif italic">
+          <p className="text-[15px] leading-relaxed font-serif italic">
             "{randomVerse}"
           </p>
           <div className="flex justify-between items-center py-2 mt-2 border-t border-[#c77c5d]">
@@ -299,8 +299,11 @@ const WorkspaceSelector = () => {
               {randomSong?.title || "Amazing Grace"}
             </p>
             <img
-              src="/swipebook.gif"
-              className="size-10"
+              src="./swipebook.gif"
+              className="size-10 mix-blend-luminosity hue-rotate-180"
+              style={{
+                accentColor: "red",
+              }}
               alt="swipebook"
               width="40"
               height="40"
@@ -322,7 +325,7 @@ const WorkspaceSelector = () => {
               <img
                 src="./grandp1.png"
                 alt="Workspace illustration"
-                className="w-64 h-64 object-cover rounded-full border-4 border-[#8c6e63] shadow-xl"
+                className="w-64 h-64 object-cover rounded-full border-4 border-[#8c6e63] shadow-xl -hue-rotate-15"
                 width="256"
                 height="256"
                 loading="eager"
@@ -331,7 +334,7 @@ const WorkspaceSelector = () => {
                 <img
                   src="./wheat1.png"
                   alt="Wheat illustration"
-                  className="w-40 h-40 object-cover rounded-full border-4 border-[#8c6e63] shadow-lg"
+                  className="w-40 h-40 object-cover rounded-full border-4 border-[#8c6e63] shadow-lg -hue-rotate-15 "
                   width="160"
                   height="160"
                   loading="lazy"

@@ -112,12 +112,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   );
 };
 
-const Sidebar = ({
-  activeTab,
-  setActiveTab,
-  savedFavorites,
-  setSavedFavorites,
-}: SideBarProps) => {
+const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
   // const [activeTab, setActiveTab] = useState("recent");
   const {
     songRepo,
@@ -415,7 +410,11 @@ const Sidebar = ({
             {collections.map((collection, index) => (
               <div
                 key={index}
-                className="px-3 bg-gradient-to-r from-[#f1e0b8] via-[#efccb6] to-[#faeed1] shadow rounded-lg backdrop-blur-sm transition-all hover:bg-white/40"
+                className={`px-3 ${
+                  theme === "creamy"
+                    ? "bg-gradient-to-r from-[#f1e0b8] via-[#efccb6] to-[#faeed1]"
+                    : "bg-white/90"
+                } shadow rounded-lg backdrop-blur-sm transition-all hover:bg-white/40`}
               >
                 <div className="flex flex-col justify-between items-start">
                   <div>
@@ -454,7 +453,11 @@ const Sidebar = ({
       </div>
 
       <div className="px-4 ">
-        <div className="flex space-x-2 bg-[#faeed1] p-1 rounded-lg">
+        <div
+          className={`flex space-x-2 ${
+            theme === "creamy" ? "bg-[#faeed1]" : "bg-[#ececeb]"
+          } p-1 rounded-lg`}
+        >
           <button
             onClick={() => setActiveTab("Song")}
             className={`flex-1 py-2 rounded-md text-[12px]  font-medium transition-colors ${

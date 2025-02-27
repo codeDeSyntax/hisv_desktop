@@ -47,6 +47,7 @@ const indexHtml = path.join(RENDERER_DIST, "index.html");
 const projectionHtml = path.join(RENDERER_DIST, "projection.html");
 
 async function createMainWindow() {
+  console.log(projectionHtml);
   mainWin = new BrowserWindow({
     title: "Main window",
     frame: false,
@@ -108,7 +109,7 @@ async function createProjectionWindow() {
       modal: true, // Optional: makes the child window modal
       show: true,
       fullscreen: true,
-      icon: path.join(process.env.VITE_PUBLIC, "music2.png"),
+      icon: path.join("./dist/", "music2.png"),
       webPreferences: {
         preload,
         nodeIntegration: true,

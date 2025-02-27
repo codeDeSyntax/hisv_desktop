@@ -568,7 +568,7 @@ const SongCollectionManager: React.FC = () => {
                   )}
                 </div>
 
-                <div className="space-y-3 mb-4 max-h-[calc(100vh-280px)] overflow-y-auto">
+                <div className="space-y-3 mb-4 max-h-[calc(100vh-280px)] overflow-y-auto no-scrollbar">
                   {collections.length === 0 ? (
                     <p className="text-gray-500 p-4 text-center">
                       No collections yet

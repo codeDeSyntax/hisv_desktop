@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="script-src 'self' 'unsafe-inline';"
+    />
+
+    <title>Song Presentation</title>
+    <link rel="stylesheet" href="./presentation.css" />
+  </head>
+  <body>
+    <div class="presentation-container">
+      <!-- macbook fixed menu bar style -->
+
+      <!-- Background with gradient overlay -->
+      <div id="backgroundImage" class="background-image"></div>
+      <div class="gradient-overlay"></div>
+
+      <!-- Content Container -->
+      <div class="content-container">
+        <!-- Title Section -->
+        <div class="title-section">
+          <h2 id="sectionTitle" class="section-title">
+            <span id="titleText"></span>
+            <svg class="audio-lines" viewBox="0 0 24 24" width="24" height="24">
+              <path
+                d="M2 10v3m4-7v11m4-7v3m4-7v11m4-4v3"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+              />
+            </svg>
+          </h2>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-wrapper no-scrollbar">
+          <div id="contentContainer" class="content no-scrollbar">
+            Blessed Music
+          </div>
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="navigation-controls">
+          <!-- Progress Indicators -->
+          <div id="progressIndicators" class="progress-indicators"></div>
+
+          <!-- Navigation Buttons -->
+          <div class="navigation-buttons">
+            <button
+              id="prevButton"
+              class="nav-button"
+              aria-label="Previous page"
+            >
+              <svg viewBox="0 0 24 24" width="12" height="12">
+                <path
+                  d="M15 18l-6-6 6-6"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                />
+              </svg>
+            </button>
+            <button id="nextButton" class="nav-button" aria-label="Next page">
+              <svg viewBox="0 0 24 24" width="12" height="12">
+                <path
+                  d="M9 18l6-6-6-6"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Listen for song data from the main process
+
+      window.api.onDisplaySong((songData) => {
+        const main = document.getElementById("backgroundImage");
+        const mainImg = localStorage.getItem("bmusicpresentationbg");
+        if (mainImg) {
+          main.style.backgroundImage = `url(${mainImg})`;
+        } else {
+          main.style.backgroundImage = "url(./wood7.png)";
+        }
+        const parseSongContent = (content) => {
+          const sections = [];
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(content, "text/html");
+          const paragraphs = Array.from(doc.getElementsByTagName("p"));
+
+          let currentType = null;
+          let currentNumber = null;
+          let currentContent = [];
+          let verseCount = 0;
+          let chorusCount = 0;
+
+          paragraphs.forEach((p) => {
+            const text = p.textContent?.trim() || "";
+
+            if (text.includes("<!-- Verse")) {
+              if (currentType && currentContent.length > 0) {
+                sections.push({
+                  type: currentType,
+                  content: currentContent,
+                  number: currentNumber,
+                });
+              }
+              verseCount++;
+              currentType = "Verse";
+              currentNumber = verseCount;
+              currentContent = [];
+            } else if (text.includes("<!-- Chorus")) {
+              if (currentType && currentContent.length > 0) {
+                sections.push({
+                  type: currentType,
+                  content: currentContent,
+                  number: currentNumber,
+                });
+              }
+              chorusCount++;
+              currentType = "Chorus";
+              currentNumber = chorusCount > 1 ? chorusCount : null;
+              currentContent = [];
+            } else if (
+              text &&
+              !text.includes("<!--") &&
+              !text.includes("-->")
+            ) {
+              currentContent.push(text);
+            }
+          });
+
+          if (currentType && currentContent.length > 0) {
+            sections.push({
+              type: currentType,
+              content: currentContent,
+              number: currentNumber,
+            });
+          }
+
+          // Convert sections into pages
+          const pages = [];
+          sections.forEach((section) => {
+            const linesPerPage = 5;
+            for (let i = 0; i < section.content.length; i += linesPerPage) {
+              pages.push({
+                type: section.type,
+                content: section.content.slice(i, i + linesPerPage),
+                number: section.number,
+                pageIndex: Math.floor(i / linesPerPage),
+              });
+            }
+          });
+
+          return pages;
+        };
+
+        // State management
+
+        // console.log("saved music", selectedSong);
+        let currentIndex = 0;
+        let songPages = parseSongContent(songData.content);
+
+        // Update UI functions
+        const updatePage = (index) => {
+          const page = songPages[index];
+          const sectionTitle = `${page.type}${
+            page.number ? ` ${page.number}` : ""
+          }${page.pageIndex > 0 ? ` (cont.)` : ""} - ${songData.title || ""}`;
+
+          document.getElementById("titleText").textContent = sectionTitle;
+
+          const container = document.getElementById("contentContainer");
+          container.innerHTML = "";
+
+          const savedSize = Number(localStorage.getItem("fontSize"));
+          const textSize = savedSize ? `${3 + savedSize}rem` : "3rem";
+
+          page.content.forEach((line, i) => {
+            const p = document.createElement("p");
+            p.textContent = line;
+            p.style.animation = `fadeInUp ${i * 0.1 + 0.2}s ease forwards`;
+            p.style.fontSize = textSize;
+            p.style.fontFamily = localStorage?.getItem("fontFamily") || "serif";
+            // text.style.textAlign = "left";
+            container.appendChild(p);
+          });
+
+          // Update navigation state
+          document.getElementById("prevButton").disabled = index === 0;
+          document.getElementById("nextButton").disabled =
+            index === songPages.length - 1;
+
+          // Update progress indicators
+          updateProgressIndicators(index);
+        };
+
+        const updateProgressIndicators = (currentIndex) => {
+          const container = document.getElementById("progressIndicators");
+          container.innerHTML = "";
+
+          songPages.forEach((_, index) => {
+            const indicator = document.createElement("button");
+            indicator.className = `progress-dot ${
+              index === currentIndex ? "active" : ""
+            }`;
+            indicator.onclick = () => {
+              currentIndex = index;
+              updatePage(index);
+            };
+            container.appendChild(indicator);
+          });
+        };
+
+        // Navigation handlers
+        document.getElementById("prevButton").onclick = () => {
+          if (currentIndex > 0) {
+            currentIndex--;
+            updatePage(currentIndex);
+          }
+        };
+
+        document.getElementById("nextButton").onclick = () => {
+          if (currentIndex < songPages.length - 1) {
+            currentIndex++;
+            updatePage(currentIndex);
+          }
+        };
+
+        // Keyboard navigation
+        document.addEventListener("keydown", (event) => {
+          if (
+            event.key === "ArrowRight" &&
+            currentIndex < songPages.length - 1
+          ) {
+            currentIndex++;
+            updatePage(currentIndex);
+          } else if (event.key === "ArrowLeft" && currentIndex > 0) {
+            currentIndex--;
+            updatePage(currentIndex);
+          }
+        });
+
+        // Initialize first page
+        updatePage(0);
+      });
+
+      // Load settings from localStorage
+      document.addEventListener("DOMContentLoaded", () => {
+        const fontSize = `${localStorage.getItem("fontSize")}rem`;
+        const fontFamily = localStorage.getItem("fontFamily");
+        const main = document.getElementById("backgroundImage");
+        const mainImg = localStorage.getItem("bmusicpresentationbg");
+        const container = document.getElementById("contentContainer");
+
+        // if (fontSize) {
+        //   document.documentElement.style.setProperty("font-size", fontSize);
+        // }
+        // get json song from local storage
+        const selectedSong = JSON.parse(localStorage.getItem("selectedSong"));
+        if (container.innerHTML === "Blessed Music") {
+          window.api.projectSong(selectedSong);
+          window.api.onDisplaySong((selectedSong) => {
+            // handle songData
+            // alert(`songData: ${selectedSong.title}`);
+          });
+        }
+        if (fontFamily) {
+          document.documentElement.style.setProperty("font-family", fontFamily);
+        }
+        if (mainImg) {
+          main.style.backgroundImage = `url(${mainImg})`;
+        } else {
+          main.style.backgroundImage = "url(./wood7.png)";
+        }
+      });
+    </script>
+  </body>
+</html>

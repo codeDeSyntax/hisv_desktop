@@ -8,6 +8,7 @@ import {
   CheckCircle,
   AlertCircle,
   ArrowLeftCircle,
+  Monitor,
 } from "lucide-react";
 import TitleBar from "./TitleBar";
 import CustomEditor from "./SongCreator";
@@ -62,7 +63,7 @@ export default function EditSong() {
     setTheme,
     songs,
     setSongs,
-    refetch
+    refetch,
   } = useBmusicContext();
   const [formData, setFormData] = useState({
     title: selectedSong?.title || "",
@@ -158,7 +159,7 @@ export default function EditSong() {
           path: selectedSong?.path || "",
           content: formData.message,
           dateModified: selectedSong?.dateModified || "",
-          categories:selectedSong?.categories || [],
+          categories: selectedSong?.categories || [],
         },
       ]);
       refetch();
@@ -192,10 +193,20 @@ export default function EditSong() {
           >
             <div className="flex h-full">
               <div className="p-6 w-[30%] border-b lg:border-b-0 lg:border-r border-[#9a674a]/10">
-                <ArrowLeftCircle
-                  className="w-6 h-6 text-[#9a674a] hover:scale-105 hover:cursor-pointer"
-                  onClick={() => setCurrentScreen("Songs")}
-                />
+                <div className="  flex gap-2  items-center">
+                  <ArrowLeftCircle
+                    className="w-6 h-6 text-[#9a674a] hover:scale-105 hover:cursor-pointer"
+                    onClick={() => setCurrentScreen("Songs")}
+                  />
+                  <Monitor className="w-6 h-6 text-[#9a674a] hover:scale-105 hover:cursor-pointer"  onClick={() => {
+                       window.api.projectSong(selectedSong);
+                       window.api.onDisplaySong((selectedSong) => {
+                        // handle songData
+                        // alert(`songData: ${selectedSong.title}`);
+                      })
+                  }}
+                  />
+                </div>
                 <div className="border-b border-[#9a674a]/10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">

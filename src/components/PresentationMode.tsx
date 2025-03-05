@@ -42,9 +42,11 @@ const SongPresentation = () => {
     if (backgroundImg) setPresentationBg(backgroundImg);
   }, []);
 
+
+
   useEffect(() => {
     if (!selectedSong?.content) return;
-
+    const container = document.getElementById("contentContainer");
     const parseSongContent = (content: string) => {
       const sections: SongSection[] = [];
       const parser = new DOMParser();
@@ -232,7 +234,7 @@ const SongPresentation = () => {
               className="w-full max-w-7xl mx-auto "
             >
               <div
-                className={`overflow-y-scroll no-scrollbar text-nowrap  flex flex-col justify-start items-start  `}
+                className={`overflow-y-scroll no-scrollbar text-nowrap  flex flex-col justify-center items-center  contentContainer `}
               >
                 {currentPage.content.map((line, i) => (
                   <motion.p
@@ -240,7 +242,7 @@ const SongPresentation = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className={`my-1 font-bold text-shadow-lg w-[90%] leading-normal mx-auto text-wrap text-ellipsis tex  font-serif `}
+                    className={`my-1 font-bold text-shadow-lg  leading-normal mx-auto  text-ellipsis  font-serif  text-center`}
                     style={{
                       fontSize: `${2.5 + Number(fontSize)}rem`,
                       fontFamily: fontFamily,

@@ -37,9 +37,7 @@
 
         <!-- Main Content -->
         <div class="content-wrapper no-scrollbar">
-          <div id="contentContainer" class="content no-scrollbar">
-            Blessed Music
-          </div>
+          <div id="contentContainer" class="content no-scrollbar">Blessed Music</div>
         </div>
 
         <!-- Navigation Controls -->
@@ -84,6 +82,9 @@
       window.api.onDisplaySong((songData) => {
         const main = document.getElementById("backgroundImage");
         const mainImg = localStorage.getItem("bmusicpresentationbg");
+        const container = document.getElementById("contentContainer");
+        const parentWidth = container.clientWidth;
+      
         if (mainImg) {
           main.style.backgroundImage = `url(${mainImg})`;
         } else {
@@ -182,14 +183,36 @@
 
           const savedSize = Number(localStorage.getItem("fontSize"));
           const textSize = savedSize ? `${3 + savedSize}rem` : "3rem";
+          const maxWidth = 270;
 
           page.content.forEach((line, i) => {
             const p = document.createElement("p");
-            p.textContent = line;
+            p.textContent = `${line}`;
+            container.appendChild(p)
+            const paragraphWidth = p.offsetWidth;
+            // p.textContent = `${line} ${paragraphWidth}`;
+            p.textContent = line
+            container.appendChild(p)
+
+            // save font size to local storage
             p.style.animation = `fadeInUp ${i * 0.1 + 0.2}s ease forwards`;
-            p.style.fontSize = textSize;
+            p.style.fontSize =  textSize;
             p.style.fontFamily = localStorage?.getItem("fontFamily") || "serif";
-            // text.style.textAlign = "left";
+              
+
+            if(paragraphWidth > maxWidth) {
+              // select all p tags in the container
+              
+              p.style.fontSize = `${3.5}rem`;
+              p.style.marginTop = '2rem'
+              // container.appendChild(p);
+            }
+            else {
+              p.style.fontSize = savedSize;
+               p.style.marginTop = '2rem'
+              // container.appendChild(p);
+            }
+
             container.appendChild(p);
           });
 

@@ -17,6 +17,7 @@ import { useBmusicContext } from "./Provider/Bmusic";
 import InstrumentShowroom from "./components/InstrumentShowRoom";
 import SongCollectionManager from "./components/Categorize";
 import UserGuidePage from "./components/Userguide";
+import PresentationBackgroundSelector from "./components/BackgroundChoose";
 
 const App = () => {
   const { currentScreen, setCurrentScreen } = useBmusicContext();
@@ -48,7 +49,10 @@ const App = () => {
         <SongCollectionManager />
       ) : currentScreen === "userguide" ? (
         <UserGuidePage />
-      ) : (
+      ) : currentScreen === "backgrounds" ? (
+        <PresentationBackgroundSelector/>
+      ):
+       (
         <ArrowLeftCircle
           className="size-6 text-white"
           onClick={() => setCurrentScreen("Home")}

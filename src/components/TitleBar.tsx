@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   ArrowLeftFromLine,
+  GalleryHorizontal,
   GalleryThumbnails,
   Group,
   Guitar,
@@ -105,6 +106,14 @@ const TitleBar = () => {
             title="Mild theme 🟤"
           >
             <SwitchCamera className="text-white z-20 size-3" />
+          </div>
+          <div
+            onClick={() => setCurrentScreen("backgrounds")}
+            className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
+              items-center justify-center flex `}
+            title="Music categories"
+          >
+            <GalleryHorizontal className="text-white z-20 size-3" />
           </div>
           <div
             onClick={() => setCurrentScreen("instRoom")}

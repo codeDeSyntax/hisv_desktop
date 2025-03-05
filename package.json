@@ -18,7 +18,7 @@
     "preview": "vite preview",
     "pree2e": "vite build --mode=test",
     "e2e": "playwright test",
-    "package": "electron-packager . Bmusic --platform=win32 --arch=x64  --icon=C:\\Users\\LINUX\\Downloads\\fav.ico --out=release/ --overwrite --asar"
+    "package": "electron-packager . Bmusic --platform=win32 --arch=x64  --icon=C:\\Users\\LENOVO\\Downloads\\fav.ico --out=release/ --overwrite --asar"
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
@@ -36,13 +36,11 @@
     "@tiptap/react": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
     "antd": "^5.20.6",
-    "electron-store": "^10.0.1",
     "electron-updater": "^6.1.8",
     "framer-motion": "^11.5.4",
     "lucide-react": "^0.441.0",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^4.10.38",
-    "react-masonry-css": "^1.0.16",
     "react-modal": "^3.16.1",
     "react-router-dom": "^7.1.5"
   },

@@ -121,7 +121,6 @@ async function createProjectionWindow() {
     if (VITE_DEV_SERVER_URL) {
       projectionWin.loadURL(`${VITE_DEV_SERVER_URL}/projection.html`);
       // projectionWin.webContents.openDevTools();
-
     } else {
       projectionWin.loadFile(projectionHtml);
     }

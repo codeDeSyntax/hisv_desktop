@@ -84,6 +84,7 @@ body {
   /* max-width: 60rem; */
   margin: 0 auto;
   margin-top: 10px;
+  padding: 0 3rem;
   gap: 1rem;
   display: flex;
   flex-direction: column;
@@ -91,7 +92,6 @@ body {
   justify-content: center;
   /* background-color: brown; */
   box-sizing: border-box;
-
 }
 
 .content p {
@@ -100,17 +100,17 @@ body {
   /* margin: auto; */
   font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  text-align: left; /* Text aligned left */
-  width: 94%;
+  text-align: center;
+  /* width: 90%; */
+
   display: flex;
   padding: 0 5px;
-  align-items: flex-start;
-  justify-content: flex-start;
-  text-justify: distribute-all-lines;
+  align-items: center;
+  justify-content: center;
   text-rendering: optimizeSpeed;
   text-wrap-style: stable;
   /* overflow: ellipsis; */
-  text-wrap: wrap;
+  /* text-wrap: wrap; */
   /* hyphens: auto; */
 }
 

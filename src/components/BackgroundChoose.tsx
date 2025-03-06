@@ -5,6 +5,7 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  Monitor,
 } from "lucide-react";
 import { useBmusicContext } from "@/Provider/Bmusic";
 import TitleBar from "./TitleBar";
@@ -128,6 +129,18 @@ const PresentationBackgroundSelector: React.FC = () => {
           className="size-6 text-[#a28686] hover:cursor-pointer hover:scale-105 ml-6"
           onClick={() => setCurrentScreen("Songs")}
         />
+        <span title="present" className={`${selectedSong ? "" : "hidden"}`}>
+          <Monitor
+            className="size-6 text-[#a28686] hover:cursor-pointer hover:scale-105 ml-6"
+            onClick={() => {
+              window.api.projectSong(selectedSong);
+              window.api.onDisplaySong((selectedSong) => {
+                // handle songData
+                alert(`songData: ${selectedSong.title}`);
+              });
+            }}
+          />
+        </span>
         <h2 className="text-2xl md:text-3x font-serif italic skew-x-12 font-bold text-center mb-8 text-gray-800">
           Select Presentation Background
         </h2>
@@ -157,14 +170,14 @@ const PresentationBackgroundSelector: React.FC = () => {
                 className={`
                   absolute inset-0 bg-black/40 flex flex-col 
                   justify-center items-center text-center p-8
-                  ${selectedBg?.textColor}
+                
                 `}
               >
                 <motion.h3
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="text-2xl md:text-3xl font-bold mb-4"
+                  className="text-2xl  font-bold mb-4 text-white font-serif italic"
                 >
                   {selectedSong?.title || "Amazing Grace"}
                 </motion.h3>
@@ -175,7 +188,7 @@ const PresentationBackgroundSelector: React.FC = () => {
                   className="text-white font-bold"
                 >
                   {/* dangerously rendered html */}
-                  <p
+                  <div
                     dangerouslySetInnerHTML={{
                       __html: selectedSong?.content || "",
                     }}
@@ -213,7 +226,7 @@ const PresentationBackgroundSelector: React.FC = () => {
                   <motion.div
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="absolute top-2 right-2 bg-gray-800 text-white 
+                    className="absolute h-6 w-6 flex items-center justify-center top-2 right-2 bg-gray-800 text-white 
                                p-1 rounded-full"
                   >
                     <Check size={16} />

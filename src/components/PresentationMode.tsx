@@ -42,8 +42,6 @@ const SongPresentation = () => {
     if (backgroundImg) setPresentationBg(backgroundImg);
   }, []);
 
-
-
   useEffect(() => {
     if (!selectedSong?.content) return;
     const container = document.getElementById("contentContainer");
@@ -242,7 +240,7 @@ const SongPresentation = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className={`my-1 font-bold text-shadow-lg  leading-normal mx-auto  text-ellipsis  font-serif  text-center`}
+                    className={`my-1 font-bold text-shadow-lg  leading-normal mx-auto  text-ellipsis  text-wrap font-serif  text-center`}
                     style={{
                       fontSize: `${2.5 + Number(fontSize)}rem`,
                       fontFamily: fontFamily,

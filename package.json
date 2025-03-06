@@ -18,7 +18,7 @@
     "preview": "vite preview",
     "pree2e": "vite build --mode=test",
     "e2e": "playwright test",
-    "package": "electron-packager . Bmusic --platform=win32 --arch=x64  --icon=C:\\Users\\LENOVO\\Downloads\\fav.ico --out=release/ --overwrite --asar"
+    "package": "electron-packager . Bmusic --platform=win32 --arch=x64  --icon=C:\\Users\\josiah-ok\\Downloads\\fav.ico --out=release/ --overwrite --asar"
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",

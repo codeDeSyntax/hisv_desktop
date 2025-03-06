@@ -37,7 +37,9 @@
 
         <!-- Main Content -->
         <div class="content-wrapper no-scrollbar">
-          <div id="contentContainer" class="content no-scrollbar">Blessed Music</div>
+          <div id="contentContainer" class="content no-scrollbar">
+            Blessed Music
+          </div>
         </div>
 
         <!-- Navigation Controls -->
@@ -84,7 +86,7 @@
         const mainImg = localStorage.getItem("bmusicpresentationbg");
         const container = document.getElementById("contentContainer");
         const parentWidth = container.clientWidth;
-      
+
         if (mainImg) {
           main.style.backgroundImage = `url(${mainImg})`;
         } else {
@@ -149,7 +151,7 @@
           // Convert sections into pages
           const pages = [];
           sections.forEach((section) => {
-            const linesPerPage = 5;
+            const linesPerPage = 6;
             for (let i = 0; i < section.content.length; i += linesPerPage) {
               pages.push({
                 type: section.type,
@@ -182,34 +184,32 @@
           container.innerHTML = "";
 
           const savedSize = Number(localStorage.getItem("fontSize"));
-          const textSize = savedSize ? `${3 + savedSize}rem` : "3rem";
+          const textSize = savedSize ? `${2 + savedSize}rem` : "3rem";
           const maxWidth = 270;
 
           page.content.forEach((line, i) => {
             const p = document.createElement("p");
             p.textContent = `${line}`;
-            container.appendChild(p)
+            container.appendChild(p);
             const paragraphWidth = p.offsetWidth;
             // p.textContent = `${line} ${paragraphWidth}`;
-            p.textContent = line
-            container.appendChild(p)
+            // p.textContent = line;
+            container.appendChild(p);
 
             // save font size to local storage
             p.style.animation = `fadeInUp ${i * 0.1 + 0.2}s ease forwards`;
-            p.style.fontSize =  textSize;
+            p.style.fontSize = textSize;
             p.style.fontFamily = localStorage?.getItem("fontFamily") || "serif";
-              
 
-            if(paragraphWidth > maxWidth) {
+            if (paragraphWidth > maxWidth) {
               // select all p tags in the container
-              
-              p.style.fontSize = `${3.5}rem`;
-              p.style.marginTop = '2rem'
+
+              p.style.fontSize = `${3.2}rem`;
+              p.style.marginBottom = "1.5rem";
               // container.appendChild(p);
-            }
-            else {
+            } else {
               p.style.fontSize = savedSize;
-               p.style.marginTop = '2rem'
+              p.style.marginBottom = "1.5rem";
               // container.appendChild(p);
             }
 

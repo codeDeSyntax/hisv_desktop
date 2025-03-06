@@ -39,6 +39,10 @@ const TitleBar = () => {
     }
   };
 
+  const randombgs = `rgba(${Math.floor(Math.random() * 255)},${Math.floor(
+    Math.random() * 255
+  )},${Math.floor(Math.random() * 255)},0.6)`;
+
   const handleMinimize = () => {
     window.api.minimizeApp();
   };
@@ -67,6 +71,13 @@ const TitleBar = () => {
             onMouseEnter={() => setIsHovered("close")}
             onMouseLeave={() => setIsHovered(null)}
             className="w-4 h-4 rounded-full bg-[#FF5F57] hover:bg-red-600 hover:cursor-pointer flex items-center justify-center"
+            // style={{
+            //   backgroundColor: `rgba(${Math.floor(
+            //     Math.random() * 255
+            //   )},${Math.floor(Math.random() * 255)},${Math.floor(
+            //     Math.random() * 255
+            //   )},1)`,
+            // }}
           >
             {isHovered === "close" && <X className="text-white z-20 size-3" />}
           </div>
@@ -75,6 +86,13 @@ const TitleBar = () => {
             onMouseEnter={() => setIsHovered("minimize")}
             onMouseLeave={() => setIsHovered(null)}
             className="w-4 h-4 rounded-full bg-[#FFBD2E] hover:bg-yellow-600 hover:cursor-pointer flex items-center justify-center"
+            // style={{
+            //   backgroundColor: `rgba(${Math.floor(
+            //     Math.random() * 255
+            //   )},${Math.floor(Math.random() * 255)},${Math.floor(
+            //     Math.random() * 255
+            //   )},1)`,
+            // }}
           >
             {isHovered === "minimize" && (
               <Minus className="text-white z-20 size-3" />
@@ -85,6 +103,13 @@ const TitleBar = () => {
             onMouseEnter={() => setIsHovered("maximize")}
             onMouseLeave={() => setIsHovered(null)}
             className="w-4 h-4 rounded-full bg-[#28CA41] hover:bg-green-600 hover:cursor-pointer flex items-center justify-center"
+            // style={{
+            //   backgroundColor: `rgba(${Math.floor(
+            //     Math.random() * 255
+            //   )},${Math.floor(Math.random() * 255)},${Math.floor(
+            //     Math.random() * 255
+            //   )},1)`,
+            // }}
           >
             {isHovered === "maximize" && (
               <Square className="text-white z-20 size-3" />
@@ -95,7 +120,13 @@ const TitleBar = () => {
             onClick={() => setCurrentScreen("Home")}
             className="w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer flex items-center justify-center"
           >
-            <HomeFilled className="text-white z-20 size-3" />
+            <HomeFilled className="text-white z-20 size-3" color={
+              `rgba(${Math.floor(
+                Math.random() * 255
+              )},${Math.floor(Math.random() * 255)},${Math.floor(
+                Math.random() * 255
+              )},1)`
+            }/>
           </div>
           <div
             onClick={setThemeChoice}
@@ -111,7 +142,7 @@ const TitleBar = () => {
             onClick={() => setCurrentScreen("backgrounds")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
               items-center justify-center flex `}
-            title="Music categories"
+            title="Presentation backgrounds"
           >
             <GalleryHorizontal className="text-white z-20 size-3" />
           </div>
@@ -147,7 +178,7 @@ const TitleBar = () => {
             onClick={() => setCurrentScreen("userguide")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
               items-center justify-center flex `}
-            title="Music categories"
+            title="User manual"
           >
             <User2Icon className="text-white z-20 size-3" />
           </div>

@@ -245,6 +245,7 @@ const SongCollectionManager: React.FC = () => {
               return {
                 ...song,
                 categories: [...categories, collectionName],
+                
               };
             }
           }
@@ -612,13 +613,23 @@ const SongCollectionManager: React.FC = () => {
                         }}
                       >
                         <div className="flex justify-between items-center relative">
-                          {collection.name === "Wedding Music" && (
+                          {collection.name === "Wedding" && (
                             <div
                               className="absolute inset-0 bg-cover bg-center"
                               style={{
                                 backgroundImage: "url('./flower.png')", // Replace with your image URL
                                 mixBlendMode: "revert-layer", // Apply the blending effect
                                 opacity: 0.5, // Adjust opacity to control visibility
+                              }}
+                            />
+                          )}
+                          {collection.name === "Today" && (
+                            <div
+                              className="absolute inset-0 bg-cover bg-center"
+                              style={{
+                                backgroundImage: "url('./wood6.jpg')", // Replace with your image URL
+                                mixBlendMode: "revert-layer", // Apply the blending effect
+                                opacity: 0.2, // Adjust opacity to control visibility
                               }}
                             />
                           )}

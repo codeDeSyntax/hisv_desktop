@@ -132,8 +132,10 @@ const BlessedMusic = () => {
     }
   };
 
-  const filteredSongs = songs.filter((song) =>
-    song.title.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredSongs = songs.filter(
+    (song) =>
+      song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      song.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Split the filtered songs into two halves
@@ -158,7 +160,7 @@ const BlessedMusic = () => {
               {songs.map((song, index) => (
                 <tr
                   key={index}
-                  className="border-b z-40 border-stone-200 shadow-inner flex justify-between hover:bg-stone-100 transition-colors cursor-pointer"
+                  className="border-b z-40 border-stone-200 shadow-inner flex items-center justify-between hover:bg-stone-100 transition-colors cursor-pointer"
                   style={{ borderWidth: "10px", borderColor: "#9a674a" }}
                   title={song.path}
                   onClick={() => onSingleClick(song)}
@@ -168,7 +170,7 @@ const BlessedMusic = () => {
                     onDoubleClick(song);
                   }}
                 >
-                  <td className="px-4 py-2   flex items-center gap-2 text-stone-800 text-[12px] font-sans font-thin ">
+                  <td className="px-4 py-2   flex items-center justify-center gap-2 text-stone-800 text-[12px] font-sans font-thin ">
                     <img src="./pdf.png" className="w-4 h-4" />
                     {song.title}
                   </td>
@@ -198,11 +200,11 @@ const BlessedMusic = () => {
               key={index}
               className="flex items-center justify-between space-x-4  px-4 bod rounded-lg shadow-md hover:shadow-md  duration-200 border border-stone-200 cursor-pointer  hover:bg-stone-100 transition-colors "
               title={song.path}
+              onClick={() => onSingleClick(song)}
               onDoubleClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setSelectedSong(song);
-                setCurrentScreen("Presentation");
+                onDoubleClick(song);
               }}
             >
               <div className="flex items-center gap-5">
@@ -255,11 +257,18 @@ const BlessedMusic = () => {
             <div className="flex flex-col justify-center mb-8 ">
               <div className="flex justify-between items-center space-x-4">
                 <h1 className="font-serif text-2xl md:text-xl text-left font-bold text-[#9a674a]">
-                  Collection of Sacred Music
+                  Blessed Songs of Zion
                   <span
-                    className={`ml-4 text-[.7rem] text-[#d87325] italic ${
+                    className={`ml-4 text-[.7rem]  italic ${
                       selectedSong ? "" : "hidden"
                     }`}
+                    style={{
+                      color: `rgba(${Math.floor(
+                        Math.random() * 255
+                      )},${Math.floor(Math.random() * 255)},${Math.floor(
+                        Math.random() * 255
+                      )},1)`
+                    }}
                   >
                     {"--" + selectedSong?.title.slice(0, 32) + "--"}
                   </span>

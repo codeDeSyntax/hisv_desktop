@@ -8,6 +8,10 @@ import {
   ChevronDown,
   Monitor,
   ExternalLink,
+  FileMusic,
+  CogIcon,
+  Group,
+  Wallpaper,
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { FolderOpen } from "lucide-react";
@@ -180,8 +184,8 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
   ];
 
   const fontSizeOptions = [
-    { value: "0.2", label: "xxs" },
-    { value: "0.8", label: "xs" },
+    { value: "0", label: "xxs" },
+    { value: "0.7", label: "xs" },
     { value: "1.2", label: "Small" },
     { value: "1.5", label: "Medium" },
     { value: "1.8", label: "Large" },
@@ -398,6 +402,16 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
                   <FolderOpen className="w-5 h-5 group-hover:scale-110 transition-transform" />
                   <span>Songs directory </span>
                 </button>
+                <button
+                  onClick={() => setCurrentScreen("backgrounds")}
+                  className="w-full py-2 px-4  bg-white/50 border-2 border-[#9a674a]/20
+                               hover:border-[#9a674a] text-[#9a674a] text-[12px] rounded-lg
+                               transition-all duration-300 flex items-center justify-center gap-2
+                               focus:outline-none group"
+                >
+                  <Wallpaper className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <span>Choose background </span>
+                </button>
               </div>
             </div>
           </div>
@@ -420,7 +434,7 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
                 } shadow rounded-lg backdrop-blur-sm transition-all hover:bg-white/40`}
               >
                 <div className="flex flex-col justify-between items-start">
-                  <div>
+                  <div className=" w-full">
                     <h4 className="font-normal flex items-center gap-3 font-serif text-[12px]">
                       {collection.name}{" "}
                       <span>
@@ -430,9 +444,18 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
                         />
                       </span>
                     </h4>
-                    <p className="text-sm text-stone-600">
-                      {collection.songIds.length} songs
-                    </p>
+                    <div className="flex items-center justify-between w-full">
+                      <p className="text-sm text-stone-600">
+                        {collection.songIds.length} songs
+                      </p>
+                      {collection.name === "Wedding" && (
+                        <img
+                          src="./flower.png"
+                          className="w-20 h-10"
+                          alt="flower"
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -451,17 +474,17 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
       //   fontFamily: fontFamily,
       //   fontSize: `${fontSize}px`,
       // }}
-      className="w-72 pt-10 border-r border-stone-300 bg-white/20 backdrop-blur-sm transition-all duration-300 ease-in-out overflow-y-auto no-scrollbar"
+      className="w-72 pt-2 border-r border-stone-300 bg-white/20 backdrop-blur-sm transition-all duration-300 ease-in-out overflow-y-auto no-scrollbar shadow"
     >
       <div className="p-4 flex items-center justify-between">
-        <h2 className="font-serif text-xl skew-x-12 italic font-thin text-[#9a674a] flex items-center gap-2">
+        <h2 className="font-serif text-xl s font-bold text-[#9a674a] flex items-center gap-2">
           <Music className="w-5 h-5 animate-bounce" />
           Soul healing music
           <Music className="w-5 h-5 animate-bounce" />
         </h2>
       </div>
 
-      <div className="px-4 ">
+      <div className="px-2 ">
         <div
           className={`flex space-x-2 ${
             theme === "creamy" ? "bg-[#faeed1]" : "bg-[#ececeb]"
@@ -469,33 +492,33 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
         >
           <button
             onClick={() => setActiveTab("Song")}
-            className={`flex-1 py-2 rounded-md text-[12px]  font-medium transition-colors ${
+            className={` py-2 rounded-md text-[12px] px-2 font-medium transition-colors flex items-center justify-center ${
               activeTab === "Song"
                 ? "bg-[#9a674a] text-white"
                 : "text-stone-600 bg-white"
             }`}
           >
-            Song
+            Song <FileMusic className="h-4 w-4" />
           </button>
           <button
             onClick={() => setActiveTab("settings")}
-            className={`flex-1 py-2 rounded-md text-[12px]  font-medium transition-colors ${
+            className={` py-2 rounded-md text-[12px] px-2  font-medium transition-colors flex items-center justify-center ${
               activeTab === "settings"
                 ? "bg-[#9a674a] text-white"
                 : "text-stone-600 bg-white"
             }`}
           >
-            Settings
+            Settings <CogIcon className="h-4 w-4" />
           </button>
           <button
             onClick={() => setActiveTab("collections")}
-            className={`flex-1 py-2 rounded-md text-[12px]  font-medium transition-colors ${
+            className={`flex-1 py-2 rounded-md text-[12px] px-2 font-medium transition-colors flex items-center justify-center ${
               activeTab === "collections"
                 ? "bg-[#9a674a] text-white"
                 : "text-stone-600 bg-white"
             }`}
           >
-            collections
+            collections <Group className="h-4 w-4" />
           </button>
         </div>
       </div>

@@ -1,0 +1,71 @@
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
+
+type EastVoiceContextType = {
+
+  theme: string;
+  setTheme: React.Dispatch<React.SetStateAction<string>>;
+  currentScreen: string;
+  setCurrentScreen: React.Dispatch<React.SetStateAction<string>>;
+  handleClose: () => void;
+  handleMaximize: () => void;
+  handleMinimize: () => void;
+};
+
+const EastVoiceContext = createContext<EastVoiceContextType | undefined>(undefined);
+
+type BmusicProviderProps = {
+  children: ReactNode;
+};
+
+export const EastVoiceProvider = ({ children }: BmusicProviderProps) => {
+ 
+  const [currentScreen, setCurrentScreen] = useState("Home");
+  const [theme, setTheme] = useState("creamy");
+
+
+
+
+  const handleMinimize = () => {
+    window.api.minimizeApp();
+  };
+
+  const handleMaximize = () => {
+    window.api.maximizeApp();
+  };
+
+  const handleClose = () => {
+    window.api.closeApp();
+  };
+
+
+  return (
+    <EastVoiceContext.Provider
+      value={{
+        theme,
+        setTheme,
+        currentScreen,
+        setCurrentScreen,
+        handleClose,
+        handleMaximize,
+        handleMinimize,
+      }}
+    >
+      {children}
+    </EastVoiceContext.Provider>
+  );
+};
+
+// Custom hook to use the EastVoiceContext
+export const useEastVoiceContext = () => {
+  const context = useContext(EastVoiceContext);
+  if (!context) {
+    throw new Error("useEastVoiceContext must be used within a BmusicProvider");
+  }
+  return context;
+};

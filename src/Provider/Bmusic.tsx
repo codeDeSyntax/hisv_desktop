@@ -8,14 +8,8 @@ import React, {
 
 import { Song } from "@/types";
 
-type AuthUser = {
-  name: string;
-  email: string;
-};
 
 type BmusicContextType = {
-  user: AuthUser | null;
-  setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
   songRepo: string;
   setSongRepo: React.Dispatch<React.SetStateAction<string>>;
   theme: string;
@@ -49,10 +43,7 @@ type BmusicProviderProps = {
 };
 
 export const BmusicProvider = ({ children }: BmusicProviderProps) => {
-  const [user, setUser] = useState<AuthUser | null>({
-    name: "John Doe",
-    email: "",
-  });
+
   const [currentScreen, setCurrentScreen] = useState("Home");
   const [songRepo, setSongRepo] = useState("");
   const [selectedHymnBackground, setSelectedHymnBackground] = useState("");
@@ -102,34 +93,7 @@ export const BmusicProvider = ({ children }: BmusicProviderProps) => {
   const handleClose = () => {
     window.api.closeApp();
   };
-  //   // Ensure imageRepo is defined and not empty
-  //   if (!imageRepo) {
-  //     console.log("Choose a directory to load images from");
-  //     return;
-  //   }
 
-  //   const fetchImages = async () => {
-  //     try {
-  //       // Fetch images from the main process
-  //       const fetchedImages = await window.api.getPresentationImages(imageRepo);
-
-  //       // Log the fetched images to ensure we're getting the right data
-  //       console.log("Fetched images:", fetchedImages);
-
-  //       // Update state with the fetched image URLs
-  //       setPresentationImgs(fetchedImages);
-  //     } catch (error) {
-  //       if (error instanceof Error) {
-  //         console.error("Error fetching images:", error.message);
-  //       } else {
-  //         console.log("An unknown error occurred while fetching images");
-  //       }
-  //     }
-  //   };
-
-  //   // Call the function to fetch images
-  //   fetchImages();
-  // }, [imageRepo]);
 
   useEffect(() => {
     if (!songRepo) {
@@ -199,8 +163,6 @@ export const BmusicProvider = ({ children }: BmusicProviderProps) => {
   return (
     <BmusicContext.Provider
       value={{
-        user,
-        setUser,
         songRepo,
         setSongRepo,
         theme,

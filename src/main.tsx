@@ -2,6 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import { BmusicProvider } from './Provider/Bmusic'
+import { SermonProvider } from './Provider/Vsermons'
+import { EastVoiceProvider } from './Provider/EastVoice'
+
 
 import './index.css'
 
@@ -11,9 +14,13 @@ import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <BmusicProvider>
-      <App />
+  <EastVoiceProvider>
+  <BmusicProvider>
+      <SermonProvider>
+        <App />
+      </SermonProvider>
     </BmusicProvider>
+  </EastVoiceProvider>
   </React.StrictMode>,
 )
 

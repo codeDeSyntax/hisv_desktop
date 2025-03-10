@@ -8,16 +8,17 @@ import {
   ChevronRight,
   ArrowLeftCircle,
 } from "lucide-react";
-import BlessedMusic from "./components/BlessedMusic";
-import EditSong from "./components/EditForm";
-import WorkspaceSelector from "./components/Welcome";
-import CreateSong from "./components/Form";
-import SongPresentation from "./components/PresentationMode";
+import BlessedMusic from "./vmusic/BlessedMusic";
+import EditSong from "./vmusic/EditForm";
+import WorkspaceSelector from "./vmusic/Welcome";
+import CreateSong from "./vmusic/Form";
+import SongPresentation from "./vmusic/PresentationMode";
 import { useBmusicContext } from "./Provider/Bmusic";
-import InstrumentShowroom from "./components/InstrumentShowRoom";
-import SongCollectionManager from "./components/Categorize";
-import UserGuidePage from "./components/Userguide";
-import PresentationBackgroundSelector from "./components/BackgroundChoose";
+import InstrumentShowroom from "./vmusic/InstrumentShowRoom";
+import SongCollectionManager from "./vmusic/Categorize";
+import UserGuidePage from "./vmusic/Userguide";
+import PresentationBackgroundSelector from "./vmusic/BackgroundChoose";
+import Hisvoice from "./Hisvoice/Hisvoice";
 
 const App = () => {
   const { currentScreen, setCurrentScreen } = useBmusicContext();
@@ -50,8 +51,9 @@ const App = () => {
       ) : currentScreen === "userguide" ? (
         <UserGuidePage />
       ) : currentScreen === "backgrounds" ? (
-        <PresentationBackgroundSelector/>
-      ):
+        <PresentationBackgroundSelector />
+      ) : currentScreen === "hisvoice" ? (
+        <Hisvoice/> ) :
        (
         <ArrowLeftCircle
           className="size-6 text-white"

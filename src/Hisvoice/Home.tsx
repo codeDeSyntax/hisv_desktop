@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useContext } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -71,41 +71,41 @@ const Home = () => {
     };
   }, [currentImageIndex, images, setCB, scriptures.length]);
 
-  return (
-    <div className="h-screen relative overflow-hidden bg-background rounded-tl-3xl w-full">
-      {/* Background Image Layer */}
-      {images.map((img, index) => (
-        <div
-          key={img}
-          className="absolute inset-0 bg-cover bg-center"
-          // initial={{ opacity: 0 }}
-          // animate={{ opacity: index === currentImageIndex ? 0.4 : 0 }}
-          // transition={{ duration: 1.5 }}
-          // style={{ backgroundImage: `url(${img || "./pic3.jpg"})` }}
-        />
-      ))}
+  const currentScripture = scriptures[currentScriptureIndex];
 
+  return (
+    <div
+      className="min-h-screen relative overflow-auto w-full rounded-tl-3xl"
+      style={{
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        backgroundImage: `linear-gradient(to bottom,
+             rgba(154, 103, 74, 0.2) 0%,
+             rgba(154, 103, 74, 1) 100%),
+             url("./wood6.jpg")`,
+      }}
+    >
       {/* Content Container */}
-      <div className="relative z-20 min-h-scr">
-        <main className=" mx-auto px-4 py-6 lg:py-8">
-          {/* Hero Section */}
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 mb-12">
-            {/* <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="lg:w-3/5 space-y-4"
+      <div className="relative z-10">
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+          {/* Scripture Display */}
+          {/* <AnimatePresence mode="wait">
+            <motion.div
+              key={currentScriptureIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.5 }}
+              className="mb-12 p-6 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 shadow-lg max-w-3xl mx-auto"
             >
-              <h1 className="text-4xl lg:text-4xl font-bold text-white leading-tight">
-                Revelation <span className="text-white">10:1-3</span>
-              </h1>
-              <p className="text-lg lg:text-md text-gray-300 font  leading-relaxed font-serif">
-                And I saw another mighty angel come down from heaven, clothed
-                with a cloud: and a rainbow was upon his head, and his face was
-                as it were the sun, and his feet as pillars of fire...
+              <p className="italic text-white text-lg md:text-xl font-serif leading-relaxed mb-3">
+                &ldquo;{currentScripture.verse}&rdquo;
               </p>
-            </motion.div> */}
-          </div>
+              <p className="text-white/80 font-semibold font-serif text-right">
+                {currentScripture.reference}
+              </p>
+            </motion.div>
+          </AnimatePresence> */}
 
           {/* Sermons Section */}
           <motion.section
@@ -114,11 +114,14 @@ const Home = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mt-8"
           >
-            <h2 className="text-3xl lg:text-2xl font-bold text-[#9a674a] mb-6 font-serif">
-              Robert Lambert Lee Preachings
-            </h2>
+            <div className="flex items-center mb-8">
+              <h2 className="text-2xl md:text-2xl font-bold text-white mb-0 font-serif">
+                Robert Lambert Lee Preachings
+              </h2>
+              <div className="h-px bg-white/30 flex-grow ml-6 hidden md:block"></div>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 font-serif">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 font-serif">
               <AnimatePresence>
                 {randomSermons.map((sermon) => (
                   <motion.div
@@ -131,31 +134,31 @@ const Home = () => {
                       y: -8,
                       transition: { duration: 0.2 },
                     }}
-                    className="group relative shadow-inner bg-white/5 backdrop-blur-lg rounded-2xl hover:cursor-pointer overflow-hidden"
+                    className="group relative bg-white/10 backdrop-blur-md rounded-2xl hover:cursor-pointer overflow-hidden border border-white/20 shadow-lg"
                     onClick={() => {
                       setSelectedMessage(sermon);
                       setActiveTab("message");
                     }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#9a674a]/10 to-[#9a674a]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#9a674a]/20 to-[#9a674a]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                     <div className="p-5 relative z-10">
                       <div className="flex items-center gap-4 mb-4">
-                        <div className="w-14 h-14 flex items-center justify-center rounded-full overflow-hidden border-2 bg-[#9a674a]">
+                        <div className="w-14 h-14 flex items-center justify-center rounded-full overflow-hidden border-2 border-white/30 bg-[#9a674a]">
                           <img
                             src="./cloud.png"
                             alt=""
-                            className=" h-[5vh] w-[5vh] object-cover mix-blend-color-dodge shadow hue-rotate-180"
-                            color="red"
+                            className="h-[5vh] w-[5vh] object-cover mix-blend-color-dodge shadow hue-rotate-180"
                           />
                         </div>
-                        <h3 className="text-sm font-semibold text-[#9a674a]  transition-colors duration-300">
+                        <h3 className="text-sm font-semibold text-white group-hover:text-white/90 transition-colors duration-300">
                           {sermon?.title.slice(0, 30)}
+                          {sermon?.title.length > 30 && "..."}
                         </h3>
                       </div>
 
-                      <div className="space-y-2">
-                        <div className="flex items-center text-[#9a674a] text-sm">
+                      <div className="space-y-3 mt-4">
+                        <div className="flex items-center text-white/80 group-hover:text-white/90 text-sm">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-4 w-4 mr-2"
@@ -178,10 +181,10 @@ const Home = () => {
                           </svg>
                           {sermon.location || "N/A"}
                         </div>
-                        <div className="flex items-center text-[#9a674a] text-sm">
+                        <div className="flex items-center text-white/80 group-hover:text-white/90 text-sm">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 mr-2 "
+                            className="h-4 w-4 mr-2"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -196,12 +199,43 @@ const Home = () => {
                           {sermon.year}
                         </div>
                       </div>
+
+                      {/* Accent line animation on hover */}
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/30 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                     </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
             </div>
           </motion.section>
+
+          {/* Footer with changing image display */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            // transition={{ delay: 1, duration: 0.8 }}
+            className="mt-16 text-center"
+          >
+            {/* <AnimatePresence> */}
+            <motion.div
+              key={currentImageIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              // transition={{ duration: 1 }}
+              className="inline-block w-16 h-16 rounded-full overflow-hidden border-2 border-white/30 mb-4"
+            >
+              <img
+                src="./bob.jpg"
+                alt="Featured"
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+            {/* </AnimatePresence> */}
+            <p className="text-white/60 text-sm font-serif">
+              Robert Lambert Lee
+            </p>
+          </motion.div>
         </main>
       </div>
     </div>

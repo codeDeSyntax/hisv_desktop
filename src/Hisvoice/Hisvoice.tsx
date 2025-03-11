@@ -22,14 +22,14 @@ const Hisvoice = () => {
   const [background, setBackground] = useState(false);
 
   return (
-    <div className="h-screen overflow-y-hidden no-scrollbar ">
+    <div className="h-screen overflow-hidden no-scrollbar">
       <TitleBar />
-      <div className={`h-full scrollbar-hidden `}>
-        <div className="flex h-screen bg-primary items-center w-ful">
+      <div className={`h-full`}>
+        <div className="flex h-full  items-center overflow-hidden">
           <SideNav isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
           {/* Main content */}
-          <div className="w-[93%]">
+          <div className="w-[95%] ">
             {activeTab === "home" ? (
               <Home />
             ) : activeTab === "sermons" ? (

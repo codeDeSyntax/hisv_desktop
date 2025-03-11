@@ -7,6 +7,7 @@ import { EastVoiceProvider } from './Provider/EastVoice'
 
 
 import './index.css'
+import { BibleProvider } from './Provider/Bible'
 
 // import './demos/ipc'
 // If you want use Node.js, the`nodeIntegration` needs to be enabled in the Main process.
@@ -17,7 +18,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <EastVoiceProvider>
   <BmusicProvider>
       <SermonProvider>
+        <BibleProvider>
         <App />
+        </BibleProvider>
       </SermonProvider>
     </BmusicProvider>
   </EastVoiceProvider>

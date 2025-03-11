@@ -89,7 +89,6 @@ const SelectedSermon = ({
     Number(selectedMessage?.lastRead) || 0
   );
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showLastReadCard, setShowLastReadCard] = useState(true);
 
   const [showSaveNotification, setShowSaveNotification] = useState(false);
@@ -132,9 +131,9 @@ const SelectedSermon = ({
           regex.test(part) ? (
             <mark
               key={i}
-              className="text-green-400 border border-green-600 rounded-md"
+              className="text-background border border-green-600 rounded-md"
               style={{
-                backgroundColor: "green",
+                backgroundColor: "#9a674a",
                 padding: "4px",
               }}
             >
@@ -147,8 +146,6 @@ const SelectedSermon = ({
       </span>
     );
   }, []);
-
-
 
   useEffect(() => {
     if (searchQuery && scrollContainerRef.current) {
@@ -258,64 +255,44 @@ const SelectedSermon = ({
   };
 
   return (
-    <div className=" bg-background">
+    <div className=" bg-background h-screen overflow-hidden ">
       <SearchModal
         showSearch={showSearch}
         onClose={handleSearchToggle}
         onSearch={handleSearch}
         searchQuery={searchQuery}
       />
-      <SaveNotification
+      {/* <SaveNotification
         show={showSaveNotification}
         onClose={() => setShowSaveNotification(false)}
-      />
-      <div
-        className="  bg-center flex flex-col p-5  pb-14 "
-        // style={
-        //   selectedMessage?.type === "text"
-        //     ? backgroundStyle
-        //     : {
-        //         backgroundPosition: "center",
-        //         backgroundSize: "contain",
-        //         backgroundImage: `linear-gradient(to bottom,
-        //         rgba(42, 42, 42, 0.5) 80%,
-        //         rgba(42, 42, 42, .4) 90%),
-        //         url("./icon.png")`,
-        //       }
-        // }
-      >
-        <div className=" mb-5 h-[90vh]">
+      /> */}
+      <div className="  bg-center flex flex-col   pb-10">
+        <div className=" mb-5 h-full">
           {selectedMessage?.type === "text" && (
-            <div className=" flex items-center   gap-2 p-2 rounded-l-full mt-10 hidden">
-              <button
-                className="rounded-full h-10 w-10 hover:cursor-pointer hover:scale-125 duration-300 bg-secondary text-white font-bold text-center flex items-center justify-center"
+            <div className=" flex items-center   gap-2 p-2 rounded-l-full mt-10 w-20">
+              <div
+                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300 bg-background shadow  text-primary font-bold text-center flex items-center justify-center"
                 title="Save progress"
                 onClick={handleManualSave}
               >
                 📝
-              </button>
-              <button
-                className="rounded-full h-10 w-10 hover:cursor-pointer hover:scale-125 duration-300 bg-secondary text-white font-bold text-center flex items-center justify-center"
+              </div>
+              <div
+                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300 bg-background shadow  text-primary font-bold text-center flex items-center justify-center"
                 title="Toggle sermon details"
                 onClick={toggleDetailsCard}
               >
-                <Info size={20} />
-              </button>
-              <button
-                className="rounded-full h-10 w-10 hover:cursor-pointer hover:scale-125 duration-300 bg-secondary text-white font-bold text-center flex items-center justify-center"
-                title="Toggle background"
-                onClick={() => setBackground(!background)}
-              >
-                {background ? "SB" : <ImageIcon />}
-              </button>
-              <button
-                className="rounded-full h-10 w-10 hover:cursor-pointer hover:scale-125 duration-300 bg-secondary text-white font-bold text-center flex items-center justify-center"
+                <Info size={20} className="text-primary" />
+              </div>
+
+              <div
+                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300 bg-background shadow  text-primary font-bold text-center flex items-center justify-center"
                 title="Search in sermon"
                 onClick={handleSearchToggle}
               >
-                <Search />
-              </button>
-              <DarkModeToggle />
+                <Search className="text-primary" />
+              </div>
+              {/* <DarkModeToggle /> */}
             </div>
           )}
 
@@ -324,16 +301,16 @@ const SelectedSermon = ({
           )}
 
           <div
+            className="rounded-lg p-4 h-[80vh] overflow-y-scroll overflow-x-hidden text-wrap"
             ref={scrollContainerRef}
-            className="rounded-lg p-8 h-[90vh] overflow-y-scroll overflow-x-hidden text-wrap"
             style={{
               scrollbarWidth: "thin",
               scrollbarColor: "#faeed1 #9a674a90",
-              scrollbarGutter: "stable",
+              // scrollbarGutter: "stable",
             }}
           >
             {selectedMessage?.type === "text" ? (
-              <div className="w">
+              <div className="h-full">
                 {selectedMessage?.lastRead && showLastReadCard && (
                   <Card
                     title="Welcome Back!"
@@ -342,8 +319,8 @@ const SelectedSermon = ({
                     style={{ width: 300, textAlign: "center" }}
                     actions={[
                       <Button
-                        type="primary"
-                        className="text-green-300 bg-green-700 "
+                        type="text"
+                        className="text-background bg-primary hover:bg-primary hover:scale-105"
                         onClick={() => {
                           scrollToPosition(scrollPosition);
                           setShowLastReadCard(false);
@@ -356,7 +333,7 @@ const SelectedSermon = ({
                         type="primary"
                         onClick={handleCloseLastReadCard}
                         key="close"
-                        className="text-white bg-green-700 hover:text-gray-300"
+                        className="text-white bg-primary hover:bg-primary hover:scale-105 hover:text-gray-300"
                       >
                         <X size={18} />
                       </Button>,
@@ -367,7 +344,7 @@ const SelectedSermon = ({
                     </p>
                   </Card>
                 )}
-                <p className=" text-3xl font-serif text-orange-900 dark:text-text font-bold underline">
+                <p className=" text-2xl font-serif text-orange-900 dark:text-text font-bold underline">
                   {selectedMessage.title}
                 </p>
                 <p className=" font-serif italic text-gray-900 ">

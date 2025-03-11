@@ -13,8 +13,6 @@ interface Song {
   dateModified: string;
 }
 
-
-
 // Preload image to ensure it's cached
 const preloadImages = () => {
   const imagesToPreload = ["./wood6.jpg", "./grandp1.png", "./wheat1.png"];
@@ -76,7 +74,7 @@ const WorkspaceSelector = () => {
   const [randomSong, setRandomSong] = useState<Song | null>(null);
   const [randomVerse, setRandomVerse] = useState("");
   const { currentScreen, setCurrentScreen, songs } = useBmusicContext();
-  const {allSermons} = useSermonContext()
+  const { allSermons } = useSermonContext();
 
   // Array of country gospel verses
   const verses = [
@@ -145,7 +143,7 @@ const WorkspaceSelector = () => {
 
   return (
     <div
-      className="w-screen  h-full overflow-y-scroll no-scrollbar bg-cover bg-no-repeat flex p-6 relative"
+      className="w-screen  h-full overflow-y-scroll no-scrollbar bg-cover bg-no-repeat flex p-6 relative font-serif"
       style={{
         backgroundImage: `url(./wood6.jpg)`,
         ...willChangeStyle,
@@ -225,10 +223,12 @@ const WorkspaceSelector = () => {
               <div
                 className={`w-12 h-12 ${colors.hdButton} rounded-lg flex items-center justify-center text-white font-semibold shadow-inner`}
               >
-                <Music size={24} />
+                <img src="./music1.png" alt="cloud" className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-medium text-white text-lg">All Songs</h3>
+                <h3 className="font-medium text-white text-[14px]">
+                  All Songs
+                </h3>
                 <p className="text-sm text-white opacity-80">
                   {songs?.length || 0} songs available
                 </p>
@@ -250,20 +250,41 @@ const WorkspaceSelector = () => {
               <div
                 className={`w-12 h-12 ${colors.hdColor} backdrop-blur rounded-lg flex items-center justify-center text-white font-semibold shadow-inner`}
               >
-                <Book size={24} />
+                <img src="./cloud.png" alt="cloud" className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-medium text-white text-lg">Add song</h3>
-                <p className="text-sm text-white opacity-80">
-                  Add a new hymn or song
-                </p>
+                <h3 className="font-medium text-white text-[14px]">
+                  His voice
+                </h3>
+                <p className="text-sm text-white opacity-80"></p>
               </div>
             </div>
             <button
               onClick={navigateToCreate}
               className={`px-4 py-2 ${colors.hdButton} text-white rounded-md hover:bg-[#a66c55] transition-colors duration-200 shadow-md font-serif`}
             >
-              Create
+              Go
+            </button>
+          </div>
+          <div
+            className={`flex items-center justify-between px-4 py-3   border border-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200`}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className={`w-12 h-12 ${colors.hdColor} backdrop-blur rounded-lg flex items-center justify-center text-white font-semibold shadow-inner`}
+              >
+                <img src="./cloud.png" alt="cloud" className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-medium text-white text-[14px]">Bible</h3>
+                <p className="text-sm text-white opacity-80"></p>
+              </div>
+            </div>
+            <button
+              onClick={navigateToCreate}
+              className={`px-4 py-2 ${colors.hdButton} text-white rounded-md hover:bg-[#a66c55] transition-colors duration-200 shadow-md font-serif`}
+            >
+              Go
             </button>
           </div>
         </div>

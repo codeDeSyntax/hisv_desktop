@@ -80,7 +80,7 @@ const QuotesManager = () => {
         You do not have a favorite Qoute saved
       </h2>
       <p className="text-background mb-6 max-w-md">
-        Start capturing wisdom by adding your first quote. Click the + button to
+        Start saving favorites by adding your first quote. Click the + button to
         begin your collection.
       </p>
       <button

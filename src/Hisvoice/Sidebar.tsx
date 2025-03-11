@@ -35,7 +35,7 @@ const SideNav = ({ isCollapsed, setIsCollapsed }: SideNavProps) => {
 
   const bottomItems = [
     { icon: Settings, label: "Settings", id: "settings" },
-    { icon: Info, label: "About", id: "about" },
+    // { icon: Info, label: "About", id: "about" },
   ];
 
   interface NavItemProps {
@@ -51,7 +51,7 @@ const SideNav = ({ isCollapsed, setIsCollapsed }: SideNavProps) => {
       key={item.id}
       className={`flex items-center justify-center w-fu p-2 ${
         activeTab === item.id
-          ? "bg-[#9a674a] shadow"
+          ? "bg-primary  shadow shadow-background  "
           : "bg-[#faeed1] text-black"
       }`}
       onClick={() => setActiveTab(item.id)}
@@ -59,7 +59,7 @@ const SideNav = ({ isCollapsed, setIsCollapsed }: SideNavProps) => {
       <item.icon
         size={14}
         className={`text-[#9a674a]
-          ${activeTab === item.id ? "text-black" : "text-[#9a674a]"}
+          ${activeTab === item.id ? "text-background" : "text-[#9a674a]"}
         ${activeTab === "message" && "text-text"}
         }
          
@@ -72,7 +72,7 @@ const SideNav = ({ isCollapsed, setIsCollapsed }: SideNavProps) => {
 
   return (
     <div
-      className={` top-0 left-0 w-[7%]  h-screen  bg-[#9a674a] text-white transition-all duration-300    z-10`}
+      className={` top-0 left-0 w-[5%]   h-full  bg-primary text-white transition-all duration-300    z10`}
     >
       <nav className="h-full  flex flex-col  py-10">
         <div className="flex flex-col gap-2 p-2">

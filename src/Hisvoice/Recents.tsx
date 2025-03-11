@@ -24,13 +24,13 @@ const Recents = () => {
     <div
       className="relative h-screen w-full bg-cover bg-center overflow-hidden"
       style={{
-        backgroundImage: "url('./pic3.jpg')",
+        backgroundImage: "url('./snow2.jpg')",
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary to-primary bg-opacity-50"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary to-primary bg-opacity-50"></div>
 
       <div className="absolute inset-0 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
-        <div className="container mx-auto px-4 py-8">
+        <div className=" mx-auto px-4 py-8">
           <motion.h2
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -43,9 +43,9 @@ const Recents = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className={`grid grid-cols-1  ${
-              !isCollapsed ? "lg:grid-cols-3" : "lg:grid-cols-4"
-            } gap-6`}
+            className={`grid grid-cols-2  
+                md:grid-cols-3 lg:grid-cols-4
+            gap-6`}
           >
             <AnimatePresence>
               {recentSermons.map((sermon) => (
@@ -63,11 +63,11 @@ const Recents = () => {
                   }}
                 >
                   <div className="mb-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center ">
                       <img
                         src="./cloud.png"
                         alt=""
-                        className="h-16 w-16 mr-4 rounded-full shadow-md"
+                        className="h-10 w-10 mr-4 rounded-full shadow-md bg-primary p-2"
                       />
                       <h3 className="text-sm font-semibold text-white truncate">
                         {sermon.title}
@@ -76,11 +76,11 @@ const Recents = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-blue-300 text-[12px] flex items-center">
+                    <p className="text-background text-[12px] flex items-center">
                       <MapPin className="h-4 w-4 mr-2" />
                       {sermon.location || "N/A"}
                     </p>
-                    <p className="text-green-300 text-sm flex items-center">
+                    <p className="text-background text-sm flex items-center">
                       <Calendar className="h-4 w-4 mr-2" />
                       {sermon.year}
                     </p>

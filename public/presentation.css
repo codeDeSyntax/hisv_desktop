@@ -103,13 +103,14 @@ body {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
   /* width: 90%; */
+  /* font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; */
 
   display: flex;
   padding: 0 5px;
   align-items: center;
   justify-content: center;
   text-rendering: optimizeSpeed;
-  text-wrap-style: stable;
+  /* text-wrap-style: stable; */
   /* overflow: ellipsis; */
   /* text-wrap: wrap; */
   /* hyphens: auto; */

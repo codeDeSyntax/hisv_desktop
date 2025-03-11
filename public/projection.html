@@ -12,8 +12,6 @@
   </head>
   <body>
     <div class="presentation-container">
-      <!-- macbook fixed menu bar style -->
-
       <!-- Background with gradient overlay -->
       <div id="backgroundImage" class="background-image"></div>
       <div class="gradient-overlay"></div>
@@ -37,9 +35,7 @@
 
         <!-- Main Content -->
         <div class="content-wrapper no-scrollbar">
-          <div id="contentContainer" class="content no-scrollbar">
-            Blessed Music
-          </div>
+          <div id="contentContainer" class="content no-scrollbar">Blessed Music</div>
         </div>
 
         <!-- Navigation Controls -->
@@ -79,24 +75,44 @@
     </div>
 
     <script>
-      // Listen for song data from the main process
+      // State management
+      let songPages = [];
+      let currentIndex = 0;
+      let songTitle = '';
 
-      window.api.onDisplaySong((songData) => {
-        const main = document.getElementById("backgroundImage");
-        const mainImg = localStorage.getItem("bmusicpresentationbg");
-        const container = document.getElementById("contentContainer");
-        const parentWidth = container.clientWidth;
-
-        if (mainImg) {
-          main.style.backgroundImage = `url(${mainImg})`;
-        } else {
-          main.style.backgroundImage = "url(./wood7.png)";
+      // Helper function to safely access localStorage
+      const getLocalStorageItem = (key, defaultValue = null) => {
+        try {
+          const item = localStorage.getItem(key);
+          return item !== null ? item : defaultValue;
+        } catch (error) {
+          console.error(`Error accessing localStorage for key ${key}:`, error);
+          return defaultValue;
         }
-        const parseSongContent = (content) => {
-          const sections = [];
+      };
+
+      // Helper function to safely parse JSON
+      const safeJsonParse = (jsonString, defaultValue = null) => {
+        try {
+          return jsonString ? JSON.parse(jsonString) : defaultValue;
+        } catch (error) {
+          console.error('Error parsing JSON:', error);
+          return defaultValue;
+        }
+      };
+
+      // Function to parse song content into navigable pages
+      const parseSongContent = (content) => {
+        if (!content) {
+          console.error('No song content provided');
+          return [{ type: 'Error', content: ['No song content available'], number: null, pageIndex: 0 }];
+        }
+
+        const sections = [];
+        try {
           const parser = new DOMParser();
-          const doc = parser.parseFromString(content, "text/html");
-          const paragraphs = Array.from(doc.getElementsByTagName("p"));
+          const doc = parser.parseFromString(content, 'text/html');
+          const paragraphs = Array.from(doc.getElementsByTagName('p'));
 
           let currentType = null;
           let currentNumber = null;
@@ -104,10 +120,16 @@
           let verseCount = 0;
           let chorusCount = 0;
 
-          paragraphs.forEach((p) => {
-            const text = p.textContent?.trim() || "";
+          // Handle empty paragraph list
+          if (paragraphs.length === 0) {
+            return [{ type: 'Song', content: ['No lyrics found'], number: null, pageIndex: 0 }];
+          }
 
-            if (text.includes("<!-- Verse")) {
+          paragraphs.forEach((p) => {
+            const text = p.textContent?.trim() || '';
+
+            if (text.includes('<!-- Verse')) {
+              // Save previous section if exists
               if (currentType && currentContent.length > 0) {
                 sections.push({
                   type: currentType,
@@ -116,10 +138,11 @@
                 });
               }
               verseCount++;
-              currentType = "Verse";
+              currentType = 'Verse';
               currentNumber = verseCount;
               currentContent = [];
-            } else if (text.includes("<!-- Chorus")) {
+            } else if (text.includes('<!-- Chorus')) {
+              // Save previous section if exists
               if (currentType && currentContent.length > 0) {
                 sections.push({
                   type: currentType,
@@ -128,18 +151,15 @@
                 });
               }
               chorusCount++;
-              currentType = "Chorus";
+              currentType = 'Chorus';
               currentNumber = chorusCount > 1 ? chorusCount : null;
               currentContent = [];
-            } else if (
-              text &&
-              !text.includes("<!--") &&
-              !text.includes("-->")
-            ) {
+            } else if (text && !text.includes('<!--') && !text.includes('-->')) {
               currentContent.push(text);
             }
           });
 
+          // Don't forget the last section
           if (currentType && currentContent.length > 0) {
             sections.push({
               type: currentType,
@@ -148,162 +168,225 @@
             });
           }
 
-          // Convert sections into pages
+          // Handle case where no valid sections were found
+          if (sections.length === 0) {
+            return [{ type: 'Song', content: ['No structured lyrics found'], number: null, pageIndex: 0 }];
+          }
+
+          // Convert sections into pages with maximum lines per page
           const pages = [];
+          const linesPerPage = 6;
+          
           sections.forEach((section) => {
-            const linesPerPage = 6;
             for (let i = 0; i < section.content.length; i += linesPerPage) {
-              pages.push({
-                type: section.type,
-                content: section.content.slice(i, i + linesPerPage),
-                number: section.number,
-                pageIndex: Math.floor(i / linesPerPage),
-              });
+              const pageContent = section.content.slice(i, i + linesPerPage);
+              // Only create pages for non-empty content
+              if (pageContent.length > 0) {
+                pages.push({
+                  type: section.type,
+                  content: pageContent,
+                  number: section.number,
+                  pageIndex: Math.floor(i / linesPerPage),
+                });
+              }
             }
           });
 
           return pages;
-        };
+        } catch (error) {
+          console.error('Error parsing song content:', error);
+          return [{ type: 'Error', content: ['Error parsing song content'], number: null, pageIndex: 0 }];
+        }
+      };
 
-        // State management
+      // Function to update page display
+      const updatePage = (index) => {
+        if (!songPages || songPages.length === 0) {
+          console.error('No song pages available');
+          return;
+        }
 
-        // console.log("saved music", selectedSong);
-        let currentIndex = 0;
-        let songPages = parseSongContent(songData.content);
+        if (index < 0 || index >= songPages.length) {
+          console.error(`Invalid page index: ${index}`);
+          return;
+        }
 
-        // Update UI functions
-        const updatePage = (index) => {
-          const page = songPages[index];
-          const sectionTitle = `${page.type}${
-            page.number ? ` ${page.number}` : ""
-          }${page.pageIndex > 0 ? ` (cont.)` : ""} - ${songData.title || ""}`;
+        const page = songPages[index];
+        const titleElement = document.getElementById('titleText');
+        const container = document.getElementById('contentContainer');
+        
+        if (!titleElement || !container) {
+          console.error('Required DOM elements not found');
+          return;
+        }
 
-          document.getElementById("titleText").textContent = sectionTitle;
+        // Update the title with section information
+        const sectionTitle = `${page.type}${
+          page.number ? ` ${page.number}` : ''
+        }${page.pageIndex > 0 ? ' (cont.)' : ''} - ${songTitle || ''}`;
+        
+        titleElement.textContent = sectionTitle;
 
-          const container = document.getElementById("contentContainer");
-          container.innerHTML = "";
+        // Clear previous content
+        container.innerHTML = '';
 
-          const savedSize = Number(localStorage.getItem("fontSize"));
-          const textSize = savedSize ? `${2 + savedSize}rem` : "3rem";
-          const maxWidth = 270;
+        // Get user preferences from localStorage with defaults
+        const savedSize = parseInt(getLocalStorageItem('fontSize', '0'));
+        const baseFontSize = 3; // Base font size in rem
+        const textSize = `${baseFontSize + savedSize}rem`;
+        const fontFamily = getLocalStorageItem('fontFamily', 'serif');
+        const maxWidth = container.clientWidth - 20; // Account for padding
 
-          page.content.forEach((line, i) => {
-            const p = document.createElement("p");
-            p.textContent = `${line}`;
-            container.appendChild(p);
-            const paragraphWidth = p.offsetWidth;
-            // p.textContent = `${line} ${paragraphWidth}`;
-            // p.textContent = line;
-            container.appendChild(p);
+        // Add each line of content
+        page.content.forEach((line, i) => {
+          if (!line.trim()) return; // Skip empty lines
+          
+          const p = document.createElement('p');
+          p.textContent = line;
+          p.style.animation = `fadeInUp ${i * 0.1 + 0.2}s ease forwards`;
+          p.style.fontSize = textSize;
+          p.style.fontFamily = fontFamily;
+          p.style.marginBottom = '1.5rem';
+          
+          // Add to DOM temporarily to measure width
+          container.appendChild(p);
+          
+          // Adjust font size if text is too wide
+          if (p.offsetWidth > maxWidth) {
+            const scaleFactor = Math.min(0.9, maxWidth / p.offsetWidth);
+            const adjustedSize = parseFloat(textSize) * scaleFactor;
+            p.style.fontSize = `${adjustedSize}rem`;
+          }
+        });
 
-            // save font size to local storage
-            p.style.animation = `fadeInUp ${i * 0.1 + 0.2}s ease forwards`;
-            p.style.fontSize = textSize;
-            p.style.fontFamily = localStorage?.getItem("fontFamily") || "serif";
+        // Update navigation buttons state
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        
+        if (prevButton) prevButton.disabled = index === 0;
+        if (nextButton) nextButton.disabled = index === songPages.length - 1;
 
-            if (paragraphWidth > maxWidth) {
-              // select all p tags in the container
+        // Update progress indicators
+        updateProgressIndicators(index);
+      };
 
-              p.style.fontSize = `${3.2}rem`;
-              p.style.marginBottom = "1.5rem";
-              // container.appendChild(p);
-            } else {
-              p.style.fontSize = savedSize;
-              p.style.marginBottom = "1.5rem";
-              // container.appendChild(p);
+      // Function to update progress indicators
+      const updateProgressIndicators = (currentIndex) => {
+        const container = document.getElementById('progressIndicators');
+        if (!container) return;
+        
+        container.innerHTML = '';
+
+        songPages.forEach((_, index) => {
+          const indicator = document.createElement('button');
+          indicator.className = `progress-dot ${index === currentIndex ? 'active' : ''}`;
+          indicator.setAttribute('aria-label', `Go to page ${index + 1}`);
+          indicator.onclick = () => {
+            currentIndex = index;
+            updatePage(index);
+          };
+          container.appendChild(indicator);
+        });
+      };
+
+      // Load background image
+      const loadBackgroundImage = () => {
+        const main = document.getElementById('backgroundImage');
+        if (!main) return;
+        
+        const mainImg = getLocalStorageItem('bmusicpresentationbg');
+        
+        if (mainImg) {
+          main.style.backgroundImage = `url(${mainImg})`;
+        } else {
+          main.style.backgroundImage = 'url(./wood7.png)';
+        }
+      };
+
+      // Function to handle receiving song data
+      const handleSongData = (songData) => {
+        loadBackgroundImage();
+        if (!songData || !songData.content) {
+          console.error('Invalid song data received');
+          return;
+        }
+
+        try {
+          songTitle = songData.title || 'Untitled Song';
+          songPages = parseSongContent(songData.content);
+          currentIndex = 0;
+          
+          // Initialize with first page
+          updatePage(0);
+        } catch (error) {
+          console.error('Error handling song data:', error);
+          document.getElementById('contentContainer').innerHTML = '<p>Error loading song</p>';
+        }
+      };
+
+      // Set up event listeners
+      const setupEventListeners = () => {
+        // Previous button
+        const prevButton = document.getElementById('prevButton');
+        if (prevButton) {
+          prevButton.onclick = () => {
+            if (currentIndex > 0) {
+              currentIndex--;
+              updatePage(currentIndex);
             }
+          };
+        }
 
-            container.appendChild(p);
-          });
-
-          // Update navigation state
-          document.getElementById("prevButton").disabled = index === 0;
-          document.getElementById("nextButton").disabled =
-            index === songPages.length - 1;
-
-          // Update progress indicators
-          updateProgressIndicators(index);
-        };
-
-        const updateProgressIndicators = (currentIndex) => {
-          const container = document.getElementById("progressIndicators");
-          container.innerHTML = "";
-
-          songPages.forEach((_, index) => {
-            const indicator = document.createElement("button");
-            indicator.className = `progress-dot ${
-              index === currentIndex ? "active" : ""
-            }`;
-            indicator.onclick = () => {
-              currentIndex = index;
-              updatePage(index);
-            };
-            container.appendChild(indicator);
-          });
-        };
-
-        // Navigation handlers
-        document.getElementById("prevButton").onclick = () => {
-          if (currentIndex > 0) {
-            currentIndex--;
-            updatePage(currentIndex);
-          }
-        };
-
-        document.getElementById("nextButton").onclick = () => {
-          if (currentIndex < songPages.length - 1) {
-            currentIndex++;
-            updatePage(currentIndex);
-          }
-        };
+        // Next button
+        const nextButton = document.getElementById('nextButton');
+        if (nextButton) {
+          nextButton.onclick = () => {
+            if (currentIndex < songPages.length - 1) {
+              currentIndex++;
+              updatePage(currentIndex);
+            }
+          };
+        }
 
         // Keyboard navigation
-        document.addEventListener("keydown", (event) => {
-          if (
-            event.key === "ArrowRight" &&
-            currentIndex < songPages.length - 1
-          ) {
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'ArrowRight' && currentIndex < songPages.length - 1) {
             currentIndex++;
             updatePage(currentIndex);
-          } else if (event.key === "ArrowLeft" && currentIndex > 0) {
+          } else if (event.key === 'ArrowLeft' && currentIndex > 0) {
             currentIndex--;
             updatePage(currentIndex);
           }
         });
+      };
 
-        // Initialize first page
-        updatePage(0);
-      });
-
-      // Load settings from localStorage
-      document.addEventListener("DOMContentLoaded", () => {
-        const fontSize = `${localStorage.getItem("fontSize")}rem`;
-        const fontFamily = localStorage.getItem("fontFamily");
-        const main = document.getElementById("backgroundImage");
-        const mainImg = localStorage.getItem("bmusicpresentationbg");
-        const container = document.getElementById("contentContainer");
-
-        // if (fontSize) {
-        //   document.documentElement.style.setProperty("font-size", fontSize);
-        // }
-        // get json song from local storage
-        const selectedSong = JSON.parse(localStorage.getItem("selectedSong"));
-        if (container.innerHTML === "Blessed Music") {
-          window.api.projectSong(selectedSong);
-          window.api.onDisplaySong((selectedSong) => {
-            // handle songData
-            // alert(`songData: ${selectedSong.title}`);
-          });
-        }
-        if (fontFamily) {
-          document.documentElement.style.setProperty("font-family", fontFamily);
-        }
-        if (mainImg) {
-          main.style.backgroundImage = `url(${mainImg})`;
-        } else {
-          main.style.backgroundImage = "url(./wood7.png)";
+      // Initialize on page load
+      document.addEventListener('DOMContentLoaded', () => {
+        loadBackgroundImage();
+        setupEventListeners();
+        
+        // Try to load song from localStorage if available
+        const contentContainer = document.getElementById('contentContainer');
+        if (contentContainer && contentContainer.innerText.includes('Blessed Music')) {
+          const selectedSong = safeJsonParse(getLocalStorageItem('selectedSong'));
+          
+          if (selectedSong) {
+            // If we have API access, use it
+            if (window.api && window.api.projectSong) {
+              window.api.projectSong(selectedSong);
+            } else {
+              // Otherwise, process directly
+              handleSongData(selectedSong);
+            }
+          }
         }
       });
+
+      // Register API event handler if available
+      if (window.api && window.api.onDisplaySong) {
+        loadBackgroundImage();
+        window.api.onDisplaySong(handleSongData);
+      }
     </script>
   </body>
 </html>

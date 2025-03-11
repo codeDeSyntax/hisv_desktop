@@ -142,6 +142,7 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
   const [selectedBg, setSelectedBg] = useState(
     localStorage.getItem("selectedBg") || "bg1"
   );
+  const [imagesPath ,setImagePath] = useState("")
   const [collections, setCollections] = useState<Collection[]>([]);
 
   const backgroundOptions = [
@@ -194,6 +195,7 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
   const fontFamilyOptions = [
     { value: "serif", label: "Serif" },
     { value: "sans-serif", label: "Sans Serif" },
+    { value: ` Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif`, label: "Impact" },
     { value: "monospace", label: "Monospace" },
     { value: "Arial, Helvetica, sans-serif", label: "Arial" },
     { value: "'Courier New', Courier, monospace", label: "Courier New" },
@@ -215,6 +217,14 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
     if (typeof path === "string") {
       setSongRepo(path);
       localStorage.setItem("bmusicsongdir", path);
+    }
+  };
+  const selectImagesPath = async () => {
+    const path = await window.api.selectDirectory();
+    if (typeof path === "string") {
+      // setSongRepo(path);
+      localStorage.setItem("vmusicimages", path);
+      setCurrentScreen("backgrounds")
     }
   };
 
@@ -403,14 +413,14 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
                   <span>Songs directory </span>
                 </button>
                 <button
-                  onClick={() => setCurrentScreen("backgrounds")}
+                  onClick={() => selectImagesPath()}
                   className="w-full py-2 px-4  bg-white/50 border-2 border-[#9a674a]/20
                                hover:border-[#9a674a] text-[#9a674a] text-[12px] rounded-lg
                                transition-all duration-300 flex items-center justify-center gap-2
                                focus:outline-none group"
                 >
                   <Wallpaper className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span>Choose background </span>
+                  <span>Presentation background path </span>
                 </button>
               </div>
             </div>

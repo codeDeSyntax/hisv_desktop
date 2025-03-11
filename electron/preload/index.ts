@@ -56,6 +56,7 @@ contextBridge.exposeInMainWorld("api", {
       ipcRenderer.removeAllListeners("display-song");
     };
   },
+  getImages: (dirPath:string) => ipcRenderer.invoke('get-images', dirPath),
 });
 
 // --------- Preload scripts loading ---------

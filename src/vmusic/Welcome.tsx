@@ -206,7 +206,7 @@ const WorkspaceSelector = () => {
               className="text-3xl font-bold font-serif text-white drop-shadow-lg"
               style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
             >
-              Blessed Music
+              EastVoice
             </h2>
             <p className="text-white mt-1 font-serif italic">
               Enjoy unperverted music for the soul

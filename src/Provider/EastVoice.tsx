@@ -15,6 +15,8 @@ type EastVoiceContextType = {
   handleClose: () => void;
   handleMaximize: () => void;
   handleMinimize: () => void;
+  presentationbgs: string[];
+  setPresentationbgs: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 const EastVoiceContext = createContext<EastVoiceContextType | undefined>(undefined);
@@ -27,9 +29,7 @@ export const EastVoiceProvider = ({ children }: BmusicProviderProps) => {
  
   const [currentScreen, setCurrentScreen] = useState("Home");
   const [theme, setTheme] = useState("creamy");
-
-
-
+  const [presentationbgs , setPresentationbgs] = useState<string[]>([])
 
   const handleMinimize = () => {
     window.api.minimizeApp();
@@ -54,6 +54,8 @@ export const EastVoiceProvider = ({ children }: BmusicProviderProps) => {
         handleClose,
         handleMaximize,
         handleMinimize,
+        presentationbgs,
+        setPresentationbgs
       }}
     >
       {children}

@@ -94,6 +94,7 @@ const SermonList = () => {
       // }}
     >
       {/* Left side - Sermon List */}
+      
       <div
         className="w-1/2 overflow-y-auto no-scrollbar  bg-background"
         style={{ height: "100vh" }}

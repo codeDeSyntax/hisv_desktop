@@ -72,9 +72,7 @@ const SideNav = ({ isCollapsed, setIsCollapsed }: SideNavProps) => {
 
   return (
     <div
-      className={`fixed top-0 left-0  h-full  bg-[#9a674a] text-white transition-all duration-300    z-10 ${
-        isCollapsed ? "w-16" : "w-64"
-      }`}
+      className={` top-0 left-0 w-[7%]  h-screen  bg-[#9a674a] text-white transition-all duration-300    z-10`}
     >
       <nav className="h-full  flex flex-col  py-10">
         <div className="flex flex-col gap-2 p-2">

@@ -72,7 +72,7 @@ const Home = () => {
   }, [currentImageIndex, images, setCB, scriptures.length]);
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-[#faeed1] rounded-tl-3xl ">
+    <div className="h-screen relative overflow-hidden bg-background rounded-tl-3xl w-full">
       {/* Background Image Layer */}
       {images.map((img, index) => (
         <div

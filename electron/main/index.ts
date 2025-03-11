@@ -1,4 +1,11 @@
-import { app, BrowserWindow, shell, ipcMain, dialog } from "electron";
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  dialog,
+  nativeImage,
+} from "electron";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
@@ -261,4 +268,40 @@ ipcMain.handle("delete-song", async (event, filePath) => {
     console.error("Error deleting song:", error);
     throw error;
   }
+});
+
+async function loadImagesFromDirectory(dirPath: string) {
+  const allowedExtensions = [".png", ".jpg", ".jpeg"];
+
+  try {
+    const files = await new Promise<string[]>((resolve, reject) => {
+      fs.readdir(dirPath, (err, files) => {
+        if (err) reject(err);
+        else resolve(files);
+      });
+    });
+    const imageFiles = files
+      .filter((file) =>
+        allowedExtensions.includes(path.extname(file).toLowerCase())
+      )
+      .slice(0, 5); // Limit to the first 4 images
+    // Load images in parallel using Promise.all
+    const images = await Promise.all(
+      imageFiles.map(async (file) => {
+        const imagePath = path.join(dirPath, file);
+        const imageBuffer = await fs.promises.readFile(imagePath); // Read file as buffer
+        const image = nativeImage.createFromBuffer(imageBuffer); // Create nativeImage from buffer
+        return image.toDataURL(); // Convert to base64 DataURL
+      })
+    );
+
+    return images;
+  } catch (error) {
+    console.error("Error loading images:", error);
+    return [];
+  }
+}
+
+ipcMain.handle("get-images", async (event, dirPath) => {
+  return loadImagesFromDirectory(dirPath); // Return the list of base64-encoded images
 });

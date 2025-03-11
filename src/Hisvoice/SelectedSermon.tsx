@@ -148,27 +148,7 @@ const SelectedSermon = ({
     );
   }, []);
 
-  const images = useMemo(
-    () => [
-      "./pic1.jpg",
-      "./picc.jpg",
-      "./pica.jpg",
-      "./picd.jpg",
-      "./picb.jpg",
-    ],
-    []
-  );
 
-  useEffect(() => {
-    const switchImage = () => {
-      const newIndex = Math.floor(Math.random() * images.length);
-      setCurrentImageIndex(newIndex);
-    };
-
-    const interval = setInterval(switchImage, 50000);
-
-    return () => clearInterval(interval);
-  }, [currentImageIndex, images]);
 
   useEffect(() => {
     if (searchQuery && scrollContainerRef.current) {
@@ -237,17 +217,6 @@ const SelectedSermon = ({
     setShowSearch(false);
   };
 
-  const backgroundStyle = background
-    ? {
-        backgroundImage: `linear-gradient(to bottom,
-          rgba(0, 0, 0, 0.5) 0%,
-          rgba(0, 0, 0, 5) 40%),
-          url(${images[currentImageIndex] || "./pic3.jpg"})`,
-      }
-    : {
-        // backgroundColor: "#2c2c2c",
-      };
-
   const scrollToPosition = (height: number) => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({
@@ -289,21 +258,19 @@ const SelectedSermon = ({
   };
 
   return (
-    <div className=" overflow-hidden bg-background">
+    <div className=" bg-background">
       <SearchModal
         showSearch={showSearch}
         onClose={handleSearchToggle}
         onSearch={handleSearch}
         searchQuery={searchQuery}
       />
-
       <SaveNotification
         show={showSaveNotification}
         onClose={() => setShowSaveNotification(false)}
       />
-
-      <motion.div
-        className="  overflow-hidden  bg-center flex flex-col p-5  pb-14 "
+      <div
+        className="  bg-center flex flex-col p-5  pb-14 "
         // style={
         //   selectedMessage?.type === "text"
         //     ? backgroundStyle
@@ -317,9 +284,9 @@ const SelectedSermon = ({
         //       }
         // }
       >
-        <div className="w-full mb-5 h-[90vh]">
+        <div className=" mb-5 h-[90vh]">
           {selectedMessage?.type === "text" && (
-            <div className=" flex items-center   gap-2 p-2 rounded-l-full mt-10 ">
+            <div className=" flex items-center   gap-2 p-2 rounded-l-full mt-10 hidden">
               <button
                 className="rounded-full h-10 w-10 hover:cursor-pointer hover:scale-125 duration-300 bg-secondary text-white font-bold text-center flex items-center justify-center"
                 title="Save progress"
@@ -358,14 +325,15 @@ const SelectedSermon = ({
 
           <div
             ref={scrollContainerRef}
-            className="rounded-lg p-8 h-[90vh] overflow-y-scroll text-wrap"
+            className="rounded-lg p-8 h-[90vh] overflow-y-scroll overflow-x-hidden text-wrap"
             style={{
               scrollbarWidth: "thin",
-              scrollbarColor: "#4B5563 #202020",
+              scrollbarColor: "#faeed1 #9a674a90",
+              scrollbarGutter: "stable",
             }}
           >
             {selectedMessage?.type === "text" ? (
-              <div className="w-full">
+              <div className="w">
                 {selectedMessage?.lastRead && showLastReadCard && (
                   <Card
                     title="Welcome Back!"
@@ -399,10 +367,10 @@ const SelectedSermon = ({
                     </p>
                   </Card>
                 )}
-                <p className=" text-3xl font-serif text-gray-900 dark:text-text font-bold underline">
+                <p className=" text-3xl font-serif text-orange-900 dark:text-text font-bold underline">
                   {selectedMessage.title}
                 </p>
-                <p className=" font-serif italic text-gray-900 dark:text-text">
+                <p className=" font-serif italic text-gray-900 ">
                   {selectedMessage?.location}
                 </p>
                 {selectedMessage.sermon
@@ -410,7 +378,7 @@ const SelectedSermon = ({
                   .map((paragraph, index) => (
                     <p
                       key={index}
-                      className="mb-6 leading-relaxed text-gray-700 text-wrap text-center"
+                      className="mb-6 leading-relaxed text-gray-700 text-wrap text-left"
                       style={{
                         fontFamily: settings.fontFamily,
                         fontWeight: settings.fontWeight,
@@ -423,14 +391,13 @@ const SelectedSermon = ({
                         : highlightEndnotes(paragraph)}
                     </p>
                   ))}
-                🗝️
               </div>
             ) : (
               <DownloadSermon />
             )}
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

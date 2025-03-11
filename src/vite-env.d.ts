@@ -25,5 +25,7 @@ interface Window {
     getPresentationImages: (directory: string) => Promise<string[]>;
     projectSong: (songs: any) => void;
     onDisplaySong: (callback: (songData: Song) => void) => void;
+    getImages: (dirPath:string) => Promise<string[]>,
   };
+  
 }

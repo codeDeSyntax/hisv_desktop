@@ -177,7 +177,9 @@ const TitleBar = () => {
           <div
             onClick={() => setCurrentScreen("categorize")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
-              items-center justify-center flex `}
+              items-center justify-center flex 
+              ${currentScreen !== "categorize" && "hidden"}
+              `}
             title="Music categories"
           >
             <Group className="text-white z-20 size-3" />

@@ -260,7 +260,7 @@ const WorkspaceSelector = () => {
               </div>
             </div>
             <button
-              onClick={navigateToCreate}
+              onClick={() => setCurrentScreen("hisvoice")}
               className={`px-4 py-2 ${colors.hdButton} text-white rounded-md hover:bg-[#a66c55] transition-colors duration-200 shadow-md font-serif`}
             >
               Go
@@ -281,7 +281,7 @@ const WorkspaceSelector = () => {
               </div>
             </div>
             <button
-              onClick={navigateToCreate}
+              onClick={() => setCurrentScreen("bible")}
               className={`px-4 py-2 ${colors.hdButton} text-white rounded-md hover:bg-[#a66c55] transition-colors duration-200 shadow-md font-serif`}
             >
               Go

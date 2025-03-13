@@ -19,6 +19,8 @@ import SongCollectionManager from "./vmusic/Categorize";
 import UserGuidePage from "./vmusic/Userguide";
 import PresentationBackgroundSelector from "./vmusic/BackgroundChoose";
 import Hisvoice from "./Hisvoice/Hisvoice";
+import BibleApp from "./Bible/Bible";
+import Biblelayout from './Bible/Bible';
 
 const App = () => {
   const { currentScreen, setCurrentScreen } = useBmusicContext();
@@ -53,7 +55,10 @@ const App = () => {
       ) : currentScreen === "backgrounds" ? (
         <PresentationBackgroundSelector />
       ) : currentScreen === "hisvoice" ? (
-        <Hisvoice/> ) :
+        <Hisvoice/> 
+      ) : currentScreen === "bible" ? (
+        <Biblelayout/>
+      ):
        (
         <ArrowLeftCircle
           className="size-6 text-white"

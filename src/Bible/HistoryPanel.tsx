@@ -1,0 +1,61 @@
+import React from "react";
+import { X, Clock } from "lucide-react";
+import { useBibleContext } from "@/Provider/Bible";
+
+const HistoryPanel: React.FC = () => {
+  const { setActiveFeature, history, setCurrentBook, setCurrentChapter } =
+    useBibleContext();
+
+  const handleHistoryClick = (reference: string) => {
+    // Parse the reference format "Book Chapter"
+    const parts = reference.split(" ");
+    const chapterNumber = parseInt(parts[parts.length - 1]);
+
+    // Book name is everything except the last part
+    const bookName = parts.slice(0, parts.length - 1).join(" ");
+
+    setCurrentBook(bookName);
+    setCurrentChapter(chapterNumber);
+    setActiveFeature(null);
+  };
+
+  const formatTimestamp = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString();
+  };
+
+  return (
+    <div className="h-full p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold">History</h2>
+        <button onClick={() => setActiveFeature(null)} className="p-1">
+          <X size={20} />
+        </button>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        {history.length > 0 ? (
+          history.map((item, index) => (
+            <button
+              key={index}
+              onClick={() => handleHistoryClick(item.reference)}
+              className="flex flex-col items-start p-3 bg-gray-100 dark:bg-gray-700 rounded-md text-left hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              <span className="font-medium">{item.reference}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center mt-1">
+                <Clock size={12} className="mr-1" />{" "}
+                {formatTimestamp(item.timestamp)}
+              </span>
+            </button>
+          ))
+        ) : (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            No history yet
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default HistoryPanel;

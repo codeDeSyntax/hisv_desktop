@@ -25,11 +25,16 @@ const HistoryPanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full p-4">
+    <div className="h-full overflow-y-scroll no-scrollbar p-4 bg-gray-50 dark:bg-black font-serif">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">History</h2>
-        <button onClick={() => setActiveFeature(null)} className="p-1">
-          <X size={20} />
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          History
+        </h2>
+        <button
+          onClick={() => setActiveFeature(null)}
+          className="p-1 hover:bg-gray-100 bg-gray-50 shadow  dark:bg-bgray  dark:hover:bg-bgray rounded"
+        >
+          <X size={20} className="text-gray-900 dark:text-white" />
         </button>
       </div>
 
@@ -39,10 +44,12 @@ const HistoryPanel: React.FC = () => {
             <button
               key={index}
               onClick={() => handleHistoryClick(item.reference)}
-              className="flex flex-col items-start p-3 bg-gray-100 dark:bg-gray-700 rounded-md text-left hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="flex flex-col items-start p-3 bg-gray-100 dark:bg-bgray hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md text-left transition-colors"
             >
-              <span className="font-medium">{item.reference}</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center mt-1">
+              <span className="font-medium text-gray-900 dark:text-white text-[14px]">
+                {item.reference}
+              </span>
+              <span className="text-[12px] text-gray-500 dark:text-gray-400 flex items-center mt-1">
                 <Clock size={12} className="mr-1" />{" "}
                 {formatTimestamp(item.timestamp)}
               </span>

@@ -1,25 +1,27 @@
-import React from 'react';
-import { X, Search } from 'lucide-react';
-import { useBibleContext } from '@/Provider/Bible';
-import { BookmarkPanel } from './BookmarkPanel';
-import HistoryPanel from './HistoryPanel';
-import LibraryPanel from './LibraryPanel';
-import SettingsPanel from './SettingsPanel';
+import React from "react";
+import { X, Search } from "lucide-react";
+import { useBibleContext } from "@/Provider/Bible";
+import { BookmarkPanel } from "./BookmarkPanel";
+import HistoryPanel from "./HistoryPanel";
+import LibraryPanel from "./LibraryPanel";
+import SettingsPanel from "./SettingsPanel";
+// import { theme } from "antd";
 
 const FeaturePanel: React.FC = () => {
-  const { activeFeature, setActiveFeature, sidebarExpanded } = useBibleContext();
+  const { activeFeature, setActiveFeature, theme, sidebarExpanded } =
+    useBibleContext();
 
   if (!activeFeature) return null;
 
   const renderPanel = () => {
     switch (activeFeature) {
-      case 'favorites':
+      case "favorites":
         return <BookmarkPanel />;
-      case 'history':
+      case "history":
         return <HistoryPanel />;
-      case 'library':
+      case "library":
         return <LibraryPanel />;
-      case 'settings':
+      case "settings":
         return <SettingsPanel />;
       default:
         return null;
@@ -27,9 +29,17 @@ const FeaturePanel: React.FC = () => {
   };
 
   return (
-    <div className={`w-64 md:w-80 border-r border-gray-300 dark:border-gray-700 overflow-y-auto h-[calc(100vh-2.5rem)] fixed top-10 ${
-      sidebarExpanded ? 'left-48' : 'left-12'
-    } bg-black transition-all duration-300 z-10`}>
+    <div
+      className={`w-64 no-scrollbar md:w-80 border-r bg-white dark:bg-bgray border-gray-100 dark:border-gray-700 overflow-y-auto h-[calc(100vh-2rem)] fixed top-8 ${
+        sidebarExpanded ? "left-48" : "left-12"
+      }  transition-all duration-300 z-10`}
+      // style={{
+      //   scrollbarWidth: "thin",
+      //   scrollbarColor:
+      //     theme === "light" ? "#f9fafb #f3f4f6" : "#424242 #202020",
+      //   // scrollbarGutter: "stable",
+      // }}
+    >
       {renderPanel()}
     </div>
   );

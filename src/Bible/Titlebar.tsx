@@ -1,33 +1,83 @@
-import React from 'react';
-import { X, Minus, Square } from 'lucide-react';
-import { useBibleContext } from '@/Provider/Bible';
+import React from "react";
+import { useState } from "react";
+import { X, Minus, Square } from "lucide-react";
+import { useBibleContext } from "@/Provider/Bible";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
+import { Settings, MoreHorizontal, FileText } from "lucide-react";
+import { useBmusicContext } from '../Provider/Bmusic';
 
 const TitleBar: React.FC = () => {
   const { handleClose, handleMaximize, handleMinimize } = useBibleContext();
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const { currentScreen, setCurrentScreen, setTheme, theme } =
+    useBmusicContext();
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
 
   return (
-    <div className="h-10 bg-gray-200 dark:bg-gray-800 flex items-center px-4 border-b border-gray-300 dark:border-gray-700 select-none">
+    <div className="h-8 bg-gray-50 dark:bg-bgray flex items-center flex-row-reverse px-4 border-b border-gray-300 dark:border-gray-700 select-none">
       <div className="flex space-x-2 mr-4">
-        <button 
+        {/* Close button */}
+        <div
           onClick={handleClose}
-          className="w-3 h-3 bg-red-500 rounded-full flex items-center justify-center group"
+          className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-bgray"
         >
-          <X className="w-2 h-2 text-red-800 opacity-0 group-hover:opacity-100" />
-        </button>
-        <button 
+          <X className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white" />
+        </div>
+        {/* Minimize button */}
+        <div
           onClick={handleMinimize}
-          className="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center group"
+          className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-bgray"
         >
-          <Minus className="w-2 h-2 text-yellow-800 opacity-0 group-hover:opacity-100" />
-        </button>
-        <button 
+          <Minus className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white" />
+        </div>
+        {/* Maximize button */}
+        <div
           onClick={handleMaximize}
-          className="w-3 h-3 bg-green-500 rounded-full flex items-center justify-center group"
+          className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-bgray"
         >
-          <Square className="w-2 h-2 text-green-800 opacity-0 group-hover:opacity-100" />
-        </button>
+          <Square className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white" />
+        </div>
       </div>
-      <div className="text-sm font-medium flex-1 text-center">Bible 300</div>
+      {/* Title text */}
+      <div className="text-sm font-medium flex-1 text-center text-gray-900 dark:text-gray-300">
+        Bible 300
+      </div>
+      <div
+        onClick={toggleDropdown}
+        className="w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer flex items-center justify-center relative"
+        title="More tools"
+      >
+        <MoreHorizontal className="text-white z-20 size-3" />
+
+        {/* Dropdown menu */}
+        {showDropdown && (
+          <div className="absolute top-5 left-0 bg-white shadow-md rounded-md p-1 z-50 w-32">
+            <div
+              className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+              onClick={() => {
+                setCurrentScreen("hisvoice");
+                setShowDropdown(false);
+              }}
+            >
+              <Settings className="size-3 text-gray-600" />
+              <span className="text-xs">His voice</span>
+            </div>
+            <div
+              className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+              onClick={() => {
+                setCurrentScreen("Songs");
+                setShowDropdown(false);
+              }}
+            >
+              <FileText className="size-3 text-gray-600" />
+              <span className="text-xs">Song app</span>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

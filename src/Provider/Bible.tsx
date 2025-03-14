@@ -187,8 +187,14 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
     return localStorage.getItem("bibleFontFamily") || "serif";
   });
   const [verseTextColor, setVerseTextColor] = useState(() => {
-    return localStorage.getItem("bibleVerseTextColor") || "#000000";
+    return localStorage.getItem("bibleVerseTextColor") || "#808080";
   });
+
+  const bgColor = theme === "light" ? "bg-white" :"bg-black";
+  const txColor = theme === "light" ? "text-stone-400" :"text-white"
+
+  const [backgroundColor,setBackgroundColor] = useState(bgColor);
+  const [textColor,setTextColor] = useState(txColor);
 
   // Bookmarks
   const [bookmarks, setBookmarks] = useState<string[]>(() => {
@@ -247,10 +253,11 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
 
   // Apply theme to document
   useEffect(() => {
+      const bibleDiv = document.getElementById("biblediv")
     if (theme === "dark") {
-      document.documentElement.classList.add("dark");
+      bibleDiv?.classList.add("dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      bibleDiv?.classList.remove("dark");
     }
   }, [theme]);
 

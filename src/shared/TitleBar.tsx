@@ -12,18 +12,19 @@ import {
   X,
   MoreHorizontal,
   Settings,
-  FileText
+  FileText,
 } from "lucide-react";
 import { HomeFilled } from "@ant-design/icons";
 import { Switch } from "antd";
 import { useEffect } from "react";
 import { useBmusicContext } from "@/Provider/Bmusic";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
 
 const TitleBar = () => {
   const [isHovered, setIsHovered] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const { currentScreen, setCurrentScreen, setTheme, theme } =
-    useBmusicContext();
+  const { setTheme, theme } = useBmusicContext();
+  const { setAndSaveCurrentScreen, currentScreen } = useEastVoiceContext();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("bmusictheme");
@@ -125,16 +126,15 @@ const TitleBar = () => {
           </div>
 
           <div
-            onClick={() => setCurrentScreen("Home")}
+            onClick={() => setAndSaveCurrentScreen("Home")}
             className="w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer flex items-center justify-center"
           >
-            <HomeFilled className="text-white z-20 size-3" color={
-              `rgba(${Math.floor(
+            <HomeFilled
+              className="text-white z-20 size-3"
+              color={`rgba(${Math.floor(Math.random() * 255)},${Math.floor(
                 Math.random() * 255
-              )},${Math.floor(Math.random() * 255)},${Math.floor(
-                Math.random() * 255
-              )},1)`
-            }/>
+              )},${Math.floor(Math.random() * 255)},1)`}
+            />
           </div>
           <div
             onClick={setThemeChoice}
@@ -147,7 +147,7 @@ const TitleBar = () => {
             <SwitchCamera className="text-white z-20 size-3" />
           </div>
           <div
-            onClick={() => setCurrentScreen("backgrounds")}
+            onClick={() => setAndSaveCurrentScreen("backgrounds")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
               items-center justify-center flex `}
             title="Presentation backgrounds"
@@ -155,7 +155,7 @@ const TitleBar = () => {
             <GalleryHorizontal className="text-white z-20 size-3" />
           </div>
           <div
-            onClick={() => setCurrentScreen("instRoom")}
+            onClick={() => setAndSaveCurrentScreen("instRoom")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
               items-center justify-center ${
                 currentScreen === "Songs" ? "flex" : "hidden"
@@ -165,7 +165,7 @@ const TitleBar = () => {
             <Guitar className="text-white z-20 size-3" />
           </div>
           <div
-            onClick={() => setCurrentScreen("Songs")}
+            onClick={() => setAndSaveCurrentScreen("Songs")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
               items-center justify-center ${
                 currentScreen === "instRoom" ? "flex" : "hidden"
@@ -175,7 +175,7 @@ const TitleBar = () => {
             <ArrowLeftFromLine className="text-white z-20 size-3" />
           </div>
           <div
-            onClick={() => setCurrentScreen("categorize")}
+            onClick={() => setAndSaveCurrentScreen("categorize")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
               items-center justify-center flex 
               ${currentScreen !== "categorize" && "hidden"}
@@ -185,14 +185,14 @@ const TitleBar = () => {
             <Group className="text-white z-20 size-3" />
           </div>
           <div
-            onClick={() => setCurrentScreen("userguide")}
+            onClick={() => setAndSaveCurrentScreen("userguide")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
               items-center justify-center flex `}
             title="User manual"
           >
             <User2Icon className="text-white z-20 size-3" />
           </div>
-          
+
           {/* New dropdown toggle icon */}
           <div
             onClick={toggleDropdown}
@@ -200,29 +200,39 @@ const TitleBar = () => {
             title="More tools"
           >
             <MoreHorizontal className="text-white z-20 size-3" />
-            
+
             {/* Dropdown menu */}
             {showDropdown && (
               <div className="absolute top-5 right-0 bg-white shadow-md rounded-md p-1 z-50 w-32">
-                <div 
+                <div
                   className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
                   onClick={() => {
-                    setCurrentScreen("hisvoice");
+                    setAndSaveCurrentScreen("hisvoice");
                     setShowDropdown(false);
                   }}
                 >
-                  <Settings className="size-3 text-gray-600" />
+                  <img src="./icon.png" className="h-4 w-4  text-gray-600" />
                   <span className="text-xs">His voice</span>
                 </div>
-                <div 
+                <div
                   className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
                   onClick={() => {
-                    setCurrentScreen("lyrics");
+                    setAndSaveCurrentScreen("Songs");
                     setShowDropdown(false);
                   }}
                 >
-                  <FileText className="size-3 text-gray-600" />
-                  <span className="text-xs">Lyrics Editor</span>
+                  <img src="./music2.png" className="h-4 w-4  text-gray-600" />
+                  <span className="text-xs">Bmusic</span>
+                </div>
+                <div
+                  className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+                  onClick={() => {
+                    setAndSaveCurrentScreen("bible");
+                    setShowDropdown(false);
+                  }}
+                >
+                  <img src="./music3.png" className="h-4 w-4  text-gray-600" />
+                  <span className="text-xs">Bible</span>
                 </div>
               </div>
             )}

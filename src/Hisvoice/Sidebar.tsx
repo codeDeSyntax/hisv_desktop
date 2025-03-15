@@ -29,7 +29,7 @@ const SideNav = ({ isCollapsed, setIsCollapsed }: SideNavProps) => {
     { icon: Book, label: "Sermons", id: "sermons" },
     { icon: BookOpen, label: "Message", id: "message" },
     { icon: Clock, label: "Recents", id: "recents" },
-    { icon: PlayCircleFilled, label: "Media", id: "media" },
+    // { icon: PlayCircleFilled, label: "Media", id: "media" },
     // { icon: Plus, label: "Media", id: "add qoute" },
   ];
 

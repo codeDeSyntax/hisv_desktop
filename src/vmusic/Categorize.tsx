@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useBmusicContext } from "@/Provider/Bmusic";
 import TitleBar from "../shared/TitleBar";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
 
 interface Song {
   id: string; // Adding an ID for uniquely identifying songs
@@ -45,10 +46,10 @@ const SongCollectionManager: React.FC = () => {
     handleClose,
     handleMinimize,
     handleMaximize,
-    setCurrentScreen,
     selectedSong,
     setSelectedSong,
   } = useBmusicContext();
+  const {setAndSaveCurrentScreen} = useEastVoiceContext();
   const [allMusic, setAllMusic] = useState<Song[]>(songs);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,9 +63,6 @@ const SongCollectionManager: React.FC = () => {
   const [showCollectionPanel, setShowCollectionPanel] = useState(true);
   const [isHovered, setIsHovered] = useState<string | null>(null);
 
-  // Colors from your requirements
-  const primaryColor = "#9a674a";
-  const secondaryColor = "#faeed1";
 
   // Check for mobile view
   useEffect(() => {
@@ -372,7 +370,7 @@ const SongCollectionManager: React.FC = () => {
             )}
           </div>
           <div
-            onClick={() => setCurrentScreen("Songs")}
+            onClick={() => setAndSaveCurrentScreen("Songs")}
             className="w-4 h-4 rounded-full bg-green-600 hover:bg-green-700 hover:cursor-pointer flex items-center justify-center relative"
           >
             <ArrowLeftCircle className="absolute text-white w-3 h-3" />
@@ -708,7 +706,7 @@ const SongCollectionManager: React.FC = () => {
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setSelectedSong(song);
-                                          setCurrentScreen("Presentation");
+                                          setAndSaveCurrentScreen("Presentation");
                                         }}
                                       >
                                         <Monitor size={14} />

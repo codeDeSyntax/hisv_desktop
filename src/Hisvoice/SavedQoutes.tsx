@@ -7,12 +7,15 @@ import {
   Eye,
   BookOpen,
   ArrowLeft,
+  ArrowLeftCircleIcon,
 } from "lucide-react";
+import { useSermonContext } from "@/Provider/Vsermons";
 
 const QuotesManager = () => {
   const [quotes, setQuotes] = useState<
     { id: number; title: string; year: string; content: string }[]
   >([]);
+  const { settings } = useSermonContext();
   const [currentView, setCurrentView] = useState("list");
   const [selectedQuote, setSelectedQuote] = useState<{
     id: number;
@@ -264,24 +267,32 @@ const QuotesManager = () => {
   );
 
   const renderViewQuote = () => (
-    <div className="container mx-auto px-4 py-8">
-      <div className=" mx-auto bg-[#1e1e1e] rounded-xl p-8  border-[#2a2a2a]">
-        <div className="flex items-center mb-6">
-          <button
+    <div className=" mx-auto px-4 py-3">
+      <div className=" mx-auto  rounded-xl p-3 ">
+        <div className="flex items-center mb-2">
+          <div
             onClick={() => setCurrentView("list")}
-            className="mr-4 text-gray-400 hover:text-white transition-colors"
+            className="mr-4 text-primary hover:text-white transition-colors"
           >
-            <ArrowLeft size={24} />
-          </button>
-          <h2 className="text-2xl font-bold text-white">Quote Details</h2>
+            <ArrowLeftCircleIcon size={24} />
+          </div>
+          <h2 className="text-xl font-bold text-primary">Quote Details</h2>
         </div>
-        <div className="space-y-4">
-          <h3 className="text-3xl font-bold text-white mb-2">
+        <div className="space-y-4 overflow-y-scroll h-[85vh] no-scrollbar">
+          <h3 className="text-xl font-bold text-stone-400 mb-2">
             {selectedQuote?.title}
           </h3>
           <p className="text-gray-400 text-lg mb-6">{selectedQuote?.year}</p>
-          <div className="bg-[#2a2a2a] rounded-lg p-6">
-            <p className="text-gray-200 text-xl leading-relaxed whitespace-pre-wrap">
+          <div className=" rounded-lg p-6  ">
+            <p
+              className="text-stone-500 text-xl leading-relaxed whitespace-pre-wrap"
+              style={{
+                fontFamily: settings.fontFamily,
+                fontWeight: settings.fontWeight,
+                fontSize: `${settings.fontSize}px`,
+                fontStyle: settings.fontStyle,
+              }}
+            >
               "{selectedQuote?.content}"
             </p>
           </div>
@@ -307,7 +318,7 @@ const QuotesManager = () => {
   );
 
   return (
-    <div className="h-screen bg-background bg-cover overflow-hidden  relative text-white ">
+    <div className="h-screen bg-background bg-cover overflow-hidden  relative text-white font-serif ">
       {/* <div className="absolute inset-0 bg-gradient-to-b from-secondary via-secondary to-primary bg-opacity-50"></div> */}
       {currentView === "list" && renderListView()}
       {currentView === "form" && renderFormView()}

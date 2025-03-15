@@ -3,6 +3,7 @@ import { ChevronLeft, Plus, Minus, Square, X, Music, Book } from "lucide-react";
 import { motion } from "framer-motion";
 import { useBmusicContext } from "@/Provider/Bmusic";
 import { useSermonContext } from "@/Provider/Vsermons";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
 
 // Define types in a separate file and import them to reduce parsing time
 interface Song {
@@ -73,8 +74,9 @@ const WorkspaceSelector = () => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [randomSong, setRandomSong] = useState<Song | null>(null);
   const [randomVerse, setRandomVerse] = useState("");
-  const { currentScreen, setCurrentScreen, songs } = useBmusicContext();
-  const { allSermons } = useSermonContext();
+  const {  songs } = useBmusicContext();
+  const {  setCurrentScreen } = useEastVoiceContext();
+  // const { allSermons } = useSermonContext();
 
   // Array of country gospel verses
   const verses = [

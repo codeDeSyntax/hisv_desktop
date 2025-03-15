@@ -23,6 +23,7 @@ const ScriptureContent: React.FC = () => {
     currentChapter,
     setCurrentChapter,
     getBookChapterCount,
+    theme,
     fontSize,
     fontFamily,
     verseTextColor,
@@ -62,6 +63,15 @@ const ScriptureContent: React.FC = () => {
     // Close verse dropdown when chapter changes
     setIsVerseDropdownOpen(false);
   }, [currentBook, currentChapter]); // Removed addToHistory from dependencies
+
+  // useEffect(() => {
+  //   const bibleDiv = document.getElementById("biblediv");
+  //   if (theme === "dark") {
+  //     bibleDiv?.classList.add("dark");
+  //   } else {
+  //     bibleDiv?.classList.remove("dark");
+  //   }
+  // }, [theme]);
 
   useEffect(() => {
     // Scroll to selected verse
@@ -110,7 +120,7 @@ const ScriptureContent: React.FC = () => {
       case "xl":
         return "text-5xl";
       case "2xl":
-        return "text-7xl";
+        return "text-8xl";
       default:
         return "text-base";
     }
@@ -270,7 +280,7 @@ const ScriptureContent: React.FC = () => {
                         key={book.name}
                         className={`py-2 px-1 text-[12px] flex items-center justify-center text-stone-400 cursor-pointer shadow  dark:shadow-black  rounded hover:bg-gray-500 dark:hover:bg-bgray/30 hover:text-white transition-colors duration-150 ${
                           currentBook === book.name
-                            ? "bg-gray-500 dark:bg-bgray/50 text-stone-500 dark:text-gray-50 font-medium"
+                            ? "bg-gray-500 dark:bg-bgray/50 text-white dark:text-gray-50 font-medium"
                             : ""
                         }`}
                         onClick={() => handleBookSelect(book.name)}
@@ -323,7 +333,7 @@ const ScriptureContent: React.FC = () => {
             </button>
 
             {isChapterDropdownOpen && (
-              <div className="absolute mt-2 w-52 bg-white dark:bg-bgray border border-gray-800 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+              <div className="absolute mt-2 w-52 bg-white dark:bg-bgray border border-gray-800 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto no-scrollbar">
                 <div className="p-2 grid grid-cols-5 gap-1">
                   {getChapters().map((chapter) => (
                     <div
@@ -365,7 +375,7 @@ const ScriptureContent: React.FC = () => {
             </button>
 
             {isVerseDropdownOpen && (
-              <div className="absolute mt-2 w-52 bg-white dark:bg-bgray border border-gray-800 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+              <div className="absolute mt-2 w-52 bg-white dark:bg-bgray border border-gray-800 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto no-scrollbar">
                 <div className="p-2 grid grid-cols-5 gap-1">
                   {getVerses().map((verse) => (
                     <div
@@ -401,23 +411,33 @@ const ScriptureContent: React.FC = () => {
         className="flex-1  p-4 md:p-6 lg:p-8 overflow-y-scroll no-scrollbar bg-white dark:bg-black"
       >
         {verses.length > 0 ? (
-          <div className={`space-y-4 ${getFontSize()} ${getFontFamily()}`}>
+          <div
+            className={`space-y-4 ${getFontSize()} }`}
+            style={{
+              fontFamily: fontFamily,
+            }}
+          >
             {verses.map((verse) => (
               <div
                 key={verse.verse}
                 className={`flex group p-2 rounded-md hover:bg-gray-50 dark:hover:bg-bgray transition-colors duration-150 bg-transparent hover:cursor-pointer`}
                 ref={(el) => (verseRefs.current[verse.verse] = el)}
               >
-                <span className="text-gray-500 mr-3 pt-1  font-medium" style={{
-                  fontSize:getFontSize()
-                }}>
+                <span
+                  className="text-primary mr-3 pt-1  font-medium"
+                  style={{
+                    fontSize: getFontSize(),
+                  }}
+                >
                   {verse.verse}
                 </span>
-                <div className="flex-1 leading-normal  ">
+                <div className="flex- leading-normal text-wrap ">
                   <p
+                    className="text-wrap break-words"
                     style={{
                       color: verseTextColor || "#ffffff",
                       fontSize: getFontSize(),
+                      fontFamily: fontFamily,
                     }}
                   >
                     {formatVerseText(verse.text)}

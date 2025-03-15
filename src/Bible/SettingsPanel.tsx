@@ -15,6 +15,20 @@ const SettingsPanel: React.FC = () => {
     setVerseTextColor,
   } = useBibleContext();
 
+  const fontOptions = [
+    { value: "'Times New Roman', Times, serif", text: "Times New Roman" },
+    { value: "'Arial', sans-serif", text: "Arial" },
+    { value: "'Helvetica', sans-serif", text: "Helvetica" },
+    { value: "'Courier New', Courier, monospace", text: "Courier New" },
+    { value: "'Verdana', sans-serif", text: "Verdana" },
+    { value: "'Impact', Charcoal, sans-serif", text: "Impact" },
+    { value: "'Georgia', serif", text: "Georgia" },
+    { value: "'Monospace', monospace", text: "Monospace" },
+    { value: "serif", text: "Serif" },
+    { value: "sans-serif", text: "Sans-serif" }
+  ];
+  
+
   return (
     <div className="h-full  p-4 bg-gray-50 dark:bg-black font-serif">
       <div className="flex justify-between items-center mb-6">
@@ -89,7 +103,7 @@ const SettingsPanel: React.FC = () => {
             onChange={(e) => setFontFamily(e.target.value)}
             className="w-full p-2 border border-gray-300 dark:border-gray-800 rounded-md bg-white dark:bg-bgray focus:outline-none hover:cursor-pointer text-gray-900 dark:text-white flex flex-col gap-3"
           >
-            <option value="serif">Serif</option>
+            {/* <option value="serif">Serif</option>
             <option value="sans">Sans-serif</option>
             <option value="mono">Monospace</option>
             <option value="arial">Arial</option>
@@ -98,7 +112,15 @@ const SettingsPanel: React.FC = () => {
             <option value="times">Times New Roman</option>
             <option value="courier">Courier New</option>
             <option value="verdana">Verdana</option>
-            <option value="impact">Impact</option>
+            <option value="impact">Impact</option> */}
+
+            {
+              fontOptions.map((font, index) => (
+                <option key={index} value={font.value} className="py-2">
+                  {font.text}
+                </option>
+              ))
+            }
           </select>
         </div>
 

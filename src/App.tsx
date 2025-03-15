@@ -21,9 +21,10 @@ import PresentationBackgroundSelector from "./vmusic/BackgroundChoose";
 import Hisvoice from "./Hisvoice/Hisvoice";
 import BibleApp from "./Bible/Bible";
 import Biblelayout from './Bible/Bible';
+import { useEastVoiceContext } from "./Provider/EastVoice";
 
 const App = () => {
-  const { currentScreen, setCurrentScreen } = useBmusicContext();
+  const { currentScreen, setCurrentScreen } = useEastVoiceContext();
 
   // Mock song data for demonstration
   // const allSongs: Song[] = new Array(100).fill(null).map((_, index) => ({

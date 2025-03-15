@@ -44,7 +44,7 @@ const HistoryPanel: React.FC = () => {
             <button
               key={index}
               onClick={() => handleHistoryClick(item.reference)}
-              className="flex flex-col items-start p-3 bg-gray-100 dark:bg-bgray hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md text-left transition-colors"
+              className="flex flex-col items-start p-3 bg-gray-100 dark:bg-bgray hover:bg-gray-200 dark:hover:bg-bgray/40 rounded-md text-left transition-colors"
             >
               <span className="font-medium text-gray-900 dark:text-white text-[14px]">
                 {item.reference}

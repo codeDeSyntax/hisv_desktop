@@ -15,6 +15,7 @@ type EastVoiceContextType = {
   handleClose: () => void;
   handleMaximize: () => void;
   handleMinimize: () => void;
+  setAndSaveCurrentScreen: (arg:string) => void;
   presentationbgs: string[];
   setPresentationbgs: React.Dispatch<React.SetStateAction<string[]>>;
 };
@@ -27,9 +28,13 @@ type BmusicProviderProps = {
 
 export const EastVoiceProvider = ({ children }: BmusicProviderProps) => {
  
-  const [currentScreen, setCurrentScreen] = useState("Home");
+  const [currentScreen, setCurrentScreen] = useState(localStorage.getItem("lastScreen") || "Home");
   const [theme, setTheme] = useState("creamy");
   const [presentationbgs , setPresentationbgs] = useState<string[]>([])
+  
+  useEffect(() => {
+    // const previousScreen = 
+  })
 
   const handleMinimize = () => {
     window.api.minimizeApp();
@@ -43,6 +48,14 @@ export const EastVoiceProvider = ({ children }: BmusicProviderProps) => {
     window.api.closeApp();
   };
 
+  const saveCurrentScreen  = (screen:string)  => {
+    localStorage.setItem("lastScreen", screen)
+  }
+  const setAndSaveCurrentScreen  = (screen:string) => {
+    setCurrentScreen(screen);
+    localStorage.setItem("lastScreen", screen)
+  }
+
 
   return (
     <EastVoiceContext.Provider
@@ -55,7 +68,8 @@ export const EastVoiceProvider = ({ children }: BmusicProviderProps) => {
         handleMaximize,
         handleMinimize,
         presentationbgs,
-        setPresentationbgs
+        setPresentationbgs,
+        setAndSaveCurrentScreen,
       }}
     >
       {children}

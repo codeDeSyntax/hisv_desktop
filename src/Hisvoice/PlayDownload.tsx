@@ -8,8 +8,13 @@ const DownloadSermon = () => {
   const audioRef = useRef(null);
 
   const downloadUrl =
-    selectedMessage && selectedMessage.type === "mp3" && selectedMessage.downloadLink;
-  const audioUrl = selectedMessage && selectedMessage.type === "mp3" && selectedMessage.audioUrl;
+    selectedMessage &&
+    selectedMessage.type === "mp3" &&
+    selectedMessage.downloadLink;
+  const audioUrl =
+    selectedMessage &&
+    selectedMessage.type === "mp3" &&
+    selectedMessage.audioUrl;
 
   const togglePlayPause = () => {
     if (audioUrl) {
@@ -34,17 +39,17 @@ const DownloadSermon = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen  p-5">
+    <div className="flex flex-col items-center justify-center mt-5 overflow-hidden h-screen  p-5 font-serif">
       <div className="w-full max-w-lg">
         <button
           onClick={handleBack}
-          className="flex items-center text-white mb-4 hover:text-gray-300"
+          className="flex items-center bg-transparent underline text-primary mb-4 hover:scale-105"
         >
           <ArrowLeft size={24} />
           <span className="ml-2">Back to Sermon List</span>
         </button>
 
-        <h1 className="text-white text-3xl mb-4">Sermon Audio</h1>
+        <h1 className="text-stone-600 text-3xl mb-4">Sermon Audio</h1>
         <h2 className="text-gray-400 text-xl mb-8 text-center">
           {selectedMessage?.title}
         </h2>

@@ -4,13 +4,11 @@ import { X, Minus, Square } from "lucide-react";
 import { useBibleContext } from "@/Provider/Bible";
 import { useEastVoiceContext } from "@/Provider/EastVoice";
 import { Settings, MoreHorizontal, FileText } from "lucide-react";
-import { useBmusicContext } from '../Provider/Bmusic';
 
 const TitleBar: React.FC = () => {
   const { handleClose, handleMaximize, handleMinimize } = useBibleContext();
+  const { setAndSaveCurrentScreen } = useEastVoiceContext();
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const { currentScreen, setCurrentScreen, setTheme, theme } =
-    useBmusicContext();
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
@@ -58,22 +56,32 @@ const TitleBar: React.FC = () => {
             <div
               className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
               onClick={() => {
-                setCurrentScreen("hisvoice");
+                setAndSaveCurrentScreen("hisvoice");
                 setShowDropdown(false);
               }}
             >
-              <Settings className="size-3 text-gray-600" />
+              <img src="./icon.png" className="h-4 w-4  text-gray-600" />
               <span className="text-xs">His voice</span>
             </div>
             <div
               className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
               onClick={() => {
-                setCurrentScreen("Songs");
+                setAndSaveCurrentScreen("Songs");
                 setShowDropdown(false);
               }}
             >
-              <FileText className="size-3 text-gray-600" />
+              <img src="./music2.png" className="h-4 w-4  text-gray-600" />
               <span className="text-xs">Song app</span>
+            </div>
+            <div
+              className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+              onClick={() => {
+                setAndSaveCurrentScreen("bible");
+                setShowDropdown(false);
+              }}
+            >
+              <img src="./music3.png" className="h-4 w-4  text-gray-600" />
+              <span className="text-xs">Bible</span>
             </div>
           </div>
         )}

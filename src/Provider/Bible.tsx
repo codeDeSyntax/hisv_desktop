@@ -154,7 +154,7 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
   // App state
   const [currentScreen, setCurrentScreen] = useState("Home");
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("bibleTheme") || "light";
+    return localStorage.getItem("bibleTheme") || "dark";
   });
 
   // UI state
@@ -190,11 +190,7 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
     return localStorage.getItem("bibleVerseTextColor") || "#808080";
   });
 
-  const bgColor = theme === "light" ? "bg-white" :"bg-black";
-  const txColor = theme === "light" ? "text-stone-400" :"text-white"
 
-  const [backgroundColor,setBackgroundColor] = useState(bgColor);
-  const [textColor,setTextColor] = useState(txColor);
 
   // Bookmarks
   const [bookmarks, setBookmarks] = useState<string[]>(() => {
@@ -479,48 +475,69 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
       setSearchResults([]);
       return;
     }
-
-    const results: {
-      book: string;
-      chapter: number;
-      verse: number;
-      text: string;
-    }[] = [];
-
-    // Simple search implementation
-    Object.values(bibleData).forEach((translation) => {
-      if (translation.translation === currentTranslation) {
-        translation.books.forEach((book) => {
-          book.chapters.forEach((chapter) => {
-            chapter.verses.forEach((verse) => {
-              let match = false;
-              if (exactMatch) {
-                match = wholeWords
-                  ? new RegExp(`\\b${term}\\b`, "i").test(verse.text)
-                  : verse.text.toLowerCase().includes(term.toLowerCase());
-              } else {
-                match = wholeWords
-                  ? verse.text
-                      .toLowerCase()
-                      .split(/\s+/)
-                      .some((word) => word === term.toLowerCase())
-                  : verse.text.toLowerCase().includes(term.toLowerCase());
-              }
-
-              if (match) {
-                results.push({
-                  book: book.name,
-                  chapter: chapter.chapter,
-                  verse: verse.verse,
-                  text: verse.text,
-                });
-              }
+    
+    console.log("Searching for:", term);
+    console.log("Bible data available:", Object.keys(bibleData));
+    console.log("Current translation:", currentTranslation);
+    
+    const results: { book: string; chapter: number; verse: number; text: string }[] = [];
+    
+    // Check if we have data for the current translation
+    if (!bibleData[currentTranslation]) {
+      console.log("No Bible data found for translation:", currentTranslation);
+      setSearchResults([]);
+      return;
+    }
+    
+    const translation = bibleData[currentTranslation];
+    
+    // Make sure we have books in this translation
+    if (!translation.books || !Array.isArray(translation.books)) {
+      console.log("No books found in translation:", currentTranslation);
+      setSearchResults([]);
+      return;
+    }
+    
+    // Convert search term to lowercase for case-insensitive comparison
+    const searchTermLower = term.toLowerCase().trim();
+    
+    translation.books.forEach((book) => {
+      if (!book.chapters || !Array.isArray(book.chapters)) return;
+      
+      book.chapters.forEach((chapter) => {
+        if (!chapter.verses || !Array.isArray(chapter.verses)) return;
+        
+        chapter.verses.forEach((verse) => {
+          const verseText = verse.text.toLowerCase();
+          let isMatch = false;
+          
+          if (exactMatch && wholeWords) {
+            // Exact match for whole words
+            isMatch = new RegExp(`\\b${searchTermLower}\\b`).test(verseText);
+          } else if (exactMatch) {
+            // Exact match (case insensitive)
+            isMatch = verseText.includes(searchTermLower);
+          } else if (wholeWords) {
+            // Match whole words only (case insensitive)
+            isMatch = verseText.split(/\s+/).some(word => word === searchTermLower);
+          } else {
+            // Default match (case insensitive)
+            isMatch = verseText.includes(searchTermLower);
+          }
+          
+          if (isMatch) {
+            results.push({
+              book: book.name,
+              chapter: chapter.chapter,
+              verse: verse.verse,
+              text: verse.text
             });
-          });
+          }
         });
-      }
+      });
     });
-
+    
+    console.log(`Found ${results.length} results for "${term}"`);
     setSearchResults(results);
   };
 

@@ -45,7 +45,7 @@ const SearchPanel: React.FC = () => {
 
   return (
     <div
-      className={`fixed top-8 ${
+      className={`fixed top-8 font-serif ${
         sidebarExpanded ? "left-48" : "left-12"
       } w-64 md:w-80 bg-white dark:bg-bgray h-[calc(100vh-2rem)] 
       border-r border-gray-300 dark:border-gray-700 
@@ -70,8 +70,9 @@ const SearchPanel: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search scripture..."
-            className="w-[80%] p-2 pl-8 border border-gray-300 dark:border-gray-600 border-none 
-              rounded-md bg-white dark:bg-[#424242] shadow focus:outline-none focus:outline-bgray  "
+            className="w-[80%] p-2 pl-8  border-gray-300 dark:border-gray-600 border-none 
+              rounded-md bg-white dark:bg-[#424242] shadow focus:outline-none focus:outline-gray-300 dark:focus:outline-[#424242] text-stone-500 dark:text-gray-100  "
+            spellCheck={false}
           />
           <Search size={18} className="absolute left-2 top-2.5 text-gray-500" />
         </div>
@@ -99,7 +100,7 @@ const SearchPanel: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 no-scrollbar">
         <div className="mb-2 text-sm text-gray-500 dark:text-gray-400">
           {searchResults.length} results found
         </div>
@@ -109,13 +110,17 @@ const SearchPanel: React.FC = () => {
             {searchResults.map((result, index) => (
               <div
                 key={index}
-                className="p-3 bg-gray-100 dark:bg-bgray rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-                onClick={() => handleResultClick(result.book, result.chapter, result.verse)}
+                className="p-3 bg-gray-100 dark:bg-[#42424240] rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-[#42424270] transition-colors"
+                onClick={() =>
+                  handleResultClick(result.book, result.chapter, result.verse)
+                }
               >
-                <div className="font-medium">
+                <div className="font-medium text-stone-500 dark:text-gray-50 text-[12px]">
                   {result.book} {result.chapter}:{result.verse}
                 </div>
-                <p className="text-sm mt-1 line-clamp-2">{result.text}</p>
+                <p className="text mt-1 line-clamp-2 text-stone-500 dark:text-gray-50 text-[12px]">
+                  {result.text}
+                </p>
               </div>
             ))}
           </div>

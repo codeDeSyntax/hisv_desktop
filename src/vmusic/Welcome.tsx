@@ -74,8 +74,8 @@ const WorkspaceSelector = () => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [randomSong, setRandomSong] = useState<Song | null>(null);
   const [randomVerse, setRandomVerse] = useState("");
-  const {  songs } = useBmusicContext();
-  const {  setCurrentScreen } = useEastVoiceContext();
+  const { songs } = useBmusicContext();
+  const { setAndSaveCurrentScreen } = useEastVoiceContext();
   // const { allSermons } = useSermonContext();
 
   // Array of country gospel verses
@@ -126,12 +126,12 @@ const WorkspaceSelector = () => {
 
   // Navigate to screens with memoized callbacks
   const navigateToSongs = useCallback(() => {
-    setCurrentScreen("Songs");
-  }, [setCurrentScreen]);
+    setAndSaveCurrentScreen("Songs");
+  }, [setAndSaveCurrentScreen]);
 
   const navigateToCreate = useCallback(() => {
-    setCurrentScreen("create");
-  }, [setCurrentScreen]);
+    setAndSaveCurrentScreen("create");
+  }, [setAndSaveCurrentScreen]);
 
   // Use will-change to optimize GPU rendering
   const willChangeStyle = { willChange: "transform, opacity" };
@@ -262,10 +262,10 @@ const WorkspaceSelector = () => {
               </div>
             </div>
             <button
-              onClick={() => setCurrentScreen("hisvoice")}
-              className={`px-4 py-2 ${colors.hdButton} text-white rounded-md hover:bg-[#a66c55] transition-colors duration-200 shadow-md font-serif`}
+              onClick={() => setAndSaveCurrentScreen("hisvoice")}
+              className={`px-4 py-2 ${colors.hdButton} text-white rounded-md hover:bg-[#a66c55] transition-colors duration-200 shadow-md font-serif text-[12px]`}
             >
-              Go
+              Open
             </button>
           </div>
           <div
@@ -275,7 +275,8 @@ const WorkspaceSelector = () => {
               <div
                 className={`w-12 h-12 ${colors.hdColor} backdrop-blur rounded-lg flex items-center justify-center text-white font-semibold shadow-inner`}
               >
-                <img src="./cloud.png" alt="cloud" className="h-6 w-6" />
+                {/* <img src="./cloud.png" alt="cloud" className="h-6 w-6" /> */}
+                B
               </div>
               <div>
                 <h3 className="font-medium text-white text-[14px]">Bible</h3>
@@ -283,10 +284,10 @@ const WorkspaceSelector = () => {
               </div>
             </div>
             <button
-              onClick={() => setCurrentScreen("bible")}
-              className={`px-4 py-2 ${colors.hdButton} text-white rounded-md hover:bg-[#a66c55] transition-colors duration-200 shadow-md font-serif`}
+              onClick={() => setAndSaveCurrentScreen("bible")}
+              className={`px-4 py-2 ${colors.hdButton} text-white rounded-md hover:bg-[#a66c55] transition-colors duration-200 shadow-md font-serif text-[12px]`}
             >
-              Go
+              Open
             </button>
           </div>
         </div>

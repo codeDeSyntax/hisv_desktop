@@ -3,7 +3,7 @@ import { Minus, Square, X } from 'lucide-react';
 
 
 const TitleBar = ({ title = 'His voice' }) => {
-  const [isHovered, setIsHovered] = useState(null);
+  const [isHovered, setIsHovered] = useState<null | 'close' | 'minimize' | 'maximize'>(null);
 
   const handleMinimize = () => {
     window.api.minimizeApp();
@@ -20,11 +20,11 @@ const TitleBar = ({ title = 'His voice' }) => {
   return (
     <div
       className="h-6 bg-[#202020]  z-20  fixed w-screen flex items-center justify-between px-2 select-none"
-      style={{ WebkitAppRegion: 'drag' }}
+      style={{ WebkitAppRegion: 'drag' } as any}
     >
       <div
         className="flex items-center space-x-2 ml-2"
-        style={{ WebkitAppRegion: 'no-drag' }}
+        style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
       >
         <button
           onClick={handleClose}

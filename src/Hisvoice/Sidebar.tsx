@@ -49,17 +49,21 @@ const SideNav = ({ isCollapsed, setIsCollapsed }: SideNavProps) => {
   const NavItem = ({ item }: NavItemProps) => (
     <button
       key={item.id}
-      className={`flex items-center justify-center w-fu p-2 ${
+      className={`flex items-center justify-center hover:bg-gray-100 dark:hover:bg-ltgray/30 w-fu p-2 focus:outline-none ${
         activeTab === item.id
-          ? "bg-primary  shadow shadow-background  "
-          : "bg-[#faeed1] text-black"
+          ? " bg-gray-200 dark:bg-bgray  shadow   "
+          : "bg-white shadow dark:bg-ltgray text-stone-500 dark:text-gray-50"
       }`}
       onClick={() => setActiveTab(item.id)}
     >
       <item.icon
         size={14}
         className={`text-[#9a674a]
-          ${activeTab === item.id ? "text-background" : "text-[#9a674a]"}
+          ${
+            activeTab === item.id
+              ? "text-stone-500 dark:text-gray-50"
+              : "text-stone-500 dark:text-gray-50"
+          }
         ${activeTab === "message" && "text-text"}
         }
          
@@ -72,10 +76,10 @@ const SideNav = ({ isCollapsed, setIsCollapsed }: SideNavProps) => {
 
   return (
     <div
-      className={` top-0 left-0 w-[5%]   h-full  bg-primary text-white transition-all duration-300    z10`}
+      className={` top-0 left-0 w-[5%]   h-full bg-white shadow   dark:bg-ltgray text-white transition-all duration-300    z10`}
     >
-      <nav className="h-full  flex flex-col  py-10">
-        <div className="flex flex-col gap-2 p-2">
+      <nav className="h-full  flex flex-col  py-10 bg-gray-50  dark:bg-ltgray ">
+        <div className="flex flex-col gap-2 p-2 ">
           {/* <div className="flex flex-col gap-2  items-center justify-center p-2">
             <button onClick={toggleSidebar} className="bg-white text-#693434">
               {isCollapsed ? <Menu size={14} /> : <X size={14} />}
@@ -86,7 +90,7 @@ const SideNav = ({ isCollapsed, setIsCollapsed }: SideNavProps) => {
           ))}
           <button
             onClick={() => setActiveTab("quotes")}
-            className={`flex items-center w-full p-2  text-sm font-semibold  bg-[#faeed1] transition-colors duration-300 justify-center text-[#9a674a]`}
+            className={` bg-gray-50 hover:bg-gray-100 dark:hover:bg-ltgray/30 dark:bg-ltgray flex items-center w-full p-2  text-sm font-semibold focus:outline-none transition-colors duration-300 justify-center dark:text-gray-50 text-stone-500`}
           >
             <PlusCircle size={15} />
           </button>

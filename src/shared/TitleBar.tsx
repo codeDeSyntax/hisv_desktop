@@ -66,7 +66,7 @@ const TitleBar = () => {
 
   return (
     <div
-      className="h-6 w-screen  fixed w-100 flex z-50 top-0 bg-white/20 bg-opacity-sm backdrop-blur-sm  items-center justify-between px-2 select-none"
+      className="h-6 w-screen  fixed w-100 flex z-50 top-0 bg-white/0 bg-opacity-sm backdrop-blur-sm  items-center justify-between px-2 select-none"
       style={{ WebkitAppRegion: "drag" } as any} // Make the entire title bar draggable
     >
       <div className="flex items-center space-x-2 ml-2">

@@ -82,6 +82,7 @@ const SelectedSermon = ({
     setSearchQuery,
     settings,
     setRecentSermons,
+    theme,
   } = useSermonContext();
 
   const [showSearch, setShowSearch] = useState(false);
@@ -255,42 +256,42 @@ const SelectedSermon = ({
   };
 
   return (
-    <div className=" bg-background h-screen overflow-hidden ">
+    <div className=" bg-white dark:bg-ltgray h-screen overflow-hidden ">
       <SearchModal
         showSearch={showSearch}
         onClose={handleSearchToggle}
         onSearch={handleSearch}
         searchQuery={searchQuery}
       />
-      {/* <SaveNotification
+      <SaveNotification
         show={showSaveNotification}
         onClose={() => setShowSaveNotification(false)}
-      /> */}
+      />
       <div className="  bg-center flex flex-col   pb-10">
         <div className=" mb-5 h-full">
           {selectedMessage?.type === "text" && (
             <div className=" flex items-center   gap-2 p-2 rounded-l-full mt-10 w-20">
               <div
-                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300 bg-background shadow  text-primary font-bold text-center flex items-center justify-center"
+                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300  shadow  text-primary font-bold text-center flex items-center justify-center"
                 title="Save progress"
                 onClick={handleManualSave}
               >
                 📝
               </div>
               <div
-                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300 bg-background shadow  text-primary font-bold text-center flex items-center justify-center"
+                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300  shadow-lg  text-primary font-bold text-center flex items-center justify-center"
                 title="Toggle sermon details"
                 onClick={toggleDetailsCard}
               >
-                <Info size={20} className="text-primary" />
+                <Info size={20} className="text-stone-500 dark:text-gray-50" />
               </div>
 
               <div
-                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300 bg-background shadow  text-primary font-bold text-center flex items-center justify-center"
+                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300  shadow-lg dark:shadow-black  text-primary font-bold text-center flex items-center justify-center"
                 title="Search in sermon"
                 onClick={handleSearchToggle}
               >
-                <Search className="text-primary" />
+                <Search className="text-stone-500 dark:text-gray-50" />
               </div>
               {/* <DarkModeToggle /> */}
             </div>
@@ -305,7 +306,8 @@ const SelectedSermon = ({
             ref={scrollContainerRef}
             style={{
               scrollbarWidth: "thin",
-              scrollbarColor: "#faeed1 #9a674a90",
+              scrollbarColor:
+                theme === "light" ? "#c0c0c0 #f3f4f6" : "#424242 #202020",
               // scrollbarGutter: "stable",
             }}
           >
@@ -344,10 +346,10 @@ const SelectedSermon = ({
                     </p>
                   </Card>
                 )}
-                <p className=" text-2xl font-serif text-orange-900 dark:text-text font-bold underline">
+                <p className=" text-2xl font-serif text-stone-500 dark:text-gray-50 font-bold underline">
                   {selectedMessage.title}
                 </p>
-                <p className=" font-serif italic text-gray-900 ">
+                <p className=" font-serif italic text-stone-500 dark:text-gray-50 ">
                   {selectedMessage?.location}
                 </p>
                 {selectedMessage.sermon
@@ -355,7 +357,7 @@ const SelectedSermon = ({
                   .map((paragraph, index) => (
                     <p
                       key={index}
-                      className="mb-6 leading-relaxed text-gray-700 text-wrap text-left"
+                      className="mb-6 leading-relaxed text-stone-500 dark:text-gray-50 text-wrap text-left"
                       style={{
                         fontFamily: settings.fontFamily,
                         fontWeight: settings.fontWeight,

@@ -13,6 +13,7 @@ import TitleBar from "../shared/TitleBar";
 import CustomEditor from "./SongCreator";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBmusicContext } from "@/Provider/Bmusic";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
 
 interface CreateSong {
   currentScreen: string;
@@ -61,7 +62,6 @@ export default function CreateSong() {
 
   const [isSaving, setIsSaving] = useState(false);
   const {
-    setCurrentScreen,
     songRepo,
     setSongRepo,
     songs,
@@ -69,6 +69,7 @@ export default function CreateSong() {
     selectedSong,
     refetch,
   } = useBmusicContext();
+  const {setCurrentScreen} = useEastVoiceContext();
   const [notification, setNotification] = useState<{
     show: boolean;
     message: string;

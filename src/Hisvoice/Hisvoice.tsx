@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense,useEffect } from "react";
 import SideNav from "./Sidebar";
 import Home from "./Home";
 // import CustomTitleBar from "./TitleBar";
@@ -18,11 +18,14 @@ const DeveloperPage = React.lazy(() => import("./Developer"));
 
 const Hisvoice = () => {
   // const [isCollapsed, setIsCollapsed] = useState(true);
-  const { activeTab, isCollapsed, setIsCollapsed } = useSermonContext();
+  const { activeTab, isCollapsed, setIsCollapsed,theme } = useSermonContext();
   const [background, setBackground] = useState(false);
 
+   // Apply theme to document
+     
+
   return (
-    <div className="h-screen overflow-hidden no-scrollbar">
+    <div className="h-screen overflow-hidden no-scrollbar" id="hisvoicediv">
       <TitleBar />
       <div className={`h-full`}>
         <div className="flex h-full  items-center overflow-hidden">

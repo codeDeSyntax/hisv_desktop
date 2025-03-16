@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const Home = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentScriptureIndex, setCurrentScriptureIndex] = useState(0);
-  const { randomSermons, setSelectedMessage, setActiveTab, setCB } =
+  const { randomSermons, setSelectedMessage, setActiveTab, setCB, theme } =
     useSermonContext();
 
   const scriptures = useMemo(
@@ -75,38 +75,25 @@ const Home = () => {
 
   return (
     <div
-      className="min-h-screen relative overflow-auto w-full rounded-tl-3xl"
+      className="h-screen relative overflow-auto no-scrollbar w-full bg-gray-50 dark:bg-bgray   rounded-tl-3xl"
       style={{
         backgroundPosition: "center",
         backgroundSize: "cover",
-        backgroundImage: `linear-gradient(to bottom,
-             rgba(154, 103, 74, 0.2) 0%,
-             rgba(154, 103, 74, 1) 100%),
-             url("./wood6.jpg")`,
+        backgroundImage:
+          theme === "light"
+            ? `linear-gradient(to bottom,
+             rgba(154, 103, 74, 0) 0%,
+        rgba(255, 255, 255, 5) 20%),
+              url("./wood7.png")`
+            : `linear-gradient(to bottom,
+             rgba(154, 103, 74, 0) 0%,
+        rgba(44,44, 44, 5) 20%),
+              url("./snow2.jpg")`,
       }}
     >
       {/* Content Container */}
       <div className="relative z-10">
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-          {/* Scripture Display */}
-          {/* <AnimatePresence mode="wait">
-            <motion.div
-              key={currentScriptureIndex}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.5 }}
-              className="mb-12 p-6 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 shadow-lg max-w-3xl mx-auto"
-            >
-              <p className="italic text-white text-lg md:text-xl font-serif leading-relaxed mb-3">
-                &ldquo;{currentScripture.verse}&rdquo;
-              </p>
-              <p className="text-white/80 font-semibold font-serif text-right">
-                {currentScripture.reference}
-              </p>
-            </motion.div>
-          </AnimatePresence> */}
-
           {/* Sermons Section */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
@@ -115,7 +102,7 @@ const Home = () => {
             className="mt-8"
           >
             <div className="flex items-center mb-8">
-              <h2 className="text-2xl md:text-2xl font-bold text-white mb-0 font-serif">
+              <h2 className="text-2xl md:text-2xl font-bold text-stone-500 dark:text-gray-50 white mb-0 font-serif">
                 Robert Lambert Lee Preachings
               </h2>
               <div className="h-px bg-white/30 flex-grow ml-6 hidden md:block"></div>
@@ -134,31 +121,31 @@ const Home = () => {
                       y: -8,
                       transition: { duration: 0.2 },
                     }}
-                    className="group relative bg-white/10 backdrop-blur-md rounded-2xl hover:cursor-pointer overflow-hidden border border-white/20 shadow-lg"
+                    className="group relative bg-gray-50 dark:bg-ltgray backdrop-blur-md rounded-2xl hover:cursor-pointer overflow-hidden border border-white/20 shadow-lg"
                     onClick={() => {
                       setSelectedMessage(sermon);
                       setActiveTab("message");
                     }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#9a674a]/20 to-[#9a674a]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-b dark:from- to-[#9a674a]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                     <div className="p-5 relative z-10">
                       <div className="flex items-center gap-4 mb-4">
-                        <div className="w-14 h-14 flex items-center justify-center rounded-full overflow-hidden border-2 border-white/30 bg-[#9a674a]">
+                        <div className="w-14 h-14 flex items-center justify-center rounded-full overflow-hidden border-2 border-white/30">
                           <img
-                            src="./cloud.png"
+                            src="./icon.png"
                             alt=""
-                            className="h-[5vh] w-[5vh] object-cover mix-blend-color-dodge shadow hue-rotate-180"
+                            className="h-[5vh] w-[5vh] object-cover rounded-full  shadow hue-rotate-180"
                           />
                         </div>
-                        <h3 className="text-sm font-semibold text-white group-hover:text-white/90 transition-colors duration-300">
+                        <h3 className="text-sm font-semibold text-stone-500 dark:text-gray-50  transition-colors duration-300">
                           {sermon?.title.slice(0, 30)}
                           {sermon?.title.length > 30 && "..."}
                         </h3>
                       </div>
 
                       <div className="space-y-3 mt-4">
-                        <div className="flex items-center text-white/80 group-hover:text-white/90 text-sm">
+                        <div className="flex items-center text-stone-500 dark:text-gray-50  text-sm">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-4 w-4 mr-2"
@@ -181,7 +168,7 @@ const Home = () => {
                           </svg>
                           {sermon.location || "N/A"}
                         </div>
-                        <div className="flex items-center text-white/80 group-hover:text-white/90 text-sm">
+                        <div className="flex items-center text-stone-500 dark:text-gray-50 group-hover:text-white/90 text-sm">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-4 w-4 mr-2"
@@ -209,33 +196,53 @@ const Home = () => {
             </div>
           </motion.section>
 
-          {/* Footer with changing image display */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            // transition={{ delay: 1, duration: 0.8 }}
-            className="mt-16 text-center"
-          >
-            {/* <AnimatePresence> */}
+          <div className="flex items-center justify-start pt-4 ">
+            {/* Scripture Display */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentScriptureIndex}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.5 }}
+                className="mb-12 p-6 mt-2 w-[50%] bg-white dark:bg-ltgray  backdrop-blur-sm rounded-lg border border-white/20 shadow-lg "
+              >
+                <p className="italic text-stone-500 dark:text-gray-50 text-lg md:text-xl font-serif leading-relaxed mb-3">
+                  &ldquo;{currentScripture.verse}&rdquo;
+                </p>
+                <p className="text-stone-500 dark:text-gray-50 font-semibold font-serif text-right">
+                  {currentScripture.reference}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+            {/* Footer with changing image display */}
             <motion.div
-              key={currentImageIndex}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              // transition={{ duration: 1 }}
-              className="inline-block w-16 h-16 rounded-full overflow-hidden border-2 border-white/30 mb-4"
+              // transition={{ delay: 1, duration: 0.8 }}
+              className=" text-center  w-[20%]"
             >
-              <img
-                src="./bob.jpg"
-                alt="Featured"
-                className="w-full h-full object-cover"
-              />
+              {/* <AnimatePresence> */}
+              <motion.div
+                key={currentImageIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                // transition={{ duration: 1 }}
+                className="inline-block w-16 h-16 rounded-full overflow-hidden border-2 border-white/30 mb-4"
+              >
+                <img
+                  src="./bob.jpg"
+                  alt="Featured"
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
+              {/* </AnimatePresence> */}
+              <p className="text-stone-500  text-sm font-serif">
+                Robert Lambert Lee
+              </p>
             </motion.div>
-            {/* </AnimatePresence> */}
-            <p className="text-white/60 text-sm font-serif">
-              Robert Lambert Lee
-            </p>
-          </motion.div>
+          </div>
         </main>
       </div>
     </div>

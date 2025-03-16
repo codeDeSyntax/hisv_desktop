@@ -85,7 +85,7 @@ const SermonList = () => {
 
   return (
     <div
-      className="flex h-screen overflow-y-scroll no-scrollbar px-10  font-serif bg-contain bg-center bg-[#faeed1]"
+      className="flex h-screen overflow-y-scroll no-scrollbar px-10  font-serif bg-contain bg-center bg-white  dark:bg-bgray"
       // style={{
       //   backgroundImage: `
       //     linear-gradient(to top, rgba(250, 206, 137, 0.8) 0%, rgba(0, 0, 0, 0.8) 20%, rgba(0, 0, 0, 0.1) 100%),
@@ -94,30 +94,32 @@ const SermonList = () => {
       // }}
     >
       {/* Left side - Sermon List */}
-      
+
       <div
-        className="w-1/2 overflow-y-auto no-scrollbar  bg-background"
+        className="w-1/2 overflow-y-auto no-scrollbar bg-white  dark:bg-bgray "
         style={{ height: "100vh" }}
       >
-        <div className="sticky top-0  px-4 py-2 z-10  rounded-b-md pt-10 bg-background">
-          <h2 className="text-lg font-bold font-serif mb-2 text-primary">
+        <div className="sticky   px-4 py-2 z-10 top-0 pt-10  rounded-b-md  bg-white  dark:bg-bgray ">
+          <h2 className="text-lg font-bold font-serif mb-2 text-stone-500 dark:text-gray-50">
             Sermon List
           </h2>
           <Space className="mb-4" direction="vertical" style={{ width: "90%" }}>
             <input
               placeholder="Search sermons"
               onChange={handleSearch}
-              className="flex-grow p-1 text-[12px] bg-primary/20 py-3 px-3 border-none  rounded-md border-gray-300 focus:border-b-2 focus:border-orange-500 text-gray-800  placeholder-gray-500 placeholder:text-[12px] bg- outline-none"
+              className="flex-grow p-1 text-[12px] bg-gray-50 dark:bg-ltgray py-3 px-3 border-none  rounded-md border-gray-300 focus:border-b-2 dark:text-white text-gray-800  placeholder-gray-500 placeholder:text-[12px] bg- outline-none"
               style={{ width: "100%" }}
               spellCheck={false}
               // prefix={<SearchOutlined className="text-gray-300" />}
             />
-            <Space className="w-full bg-background">
+            <Space className="w-full bg-">
               <Tooltip title="Sort by Title">
                 <button
                   onClick={() => handleSort("title")}
                   className={`p-2 rounded text-white ${
-                    sortKey === "title" ? "bg-primary" : "bg-primary"
+                    sortKey === "title"
+                      ? "dark:bg-ltgray bg-ltgray"
+                      : "bg-ltgray/30"
                   }`}
                 >
                   <FontSizeOutlined />
@@ -133,7 +135,9 @@ const SermonList = () => {
                 <button
                   onClick={() => handleSort("year")}
                   className={`p-2 rounded text-white ${
-                    sortKey === "year" ? "bg-primary" : "bg-primary"
+                    sortKey === "year"
+                      ? "dark:bg-ltgray bg-ltgray"
+                      : "bg-ltgray/30"
                   }`}
                 >
                   <CalendarOutlined />
@@ -164,7 +168,7 @@ const SermonList = () => {
             </Space>
           </Space>
         </div>
-        <div className="px-4 scrollbar-hidden pt-2 flex flex-col items-center ">
+        <div className="px-4  scrollbar-hidden  flex flex-col items-center ">
           {sortedSermons.length === 0 && (
             <div className="flex items-center flex-col">
               <img src="./nosong.png" alt="look" className="h-40 " />
@@ -174,28 +178,28 @@ const SermonList = () => {
           {sortedSermons.map((sermon) => (
             <div
               key={sermon.id}
-              className=" border-b border-gray-500  cursor-pointer px-2 mb-1 hover:bg-primary/30 shadow group rounded-lg w-full"
+              className=" border-b border-gray-500  cursor-pointer px-2 mb-1 hover:bg-gray-50 dark:hover:bg-ltgray shadow dark:shadow-black group rounded-lg w-full"
               onClick={() => handleSermonClick(sermon)}
             >
-              <p className="text-primary text-[12px] font-bold font-serif pt-1 group-hover:underline">
+              <p className=" text-[12px] font-bold font-serif pt-1 group-hover:underline text-stone-500 dark:text-gray-50">
                 {sermon.title}
               </p>
               <div className="flex gap-3 text-gray-300 -mt-3">
                 <p className="flex items-center  text-[12px] font-mono text-gray-500">
-                  <CalendarOutlined className="mr-1 text-primary" />
+                  <CalendarOutlined className="mr-1 text-gray-300" />
                   {sermon.year}
                 </p>
                 <p
                   className={`flex items-center text-[12px] font-mono text-gray-500 `}
                 >
-                  <EnvironmentOutlined className="mr-1 text-primary" />{" "}
+                  <EnvironmentOutlined className="mr-1 text-gray-300" />{" "}
                   {!sermon.location && "N/A"}
                 </p>
                 <p className="flex items-center text-[12px]">
                   {sermon.type === "mp3" ? (
-                    <Mic size={12} className="text-primary" />
+                    <Mic size={12} className="text-gray-300" />
                   ) : (
-                    <LetterTextIcon size={12} className="text-primary" />
+                    <LetterTextIcon size={12} className="text-gray-300" />
                   )}
                 </p>
               </div>

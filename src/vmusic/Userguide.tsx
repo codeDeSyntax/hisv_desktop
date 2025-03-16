@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useBmusicContext } from "@/Provider/Bmusic";
 import { HomeFilled } from "@ant-design/icons";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
 
 // Type definitions
 interface SidebarItem {
@@ -32,7 +33,7 @@ const UserGuidePage: React.FC = () => {
     internal: true,
     external: false,
   });
-  const { setCurrentScreen } = useBmusicContext();
+  const { setCurrentScreen } = useEastVoiceContext();
 
   const toggleGuide = (guide: string): void => {
     setExpandedGuides({

@@ -15,7 +15,7 @@ const QuotesManager = () => {
   const [quotes, setQuotes] = useState<
     { id: number; title: string; year: string; content: string }[]
   >([]);
-  const { settings } = useSermonContext();
+  const { settings, theme } = useSermonContext();
   const [currentView, setCurrentView] = useState("list");
   const [selectedQuote, setSelectedQuote] = useState<{
     id: number;
@@ -79,10 +79,10 @@ const QuotesManager = () => {
   const EmptyState = () => (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] text-center p-6">
       <BookOpen size={80} className="text-primary mb-6 opacity-70" />
-      <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+      <h2 className="text-2xl md:text-3xl font-bold text-stone-500 dark:text-white mb-4">
         You do not have a favorite Qoute saved
       </h2>
-      <p className="text-background mb-6 max-w-md">
+      <p className="text-primary mb-6 max-w-md">
         Start saving favorites by adding your first quote. Click the + button to
         begin your collection.
       </p>
@@ -92,7 +92,7 @@ const QuotesManager = () => {
           setFormData({ title: "", year: "", content: "" });
           setCurrentView("form");
         }}
-        className="bg-background text-primary px-6 py-3 rounded-full hover:bg-background/40 transition-colors flex items-center gap-2"
+        className="bg-primary text-white px-6 py-3 rounded-full hover:bg-primary/90 transition-colors flex items-center gap-2"
       >
         <PlusCircle size={24} />
         Add First Quote
@@ -102,29 +102,35 @@ const QuotesManager = () => {
 
   const renderListView = () => (
     <div
-      className="relative  bg-[rgb(250,238,209)] h-screen mx-auto px-4 pt-10 "
+      className="relative h-screen overfow-y-scroll no-scrollbar bg-ltgray mx-auto px-4 pt-10 "
       style={{
         backgroundPosition: "center",
         backgroundSize: "contain",
-        backgroundImage: `linear-gradient(to bottom,
+        backgroundImage:
+          theme === "light"
+            ? `linear-gradient(to bottom,
+               rgba(255, 255, 255, 0%) 0%,
+          rgba(255, 255, 255, 5) 20%),
+                url("./wood7.png")`
+            : `linear-gradient(to bottom,
                rgba(154, 103, 74, 0) 0%,
-          rgba(154, 103, 74, 5) 20%),
-                url("./wood7.png")`,
+          rgba(44,44, 44, 5) 20%),
+                url("./snow2.jpg")`,
       }}
     >
       {quotes.length === 0 ? (
         <EmptyState />
       ) : (
         <table className="w-full text-left">
-          <thead className="bg-primary bg-opacity-50">
+          <thead className="bg-white dark:bg-ltgray bg-opacity-50">
             <tr>
-              <th className="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-xs font-medium text-stone-500 dark:text-gray-400 uppercase tracking-wider">
                 Title
               </th>
-              <th className="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-xs font-medium text-stone-500 dark:text-gray-400 uppercase tracking-wider">
                 Year
               </th>
-              <th className="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-xs font-medium text-stone-500 dark:text-gray-400 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -133,16 +139,16 @@ const QuotesManager = () => {
             {quotes.map((quote) => (
               <tr
                 key={quote.id}
-                className=" hover:bg-background/20 hover:cursor-pointer hover:bg-opacity-30 transition-colors shadow"
+                className=" dark:hover:bg-ltgray/20  hover:cursor-pointer hover:bg-opacity-30 transition-colors shadow"
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <img
-                      src="./cloud.png"
+                      src="./icon.png"
                       alt=""
-                      className="h-10 w-10 mr-4 rounded-full shadow-md bg-primary p-3"
+                      className="h-10 w-10 mr-4 rounded-full shadow-md dark:bg-ltgray p-3"
                     />
-                    <span className="text-sm font-semibold text-white truncate">
+                    <span className="text-sm font-semibold text-stone-500 dark:text-gray-50 truncate">
                       {quote.title}
                     </span>
                   </div>
@@ -154,24 +160,27 @@ const QuotesManager = () => {
                   <div className="flex space-x-2">
                     <button
                       onClick={() => handleEdit(quote)}
-                      className="p-2 bg-background/30 hover:bg-background/50 rounded-lg transition-colors"
+                      className="p-2 dark:bg-ltgray bg-gray-100 hover:bg-ltgray/50 hover:scale-105 rounded-lg transition-colors"
                     >
-                      <Edit2 size={20} className="text-background" />
+                      <Edit2
+                        size={20}
+                        className="text-stone-500 dark:text-stone-500"
+                      />
                     </button>
                     <button
                       onClick={() => {
                         setSelectedQuote(quote);
                         setCurrentView("view");
                       }}
-                      className="p-2 bg-background/30 hover:bg-background/50 rounded-lg transition-colors"
+                      className="p-2 dark:bg-ltgray bg-gray-100 hover:bg-ltgray/50 hover:scale-105 rounded-lg transition-colors"
                     >
                       <Eye size={20} className="text-primary" />
                     </button>
                     <button
                       onClick={() => handleDelete(quote.id)}
-                      className="p-2 bg-background/30 hover:bg-background/50 rounded-lg transition-colors"
+                      className="p-2 dark:bg-ltgray bg-gray-100 hover:bg-ltgray/50 hover:scale-105 rounded-lg transition-colors"
                     >
-                      <Trash2 size={20} className="text-background" />
+                      <Trash2 size={20} className="text-red-500" />
                     </button>
                   </div>
                 </td>
@@ -187,15 +196,15 @@ const QuotesManager = () => {
           setFormData({ title: "", year: "", content: "" });
           setCurrentView("form");
         }}
-        className="fixed bottom-6 right-6 h-16 flex items-center justify-center w-16  bg-background p-4 rounded-full shadow-2xl hover:bg-background/60 transition-colors z-50"
+        className="fixed bottom-6 right-6 h-16 flex items-center justify-center w-16  bg-primary p-4 rounded-full shadow-2xl  text-white hover:bg-primary/90 transition-colors z-50"
       >
-        <PlusCircle size={24} className="text-primary" />
+        <PlusCircle size={24} className="" />
       </button>
     </div>
   );
 
   const renderFormView = () => (
-    <div className=" mx-auto bg-primary h-full px-4 py-8">
+    <div className=" mx-auto bg-white dark:bg-ltgray h-full px-4 py-8">
       <form
         onSubmit={handleSubmit}
         className="max-w-[80%] mx-auto  rounded-xl p-8  border border-[#2a2a2a]"
@@ -205,7 +214,7 @@ const QuotesManager = () => {
             <button
               type="button"
               onClick={() => setCurrentView("list")}
-              className="mr-4 text-gray-400 bg-background hover:text-white transition-colors"
+              className="mr-4 text-gray-400 bg-gray-50 dark:bg-[#424242] focus:outline-none dark:hover:text-gray-100 hover:text-stone-600 transition-colors"
             >
               <ArrowLeft size={14} />
             </button>
@@ -218,37 +227,29 @@ const QuotesManager = () => {
             <input
               type="text"
               placeholder="Sermon Title"
+              spellCheck={false}
               value={formData.title}
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="bg-background/30 border-none shadow border-background w-72 outline-none text-white rounded-lg px-4 py-3 w focus:outline-none focus:ring-2 focus:ring-orange-900 placeholder:text-gray-200"
+              className="bg-gray-50 dark:bg-bgray text-stone-500 dark:text-gray-50 border-none shadow border-background w-72 outline-none  rounded-lg px-4 py-3 w focus:outline-none f  placeholder:text-stone-500 dark:placeholder:text-gray-50 "
               required
-            />
-            <input
-              type="number"
-              placeholder="Year"
-              value={formData.year}
-              onChange={(e) =>
-                setFormData({ ...formData, year: e.target.value })
-              }
-              className="bg-background/40 border-none  text-white rounded-lg px-4 py-3 w-72 focus:outline-none focus:ring-2 focus:ring-orange-900 placeholder:text-gray-200"
-              // required
             />
           </div>
           <textarea
             placeholder="Quote Content"
             value={formData.content}
+            spellCheck={false}
             onChange={(e) =>
               setFormData({ ...formData, content: e.target.value })
             }
-            className="bg-background/30 text-white rounded-lg px-4 py-3 w-full h-48 focus:outline-none focus:ring-2 focus:ring-orange-900 placeholder:text-gray-200"
+            className="bg-gray-50 dark:bg-ltgray text-stone-500 dark:text-gray-50 rounded-lg px-4 py-3 w-full h-48 focus:outline-none f  placeholder:text-stone-500 dark:placeholder:text-gray-50 "
             required
           />
           <div className="flex gap-4">
             <button
               type="submit"
-              className="flex items-center px-6 py-3 bg-background   text-primary rounded-lg  transition-colors"
+              className="flex items-center px-6 py-3 bg-gray-500 dark:bg-[#424242] dark:text-white text-white rounded-lg  transition-colors text-[12px]"
             >
               <Save size={20} className="mr-2" />
               {selectedQuote ? "Update Quote" : "Save Quote"}
@@ -256,7 +257,7 @@ const QuotesManager = () => {
             <button
               type="button"
               onClick={() => setCurrentView("list")}
-              className="px-6 py-3 bg-[#2a2a2a] text-white rounded-lg hover:bg-[#3a3a3a] transition-colors"
+              className="px-6 py-3 bg-red-400  text-white dark:text-gray-50 rounded-lg hover:bg-red-600 transition-colors"
             >
               Cancel
             </button>
@@ -267,12 +268,12 @@ const QuotesManager = () => {
   );
 
   const renderViewQuote = () => (
-    <div className=" mx-auto px-4 py-3">
+    <div className=" mx-auto px-4 py-3 bg-white dark:bg-ltgray">
       <div className=" mx-auto  rounded-xl p-3 ">
         <div className="flex items-center mb-2">
           <div
             onClick={() => setCurrentView("list")}
-            className="mr-4 text-primary hover:text-white transition-colors"
+            className="mr-4 text-primary hover:text-gray-400 transition-colors"
           >
             <ArrowLeftCircleIcon size={24} />
           </div>
@@ -318,7 +319,7 @@ const QuotesManager = () => {
   );
 
   return (
-    <div className="h-screen bg-background bg-cover overflow-hidden  relative text-white font-serif ">
+    <div className="h-screen bg-background bg-cover overflow-scroll no-scrollbar  relative text-white font-serif ">
       {/* <div className="absolute inset-0 bg-gradient-to-b from-secondary via-secondary to-primary bg-opacity-50"></div> */}
       {currentView === "list" && renderListView()}
       {currentView === "form" && renderFormView()}

@@ -19,6 +19,7 @@ import { useBmusicContext } from "@/Provider/Bmusic";
 import { motion } from "framer-motion";
 import { DeleteColumnOutlined } from "@ant-design/icons";
 import { Song, Collection } from "@/types";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
 
 interface Option {
   value: string;
@@ -120,13 +121,12 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
   // const [activeTab, setActiveTab] = useState("recent");
   const {
-    songRepo,
     setSongRepo,
     selectedSong,
-    setCurrentScreen,
     setSelectedHymnBackground,
     theme,
   } = useBmusicContext();
+  const {setCurrentScreen}  = useEastVoiceContext()
   const [fontSize, setFontSize] = useState(
     localStorage.getItem("fontSize") || "1.5"
   );

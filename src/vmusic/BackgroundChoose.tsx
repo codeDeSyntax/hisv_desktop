@@ -69,8 +69,8 @@ const PresentationBackgroundSelector: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   // Context hooks
-  const { setCurrentScreen, selectedSong } = useBmusicContext();
-  const { setPresentationbgs } = useEastVoiceContext();
+  const {  selectedSong } = useBmusicContext();
+  const { setPresentationbgs,setAndSaveCurrentScreen } = useEastVoiceContext();
 
   // Check for mobile view
   useEffect(() => {
@@ -227,7 +227,7 @@ const PresentationBackgroundSelector: React.FC = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setCurrentScreen("Songs")}
+              onClick={() => setAndSaveCurrentScreen("Songs")}
               className="flex items-center gap-2 px-2 text-[12px] py-2 rounded-lg bg-background shadow-inner text-primary hover:bg-slate-200 transition-colors"
             >
               <ArrowLeftCircle size={20} />
@@ -476,7 +476,7 @@ const BackgroundThumbnail: React.FC<BackgroundThumbnailProps> = ({
       whileTap={{ scale: 0.98 }}
       onClick={onSelect}
     >
-      <div className="relative w-full h-24">
+      <div className="relative w-full h-20">
         <img
           src={image}
           alt="Background thumbnail"

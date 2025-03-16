@@ -27,6 +27,8 @@ interface SermonContextType {
   setSelectedMessage: (sermon: Sermon | null) => void;
   setActiveTab: (tab: string) => void;
   activeTab: string;
+  setTheme: (tab: string) => void;
+  theme: string;
   randomSermons: Sermon[];
   setRandomSermons: (sermons: Sermon[]) => void;
   getThreeRandomSermons: () => Sermon[];
@@ -68,12 +70,28 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const [randomSermons, setRandomSermons] = useState<Sermon[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [CB, setCB] = useState<number>(0);
+  const [theme,setTheme] = useState(localStorage.getItem("vsermontheme") || "light")
   const [settings, setSettings] = useState<SermonSettings>({
     fontFamily: 'cursive',
     fontStyle: 'normal',
     fontSize: '20',
     fontWeight: 'normal'
   });
+
+    // Apply theme to document
+    useEffect(() => {
+        const hisvoicediv = document.getElementById("hisvoicediv")
+      if (theme === "dark") {
+        hisvoicediv?.classList.add("dark");
+        localStorage.setItem("vsermontheme", theme)
+      } else {
+        hisvoicediv?.classList.remove("dark");
+        localStorage.setItem("vsermontheme", theme)
+      }
+
+
+    }, [theme]);
+
 
   // Generate random sermon
   const getRandomSermon = (): Sermon | null => {
@@ -171,7 +189,9 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     CB,
     setCB,
     isCollapsed,
-    setIsCollapsed
+    setIsCollapsed,
+    theme,
+    setTheme
   };
 
   console.log("SermonProvider rendering, context value:", contextValue);

@@ -16,6 +16,7 @@ import Sidebar from "./Sidebar";
 import DeletePopup from "./DeletePopup";
 import { useBmusicContext } from "@/Provider/Bmusic";
 import { Song } from "@/types";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
 
 const BlessedMusic = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,17 +32,15 @@ const BlessedMusic = () => {
     setSongRepo,
     theme,
     setTheme,
-    setCurrentScreen,
     selectedSong,
     setSelectedSong,
     fetching,
     favorites,
     fetchError,
-    setFavorites,
     songs,
-    setSongs,
     refetch,
   } = useBmusicContext();
+  const { setCurrentScreen,} = useEastVoiceContext()
   const [savedFavorites, setSavedFavorites] = useState<Song[]>(favorites);
 
   useEffect(() => {
@@ -75,7 +74,7 @@ const BlessedMusic = () => {
       window.api.projectSong(selectedSong);
       window.api.onDisplaySong((selectedSong) => {
         // handle songData
-        alert(`songData: ${selectedSong.title}`);
+        console.log(`songData: ${selectedSong.title}`);
       });
     }
   };

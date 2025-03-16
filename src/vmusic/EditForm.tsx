@@ -16,6 +16,7 @@ import SongEditor from "./SongEditor";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBmusicContext } from "@/Provider/Bmusic";
 import { Song } from "@/types";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
 
 const Notification = ({
   message,
@@ -53,10 +54,7 @@ const Notification = ({
 
 export default function EditSong() {
   const {
-    currentScreen,
-    setCurrentScreen,
     selectedSong,
-    setSelectedSong,
     songRepo,
     setSongRepo,
     theme,
@@ -65,6 +63,7 @@ export default function EditSong() {
     setSongs,
     refetch,
   } = useBmusicContext();
+  const {setCurrentScreen}  = useEastVoiceContext()
   const [formData, setFormData] = useState({
     title: selectedSong?.title || "",
     message: selectedSong?.content || "",
@@ -201,10 +200,10 @@ export default function EditSong() {
                   <Monitor
                     className="w-6 h-6 text-[#9a674a] hover:scale-105 hover:cursor-pointer"
                     onClick={() => {
-                      window.api.projectSong(selectedSong);
-                      window.api.onDisplaySong((selectedSong) => {
+                      window.api.projectSong(formData);
+                      window.api.onDisplaySong((formData) => {
                         // handle songData
-                        // alert(`songData: ${selectedSong.title}`);
+                        console.log(`songData: ${formData.title}`);
                       });
                     }}
                   />

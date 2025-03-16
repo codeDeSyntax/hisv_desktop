@@ -146,33 +146,29 @@ const Search = () => {
 
   return (
     <div
-      className="w-1/2  bg-[#faeed1]  flex flex-col overflow-y-scroll no-scrollbar"
+      className="w-1/2 bg-white dark:bg-bgray  flex flex-col overflow-y-scroll no-scrollbar"
       style={{ height: "100vh" }}
     >
-      <div className="sticky top-0  p-8 z-10  rounded-b-md pt-10 bg-[#faeed1]">
+      <div className="sticky top-10  p-8 z-10  rounded-b-md pt-10 bg-white  dark:bg-bgray">
         <form onSubmit={handleSubmit}>
           <div className="flex items-end">
             <input
               type="text"
               placeholder="Search quotes within all sermons"
-              className="flex-grow p-2 text-[12px] border-none border-gray-300 focus:border-b-2 focus:border-gray-500 text-gray-500 placeholder-gray-500 bg-primary/20 rounded-lg outline-none"
+              className="flex-grow p-2 text-[12px] border-none border-gray-300 focus:border-b-2 focus:border-gray-500 focus:outline-none dark:text-gray-50 text-gray-500 placeholder-gray-500 bg-gray-50 dark:bg-ltgray rounded-lg outline-none dark:placeholder-gray-50"
               onChange={(e) => setRightSearchText(e.target.value)}
               value={rightSearchText}
               style={{ fontFamily: "cursive" }}
             />
-            <Button
-              type="primary"
-              icon={<SearchOutlined />}
-              className="ml-2 bg-primary"
-            >
+            <button className="ml-2 p-2 px-3 bg-primary text-white dark:text-gray-50">
               Search
-            </Button>
+            </button>
           </div>
         </form>
       </div>
       <div className="flex-grow overflow-y-auto no-scrollbar p-4">
         <p
-          className="text-center font-sans text-sm italic text-primary mb-4 "
+          className="text-center font-sans text-sm italic text-primary mb-4 mt-10"
           style={{ fontFamily: "cursive" }}
         >
           Search for quotes across all sermons preached by Robert Lambert Lee
@@ -180,7 +176,7 @@ const Search = () => {
         {searchResults.map((result, index) => (
           <div
             key={`${result.id}-${index}`}
-            className="mb-4 p-3 bg-primary/20 rounded-lg cursor-pointer hover:bg-opacity-20 transition-all shadow"
+            className="mb-4 p-3 bg-white shadow dark:shadow-black dark:bg-ltgray rounded-lg cursor-pointer hover:bg-opacity-20 transition-all "
             onClick={() => handleSearchResultClick(result)}
           >
             <h3 className="text-primary font-bold mb-2 text-[12px] ">
@@ -188,14 +184,20 @@ const Search = () => {
             </h3>
             <div className="relative">
               {expandedResults[result.id] ? (
-                <div className="text-gray-700 text-[12px]">
-                  <span className="opacity-70">{result.fullContext.pre}</span>
-                  <span className="highlight">{result.fullContext.match}</span>
-                  <span className="opacity-70">{result.fullContext.post}</span>
+                <div className=" text-[12px]">
+                  <span className=" text-stone-500 dark:text-gray-50 opacity-70">
+                    {result.fullContext.pre}
+                  </span>
+                  <span className=" text-stone-500 dark:text-gray-50 highlight">
+                    {result.fullContext.match}
+                  </span>
+                  <span className=" text-stone-500 dark:text-gray-50 opacity-70">
+                    {result.fullContext.post}
+                  </span>
                 </div>
               ) : (
                 <p
-                  className="text-gray-700 text-[12px]"
+                  className="text-stone-500 opacity-70 dark:text-gray-50 text-[12px]"
                   dangerouslySetInnerHTML={{ __html: result.shortSentence }}
                 ></p>
               )}

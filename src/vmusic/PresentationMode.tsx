@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, AudioLines } from "lucide-react";
 import { useBmusicContext } from "@/Provider/Bmusic";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
 
 interface SongSection {
   type: "Verse" | "Chorus";
@@ -26,8 +27,9 @@ const SongPresentation = () => {
     }[]
   >([]);
   const [direction, setDirection] = useState(0);
-  const { selectedSong, setCurrentScreen, selectedHymnBackground } =
+  const { selectedSong, selectedHymnBackground } =
     useBmusicContext();
+    const {setCurrentScreen} = useEastVoiceContext()
 
   // grab settings from local storage
   useEffect(() => {

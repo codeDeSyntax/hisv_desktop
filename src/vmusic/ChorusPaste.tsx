@@ -1,4 +1,4 @@
-import { useEditor, EditorContent, Editor } from '@tiptap/react';
+import { useEditor, EditorContent, Editor } from "@tiptap/react";
 
 const predefinedText = "<!-- Chorus -->"; // The text that will be inserted
 
@@ -21,7 +21,7 @@ export const ChorusPaste = ({ editor }: { editor: Editor | null }) => {
   return (
     <button
       onClick={handleInsertText}
-      className="bg-[#9a674a] hover:bg-[#8a5739] text-white font-thin py-1 text-[12x] px-2 rounded-lg shadow-lg transition-all duration-300"
+      className="bg-[#9a674a] hover:bg-[#8a5739] text-white font-thin p-2 text-[12x] px-2 rounded-lg shadow-lg transition-all duration-300"
     >
       Ch
     </button>

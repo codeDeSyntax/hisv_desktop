@@ -12,7 +12,21 @@ export default {
         bgray:"#202020",
         ltgray:"#2c2c2c"
 
+      },
+      fontFamily: {
+        anton: ['"Anton SC"', 'sans-serif'],
+        bigshoulders: ['"Big Shoulders Thin"', 'sans-serif'],
+        bitter: ['"Bitter Thin"', 'sans-serif'],
+        oswald: ['"Oswald ExtraLight"', 'sans-serif'],
+        archivo: ['"Archivo Black"', 'sans-serif'],
+        roboto: ['"Roboto Thin"', 'sans-serif'],
+        cooper: ['"Cooper Black"', 'sans-serif'],
+        haettenschweiler: ['"Haettenschweiler"', 'sans-serif'],
+        impact: ['"Impact"', 'sans-serif'],
+        teko: ['"Teko Light"', 'sans-serif'],
+        alumini: ['"Alumini Sans Black"', 'sans-serif']
       }
+      
     },
   },
   corePlugins: {

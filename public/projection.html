@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="./presentation.css" />
   </head>
   <body>
-    <div class="presentation-container">
+    <div class="presentation-container" id="presentation-container">
       <!-- Background with gradient overlay -->
       <div id="backgroundImage" class="background-image"></div>
       <div class="gradient-overlay"></div>
@@ -35,7 +35,9 @@
 
         <!-- Main Content -->
         <div class="content-wrapper no-scrollbar">
-          <div id="contentContainer" class="content no-scrollbar">Blessed Music</div>
+          <div id="contentContainer" class="content no-scrollbar">
+            Blessed Music
+          </div>
         </div>
 
         <!-- Navigation Controls -->
@@ -78,7 +80,7 @@
       // State management
       let songPages = [];
       let currentIndex = 0;
-      let songTitle = '';
+      let songTitle = "";
 
       // Helper function to safely access localStorage
       const getLocalStorageItem = (key, defaultValue = null) => {
@@ -96,7 +98,7 @@
         try {
           return jsonString ? JSON.parse(jsonString) : defaultValue;
         } catch (error) {
-          console.error('Error parsing JSON:', error);
+          console.error("Error parsing JSON:", error);
           return defaultValue;
         }
       };
@@ -104,15 +106,22 @@
       // Function to parse song content into navigable pages
       const parseSongContent = (content) => {
         if (!content) {
-          console.error('No song content provided');
-          return [{ type: 'Error', content: ['No song content available'], number: null, pageIndex: 0 }];
+          console.error("No song content provided");
+          return [
+            {
+              type: "Error",
+              content: ["No song content available"],
+              number: null,
+              pageIndex: 0,
+            },
+          ];
         }
 
         const sections = [];
         try {
           const parser = new DOMParser();
-          const doc = parser.parseFromString(content, 'text/html');
-          const paragraphs = Array.from(doc.getElementsByTagName('p'));
+          const doc = parser.parseFromString(content, "text/html");
+          const paragraphs = Array.from(doc.getElementsByTagName("p"));
 
           let currentType = null;
           let currentNumber = null;
@@ -122,13 +131,20 @@
 
           // Handle empty paragraph list
           if (paragraphs.length === 0) {
-            return [{ type: 'Song', content: ['No lyrics found'], number: null, pageIndex: 0 }];
+            return [
+              {
+                type: "Song",
+                content: ["No lyrics found"],
+                number: null,
+                pageIndex: 0,
+              },
+            ];
           }
 
           paragraphs.forEach((p) => {
-            const text = p.textContent?.trim() || '';
+            const text = p.textContent?.trim() || "";
 
-            if (text.includes('<!-- Verse')) {
+            if (text.includes("<!-- Verse")) {
               // Save previous section if exists
               if (currentType && currentContent.length > 0) {
                 sections.push({
@@ -138,10 +154,10 @@
                 });
               }
               verseCount++;
-              currentType = 'Verse';
+              currentType = "Verse";
               currentNumber = verseCount;
               currentContent = [];
-            } else if (text.includes('<!-- Chorus')) {
+            } else if (text.includes("<!-- Chorus")) {
               // Save previous section if exists
               if (currentType && currentContent.length > 0) {
                 sections.push({
@@ -151,10 +167,14 @@
                 });
               }
               chorusCount++;
-              currentType = 'Chorus';
+              currentType = "Chorus";
               currentNumber = chorusCount > 1 ? chorusCount : null;
               currentContent = [];
-            } else if (text && !text.includes('<!--') && !text.includes('-->')) {
+            } else if (
+              text &&
+              !text.includes("<!--") &&
+              !text.includes("-->")
+            ) {
               currentContent.push(text);
             }
           });
@@ -170,13 +190,20 @@
 
           // Handle case where no valid sections were found
           if (sections.length === 0) {
-            return [{ type: 'Song', content: ['No structured lyrics found'], number: null, pageIndex: 0 }];
+            return [
+              {
+                type: "Song",
+                content: ["No structured lyrics found"],
+                number: null,
+                pageIndex: 0,
+              },
+            ];
           }
 
           // Convert sections into pages with maximum lines per page
           const pages = [];
           const linesPerPage = 6;
-          
+
           sections.forEach((section) => {
             for (let i = 0; i < section.content.length; i += linesPerPage) {
               const pageContent = section.content.slice(i, i + linesPerPage);
@@ -194,15 +221,22 @@
 
           return pages;
         } catch (error) {
-          console.error('Error parsing song content:', error);
-          return [{ type: 'Error', content: ['Error parsing song content'], number: null, pageIndex: 0 }];
+          console.error("Error parsing song content:", error);
+          return [
+            {
+              type: "Error",
+              content: ["Error parsing song content"],
+              number: null,
+              pageIndex: 0,
+            },
+          ];
         }
       };
 
       // Function to update page display
       const updatePage = (index) => {
         if (!songPages || songPages.length === 0) {
-          console.error('No song pages available');
+          console.error("No song pages available");
           return;
         }
 
@@ -212,45 +246,47 @@
         }
 
         const page = songPages[index];
-        const titleElement = document.getElementById('titleText');
-        const container = document.getElementById('contentContainer');
-        
+        const titleElement = document.getElementById("titleText");
+        const container = document.getElementById("contentContainer");
+
         if (!titleElement || !container) {
-          console.error('Required DOM elements not found');
+          console.error("Required DOM elements not found");
           return;
         }
 
         // Update the title with section information
         const sectionTitle = `${page.type}${
-          page.number ? ` ${page.number}` : ''
-        }${page.pageIndex > 0 ? ' (cont.)' : ''} - ${songTitle || ''}`;
-        
+          page.number ? ` ${page.number}` : ""
+        }${page.pageIndex > 0 ? " (cont.)" : ""} - ${songTitle || ""}`;
+
         titleElement.textContent = sectionTitle;
 
         // Clear previous content
-        container.innerHTML = '';
+        container.innerHTML = "";
 
         // Get user preferences from localStorage with defaults
-        const savedSize = parseInt(getLocalStorageItem('fontSize', '0'));
-        const baseFontSize = 3; // Base font size in rem
+        const savedSize = parseInt(getLocalStorageItem("fontSize", "0"));
+        const baseFontSize = 3.5; // Base font size in rem
         const textSize = `${baseFontSize + savedSize}rem`;
-        const fontFamily = getLocalStorageItem('fontFamily', 'serif');
-        const maxWidth = container.clientWidth - 20; // Account for padding
+        const fontFamily = getLocalStorageItem("fontFamily", "serif");
+        const maxWidth = container.clientWidth - 10; // Account for padding
 
         // Add each line of content
         page.content.forEach((line, i) => {
           if (!line.trim()) return; // Skip empty lines
-          
-          const p = document.createElement('p');
+
+          const p = document.createElement("p");
           p.textContent = line;
           p.style.animation = `fadeInUp ${i * 0.1 + 0.2}s ease forwards`;
           p.style.fontSize = textSize;
           p.style.fontFamily = fontFamily;
-          p.style.marginBottom = '1.5rem';
-          
+          // p.style.marginBottom = "1rem";
+          p.innerText.toLowerCase();
+          p.style.fontWeight = "bold";
+
           // Add to DOM temporarily to measure width
           container.appendChild(p);
-          
+
           // Adjust font size if text is too wide
           if (p.offsetWidth > maxWidth) {
             const scaleFactor = Math.min(0.9, maxWidth / p.offsetWidth);
@@ -260,9 +296,9 @@
         });
 
         // Update navigation buttons state
-        const prevButton = document.getElementById('prevButton');
-        const nextButton = document.getElementById('nextButton');
-        
+        const prevButton = document.getElementById("prevButton");
+        const nextButton = document.getElementById("nextButton");
+
         if (prevButton) prevButton.disabled = index === 0;
         if (nextButton) nextButton.disabled = index === songPages.length - 1;
 
@@ -272,15 +308,17 @@
 
       // Function to update progress indicators
       const updateProgressIndicators = (currentIndex) => {
-        const container = document.getElementById('progressIndicators');
+        const container = document.getElementById("progressIndicators");
         if (!container) return;
-        
-        container.innerHTML = '';
+
+        container.innerHTML = "";
 
         songPages.forEach((_, index) => {
-          const indicator = document.createElement('button');
-          indicator.className = `progress-dot ${index === currentIndex ? 'active' : ''}`;
-          indicator.setAttribute('aria-label', `Go to page ${index + 1}`);
+          const indicator = document.createElement("button");
+          indicator.className = `progress-dot ${
+            index === currentIndex ? "active" : ""
+          }`;
+          indicator.setAttribute("aria-label", `Go to page ${index + 1}`);
           indicator.onclick = () => {
             currentIndex = index;
             updatePage(index);
@@ -291,15 +329,15 @@
 
       // Load background image
       const loadBackgroundImage = () => {
-        const main = document.getElementById('backgroundImage');
+        const main = document.getElementById("backgroundImage");
         if (!main) return;
-        
-        const mainImg = getLocalStorageItem('bmusicpresentationbg');
-        
+
+        const mainImg = getLocalStorageItem("bmusicpresentationbg");
+
         if (mainImg) {
           main.style.backgroundImage = `url(${mainImg})`;
         } else {
-          main.style.backgroundImage = 'url(./wood7.png)';
+          main.style.backgroundImage = "url(./wood7.png)";
         }
       };
 
@@ -307,27 +345,28 @@
       const handleSongData = (songData) => {
         loadBackgroundImage();
         if (!songData || !songData.content) {
-          console.error('Invalid song data received');
+          console.error("Invalid song data received");
           return;
         }
 
         try {
-          songTitle = songData.title || 'Untitled Song';
+          songTitle = songData.title || "Untitled Song";
           songPages = parseSongContent(songData.content);
           currentIndex = 0;
-          
+
           // Initialize with first page
           updatePage(0);
         } catch (error) {
-          console.error('Error handling song data:', error);
-          document.getElementById('contentContainer').innerHTML = '<p>Error loading song</p>';
+          console.error("Error handling song data:", error);
+          document.getElementById("contentContainer").innerHTML =
+            "<p>Error loading song</p>";
         }
       };
 
       // Set up event listeners
       const setupEventListeners = () => {
         // Previous button
-        const prevButton = document.getElementById('prevButton');
+        const prevButton = document.getElementById("prevButton");
         if (prevButton) {
           prevButton.onclick = () => {
             if (currentIndex > 0) {
@@ -338,7 +377,7 @@
         }
 
         // Next button
-        const nextButton = document.getElementById('nextButton');
+        const nextButton = document.getElementById("nextButton");
         if (nextButton) {
           nextButton.onclick = () => {
             if (currentIndex < songPages.length - 1) {
@@ -349,27 +388,44 @@
         }
 
         // Keyboard navigation
-        document.addEventListener('keydown', (event) => {
-          if (event.key === 'ArrowRight' && currentIndex < songPages.length - 1) {
+        document.addEventListener("keydown", (event) => {
+          if (
+            event.key === "ArrowRight" &&
+            currentIndex < songPages.length - 1
+          ) {
             currentIndex++;
             updatePage(currentIndex);
-          } else if (event.key === 'ArrowLeft' && currentIndex > 0) {
+          } else if (event.key === "ArrowLeft" && currentIndex > 0) {
             currentIndex--;
             updatePage(currentIndex);
           }
         });
       };
 
+      document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    // Use the IPC exposed by preload to communicate with main process
+    if (window.api && window.api.minimizeProjection) {
+      window.api.minimizeProjection();
+    }
+  }
+});
+
       // Initialize on page load
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener("DOMContentLoaded", () => {
         loadBackgroundImage();
         setupEventListeners();
-        
+
         // Try to load song from localStorage if available
-        const contentContainer = document.getElementById('contentContainer');
-        if (contentContainer && contentContainer.innerText.includes('Blessed Music')) {
-          const selectedSong = safeJsonParse(getLocalStorageItem('selectedSong'));
-          
+        const contentContainer = document.getElementById("contentContainer");
+        if (
+          contentContainer &&
+          contentContainer.innerText.includes("Blessed Music")
+        ) {
+          const selectedSong = safeJsonParse(
+            getLocalStorageItem("selectedSong")
+          );
+
           if (selectedSong) {
             // If we have API access, use it
             if (window.api && window.api.projectSong) {

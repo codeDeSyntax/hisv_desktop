@@ -68,7 +68,7 @@ const CustomEditor = ({ formData, setFormData }: CustomEditorProps) => {
   }) => (
     <button
       onClick={onClick}
-      className={`p-1 px-2 rounded-lg bg-[#9a674a]/80 transition-all duration-200 ${
+      className={`p-2 px-2 rounded-lg bg-[#9a674a]/80 transition-all duration-200 ${
         isActive
           ? "bg-[#9a674a] text-stone-500"
           : "hover:bg-gray-100 text-gray-700"

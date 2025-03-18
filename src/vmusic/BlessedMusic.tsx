@@ -40,8 +40,23 @@ const BlessedMusic = () => {
     songs,
     refetch,
   } = useBmusicContext();
-  const { setCurrentScreen,} = useEastVoiceContext()
+  const { setCurrentScreen } = useEastVoiceContext();
   const [savedFavorites, setSavedFavorites] = useState<Song[]>(favorites);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter" && selectedSong) {
+        presentSong(selectedSong);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup the event listener when the component unmounts or when selectedSong changes
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedSong]);
 
   useEffect(() => {
     const savedDirectory = localStorage.getItem("bmusic");
@@ -78,33 +93,6 @@ const BlessedMusic = () => {
       });
     }
   };
-
-  // function to search for song directly from directory
-  // const searchSong = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setSearchQuery(e.target.value);
-  //   try {
-  //     setfetching(true);
-  //     const searchedSongs: Song[] = await window.api.searchSong(
-  //       songRepo,
-  //       searchQuery
-  //     );
-  //     searchedSongs.sort((a, b) => {
-  //       return a.title.localeCompare(b.title);
-  //     });
-  //     setSongs(searchedSongs);
-  //     setFetchError("");
-  //   } catch (error) {
-  //     if (error instanceof Error) {
-  //       setFetchError(error.message);
-  //     } else {
-  //       setFetchError("An unknown error occurred");
-  //     }
-  //     console.error("Failed to search songs:", error);
-  //     setSongs([]);
-  //   } finally {
-  //     setfetching(false);
-  //   }
-  // };
 
   const changeDirectory = async () => {
     const path = await window.api.selectDirectory();
@@ -258,16 +246,9 @@ const BlessedMusic = () => {
                 <h1 className="font-serif text-2xl md:text-xl text-left font-bold text-[#9a674a]">
                   Blessed Songs of Zion
                   <span
-                    className={`ml-4 text-[.7rem]  italic ${
+                    className={`ml-4 text-[.7rem]  italic animate-pulse ${
                       selectedSong ? "" : "hidden"
                     }`}
-                    style={{
-                      color: `rgba(${Math.floor(
-                        Math.random() * 255
-                      )},${Math.floor(Math.random() * 255)},${Math.floor(
-                        Math.random() * 255
-                      )},1)`,
-                    }}
                   >
                     {"--" + selectedSong?.title.slice(0, 32) + "--"}
                   </span>
@@ -327,7 +308,7 @@ const BlessedMusic = () => {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => setViewMode("table")}
-                    className={`p-1 px-2 rounded-lg ${
+                    className={`h-8 p-2 rounded-lg flex item-center justify-center ${
                       viewMode === "table"
                         ? "bg-[#9a674a] text-white"
                         : "bg-stone-100 text-stone-500"
@@ -337,7 +318,7 @@ const BlessedMusic = () => {
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`p-1 px-2 rounded-lg ${
+                    className={`h-8 p-2 rounded-lg flex item-center justify-center ${
                       viewMode === "list"
                         ? "bg-[#9a674a] text-white"
                         : "bg-stone-100 text-stone-500"
@@ -347,7 +328,7 @@ const BlessedMusic = () => {
                   </button>
                   <button
                     onClick={() => setCurrentScreen("create")}
-                    className="p-1 px-2 rounded-lg bg-stone-100 text-stone-500 hover:bg-[#9a674a] hover:text-white transition-colors"
+                    className="h-8 p-2 rounded-lg flex item-center justify-center bg-stone-100 text-stone-500 hover:bg-[#9a674a] hover:text-white transition-colors"
                     title="add song"
                   >
                     <PlusIcon className="w-3 h-3" />
@@ -358,7 +339,7 @@ const BlessedMusic = () => {
                       e.preventDefault();
                       presentSong(selectedSong);
                     }}
-                    className={`p-1 px-2 rounded-lg bg-stone-100 text-stone-500 hover:bg-[#9a674a] hover:text-white transition-colors ${
+                    className={`h-8 p-2 rounded-lg flex item-center justify-center bg-stone-100 text-stone-500 hover:bg-[#9a674a] hover:text-white transition-colors ${
                       selectedSong ? "block" : "hidden"
                     }`}
                     title="External screen"
@@ -367,24 +348,34 @@ const BlessedMusic = () => {
                   </button>
                   <button
                     onClick={refetch}
-                    className={`p-1 px-2 rounded-lg bg-stone-100 text-stone-500 hover:bg-[#9a674a] hover:text-white transition-colors`}
+                    className={`h-8 p-2 rounded-lg flex item-center justify-center bg-stone-100 text-stone-500 hover:bg-[#9a674a] hover:text-white transition-colors`}
                     title="Reload"
                   >
                     <RefreshCcw className="w-3 h-3" />
                   </button>
                   <button
                     onClick={changeDirectory}
-                    className={`p-1 px-2 rounded-lg bg-stone-100 text-yellow-500 hover:bg-[#9a674a] hover:text-white transition-colors`}
+                    className={`h-8 p-2 rounded-lg flex item-center justify-center bg-stone-100 text-yellow-500 hover:bg-[#9a674a] hover:text-white transition-colors`}
                     title="change directory"
                   >
                     <Folder className="w-3 h-3" />
                   </button>
                   <button
                     // onClick={changeDirectory}
-                    className={`p-1 px-2 rounded-lg font-thin text-[12px] bg-stone-100 text-stone-500 hover:bg-[#9a674a] hover:text-white transition-colors`}
+                    className={`h-8 p-2 rounded-lg flex item-center justify-center font-thin text-[12px] bg-stone-100 text-stone-500 hover:bg-[#9a674a] hover:text-white transition-colors gap-2`}
                     title={songRepo}
                   >
-                    📂{songRepo.slice(0, 13)}..
+                    <Folder
+                      // color=""
+
+                      color={`rgba(${Math.floor(
+                        Math.random() * 255
+                      )},${Math.floor(Math.random() * 255)},${Math.floor(
+                        Math.random() * 255
+                      )},1)`}
+                      size={14}
+                    />
+                    {songRepo.slice(0, 13)}..
                   </button>
                 </div>
               </div>

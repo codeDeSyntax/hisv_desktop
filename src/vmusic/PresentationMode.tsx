@@ -27,9 +27,8 @@ const SongPresentation = () => {
     }[]
   >([]);
   const [direction, setDirection] = useState(0);
-  const { selectedSong, selectedHymnBackground } =
-    useBmusicContext();
-    const {setCurrentScreen} = useEastVoiceContext()
+  const { selectedSong, selectedHymnBackground } = useBmusicContext();
+  const { setCurrentScreen } = useEastVoiceContext();
 
   // grab settings from local storage
   useEffect(() => {
@@ -44,9 +43,10 @@ const SongPresentation = () => {
     if (backgroundImg) setPresentationBg(backgroundImg);
   }, []);
 
+  const container = document.getElementById("contentContainer");
+  const maxWidth = container && container.clientWidth - 20;
   useEffect(() => {
     if (!selectedSong?.content) return;
-    const container = document.getElementById("contentContainer");
     const parseSongContent = (content: string) => {
       const sections: SongSection[] = [];
       const parser = new DOMParser();
@@ -218,7 +218,7 @@ const SongPresentation = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex items-start justify-center px-4">
+        <div className="flex-1 flex items-start justify-center px-4 overflow-y-scroll no-scrollbar">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentIndex}
@@ -234,7 +234,7 @@ const SongPresentation = () => {
               className="w-full max-w-7xl mx-auto "
             >
               <div
-                className={`overflow-y-scroll no-scrollbar text-nowrap  flex flex-col justify-center items-center  contentContainer `}
+                className={`overflow-y-scroll no-scrollbar text-wrap h-full flex flex-col justify-center items-center  contentContainer `}
               >
                 {currentPage.content.map((line, i) => (
                   <motion.p

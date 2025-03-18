@@ -49,7 +49,7 @@ const SongCollectionManager: React.FC = () => {
     selectedSong,
     setSelectedSong,
   } = useBmusicContext();
-  const {setAndSaveCurrentScreen} = useEastVoiceContext();
+  const { setAndSaveCurrentScreen } = useEastVoiceContext();
   const [allMusic, setAllMusic] = useState<Song[]>(songs);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,7 +62,6 @@ const SongCollectionManager: React.FC = () => {
   const [showSongList, setShowSongList] = useState(true);
   const [showCollectionPanel, setShowCollectionPanel] = useState(true);
   const [isHovered, setIsHovered] = useState<string | null>(null);
-
 
   // Check for mobile view
   useEffect(() => {
@@ -441,7 +440,11 @@ const SongCollectionManager: React.FC = () => {
                       <p className="text-gray-100 italic skew-x-12  p-4 text-center">
                         No songs found
                       </p>
-                      <img src="./nosong.png" alt="look" className="h-40 " />
+                      <img
+                        src="./something-lost.png"
+                        alt="look"
+                        className="h-40 "
+                      />
                     </div>
                   ) : (
                     filteredSongs.map((song) => (
@@ -575,12 +578,12 @@ const SongCollectionManager: React.FC = () => {
 
                 <div className="space-y-3 mb-4 max-h-[calc(100vh-280px)] overflow-y-auto no-scrollbar">
                   {collections.length === 0 ? (
-                    <p className="text-white flex flex-col items-center italic font-thin skew-x-12  p-4 text-center">
+                    <p className="text-white flex flex-col items-center italic font-thin skewx-12  p-4 text-center">
                       No collections yet
                       <img
-                        src="./nosong.png"
+                        src="./something-lost.png"
                         alt=""
-                        className="h-40 -skew-x-12"
+                        className="h-40 -skew-x-12 pt-10 animate-bounce"
                       />
                     </p>
                   ) : (
@@ -706,7 +709,9 @@ const SongCollectionManager: React.FC = () => {
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setSelectedSong(song);
-                                          setAndSaveCurrentScreen("Presentation");
+                                          setAndSaveCurrentScreen(
+                                            "Presentation"
+                                          );
                                         }}
                                       >
                                         <Monitor size={14} />

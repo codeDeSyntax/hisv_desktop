@@ -31,6 +31,8 @@ contextBridge.exposeInMainWorld("api", {
     console.log("Minimize action triggered");
     ipcRenderer.send("minimizeApp");
   },
+  // Add this to your preload script's contextBridge.exposeInMainWorld call
+minimizeProjection: () => ipcRenderer.send('minimizeProjection'),
   closeApp: () => {
     console.log("Close action triggered");
     ipcRenderer.send("closeApp");

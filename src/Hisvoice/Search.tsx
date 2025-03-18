@@ -160,7 +160,7 @@ const Search = () => {
               value={rightSearchText}
               style={{ fontFamily: "cursive" }}
             />
-            <button className="ml-2 p-2 px-3 bg-primary text-white dark:text-gray-50">
+            <button className="ml-2 p-2 px-3 dark:bg-[#434343] bg-gray-50 shadow  text-stone-500 dark:text-gray-50">
               Search
             </button>
           </div>
@@ -168,7 +168,7 @@ const Search = () => {
       </div>
       <div className="flex-grow overflow-y-auto no-scrollbar p-4">
         <p
-          className="text-center font-sans text-sm italic text-primary mb-4 mt-10"
+          className="text-center font-sans text-sm italic text-stone-500 dark:text-gray-50 mb-4 mt-10"
           style={{ fontFamily: "cursive" }}
         >
           Search for quotes across all sermons preached by Robert Lambert Lee
@@ -179,7 +179,7 @@ const Search = () => {
             className="mb-4 p-3 bg-white shadow dark:shadow-black dark:bg-ltgray rounded-lg cursor-pointer hover:bg-opacity-20 transition-all "
             onClick={() => handleSearchResultClick(result)}
           >
-            <h3 className="text-primary font-bold mb-2 text-[12px] ">
+            <h3 className="dark:text-gray-50 text-stone-500 font-bold mb-2 text-[12px] ">
               {result.title}
             </h3>
             <div className="relative">
@@ -202,7 +202,7 @@ const Search = () => {
                 ></p>
               )}
               <button
-                className=" right-0 bottom-0 flex items-center bg-primary text-gray-200 hover:text-white transition-colors p-1 text-[12px] mt-2"
+                className=" right-0 bottom-0 flex items-center bg-gray-50 dark:bg-[#434343] text-stone-500 shadow focus:outline-none dark:text-gray-50 hover:text-stone-700 transition-colors p-1 text-[12px] mt-2"
                 onClick={(e) => toggleExpanded(result.id, e)}
               >
                 {expandedResults[result.id] ? (

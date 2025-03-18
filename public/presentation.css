@@ -13,6 +13,107 @@ body {
   overflow: hidden;
 }
 
+@font-face {
+  font-family: "Anton SC";
+  src: url("./fonts/antonsc.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Big Shoulders Thin";
+  src: url("./fonts/bigshouldsvw.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Bitter Thin";
+  src: url("./fonts/bittervw.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Oswald ExtraLight";
+  src: url("./fonts/oswaldv.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Archivo Black";
+  src: url("./fonts/archivoblack.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Roboto Thin";
+  src: url("./fonts/robotovw.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Cooper Black";
+  src: url("./fonts/COOPBL.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Haettenschweiler";
+  src: url("./fonts/HATTEN.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Impact";
+  src: url("./fonts/impact.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Teko Light";
+  src: url("./fonts/teko.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Alumini Sans Black";
+  src: url("./fonts/aluminisans.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Glarino DEMO";
+  src: url("./fonts/Glarino DEMO.otf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Tropical Organic Demo";
+  src: url("./fonts/Tropical Organic Demo.otf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LTFuzz";
+  src: url("./fonts/LTFuzz-Regular.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Staatliches";
+  src: url("./fonts/Staatliches-Regular.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Shrikhand";
+  src: url("./fonts/Shrikhand-Regular.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
 .presentation-container {
   height: 100vh;
   position: relative;
@@ -73,7 +174,7 @@ body {
 .content-wrapper {
   flex: 1;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: flex-start;
   padding: 0 1rem;
   overflow-y: scroll;
@@ -84,29 +185,30 @@ body {
   /* max-width: 60rem; */
   margin: 0 auto;
   margin-top: 10px;
-  padding: 0 3rem;
-  gap: 1rem;
+  padding: 0 2rem;
+  /* padding-top: 70px; */
+  gap: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
   /* background-color: brown; */
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
 }
 
 .content p {
   /* margin: 0.75rem 0; */
   /* background: #000; */
   /* margin: auto; */
-  font-weight: bold;
+  font-weight: bolder;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   text-align: center;
   /* width: 90%; */
   /* font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; */
 
   display: flex;
-  padding: 0 5px;
+  padding: 0 2px;
   align-items: center;
   justify-content: center;
   text-rendering: optimizeSpeed;

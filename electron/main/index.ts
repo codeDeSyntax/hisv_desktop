@@ -49,6 +49,7 @@ if (!app.requestSingleInstanceLock()) {
 
 let mainWin: BrowserWindow | null = null;
 let projectionWin: BrowserWindow | null = null;
+let isProjectionMinimized = false;
 const preload = path.join(__dirname, "../preload/index.mjs");
 const indexHtml = path.join(RENDERER_DIST, "index.html");
 const projectionHtml = path.join(RENDERER_DIST, "projection.html");
@@ -108,30 +109,44 @@ async function createMainWindow() {
 }
 
 async function createProjectionWindow() {
-  // Check if projection window already exists, if not create it
-  if (!projectionWin) {
-    projectionWin = new BrowserWindow({
-      title: "Projection",
-      frame: false,
-      modal: true, // Optional: makes the child window modal
-      show: true,
-      fullscreen: true,
-      icon: path.join("./dist/", "music2.png"),
-      webPreferences: {
-        preload,
-        devTools: false,
-        nodeIntegration: true,
-        contextIsolation: true,
-      },
-    });
+  // Create a new projection window
+  projectionWin = new BrowserWindow({
+    title: "Projection",
+    frame: false,
+    show: true,
+    minimizable: true,
+    fullscreen: true,
+    alwaysOnTop: false,
+    icon: path.join("./dist/", "music2.png"),
+    webPreferences: {
+      preload,
+      devTools: false,
+      nodeIntegration: true,
+      contextIsolation: true,
+    },
+  });
 
-    if (VITE_DEV_SERVER_URL) {
-      projectionWin.loadURL(`${VITE_DEV_SERVER_URL}/projection.html`);
-      // projectionWin.webContents.openDevTools();
-    } else {
-      projectionWin.loadFile(projectionHtml);
-    }
+  if (VITE_DEV_SERVER_URL) {
+    projectionWin.loadURL(`${VITE_DEV_SERVER_URL}/projection.html`);
+    // projectionWin.webContents.openDevTools();
+  } else {
+    projectionWin.loadFile(projectionHtml);
   }
+
+  // Track window state changes
+  projectionWin.on('minimize', () => {
+    isProjectionMinimized = true;
+  });
+  
+  projectionWin.on('restore', () => {
+    isProjectionMinimized = false;
+  });
+  
+  // Critical: Reset reference when window is closed
+  projectionWin.on('closed', () => {
+    projectionWin = null;
+    isProjectionMinimized = false;
+  });
 
   projectionWin.webContents.on("before-input-event", (event, input) => {
     if (
@@ -147,6 +162,18 @@ async function createProjectionWindow() {
   return projectionWin;
 }
 
+// Handle the escape key minimize functionality from the renderer
+ipcMain.on("minimizeProjection", () => {
+  if (projectionWin && !projectionWin.isDestroyed()) {
+    projectionWin.minimize();
+    isProjectionMinimized = true;
+    
+    // Focus the main window after minimizing the projection window
+    if (mainWin && !mainWin.isDestroyed()) {
+      mainWin.focus();
+    }
+  }
+});
 app.whenReady().then(() => {
   createMainWindow();
   app.on("activate", () => {
@@ -159,23 +186,32 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
 
-ipcMain.handle("project-song", (event, songData) => {
+ipcMain.handle("project-song", async (event, songData) => {
   console.log(songData);
 
-  // Check if projection window exists and has not been destroyed
-  if (projectionWin && !projectionWin.isDestroyed()) {
-    // If projectionWin exists and is not destroyed, send the song data
-    projectionWin.webContents.send("display-song", songData);
-    projectionWin?.focus();
-  } else {
-    // If projectionWin doesn't exist or has been destroyed, create it again
-    createProjectionWindow().then(() => {
-      projectionWin?.once("ready-to-show", () => {
-        // Once the window is ready, send the song data
-        projectionWin?.webContents.send("display-song", songData);
-        projectionWin?.focus();
-      });
+  // First check if window exists but is minimized
+  if (projectionWin && !projectionWin.isDestroyed() && isProjectionMinimized) {
+    projectionWin.restore();
+    isProjectionMinimized = false;
+    setTimeout(() => {
+      projectionWin?.webContents.send("display-song", songData);
+      projectionWin?.focus();
+    }, 300); // Short delay to ensure window is restored before sending data
+    return;
+  }
+  
+  // If window doesn't exist or was destroyed, create a new one
+  if (!projectionWin || projectionWin.isDestroyed()) {
+    await createProjectionWindow();
+    // Wait for window to be ready before sending data
+    projectionWin?.once("ready-to-show", () => {
+      projectionWin?.webContents.send("display-song", songData);
+      projectionWin?.focus();
     });
+  } else {
+    // Window exists and is not minimized, just send the data
+    projectionWin.webContents.send("display-song", songData);
+    projectionWin.focus();
   }
 });
 

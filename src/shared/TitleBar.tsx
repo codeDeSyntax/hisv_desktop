@@ -178,7 +178,7 @@ const TitleBar = () => {
             onClick={() => setAndSaveCurrentScreen("categorize")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
               items-center justify-center flex 
-              ${currentScreen !== "categorize" && "hidden"}
+              ${currentScreen == "categorize" && "hidden"}
               `}
             title="Music categories"
           >

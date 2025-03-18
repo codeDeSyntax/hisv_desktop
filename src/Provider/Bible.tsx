@@ -53,6 +53,8 @@ type BibleContextType = {
   setCurrentBook: React.Dispatch<React.SetStateAction<string>>;
   currentChapter: number;
   setCurrentChapter: React.Dispatch<React.SetStateAction<number>>;
+  currentVerse: number | null;
+  setCurrentVerse: React.Dispatch<React.SetStateAction<number | null>>;
   bookList: Book[];
 
   // User preferences
@@ -177,6 +179,8 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
   const [currentChapter, setCurrentChapter] = useState(() => {
     return parseInt(localStorage.getItem("bibleCurrentChapter") || "3");
   });
+  const [currentVerse, setCurrentVerse] = useState<number | null>(null);
+  
   const [bookList, setBookList] = useState<Book[]>(allBooks);
 
   // User preferences
@@ -609,6 +613,8 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
         setCurrentBook,
         currentChapter,
         setCurrentChapter,
+        currentVerse,
+      setCurrentVerse,
         bookList,
 
         // User preferences

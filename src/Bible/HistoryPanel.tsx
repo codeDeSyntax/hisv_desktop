@@ -3,19 +3,39 @@ import { X, Clock } from "lucide-react";
 import { useBibleContext } from "@/Provider/Bible";
 
 const HistoryPanel: React.FC = () => {
-  const { setActiveFeature, history, setCurrentBook, setCurrentChapter } =
-    useBibleContext();
+  const { 
+    setActiveFeature, 
+    history, 
+    setCurrentBook, 
+    setCurrentChapter, 
+    setCurrentVerse 
+  } = useBibleContext();
 
   const handleHistoryClick = (reference: string) => {
-    // Parse the reference format "Book Chapter"
-    const parts = reference.split(" ");
-    const chapterNumber = parseInt(parts[parts.length - 1]);
-
-    // Book name is everything except the last part
-    const bookName = parts.slice(0, parts.length - 1).join(" ");
-
-    setCurrentBook(bookName);
-    setCurrentChapter(chapterNumber);
+    // Check if reference includes a verse (format: "Book Chapter:Verse")
+    if (reference.includes(":")) {
+      const [chapterPart, versePart] = reference.split(":");
+      const verse = parseInt(versePart);
+      
+      // Handle chapter part which contains book and chapter
+      const parts = chapterPart.split(" ");
+      const chapterNumber = parseInt(parts[parts.length - 1]);
+      const bookName = parts.slice(0, parts.length - 1).join(" ");
+      
+      setCurrentBook(bookName);
+      setCurrentChapter(chapterNumber);
+      setCurrentVerse(verse);
+    } else {
+      // Original handling for just book and chapter
+      const parts = reference.split(" ");
+      const chapterNumber = parseInt(parts[parts.length - 1]);
+      const bookName = parts.slice(0, parts.length - 1).join(" ");
+      
+      setCurrentBook(bookName);
+      setCurrentChapter(chapterNumber);
+      setCurrentVerse(null); // Reset verse when navigating to just a chapter
+    }
+    
     setActiveFeature(null);
   };
 
@@ -32,7 +52,7 @@ const HistoryPanel: React.FC = () => {
         </h2>
         <button
           onClick={() => setActiveFeature(null)}
-          className="p-1 hover:bg-gray-100 bg-gray-50 shadow  dark:bg-bgray  dark:hover:bg-bgray rounded"
+          className="p-1 hover:bg-gray-100 bg-gray-50 shadow dark:bg-bgray dark:hover:bg-bgray rounded"
         >
           <X size={20} className="text-gray-900 dark:text-white" />
         </button>

@@ -111,7 +111,7 @@ const QuotesManager = () => {
             ? `linear-gradient(to bottom,
                rgba(255, 255, 255, 0%) 0%,
           rgba(255, 255, 255, 5) 20%),
-                url("./wood7.png")`
+                url("./snow2.jpg")`
             : `linear-gradient(to bottom,
                rgba(154, 103, 74, 0) 0%,
           rgba(44,44, 44, 5) 20%),
@@ -280,13 +280,13 @@ const QuotesManager = () => {
           <h2 className="text-xl font-bold text-primary">Quote Details</h2>
         </div>
         <div className="space-y-4 overflow-y-scroll h-[85vh] no-scrollbar">
-          <h3 className="text-xl font-bold text-stone-400 mb-2">
+          <h3 className="text-xl font-bold text-stone-400 dark:text-gray-50 mb-2">
             {selectedQuote?.title}
           </h3>
           <p className="text-gray-400 text-lg mb-6">{selectedQuote?.year}</p>
           <div className=" rounded-lg p-6  ">
             <p
-              className="text-stone-500 text-xl leading-relaxed whitespace-pre-wrap"
+              className="text-stone-500 dark:text-gray-200 text-xl leading-relaxed whitespace-pre-wrap"
               style={{
                 fontFamily: settings.fontFamily,
                 fontWeight: settings.fontWeight,

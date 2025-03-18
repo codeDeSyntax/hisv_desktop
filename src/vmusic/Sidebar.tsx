@@ -120,13 +120,9 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
 const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
   // const [activeTab, setActiveTab] = useState("recent");
-  const {
-    setSongRepo,
-    selectedSong,
-    setSelectedHymnBackground,
-    theme,
-  } = useBmusicContext();
-  const {setCurrentScreen}  = useEastVoiceContext()
+  const { setSongRepo, selectedSong, setSelectedHymnBackground, theme } =
+    useBmusicContext();
+  const { setCurrentScreen } = useEastVoiceContext();
   const [fontSize, setFontSize] = useState(
     localStorage.getItem("fontSize") || "1.5"
   );
@@ -142,7 +138,7 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
   const [selectedBg, setSelectedBg] = useState(
     localStorage.getItem("selectedBg") || "bg1"
   );
-  const [imagesPath ,setImagePath] = useState("")
+  const [imagesPath, setImagePath] = useState("");
   const [collections, setCollections] = useState<Collection[]>([]);
 
   const backgroundOptions = [
@@ -185,25 +181,29 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
   ];
 
   const fontSizeOptions = [
-    { value: "0", label: "xxs" },
-    { value: "0.7", label: "xs" },
-    { value: "1.2", label: "Small" },
-    { value: "1.5", label: "Medium" },
-    { value: "1.8", label: "Large" },
+    { value: "0.2", label: "xxs" },
+    { value: "0.6", label: "xs" },
+    { value: "1.4", label: "Small" },
+    { value: "1.7", label: "Medium" },
+    { value: "1.95", label: "Large" },
   ];
 
   const fontFamilyOptions = [
-    { value: "serif", label: "Serif" },
-    { value: "sans-serif", label: "Sans Serif" },
-    { value: ` Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif`, label: "Impact" },
-    { value: "monospace", label: "Monospace" },
-    { value: "Arial, Helvetica, sans-serif", label: "Arial" },
-    { value: "'Courier New', Courier, monospace", label: "Courier New" },
-    { value: "'Times New Roman', Times, serif", label: "Times New Roman" },
-    { value: "'Georgia', serif", label: "Georgia" },
-    { value: "'Verdana', Geneva, sans-serif", label: "Verdana" },
-    { value: "'Tahoma', Geneva, sans-serif", label: "Tahoma" },
-    { value: "'Lucida Console', Monaco, monospace", label: "Lucida Console" },
+    { value: "'Roboto Bold', serif", label: "Roboto Bold" },
+    { value: "'Anton SC', serif", label: "Anton SC" },
+    { value: "'Big Shoulder Thin', serif", label: "Big Shoulder Thin" },
+    { value: "'Bitter Thin', serif", label: "Bitter Thin" },
+    { value: "'Oswald ExtraLight', serif", label: "Oswald ExtraLight" },
+    { value: "'Haettenschweiler', serif", label: "Haetten" },
+    { value: "'Impact', serif", label: "Impact" },
+    { value: "'Cooper Black', serif", label: "CollPbl" },
+    { value: "'Teko', serif", label: "Teko" },
+    { value: "'Alumini Sans Black', serif", label: "Alumini" },
+    { value: "'Glarino DEMO', serif", label: "Glarino" },
+    { value: "'Tropical Organic Demo', serif", label: "Tropical" },
+    { value: "'Shrikhand', serif", label: "Shrikhand" },
+    { value: "'Staatliches', serif", label: "Staatliches" },
+    { value: "'LTFuzz', serif", label: "LtFuzz" },
   ];
 
   const displayCountOptions = [
@@ -224,7 +224,7 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
     if (typeof path === "string") {
       // setSongRepo(path);
       localStorage.setItem("vmusicimages", path);
-      setCurrentScreen("backgrounds")
+      setCurrentScreen("backgrounds");
     }
   };
 

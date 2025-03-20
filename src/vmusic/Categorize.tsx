@@ -581,7 +581,7 @@ const SongCollectionManager: React.FC = () => {
                     <p className="text-white flex flex-col items-center italic font-thin skewx-12  p-4 text-center">
                       No collections yet
                       <img
-                        src="./something-lost.png"
+                        src="./nosong.png"
                         alt=""
                         className="h-40 -skew-x-12 pt-10 animate-bounce"
                       />

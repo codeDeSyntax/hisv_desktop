@@ -262,6 +262,7 @@ const ScriptureContent: React.FC = () => {
     setCurrentBook(book);
     setCurrentChapter(1);
     setIsBookDropdownOpen(false);
+    setSelectedVerse(1);
     // Open chapter dropdown after selecting a book
     setTimeout(() => {
       setIsChapterDropdownOpen(true);
@@ -271,6 +272,7 @@ const ScriptureContent: React.FC = () => {
   // When selecting a different chapter
   const handleChapterSelect = (chapter: number) => {
     // Save to history before changing
+    setSelectedVerse(1);
     if (currentChapter !== chapter) {
       addToHistory(`${currentBook} ${currentChapter}`);
     }
@@ -327,7 +329,7 @@ const ScriptureContent: React.FC = () => {
         if (isInside) {
           // If we're inside the special brackets, apply the red color
           result.push(
-            <span key={i} style={{ color: "red" }}>
+            <span key={i} style={{ color: "red" }} className="underline">
               {parts[i]}
             </span>
           );
@@ -547,48 +549,53 @@ const ScriptureContent: React.FC = () => {
       >
         {verses.length > 0 ? (
           <div
-            className={`space-y-4 ${getFontSize()} }`}
+            className={`space-y ${getFontSize()} }`}
             style={{
               fontFamily: fontFamily,
             }}
           >
             {verses.map((verse) => (
               <div
-                key={verse.verse}
-                className={`flex group p-2 rounded-md hover:bg-gray-50 dark:hover:bg-bgray transition-colors duration-150 bg-transparent `}
+                key={verse.verse.toString().trim()}
+                className="relative  group p-2 pb-0 rounded-md hover:bg-gray-50 dark:hover:bg-bgray transition-colors duration-150 bg-transparent"
                 ref={(el) => (verseRefs.current[verse.verse] = el)}
               >
-                <span
-                  className="text-primary mr-3 pt-1  font-medium"
-                  style={{
-                    fontSize: getFontSize(),
-                  }}
-                >
-                  {verse.verse}
-                </span>
-                <div className="flex- leading-normal text-wrap ">
-                  <p
-                    className="text-wrap break-words scripturetext p-2"
+                <div className="flex-1">
+                  <span
+                    className=" absolute text-primary ml-5 font-medium flex-shrink-0"
                     style={{
-                      color:
-                        getVerseHighlight(verse.verse) ||
-                        (theme === "dark"
-                          ? verseTextColor || "#f9fafb"
-                          : verseTextColor || "#78716c"),
-                      backgroundColor: getVerseHighlight(verse.verse)
-                        ? `${getVerseHighlight(verse.verse)}22` // Add transparency to the highlight color
-                        : "transparent",
                       fontSize: getFontSize(),
-                      fontFamily: fontFamily,
                     }}
                   >
-                    {formatVerseText(verse.text)}
-                  </p>
+                    {verse.verse}
+                  </span>
+                  <div className="flex leading-normal pr-2">
+                    <p
+                      className="text-wrap break-words scripturetext p-2"
+                      style={{
+                        color:
+                          getVerseHighlight(verse.verse) ||
+                          (theme === "dark"
+                            ? verseTextColor || "#f9fafb"
+                            : verseTextColor || "#78716c"),
+                        backgroundColor: getVerseHighlight(verse.verse)
+                          ? `${getVerseHighlight(verse.verse)}22` // Add transparency to the highlight color
+                          : "transparent",
+                        fontSize: getFontSize(),
+                        fontFamily: fontFamily,
+                      }}
+                    >
+                      {formatVerseText(verse.text)}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center gap-2">
+
+                {/* Absolutely positioned horizontal tools */}
+                <div className="absolute top-2 right-14 opacity-0 group-hover:opacity-100 flex flex-row items-center gap-2 transition-opacity duration-200">
+                  {/* Action buttons */}
                   <button
                     onClick={() => toggleBookmark(verse.verse)}
-                    className="opacity-0 flex outline-none border-none items-center justify-center h-10 w-10 shadow bg-white group-hover:opacity-100 dark:bg-ltgray  p-1 ml-2 transition-opacity duration-200 rounded-full dark:hover:bg-gray-800 hover:bg-gray-200"
+                    className="flex outline-none border-none items-center justify-center h-8 w-8 shadow bg-white dark:bg-ltgray p-1 rounded-full dark:hover:bg-gray-800 hover:bg-gray-200"
                     title={
                       isBookmarked(verse.verse)
                         ? "Remove bookmark"
@@ -596,11 +603,12 @@ const ScriptureContent: React.FC = () => {
                     }
                   >
                     {isBookmarked(verse.verse) ? (
-                      <Star size={16} className="text-primary" />
+                      <Star size={14} className="text-primary" />
                     ) : (
-                      <StarOff size={16} className="text-primary" />
+                      <StarOff size={14} className="text-primary" />
                     )}
                   </button>
+
                   <button
                     onClick={() =>
                       handleShare(
@@ -608,39 +616,36 @@ const ScriptureContent: React.FC = () => {
                         verse.text
                       )
                     }
-                    className="opacity-0 flex items-center justify-center h-10 w-10  bg-white dark:bg-ltgray shadow-sm group-hover:opacity-100 p-1 ml-2 transition-opacity duration-200 dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full"
-                    title={
-                      isBookmarked(verse.verse)
-                        ? "Remove bookmark"
-                        : "Add bookmark"
-                    }
+                    className="flex items-center justify-center h-8 w-8 bg-white dark:bg-ltgray shadow-sm p-1 rounded-full dark:hover:bg-gray-800 hover:bg-gray-200"
+                    title="Share or copy verse"
                   >
-                    <Copy size={16} className="text-primary" />
+                    <Copy size={14} className="text-primary" />
                   </button>
 
-                  <div className="opacity-0 flex flex-col items-center justify-center gap-1  group-hover:opacity-100 p-1 ml-2 transition-opacity duration-200 rounded-full">
+                  {/* Highlight color options */}
+                  <div className="flex flex-row items-center gap-1 bg-white dark:bg-ltgray p-1 rounded-full shadow">
                     {/* Yellow highlight */}
                     <div
                       onClick={() => highlightVerse(verse.verse, "#FFD700")}
-                      className="h-6 w-6 rounded-full bg-yellow-400 hover:bg-yellow-500 shadow-sm"
+                      className="h-5 w-5 rounded-full bg-yellow-400 hover:bg-yellow-500 shadow-sm cursor-pointer"
                       title="Highlight yellow"
                     ></div>
                     {/* Green highlight */}
                     <div
                       onClick={() => highlightVerse(verse.verse, "#4CAF50")}
-                      className="h-6 w-6 rounded-full bg-green-500 hover:bg-green-600 shadow-sm"
+                      className="h-5 w-5 rounded-full bg-green-500 hover:bg-green-600 shadow-sm cursor-pointer"
                       title="Highlight green"
                     ></div>
                     {/* Blue highlight */}
                     <div
                       onClick={() => highlightVerse(verse.verse, "#2196F3")}
-                      className="h-6 w-6 rounded-full bg-blue-500 hover:bg-blue-600 shadow-sm"
+                      className="h-5 w-5 rounded-full bg-blue-500 hover:bg-blue-600 shadow-sm cursor-pointer"
                       title="Highlight blue"
                     ></div>
                     {/* Reset highlight */}
                     <div
                       onClick={() => highlightVerse(verse.verse, "reset")}
-                      className="h-6 w-6 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center shadow-sm"
+                      className="h-5 w-5 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center shadow-sm cursor-pointer"
                       title="Remove highlight"
                     >
                       <span className="text-xs">×</span>

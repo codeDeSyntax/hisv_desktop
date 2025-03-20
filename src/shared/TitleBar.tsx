@@ -148,8 +148,9 @@ const TitleBar = () => {
           </div>
           <div
             onClick={() => setAndSaveCurrentScreen("backgrounds")}
-            className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
-              items-center justify-center flex `}
+            className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer items-center justify-center flex 
+               ${(currentScreen === "bible" || currentScreen === "hisvoice" ) && "hidden"}
+              `}
             title="Presentation backgrounds"
           >
             <GalleryHorizontal className="text-white z-20 size-3" />
@@ -176,9 +177,8 @@ const TitleBar = () => {
           </div>
           <div
             onClick={() => setAndSaveCurrentScreen("categorize")}
-            className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
-              items-center justify-center flex 
-              ${currentScreen == "categorize" && "hidden"}
+            className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer items-center justify-center flex 
+              ${(currentScreen === "bible" || currentScreen === "hisvoice" ) && "hidden"}
               `}
             title="Music categories"
           >

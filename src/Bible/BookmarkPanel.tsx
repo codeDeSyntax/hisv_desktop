@@ -9,38 +9,38 @@ export const BookmarkPanel: React.FC = () => {
     removeBookmark,
     setCurrentBook,
     setCurrentChapter,
-    setCurrentVerse
+    setCurrentVerse,
   } = useBibleContext();
 
   const handleBookmarkClick = (bookmark: string) => {
     // Parse the bookmark format "Book Chapter:Verse"
     const parts = bookmark.split(" ");
     const chapterVerse = parts[parts.length - 1];
-    
+
     // Check if the bookmark has a verse reference
     if (chapterVerse.includes(":")) {
       const [chapterStr, verseStr] = chapterVerse.split(":");
       const chapterNumber = parseInt(chapterStr);
       const verseNumber = parseInt(verseStr);
-      
+
       // Book name is everything except the last part
       const bookName = parts.slice(0, parts.length - 1).join(" ");
-      
+
       setCurrentBook(bookName);
       setCurrentChapter(chapterNumber);
       setCurrentVerse(verseNumber);
     } else {
       // If no verse is specified, just navigate to the chapter
       const chapterNumber = parseInt(chapterVerse);
-      
+
       // Book name is everything except the last part
       const bookName = parts.slice(0, parts.length - 1).join(" ");
-      
+
       setCurrentBook(bookName);
       setCurrentChapter(chapterNumber);
       setCurrentVerse(null); // Reset verse when navigating to just a chapter
     }
-    
+
     setActiveFeature(null);
   };
 
@@ -58,7 +58,7 @@ export const BookmarkPanel: React.FC = () => {
         </h2>
         <button
           onClick={() => setActiveFeature(null)}
-          className="p-1 hover:bg-gray-100 bg-gray-50 shadow dark:hover:bg-bgray rounded"
+          className="p-1 hover:bg-gray-100 bg-gray-50 dark:bg-bgray shadow dark:hover:bg-bgray rounded"
         >
           <X size={20} className="text-gray-900 dark:text-white" />
         </button>

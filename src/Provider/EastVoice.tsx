@@ -18,6 +18,8 @@ type EastVoiceContextType = {
   setAndSaveCurrentScreen: (arg:string) => void;
   presentationbgs: string[];
   setPresentationbgs: React.Dispatch<React.SetStateAction<string[]>>;
+  bibleBgs: string[];
+  setBibleBgs: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 const EastVoiceContext = createContext<EastVoiceContextType | undefined>(undefined);
@@ -31,10 +33,21 @@ export const EastVoiceProvider = ({ children }: BmusicProviderProps) => {
   const [currentScreen, setCurrentScreen] = useState(localStorage.getItem("lastScreen") || "Home");
   const [theme, setTheme] = useState("creamy");
   const [presentationbgs , setPresentationbgs] = useState<string[]>([])
+  const imagesUrl = localStorage.getItem("vmusicimages") || "";
+  const [bibleBgs , setBibleBgs] = useState<string[]>([]);
   
   useEffect(() => {
     // const previousScreen = 
   })
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const images = await window.api.getImages(imagesUrl);
+      setBibleBgs(images);
+    };
+
+    fetchImages();
+  }, [imagesUrl]);
 
   const handleMinimize = () => {
     window.api.minimizeApp();
@@ -70,6 +83,8 @@ export const EastVoiceProvider = ({ children }: BmusicProviderProps) => {
         presentationbgs,
         setPresentationbgs,
         setAndSaveCurrentScreen,
+        bibleBgs,
+        setBibleBgs
       }}
     >
       {children}

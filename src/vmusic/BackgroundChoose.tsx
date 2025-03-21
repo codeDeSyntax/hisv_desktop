@@ -67,6 +67,7 @@ const PresentationBackgroundSelector: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [sysImags, setSysImages] = useState<string[]>([]);
 
   // Context hooks
   const {  selectedSong } = useBmusicContext();
@@ -110,7 +111,9 @@ const PresentationBackgroundSelector: React.FC = () => {
       }
 
       const imageBase64List = await window.api.getImages(imagesUrl);
-
+      // if(imageBase64List){
+      //   setSysImages(imageBase64List);
+      // }
       if (!imageBase64List || imageBase64List.length === 0) {
         setImageError("No images found in selected directory");
         setIsLoading(false);

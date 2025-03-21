@@ -85,7 +85,7 @@ const BibleSidebar: React.FC = () => {
       {/* Settings at bottom */}
       <div
         onClick={() => toggleFeature("settings")}
-        className={`p-3 flex items-center font-serif text-gray-900 dark:text-gray-300 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-70bgray/50to ${
+        className={`p-3 flex items-center font-serif text-gray-900 dark:text-gray-300 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-bgray/50 to ${
           activeFeature === "settings" ? "bg-gray-200 dark:bg-bgray" : ""
         }`}
       >

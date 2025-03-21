@@ -8,8 +8,11 @@ import {
   BookOpen,
   Share,
   Copy,
+  Monitor,
 } from "lucide-react";
 import { useBibleContext } from "@/Provider/Bible";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
+import PresentationOverlay from "./PresentationOverlay";
 
 interface Book {
   name: string;
@@ -40,6 +43,8 @@ const ScriptureContent: React.FC = () => {
     currentTranslation,
   } = useBibleContext();
 
+  const { bibleBgs } = useEastVoiceContext();
+
   const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
   const [isChapterDropdownOpen, setIsChapterDropdownOpen] = useState(false);
   const [isVerseDropdownOpen, setIsVerseDropdownOpen] = useState(false);
@@ -50,11 +55,19 @@ const ScriptureContent: React.FC = () => {
   const [highlightedVerses, setHighlightedVerses] = useState<{
     [key: string]: string;
   }>({});
+  const [showDropdown, setShowdropdown] = useState(false);
 
   const verses = getCurrentChapterVerses();
   const contentRef = useRef<HTMLDivElement>(null);
   const verseRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const chapterCount = getBookChapterCount(currentBook);
+  const [selectedBg, setSelectedBg] = useState<string | null>(null);
+  const [activeDropdownVerse, setActiveDropdownVerse] = useState<number | null>(
+    null
+  );
+  const [isPresentingVerse, setIsPresentingVerse] = useState(false);
+  const [presentationText, setPresentationText] = useState("");
+  const [presentationBg, setPresentationBg] = useState("");
 
   // Remove the scroll-based history saving
   const updateVisibleVerses = () => {
@@ -139,6 +152,7 @@ const ScriptureContent: React.FC = () => {
       addToHistory(`${currentBook} ${currentChapter}`);
       setCurrentChapter(currentChapter - 1);
     }
+    setCurrentVerse(1);
   };
 
   const handleNextChapter = () => {
@@ -146,6 +160,7 @@ const ScriptureContent: React.FC = () => {
       // Save to history before changing
       addToHistory(`${currentBook} ${currentChapter}`);
       setCurrentChapter(currentChapter + 1);
+      setCurrentVerse(1);
     }
   };
 
@@ -160,6 +175,29 @@ const ScriptureContent: React.FC = () => {
     } else {
       addBookmark(reference);
     }
+  };
+
+  const toggleShowPresentationBgs = (verseNumber: number) => {
+    if (activeDropdownVerse === verseNumber) {
+      // If clicking on the same verse, toggle off
+      setActiveDropdownVerse(null);
+    } else {
+      // If clicking on a different verse, show dropdown for that verse
+      setActiveDropdownVerse(verseNumber);
+    }
+  };
+
+  const handlePresentVerse = (text: string, bgSrc: string) => {
+    setPresentationText(text);
+    setPresentationBg(bgSrc);
+    setIsPresentingVerse(true);
+  };
+
+  const handleSelectBackground = (bgUrl: string, verseNumber: number) => {
+    setSelectedBg(bgUrl);
+    const verseText = verses.find((v) => v.verse === verseNumber)?.text || "";
+    handlePresentVerse(verseText, bgUrl);
+    setActiveDropdownVerse(null);
   };
 
   // Add this with your other utility functions
@@ -540,7 +578,12 @@ const ScriptureContent: React.FC = () => {
           <ChevronRight size={14} />
         </button>
       </div>
-
+      <PresentationOverlay
+        backgroundSrc={presentationBg}
+        text={presentationText}
+        isPresenting={isPresentingVerse}
+        onClose={() => setIsPresentingVerse(false)}
+      />
       {/* Scripture content */}
       <div
         ref={contentRef}
@@ -549,7 +592,7 @@ const ScriptureContent: React.FC = () => {
       >
         {verses.length > 0 ? (
           <div
-            className={`space-y ${getFontSize()} }`}
+            className={`flex flex-col  ${getFontSize()} }`}
             style={{
               fontFamily: fontFamily,
             }}
@@ -562,7 +605,7 @@ const ScriptureContent: React.FC = () => {
               >
                 <div className="flex-1">
                   <span
-                    className=" absolute text-primary ml-5 font-medium flex-shrink-0"
+                    className=" absolute pb-1 pb-1 text-primary ml-5 font-medium flex-shrink-0"
                     style={{
                       fontSize: getFontSize(),
                     }}
@@ -571,7 +614,9 @@ const ScriptureContent: React.FC = () => {
                   </span>
                   <div className="flex leading-normal pr-2">
                     <p
-                      className="text-wrap break-words scripturetext p-2"
+                      className={`${
+                        theme === "dark" ? "text-gray-50" : "text-red-500"
+                      } text-wrap break-words scripturetext p-2`}
                       style={{
                         color:
                           getVerseHighlight(verse.verse) ||
@@ -621,6 +666,41 @@ const ScriptureContent: React.FC = () => {
                   >
                     <Copy size={14} className="text-primary" />
                   </button>
+
+                  <div
+                    onClick={() => toggleShowPresentationBgs(verse.verse)}
+                    className="flex outline-none border-none items-center justify-center h-8 w-8 shadow bg-white dark:bg-ltgray p-1 rounded-full cursor-pointer dark:hover:bg-gray-800 hover:bg-gray-200 relative"
+                    title="Show presentation backgrounds"
+                  >
+                    <Monitor className="text-primary z-20 size-3" />
+
+                    {/* Dropdown menu - only show for the active verse */}
+                    {activeDropdownVerse === verse.verse && (
+                      <div className="absolute top-10 right-0 bg-white dark:bg-gray-800 shadow-md rounded-md p-1 z- w-ato">
+                        <div className="flex flex-row -space-x-2 overflow-x-auto py-1 px-1 max-w-48">
+                          {bibleBgs.length === 0 && "No backgrounds available"}
+                          {bibleBgs?.map((bg, index) => (
+                            <img
+                              key={index}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelectBackground(bg, verse.verse);
+                              }}
+                              src={bg}
+                              alt={`Bg ${index + 1}`}
+                              className={`h-8 w-8 object-cover hover:cursor-pointer rounded-full border-2 border-white dark:border-gray-700 *:
+                                  ${
+                                    selectedBg === bg
+                                      ? "ring-2 ring-primary z-10"
+                                      : ""
+                                  }
+                                  `}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Highlight color options */}
                   <div className="flex flex-row items-center gap-1 bg-white dark:bg-ltgray p-1 rounded-full shadow">

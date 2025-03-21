@@ -78,7 +78,8 @@
 
     <script>
       // State management
-      let songPages = [];
+      let songSections = [];      // Original parsed sections
+      let displaySequence = [];   // Sequence with chorus after each verse
       let currentIndex = 0;
       let songTitle = "";
 
@@ -103,7 +104,7 @@
         }
       };
 
-      // Function to parse song content into navigable pages
+      // Function to parse song content into sections
       const parseSongContent = (content) => {
         if (!content) {
           console.error("No song content provided");
@@ -200,26 +201,7 @@
             ];
           }
 
-          // Convert sections into pages with maximum lines per page
-          const pages = [];
-          const linesPerPage = 6;
-
-          sections.forEach((section) => {
-            for (let i = 0; i < section.content.length; i += linesPerPage) {
-              const pageContent = section.content.slice(i, i + linesPerPage);
-              // Only create pages for non-empty content
-              if (pageContent.length > 0) {
-                pages.push({
-                  type: section.type,
-                  content: pageContent,
-                  number: section.number,
-                  pageIndex: Math.floor(i / linesPerPage),
-                });
-              }
-            }
-          });
-
-          return pages;
+          return sections;
         } catch (error) {
           console.error("Error parsing song content:", error);
           return [
@@ -233,19 +215,93 @@
         }
       };
 
+      // Function to create paginated sections
+      const createPaginatedSections = (sections) => {
+        // Convert sections into pages with maximum lines per page
+        const paginatedSections = [];
+        const linesPerPage = 6;
+
+        sections.forEach((section) => {
+          const pages = [];
+          for (let i = 0; i < section.content.length; i += linesPerPage) {
+            const pageContent = section.content.slice(i, i + linesPerPage);
+            // Only create pages for non-empty content
+            if (pageContent.length > 0) {
+              pages.push({
+                type: section.type,
+                content: pageContent,
+                number: section.number,
+                pageIndex: Math.floor(i / linesPerPage),
+                sectionId: section.type.toLowerCase() + (section.number || "1")
+              });
+            }
+          }
+          if (pages.length > 0) {
+            paginatedSections.push({
+              type: section.type,
+              number: section.number,
+              pages: pages
+            });
+          }
+        });
+
+        return paginatedSections;
+      };
+
+      // Function to create display sequence with chorus after each verse (but not after chorus)
+      const createDisplaySequence = (paginatedSections) => {
+        const sequence = [];
+        
+        // Find the first chorus section (if any)
+        const firstChorus = paginatedSections.find(section => section.type === "Chorus");
+        
+        if (!firstChorus) {
+          // If no chorus found, just flatten all sections
+          paginatedSections.forEach(section => {
+            section.pages.forEach(page => sequence.push(page));
+          });
+          return sequence;
+        }
+        
+        // Create sequence with chorus after each verse (but not after chorus)
+        paginatedSections.forEach((section, index) => {
+          // Add the current section's pages
+          section.pages.forEach(page => sequence.push(page));
+          
+          // If this was a verse, add the first chorus UNLESS the next section is already a chorus
+          if (section.type === "Verse" && firstChorus) {
+            // Check if the next section is a chorus
+            const nextSectionIsChorus = index + 1 < paginatedSections.length && 
+                                    paginatedSections[index + 1].type === "Chorus";
+            
+            // Only add repeating chorus if the next section is not already a chorus
+            if (!nextSectionIsChorus) {
+              firstChorus.pages.forEach(page => {
+                // Clone the chorus page and mark it as repeating
+                const chorusPage = {...page};
+                chorusPage.isRepeating = true;
+                sequence.push(chorusPage);
+              });
+            }
+          }
+        });
+        
+        return sequence;
+      };
+
       // Function to update page display
       const updatePage = (index) => {
-        if (!songPages || songPages.length === 0) {
+        if (!displaySequence || displaySequence.length === 0) {
           console.error("No song pages available");
           return;
         }
 
-        if (index < 0 || index >= songPages.length) {
+        if (index < 0 || index >= displaySequence.length) {
           console.error(`Invalid page index: ${index}`);
           return;
         }
 
-        const page = songPages[index];
+        const page = displaySequence[index];
         const titleElement = document.getElementById("titleText");
         const container = document.getElementById("contentContainer");
 
@@ -255,10 +311,16 @@
         }
 
         // Update the title with section information
-        const sectionTitle = `${page.type}${
+        let sectionTitle = `${page.type}${
           page.number ? ` ${page.number}` : ""
-        }${page.pageIndex > 0 ? " (cont.)" : ""} - ${songTitle || ""}`;
-
+        }${page.pageIndex > 0 ? " (cont.)" : ""}`;
+        
+        // Add indication if this is a repeating chorus
+        if (page.isRepeating) {
+          sectionTitle += " (Repeat)";
+        }
+        
+        sectionTitle += ` - ${songTitle || ""}`;
         titleElement.textContent = sectionTitle;
 
         // Clear previous content
@@ -300,24 +362,37 @@
         const nextButton = document.getElementById("nextButton");
 
         if (prevButton) prevButton.disabled = index === 0;
-        if (nextButton) nextButton.disabled = index === songPages.length - 1;
+        if (nextButton) nextButton.disabled = index === displaySequence.length - 1;
 
         // Update progress indicators
         updateProgressIndicators(index);
       };
 
-      // Function to update progress indicators
+      // Function to update progress indicators with different style for chorus repeats
       const updateProgressIndicators = (currentIndex) => {
         const container = document.getElementById("progressIndicators");
         if (!container) return;
 
         container.innerHTML = "";
 
-        songPages.forEach((_, index) => {
+        displaySequence.forEach((page, index) => {
           const indicator = document.createElement("button");
-          indicator.className = `progress-dot ${
-            index === currentIndex ? "active" : ""
-          }`;
+          
+          // Use a different class for repeating chorus indicators
+          if (page.isRepeating) {
+            indicator.className = `progress-dot chorus-repeat ${
+              index === currentIndex ? "active" : ""
+            }`;
+            
+            // Add a different style to repeating chorus dots
+            indicator.style.borderRadius = "0"; // Make it square instead of round
+            indicator.style.transform = "rotate(45deg)"; // Diamond shape
+          } else {
+            indicator.className = `progress-dot ${
+              index === currentIndex ? "active" : ""
+            }`;
+          }
+          
           indicator.setAttribute("aria-label", `Go to page ${index + 1}`);
           indicator.onclick = () => {
             currentIndex = index;
@@ -351,7 +426,16 @@
 
         try {
           songTitle = songData.title || "Untitled Song";
-          songPages = parseSongContent(songData.content);
+          
+          // Step 1: Parse the song content into sections
+          const sections = parseSongContent(songData.content);
+          
+          // Step 2: Create paginated sections
+          const paginatedSections = createPaginatedSections(sections);
+          
+          // Step 3: Create display sequence with chorus after each verse
+          displaySequence = createDisplaySequence(paginatedSections);
+          
           currentIndex = 0;
 
           // Initialize with first page
@@ -380,7 +464,7 @@
         const nextButton = document.getElementById("nextButton");
         if (nextButton) {
           nextButton.onclick = () => {
-            if (currentIndex < songPages.length - 1) {
+            if (currentIndex < displaySequence.length - 1) {
               currentIndex++;
               updatePage(currentIndex);
             }
@@ -391,7 +475,7 @@
         document.addEventListener("keydown", (event) => {
           if (
             event.key === "ArrowRight" &&
-            currentIndex < songPages.length - 1
+            currentIndex < displaySequence.length - 1
           ) {
             currentIndex++;
             updatePage(currentIndex);
@@ -403,13 +487,13 @@
       };
 
       document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    // Use the IPC exposed by preload to communicate with main process
-    if (window.api && window.api.minimizeProjection) {
-      window.api.minimizeProjection();
-    }
-  }
-});
+        if (event.key === "Escape") {
+          // Use the IPC exposed by preload to communicate with main process
+          if (window.api && window.api.minimizeProjection) {
+            window.api.minimizeProjection();
+          }
+        }
+      });
 
       // Initialize on page load
       document.addEventListener("DOMContentLoaded", () => {
@@ -437,6 +521,21 @@
           }
         }
       });
+
+      // Add CSS for the chorus repeat indicators
+      const style = document.createElement('style');
+      style.textContent = `
+        .progress-dot.chorus-repeat {
+          border-radius: 0;
+          transform: rotate(45deg);
+          background-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .progress-dot.chorus-repeat.active {
+          background-color: rgba(255, 255, 255, 0.9);
+        }
+      `;
+      document.head.appendChild(style);
 
       // Register API event handler if available
       if (window.api && window.api.onDisplaySong) {

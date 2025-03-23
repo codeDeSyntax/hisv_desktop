@@ -470,7 +470,10 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
   // Add to history
   const addToHistory = (reference: string) => {
     const newEntry = { reference, timestamp: Date.now() };
-    setHistory((prevHistory) => [newEntry, ...prevHistory.slice(0, 19)]); // Keep last 20 items
+    const histories = [newEntry, ...history.slice(0, 19)];
+    setHistory(histories);
+    //save new entry at the top of the history
+    
   };
 
   // Search function

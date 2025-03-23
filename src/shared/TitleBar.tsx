@@ -197,7 +197,7 @@ const TitleBar = () => {
           <div
             onClick={toggleDropdown}
             className="w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer flex items-center justify-center relative"
-            title="More tools"
+            
           >
             <MoreHorizontal className="text-white z-20 size-3" />
 

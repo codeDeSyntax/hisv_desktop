@@ -123,7 +123,7 @@ const ScriptureContent: React.FC = () => {
     }
 
     // Reset selected verse when chapter changes
-    setSelectedVerse(null);
+    setSelectedVerse(1);
     // Close verse dropdown when chapter changes
     setIsVerseDropdownOpen(false);
   }, [currentBook, currentChapter]);
@@ -131,14 +131,14 @@ const ScriptureContent: React.FC = () => {
   useEffect(() => {
     // If we have a currentVerse (coming from bookmarks/history), use it
     if (currentVerse && verseRefs.current[currentVerse]) {
+      setSelectedVerse(currentVerse);
       // Use a small delay to ensure the DOM is ready
       setTimeout(() => {
         verseRefs.current[currentVerse]?.scrollIntoView({
           behavior: "smooth",
-          block: "center",
+          block: "start",
         });
         // Update selectedVerse to match the current verse
-        setSelectedVerse(currentVerse);
         // Don't clear currentVerse for immediate navigation feedback
       }, 100);
     }
@@ -292,7 +292,7 @@ const ScriptureContent: React.FC = () => {
   const handleBookSelect = (book: string) => {
     // Save to history before changing
     if (currentBook !== book) {
-      addToHistory(`${currentBook} ${currentChapter}`);
+      addToHistory(`${currentBook} ${currentChapter}:${selectedVerse || 1}`);
     }
 
     setCurrentBook(book);
@@ -310,7 +310,7 @@ const ScriptureContent: React.FC = () => {
     // Save to history before changing
     setSelectedVerse(1);
     if (currentChapter !== chapter) {
-      addToHistory(`${currentBook} ${currentChapter}`);
+      addToHistory(`${currentBook} ${currentChapter}:${selectedVerse || 1}`);
     }
 
     setCurrentChapter(chapter);

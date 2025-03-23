@@ -76,6 +76,7 @@ const WorkspaceSelector = () => {
   const [randomVerse, setRandomVerse] = useState("");
   const { songs } = useBmusicContext();
   const { setAndSaveCurrentScreen } = useEastVoiceContext();
+  const { allSermons } = useSermonContext();
   // const { allSermons } = useSermonContext();
 
   // Array of country gospel verses
@@ -258,7 +259,9 @@ const WorkspaceSelector = () => {
                 <h3 className="font-medium text-white text-[14px]">
                   His voice
                 </h3>
-                <p className="text-sm text-white opacity-80"></p>
+                <p className="text-sm text-white opacity-80">
+                  {allSermons.length} sermons
+                </p>
               </div>
             </div>
             <button
@@ -280,7 +283,7 @@ const WorkspaceSelector = () => {
               </div>
               <div>
                 <h3 className="font-medium text-white text-[14px]">Bible</h3>
-                <p className="text-sm text-white opacity-80"></p>
+                <p className="text-sm text-white opacity-80">{}</p>
               </div>
             </div>
             <button

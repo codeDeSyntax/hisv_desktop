@@ -123,7 +123,7 @@ const ScriptureContent: React.FC = () => {
     }
 
     // Reset selected verse when chapter changes
-    setSelectedVerse(1);
+    setSelectedVerse(null);
     // Close verse dropdown when chapter changes
     setIsVerseDropdownOpen(false);
   }, [currentBook, currentChapter]);
@@ -131,7 +131,7 @@ const ScriptureContent: React.FC = () => {
   useEffect(() => {
     // If we have a currentVerse (coming from bookmarks/history), use it
     if (currentVerse && verseRefs.current[currentVerse]) {
-      setSelectedVerse(currentVerse);
+      // setSelectedVerse(currentVerse);
       // Use a small delay to ensure the DOM is ready
       setTimeout(() => {
         verseRefs.current[currentVerse]?.scrollIntoView({
@@ -298,7 +298,7 @@ const ScriptureContent: React.FC = () => {
     setCurrentBook(book);
     setCurrentChapter(1);
     setIsBookDropdownOpen(false);
-    setSelectedVerse(1);
+    setSelectedVerse(null);
     // Open chapter dropdown after selecting a book
     setTimeout(() => {
       setIsChapterDropdownOpen(true);
@@ -536,7 +536,7 @@ const ScriptureContent: React.FC = () => {
               }}
             >
               <span className="text-[12px] font-medium text-stone-500 dark:text-gray-50">
-                v {selectedVerse || "?"}
+                v {selectedVerse || "🤐"}
               </span>
               <ChevronDown
                 size={14}

@@ -78,8 +78,8 @@
 
     <script>
       // State management
-      let songSections = [];      // Original parsed sections
-      let displaySequence = [];   // Sequence with chorus after each verse
+      let songSections = []; // Original parsed sections
+      let displaySequence = []; // Sequence with chorus after each verse
       let currentIndex = 0;
       let songTitle = "";
 
@@ -123,12 +123,12 @@
           const parser = new DOMParser();
           const doc = parser.parseFromString(content, "text/html");
           const paragraphs = Array.from(doc.getElementsByTagName("p"));
+          console.log("Total paragraphs found:", paragraphs.length);
+          console.log("Parsed sections:", sections);
 
           let currentType = null;
           let currentNumber = null;
           let currentContent = [];
-          let verseCount = 0;
-          let chorusCount = 0;
 
           // Handle empty paragraph list
           if (paragraphs.length === 0) {
@@ -142,10 +142,13 @@
             ];
           }
 
-          paragraphs.forEach((p) => {
+          paragraphs.forEach((p, index) => {
             const text = p.textContent?.trim() || "";
+            const verseMatch = text.match(/^Verse (\d+)$/);
+            const isChorus = text === "Chorus";
 
-            if (text.includes("<!-- Verse")) {
+            // Check for new section start
+            if (verseMatch) {
               // Save previous section if exists
               if (currentType && currentContent.length > 0) {
                 sections.push({
@@ -153,12 +156,12 @@
                   content: currentContent,
                   number: currentNumber,
                 });
+                currentContent = [];
               }
-              verseCount++;
+
               currentType = "Verse";
-              currentNumber = verseCount;
-              currentContent = [];
-            } else if (text.includes("<!-- Chorus")) {
+              currentNumber = parseInt(verseMatch[1]);
+            } else if (isChorus) {
               // Save previous section if exists
               if (currentType && currentContent.length > 0) {
                 sections.push({
@@ -166,28 +169,25 @@
                   content: currentContent,
                   number: currentNumber,
                 });
+                currentContent = [];
               }
-              chorusCount++;
+
               currentType = "Chorus";
-              currentNumber = chorusCount > 1 ? chorusCount : null;
-              currentContent = [];
-            } else if (
-              text &&
-              !text.includes("<!--") &&
-              !text.includes("-->")
-            ) {
+              currentNumber = null;
+            } else if (text && !verseMatch && !isChorus) {
+              // Add content to current section
               currentContent.push(text);
             }
-          });
 
-          // Don't forget the last section
-          if (currentType && currentContent.length > 0) {
-            sections.push({
-              type: currentType,
-              content: currentContent,
-              number: currentNumber,
-            });
-          }
+            // Ensure the last section is added
+            if (index === paragraphs.length - 1 && currentContent.length > 0) {
+              sections.push({
+                type: currentType,
+                content: currentContent,
+                number: currentNumber,
+              });
+            }
+          });
 
           // Handle case where no valid sections were found
           if (sections.length === 0) {
@@ -232,7 +232,7 @@
                 content: pageContent,
                 number: section.number,
                 pageIndex: Math.floor(i / linesPerPage),
-                sectionId: section.type.toLowerCase() + (section.number || "1")
+                sectionId: section.type.toLowerCase() + (section.number || "1"),
               });
             }
           }
@@ -240,7 +240,7 @@
             paginatedSections.push({
               type: section.type,
               number: section.number,
-              pages: pages
+              pages: pages,
             });
           }
         });
@@ -251,41 +251,44 @@
       // Function to create display sequence with chorus after each verse (but not after chorus)
       const createDisplaySequence = (paginatedSections) => {
         const sequence = [];
-        
+
         // Find the first chorus section (if any)
-        const firstChorus = paginatedSections.find(section => section.type === "Chorus");
-        
+        const firstChorus = paginatedSections.find(
+          (section) => section.type === "Chorus"
+        );
+
         if (!firstChorus) {
           // If no chorus found, just flatten all sections
-          paginatedSections.forEach(section => {
-            section.pages.forEach(page => sequence.push(page));
+          paginatedSections.forEach((section) => {
+            section.pages.forEach((page) => sequence.push(page));
           });
           return sequence;
         }
-        
+
         // Create sequence with chorus after each verse (but not after chorus)
         paginatedSections.forEach((section, index) => {
           // Add the current section's pages
-          section.pages.forEach(page => sequence.push(page));
-          
+          section.pages.forEach((page) => sequence.push(page));
+
           // If this was a verse, add the first chorus UNLESS the next section is already a chorus
           if (section.type === "Verse" && firstChorus) {
             // Check if the next section is a chorus
-            const nextSectionIsChorus = index + 1 < paginatedSections.length && 
-                                    paginatedSections[index + 1].type === "Chorus";
-            
+            const nextSectionIsChorus =
+              index + 1 < paginatedSections.length &&
+              paginatedSections[index + 1].type === "Chorus";
+
             // Only add repeating chorus if the next section is not already a chorus
             if (!nextSectionIsChorus) {
-              firstChorus.pages.forEach(page => {
+              firstChorus.pages.forEach((page) => {
                 // Clone the chorus page and mark it as repeating
-                const chorusPage = {...page};
+                const chorusPage = { ...page };
                 chorusPage.isRepeating = true;
                 sequence.push(chorusPage);
               });
             }
           }
         });
-        
+
         return sequence;
       };
 
@@ -314,12 +317,12 @@
         let sectionTitle = `${page.type}${
           page.number ? ` ${page.number}` : ""
         }${page.pageIndex > 0 ? " (cont.)" : ""}`;
-        
+
         // Add indication if this is a repeating chorus
         if (page.isRepeating) {
           sectionTitle += " (Repeat)";
         }
-        
+
         sectionTitle += ` - ${songTitle || ""}`;
         titleElement.textContent = sectionTitle;
 
@@ -362,7 +365,8 @@
         const nextButton = document.getElementById("nextButton");
 
         if (prevButton) prevButton.disabled = index === 0;
-        if (nextButton) nextButton.disabled = index === displaySequence.length - 1;
+        if (nextButton)
+          nextButton.disabled = index === displaySequence.length - 1;
 
         // Update progress indicators
         updateProgressIndicators(index);
@@ -377,13 +381,13 @@
 
         displaySequence.forEach((page, index) => {
           const indicator = document.createElement("button");
-          
+
           // Use a different class for repeating chorus indicators
           if (page.isRepeating) {
             indicator.className = `progress-dot chorus-repeat ${
               index === currentIndex ? "active" : ""
             }`;
-            
+
             // Add a different style to repeating chorus dots
             indicator.style.borderRadius = "0"; // Make it square instead of round
             indicator.style.transform = "rotate(45deg)"; // Diamond shape
@@ -392,7 +396,7 @@
               index === currentIndex ? "active" : ""
             }`;
           }
-          
+
           indicator.setAttribute("aria-label", `Go to page ${index + 1}`);
           indicator.onclick = () => {
             currentIndex = index;
@@ -426,16 +430,16 @@
 
         try {
           songTitle = songData.title || "Untitled Song";
-          
+
           // Step 1: Parse the song content into sections
           const sections = parseSongContent(songData.content);
-          
+
           // Step 2: Create paginated sections
           const paginatedSections = createPaginatedSections(sections);
-          
+
           // Step 3: Create display sequence with chorus after each verse
           displaySequence = createDisplaySequence(paginatedSections);
-          
+
           currentIndex = 0;
 
           // Initialize with first page
@@ -523,7 +527,7 @@
       });
 
       // Add CSS for the chorus repeat indicators
-      const style = document.createElement('style');
+      const style = document.createElement("style");
       style.textContent = `
         .progress-dot.chorus-repeat {
           border-radius: 0;

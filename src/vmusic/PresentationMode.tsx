@@ -16,7 +16,6 @@ const SongPresentation = () => {
   const [fontFamily, setFontFamily] = useState<string>("serif");
   const [presentationBg, setPresentationBg] =
     useState<string>("url(wood7.png)");
-  const [displayCount, setDisplayCount] = useState<number>(6);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [songPages, setSongPages] = useState<
     {
@@ -30,21 +29,17 @@ const SongPresentation = () => {
   const { selectedSong, selectedHymnBackground } = useBmusicContext();
   const { setCurrentScreen } = useEastVoiceContext();
 
-  // grab settings from local storage
+  // Settings from local storage
   useEffect(() => {
     const fontSize = localStorage.getItem("fontSize");
     const fontFamily = localStorage.getItem("fontFamily");
-    const layout = localStorage.getItem("layout");
-    const displayCount = localStorage.getItem("displayCount");
     const backgroundImg = localStorage.getItem("bmusicpresentationbg");
     if (fontSize) setFontSize(fontSize);
     if (fontFamily) setFontFamily(fontFamily);
-    if (displayCount) setDisplayCount(parseInt(displayCount));
     if (backgroundImg) setPresentationBg(backgroundImg);
   }, []);
 
-  const container = document.getElementById("contentContainer");
-  const maxWidth = container && container.clientWidth - 20;
+  // Song content parsing
   useEffect(() => {
     if (!selectedSong?.content) return;
     const parseSongContent = (content: string) => {
@@ -62,7 +57,7 @@ const SongPresentation = () => {
       paragraphs.forEach((p) => {
         const text = p.textContent?.trim() || "";
 
-        if (text.includes("<!-- Verse")) {
+        if (text.includes("Verse")) {
           if (currentType && currentContent.length > 0) {
             sections.push({
               type: currentType,
@@ -75,7 +70,7 @@ const SongPresentation = () => {
           currentType = "Verse";
           currentNumber = verseCount;
           currentContent = [];
-        } else if (text.includes("<!-- Chorus")) {
+        } else if (text.includes("Chorus")) {
           if (currentType && currentContent.length > 0) {
             sections.push({
               type: currentType,
@@ -102,7 +97,7 @@ const SongPresentation = () => {
         });
       }
 
-      // Convert sections into pages of 5 lines each
+      // Convert sections into pages of 6 lines each
       const pages: {
         type: "Verse" | "Chorus";
         content: string[];
@@ -110,7 +105,7 @@ const SongPresentation = () => {
         pageIndex: number;
       }[] = [];
       sections.forEach((section) => {
-        const linesPerPage = 5;
+        const linesPerPage = 6;
         for (let i = 0; i < section.content.length; i += linesPerPage) {
           pages.push({
             type: section.type,
@@ -132,6 +127,7 @@ const SongPresentation = () => {
     }
   }, [selectedSong]);
 
+  // Navigation handlers
   const handleNext = useCallback(() => {
     if (currentIndex < songPages.length - 1) {
       setDirection(1);
@@ -146,6 +142,7 @@ const SongPresentation = () => {
     }
   }, [currentIndex]);
 
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") handleNext();
@@ -157,6 +154,7 @@ const SongPresentation = () => {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleNext, handlePrev, setCurrentScreen]);
 
+  // Loading state
   if (!selectedSong || songPages.length === 0) {
     return (
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-blue-900 text-white">
@@ -196,29 +194,27 @@ const SongPresentation = () => {
           backgroundBlendMode: "overlay",
           backgroundImage: `url(${presentationBg})`,
           fontFamily: fontFamily,
-          // fontSize: `${1.5 + fontSize}rem`,
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-blue-900/30" />
+      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-blue-900/40" />
 
       {/* Content Container */}
-      <div className="relative h-full flex flex-col text-white">
+      <div className="relative h-screen flex flex-col text-white">
         {/* Title Section */}
-        <div className="p- text-center">
+        <div className="py-2 text-center">
           <motion.h2
-            className="text-2xl md:text-2xl font- text-shadow -skew-x-12 font-thin underline flex text-center justify-center items-center "
+            className="text-2xl md:text-3xl font-light text-shadow-md tracking-wide flex justify-center items-center gap-4"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             key={sectionTitle}
           >
             {sectionTitle}
-
-            <AudioLines className="h-10 w-20 animate-pulse" />
+            <AudioLines className="h-6 w-6 opacity-70 animate-pulse" />
           </motion.h2>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex items-start justify-center px-4 overflow-y-scroll no-scrollbar">
+        <div className="flex-1 flex items-center justify-center px-4 overflow-hidden">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentIndex}
@@ -231,20 +227,18 @@ const SongPresentation = () => {
                 x: { type: "spring", stiffness: 300, damping: 30 },
                 opacity: { duration: 0.2 },
               }}
-              className="w-full max-w-7xl mx-auto "
+              className="w-full max-w-6xl mx-auto"
             >
-              <div
-                className={`overflow-y-scroll no-scrollbar text-wrap h-full flex flex-col justify-center items-center  contentContainer `}
-              >
+              <div className="flex flex-col items-center space-y-1">
                 {currentPage.content.map((line, i) => (
                   <motion.p
                     key={i}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className={`my-1 font-bold text-shadow-lg  leading-normal mx-auto  text-ellipsis  text-wrap font-serif  text-center`}
+                    className="text-center font-semibold text-shadow-lg leading-tight tracking-wide"
                     style={{
-                      fontSize: `${2.5 + Number(fontSize)}rem`,
+                      fontSize: `${2.2 + Number(fontSize)}rem`,
                       fontFamily: fontFamily,
                     }}
                   >
@@ -273,9 +267,7 @@ const SongPresentation = () => {
                     : "w-1 bg-white/30 hover:bg-white/50"
                 }`}
                 aria-label={`Go to page ${index + 1}`}
-              >
-                {/* {index + 1} */}
-              </button>
+              />
             ))}
           </div>
 
@@ -286,14 +278,14 @@ const SongPresentation = () => {
               whileTap={{ scale: 0.9 }}
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className={`w-6 h-6 rounded-full flex items-center justify-center backdrop-blur-sm transition-all ${
+              className={`w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm transition-all ${
                 currentIndex === 0
                   ? "bg-white/10 cursor-not-allowed"
                   : "bg-white/20 hover:bg-white/30 active:bg-white/40"
               }`}
               aria-label="Previous page"
             >
-              <ChevronLeft className="w-3 h-3 text-white" />
+              <ChevronLeft className="w-5 h-5 text-white" />
             </motion.button>
 
             <motion.button
@@ -301,14 +293,14 @@ const SongPresentation = () => {
               whileTap={{ scale: 0.9 }}
               onClick={handleNext}
               disabled={currentIndex === songPages.length - 1}
-              className={`w-6 h-6 rounded-full flex items-center justify-center backdrop-blur-sm transition-all ${
+              className={`w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm transition-all ${
                 currentIndex === songPages.length - 1
                   ? "bg-white/10 cursor-not-allowed"
                   : "bg-white/20 hover:bg-white/30 active:bg-white/40"
               }`}
               aria-label="Next page"
             >
-              <ChevronRight className="w-3 h-3 text-white" />
+              <ChevronRight className="w-5 h-5 text-white" />
             </motion.button>
           </div>
         </div>

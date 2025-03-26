@@ -55,6 +55,17 @@ const ScriptureContent: React.FC = () => {
   const [highlightedVerses, setHighlightedVerses] = useState<{
     [key: string]: string;
   }>({});
+  const [presentationCurrentVerse, setPresentationCurrentVerse] =
+    useState<number>(1);
+  const [presentationNavigation, setPresentationNavigation] = useState<{
+    book: string;
+    chapter: number;
+    verse: number;
+  }>({
+    book: currentBook,
+    chapter: currentChapter,
+    verse: 1,
+  });
   const [showDropdown, setShowdropdown] = useState(false);
 
   const verses = getCurrentChapterVerses();
@@ -185,19 +196,6 @@ const ScriptureContent: React.FC = () => {
     }
   };
 
-  const handlePresentVerse = (text: string, bgSrc: string) => {
-    setPresentationText(text);
-    setPresentationBg(bgSrc);
-    setIsPresentingVerse(true);
-  };
-
-  const handleSelectBackground = (bgUrl: string, verseNumber: number) => {
-    setSelectedBg(bgUrl);
-    const verseText = verses.find((v) => v.verse === verseNumber)?.text || "";
-    handlePresentVerse(verseText, bgUrl);
-    setActiveDropdownVerse(null);
-  };
-
   // Add this with your other utility functions
   const highlightVerse = (verse: number, color: string) => {
     const verseKey = `${currentBook}-${currentChapter}-${verse}`;
@@ -288,7 +286,6 @@ const ScriptureContent: React.FC = () => {
 
   // Set font family based on user preference
 
-  // When selecting a different book
   const handleBookSelect = (book: string) => {
     // Save to history before changing
     if (currentBook !== book) {
@@ -297,24 +294,38 @@ const ScriptureContent: React.FC = () => {
 
     setCurrentBook(book);
     setCurrentChapter(1);
+    setCurrentVerse(1); // Explicitly set verse to 1
+    setSelectedVerse(1); // Ensure selected verse is 1
     setIsBookDropdownOpen(false);
-    setSelectedVerse(null);
+
+    // Ensure scroll to top
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+
     // Open chapter dropdown after selecting a book
     setTimeout(() => {
       setIsChapterDropdownOpen(true);
     }, 100);
   };
 
-  // When selecting a different chapter
+  // Modify handleChapterSelect to ensure verse is set to 1 and scrolled to top
   const handleChapterSelect = (chapter: number) => {
     // Save to history before changing
-    setSelectedVerse(1);
     if (currentChapter !== chapter) {
       addToHistory(`${currentBook} ${currentChapter}:${selectedVerse || 1}`);
     }
 
     setCurrentChapter(chapter);
+    setCurrentVerse(1); // Explicitly set verse to 1
+    setSelectedVerse(1); // Ensure selected verse is 1
     setIsChapterDropdownOpen(false);
+
+    // Ensure scroll to top
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+
     // Open verse dropdown after selecting a chapter
     setTimeout(() => {
       setIsVerseDropdownOpen(true);
@@ -379,6 +390,39 @@ const ScriptureContent: React.FC = () => {
     }
 
     return result;
+  };
+
+  const handlePresentVerse = (text: string, bgSrc: string, verse: number) => {
+    setPresentationText(text);
+    setPresentationBg(bgSrc);
+
+    // Set initial presentation navigation state
+    setPresentationNavigation({
+      book: currentBook,
+      chapter: currentChapter,
+      verse: verse,
+    });
+    setPresentationCurrentVerse(verse);
+    setIsPresentingVerse(true);
+  };
+
+  // New method to handle presentation navigation
+  const handlePresentationNavigation = (direction: "prev" | "next") => {
+    const currentVerses = getCurrentChapterVerses();
+    const currentVerseIndex = currentVerses.findIndex(
+      (v) => v.verse === presentationCurrentVerse
+    );
+    const chapterVerseCount = currentVerses.length;
+
+    if (direction === "next" && currentVerseIndex < chapterVerseCount - 1) {
+      const nextVerse = currentVerses[currentVerseIndex + 1];
+      setPresentationCurrentVerse(nextVerse.verse);
+      setPresentationText(nextVerse.text);
+    } else if (direction === "prev" && currentVerseIndex > 0) {
+      const prevVerse = currentVerses[currentVerseIndex - 1];
+      setPresentationCurrentVerse(prevVerse.verse);
+      setPresentationText(prevVerse.text);
+    }
   };
 
   const oldTestamentBooks = bookList.filter((book) => book.testament === "old");
@@ -581,6 +625,10 @@ const ScriptureContent: React.FC = () => {
         text={presentationText}
         isPresenting={isPresentingVerse}
         onClose={() => setIsPresentingVerse(false)}
+        onNext={() => handlePresentationNavigation("next")}
+        onPrev={() => handlePresentationNavigation("prev")}
+        currentVerse={presentationCurrentVerse}
+        totalVerses={getCurrentChapterVerses().length}
       />
       {/* Scripture content */}
       <div
@@ -598,7 +646,7 @@ const ScriptureContent: React.FC = () => {
             {verses.map((verse) => (
               <div
                 key={verse.verse.toString().trim()}
-                className="relative group py-2 rounded-md hover:bg-gray-50 dark:hover:bg-bgray transition-colors duration-150 bg-transparent"
+                className="relative group py-2 rounded-md hover:bg-gray-50 dark:hover:bg-bgray/40  transition-colors duration-150 bg-transparent"
                 ref={(el) => (verseRefs.current[verse.verse] = el)}
               >
                 <div className="flex items-start">
@@ -686,7 +734,11 @@ const ScriptureContent: React.FC = () => {
                                 key={index}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleSelectBackground(bg, verse.verse);
+                                  handlePresentVerse(
+                                    verse.text,
+                                    bg || bibleBgs[0],
+                                    verse.verse
+                                  );
                                 }}
                                 src={bg}
                                 alt={`Bg ${index + 1}`}

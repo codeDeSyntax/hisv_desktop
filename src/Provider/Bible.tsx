@@ -483,10 +483,6 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
       return;
     }
     
-    console.log("Searching for:", term);
-    console.log("Bible data available:", Object.keys(bibleData));
-    console.log("Current translation:", currentTranslation);
-    
     const results: { book: string; chapter: number; verse: number; text: string }[] = [];
     
     // Check if we have data for the current translation
@@ -498,41 +494,54 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
     
     const translation = bibleData[currentTranslation];
     
-    // Make sure we have books in this translation
+    // Validate books data
     if (!translation.books || !Array.isArray(translation.books)) {
       console.log("No books found in translation:", currentTranslation);
       setSearchResults([]);
       return;
     }
     
-    // Convert search term to lowercase for case-insensitive comparison
-    const searchTermLower = term.toLowerCase().trim();
+    // Preprocess search term: remove square brackets, trim, and handle case
+    const cleanSearchTerm = term.replace(/\[|\]/g, '').trim();
     
-    translation.books.forEach((book) => {
-      if (!book.chapters || !Array.isArray(book.chapters)) return;
+    // Create flexible search function
+    const matchSearch = (verseText: string, searchTerm: string) => {
+      // Remove square brackets and cleanup text
+      const cleanText = verseText.replace(/\[|\]/g, '');
       
-      book.chapters.forEach((chapter) => {
-        if (!chapter.verses || !Array.isArray(chapter.verses)) return;
-        
-        chapter.verses.forEach((verse) => {
-          const verseText = verse.text.toLowerCase();
-          let isMatch = false;
-          
-          if (exactMatch && wholeWords) {
-            // Exact match for whole words
-            isMatch = new RegExp(`\\b${searchTermLower}\\b`).test(verseText);
-          } else if (exactMatch) {
-            // Exact match (case insensitive)
-            isMatch = verseText.includes(searchTermLower);
-          } else if (wholeWords) {
-            // Match whole words only (case insensitive)
-            isMatch = verseText.split(/\s+/).some(word => word === searchTermLower);
-          } else {
-            // Default match (case insensitive)
-            isMatch = verseText.includes(searchTermLower);
-          }
-          
-          if (isMatch) {
+      // Convert both to lowercase for case-insensitive matching
+      const lowerText = cleanText.toLowerCase();
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      
+      // Different matching strategies based on search options
+      if (exactMatch && wholeWords) {
+        // Exact whole word match
+        return new RegExp(`\\b${(RegExp as any).escape(lowerSearchTerm)}\\b`).test(lowerText);
+      } else if (exactMatch) {
+        // Exact substring match
+        return lowerText.includes(lowerSearchTerm);
+      } else if (wholeWords) {
+        // Whole word match with partial flexibility
+        return lowerText.split(/\s+/).some(word => word.includes(lowerSearchTerm));
+      } else {
+        // Flexible pattern matching
+        // Allows matching even if search term is a partial word or part of a word
+        return lowerText.includes(lowerSearchTerm);
+      }
+    };
+    
+    // Extend RegExp with escape method if not exists
+    if (!(RegExp as any).escape) {
+      (RegExp as any).escape = function(string: string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      };
+    }
+    
+    // Comprehensive search across all books and chapters
+    translation.books.forEach((book) => {
+      book.chapters?.forEach((chapter) => {
+        chapter.verses?.forEach((verse) => {
+          if (matchSearch(verse.text, cleanSearchTerm)) {
             results.push({
               book: book.name,
               chapter: chapter.chapter,
@@ -544,8 +553,11 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
       });
     });
     
-    console.log(`Found ${results.length} results for "${term}"`);
-    setSearchResults(results);
+    // Limit results for performance and usability
+    const limitedResults = results.slice(0, 200);
+    
+    // console.log(`Found ${results.length} results for "${term}"`);
+    setSearchResults(limitedResults);
   };
 
   // Get current chapter verses

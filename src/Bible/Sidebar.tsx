@@ -37,9 +37,21 @@ const BibleSidebar: React.FC = () => {
       {/* Top sidebar button */}
       <div
         onClick={toggleSidebar}
-        className="p-3 text-gray-900 dark:text-gray-300 hover:bg-gray-100 hover:cursor-pointer dark:hover:bg-gray-700  text-left "
+        className="p-3 text-gray-900 dark:text-gray-300 hover:bg-gray-100 hover:cursor-pointer dark:hover:bg-bgray/50  text-left "
       >
-        {sidebarExpanded ? <X size={20} /> : <Menu size={20} />}
+        {sidebarExpanded ? <X size={20} style={{
+             color: `rgba(${Math.floor(
+                Math.random() * 255
+              )},${Math.floor(Math.random() * 255)},${Math.floor(
+                Math.random() * 255
+              )},1)`,
+        }} /> : <Menu size={20} style={{
+             color: `rgba(${Math.floor(
+                Math.random() * 255
+              )},${Math.floor(Math.random() * 255)},${Math.floor(
+                Math.random() * 255
+              )},1)`,
+        }} />}
       </div>
 
       {/* Sidebar menu items */}
@@ -50,7 +62,13 @@ const BibleSidebar: React.FC = () => {
             searchOpen ? "bg-gray-200 dark:bg-bgray" : ""
           }`}
         >
-          <Search size={20} />
+          <Search size={20} style={{
+               color: `rgba(${Math.floor(
+                Math.random() * 255
+              )},${Math.floor(Math.random() * 255)},${Math.floor(
+                Math.random() * 255
+              )},1)`,
+          }} />
           {sidebarExpanded && <span className="ml-3">Search</span>}
         </div>
         <div
@@ -59,7 +77,13 @@ const BibleSidebar: React.FC = () => {
             activeFeature === "favorites" ? "bg-gray-200 dark:bg-bgray" : ""
           }`}
         >
-          <Star size={20} />
+          <Star size={20} style={{
+               color: `rgba(${Math.floor(
+                Math.random() * 255
+              )},${Math.floor(Math.random() * 255)},${Math.floor(
+                Math.random() * 255
+              )},1)`,
+          }} />
           {sidebarExpanded && <span className="ml-3">Bookmarks</span>}
         </div>
         <div
@@ -68,7 +92,13 @@ const BibleSidebar: React.FC = () => {
             activeFeature === "history" ? "bg-gray-200 dark:bg-bgray" : ""
           }`}
         >
-          <RotateCcw size={20} />
+          <RotateCcw size={20} style={{
+               color: `rgba(${Math.floor(
+                Math.random() * 255
+              )},${Math.floor(Math.random() * 255)},${Math.floor(
+                Math.random() * 255
+              )},1)`,
+          }} />
           {sidebarExpanded && <span className="ml-3">History</span>}
         </div>
         <div
@@ -77,7 +107,13 @@ const BibleSidebar: React.FC = () => {
             activeFeature === "library" ? "bg-gray-200 dark:bg-bgray" : ""
           }`}
         >
-          <Book size={20} />
+          <Book size={20} style={{
+               color: `rgba(${Math.floor(
+                Math.random() * 255
+              )},${Math.floor(Math.random() * 255)},${Math.floor(
+                Math.random() * 255
+              )},1)`,
+          }} />
           {sidebarExpanded && <span className="ml-3">Library</span>}
         </div>
       </div>
@@ -89,7 +125,13 @@ const BibleSidebar: React.FC = () => {
           activeFeature === "settings" ? "bg-gray-200 dark:bg-bgray" : ""
         }`}
       >
-        <Settings size={20} />
+        <Settings size={20} style={{
+             color: `rgba(${Math.floor(
+                Math.random() * 255
+              )},${Math.floor(Math.random() * 255)},${Math.floor(
+                Math.random() * 255
+              )},1)`,
+        }} />
         {sidebarExpanded && <span className="ml-3">Settings</span>}
       </div>
     </div>

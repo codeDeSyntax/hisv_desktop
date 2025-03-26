@@ -76,12 +76,12 @@ class SongExtractor:
             in_chorus = False
             
             # Start with the first verse
-            formatted_parts.append(f'<p><!-- Verse {verse_count} --></p>')
+            formatted_parts.append(f'<p>Verse {verse_count}</p>')
             
             for i, line in enumerate(lines):
                 # Check if this line indicates a chorus
                 if 'CHORUS' in line.upper() or line.upper() == 'REFRAIN':
-                    formatted_parts.append('<p><!-- Chorus --></p>')
+                    formatted_parts.append('<p>Chorus</p>')
                     in_chorus = True
                     line_count = 0
                     continue  # Skip the chorus label
@@ -100,13 +100,13 @@ class SongExtractor:
                     if in_chorus:
                         verse_count += 1
                         if i < len(lines) - 1 and not ('CHORUS' in next_line.upper() or next_line.upper() == 'REFRAIN'):
-                            formatted_parts.append(f'<p><!-- Verse {verse_count} --></p>')
+                            formatted_parts.append(f'<p>Verse {verse_count}</p>')
                             in_chorus = False
                     else:
                         # If next is not a chorus and we've finished a verse, start a new verse
                         if i < len(lines) - 1 and not ('CHORUS' in next_line.upper() or next_line.upper() == 'REFRAIN'):
                             verse_count += 1
-                            formatted_parts.append(f'<p><!-- Verse {verse_count} --></p>')
+                            formatted_parts.append(f'<p>Verse {verse_count}</p>')
                     
                     line_count = 0
             

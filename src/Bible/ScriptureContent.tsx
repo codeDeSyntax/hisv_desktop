@@ -9,6 +9,7 @@ import {
   Share,
   Copy,
   Monitor,
+  Upload,
 } from "lucide-react";
 import { useBibleContext } from "@/Provider/Bible";
 import { useEastVoiceContext } from "@/Provider/EastVoice";
@@ -137,32 +138,54 @@ const ScriptureContent: React.FC = () => {
     setSelectedVerse(null);
     // Close verse dropdown when chapter changes
     setIsVerseDropdownOpen(false);
-  }, [currentBook, currentChapter]);
+  }, [currentBook, currentChapter, currentVerse]);
 
   useEffect(() => {
     // If we have a currentVerse (coming from bookmarks/history), use it
     if (currentVerse && verseRefs.current[currentVerse]) {
-      // setSelectedVerse(currentVerse);
       // Use a small delay to ensure the DOM is ready
+      console.log("selectedV verse sc: ", selectedVerse);
       setTimeout(() => {
         verseRefs.current[currentVerse]?.scrollIntoView({
           behavior: "smooth",
           block: "start",
+          inline: "nearest",
         });
+
+        // setSelectedVerse(currentVerse);
         // Update selectedVerse to match the current verse
         // Don't clear currentVerse for immediate navigation feedback
-      }, 100);
+      }, 300);
     }
   }, [currentVerse, currentBook, currentChapter]);
 
   const handlePreviousChapter = () => {
     if (currentChapter > 1) {
       // Save to history before changing
-      addToHistory(`${currentBook} ${currentChapter}`);
+      addToHistory(`${currentBook} ${currentChapter}:${selectedVerse || 1}`);
       setCurrentChapter(currentChapter - 1);
     }
     setCurrentVerse(1);
   };
+
+  // const setV = () => {
+  //   setSelectedVerse(currentVerse);
+  //   if (currentVerse && verseRefs.current[currentVerse]) {
+  //     // Use a small delay to ensure the DOM is ready
+  //     console.log("selectedV verse sc: ", selectedVerse);
+  //     setTimeout(() => {
+  //       verseRefs.current[currentVerse]?.scrollIntoView({
+  //         behavior: "smooth",
+  //         block: "start",
+  //         inline: "nearest",
+  //       });
+
+  //       // setSelectedVerse(currentVerse);
+  //       // Update selectedVerse to match the current verse
+  //       // Don't clear currentVerse for immediate navigation feedback
+  //     }, 100);
+  //   }
+  // };
 
   const handleNextChapter = () => {
     if (currentChapter < chapterCount) {
@@ -449,8 +472,12 @@ const ScriptureContent: React.FC = () => {
     };
   }, [isBookDropdownOpen, isChapterDropdownOpen, isVerseDropdownOpen]);
 
+  const selectedColor = `rgba(${Math.floor(Math.random() * 255)},${Math.floor(
+    Math.random() * 255
+  )},${Math.floor(Math.random() * 255)},1)`;
+
   return (
-    <div className="flex flex-col h-full bg-red-500 dark:bg-black text-white">
+    <div className="flex flex-col h-full bg-red-500 dark:bg-black text-white font-serif">
       {/* Single-row navigation bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-white dark:bg-black">
         <button
@@ -473,7 +500,7 @@ const ScriptureContent: React.FC = () => {
               }}
             >
               <BookOpen size={16} className="text-gray-400 text-[12px]" />
-              <span className="text-[12px] font-medium text-stone-500 dark:text-gray-50">
+              <span className="text-[12px] font-bold text-stone-500 dark:text-gray-50 font-serif ">
                 {currentBook}
               </span>
               <ChevronDown
@@ -487,19 +514,42 @@ const ScriptureContent: React.FC = () => {
             {isBookDropdownOpen && (
               <div className="absolute left-0 mt-2 w-[40vw] bg-white dark:bg-bgray  rounded-lg shadow-lg z-10 max-h-96 overflow-y-auto no-scrollbar">
                 <div className="p-3">
-                  <h2 className="text-sm font-semibold mb-2 text-stone-400">
-                    Old Testament
+                  <h2 className="text-sm flex items-center justify-between font-semibold mb-2 font-serif text-stone-400">
+                    Old Testament {"   "}
+                    <span
+                      className="underline font-serif"
+                      style={{
+                        color: `rgba(${Math.floor(
+                          Math.random() * 255
+                        )},${Math.floor(Math.random() * 255)},${Math.floor(
+                          Math.random() * 255
+                        )},1)`,
+                      }}
+                    >
+                      Bk:: {currentBook}
+                      {currentChapter}:
+                      {currentVerse === null ? "1" : currentVerse}
+                    </span>
                   </h2>
                   <div className="grid grid-cols-3 gap-1 mb-4">
                     {oldTestamentBooks.map((book) => (
                       <div
                         key={book.name}
-                        className={`py-2 px-1 text-[12px] flex items-center justify-center text-stone-400 cursor-pointer shadow  dark:shadow-black  rounded hover:bg-gray-500 dark:hover:bg-bgray/30 hover:text-white transition-colors duration-150 ${
+                        className={`p-2 text-[12px] flex items-center justify-center  dark:shadow-black shadow rounded   transition-colors duration-150 ${
                           currentBook === book.name
-                            ? "bg-gray-500 dark:bg-bgray/50 text-white dark:text-gray-50 font-medium"
-                            : ""
+                            ? "bg-transparent text-stone-500  hover:text-stone-900 cursor-not-allowed dark:text-gray-50 font-medium"
+                            : "text-stone-400 dark:text-gray-400 cursor-pointer   hover:text-stone-500 dark:hover:text-gray-200"
                         }`}
                         onClick={() => handleBookSelect(book.name)}
+                        style={{
+                          borderWidth: 2,
+                          borderStyle:
+                            currentBook === book.name ? "dotted" : "none",
+                          borderColor:
+                            currentBook === book.name
+                              ? selectedColor
+                              : selectedColor,
+                        }}
                       >
                         {book.name}
                       </div>
@@ -512,13 +562,21 @@ const ScriptureContent: React.FC = () => {
                     {newTestamentBooks.map((book) => (
                       <div
                         key={book.name}
-                        className={`p-2 text-[12px] flex items-center justify-center text-stone-400 dark:shadow-black cursor-pointer shadow rounded hover:bg-gray-500
-                          dark:hover:bg-bgray/30 hover:text-white transition-colors duration-150 ${
-                            currentBook === book.name
-                              ? "bg-gray-500 text-white dark:bg-bgray/50  dark:text-gray-50 font-medium"
-                              : ""
-                          }`}
+                        className={`p-2 text-[12px] flex items-center justify-center  dark:shadow-black cursor-pointer shadow rounded   transition-colors duration-150 ${
+                          currentBook === book.name
+                            ? "bg-transparent text-stone-500  hover:text-stone-900 cursor-not-allowed dark:text-gray-50 font-medium"
+                            : "text-stone-400 dark:text-gray-400 cursor-pointer   hover:text-stone-500 dark:hover:text-gray-200"
+                        }`}
                         onClick={() => handleBookSelect(book.name)}
+                        style={{
+                          borderWidth: 2,
+                          borderStyle:
+                            currentBook === book.name ? "dotted" : "none",
+                          borderColor:
+                            currentBook === book.name
+                              ? selectedColor
+                              : selectedColor,
+                        }}
                       >
                         {book.name}
                       </div>
@@ -539,7 +597,9 @@ const ScriptureContent: React.FC = () => {
                 setIsVerseDropdownOpen(false);
               }}
             >
-              <span className="text-[12px] font-medium">{currentChapter}</span>
+              <span className="text-[12px] font-medium font-bitter">
+                {currentChapter}
+              </span>
               <ChevronDown
                 size={14}
                 className={`transition-transform duration-200    text-gray-400 ${
@@ -554,12 +614,21 @@ const ScriptureContent: React.FC = () => {
                   {getChapters().map((chapter) => (
                     <div
                       key={chapter}
-                      className={`p-2 text-[12px] flex items-center justify-center  dark:shadow-black cursor-pointer shadow rounded hover:bg-gray-500 dark:hover:bg-bgray/30 hover:text-white transition-colors duration-150 ${
+                      className={`p-2 text-[12px] flex items-center justify-center  dark:shadow-black shadow rounded   transition-colors duration-150 ${
                         currentChapter === chapter
-                          ? "bg-gray-500 dark:bg-bgray/50 text-white dark:text-gray-50 font-medium"
-                          : "text-stone-500"
+                          ? "bg-transparent text-stone-500  hover:text-stone-900 cursor-not-allowed dark:text-gray-50 font-medium"
+                          : "text-stone-500 dark:text-gray-400 cursor-pointer   hover:text-stone-500 dark:hover:text-gray-200"
                       }`}
                       onClick={() => handleChapterSelect(chapter)}
+                      style={{
+                        borderWidth: 2,
+                        borderStyle:
+                          currentChapter === chapter ? "dotted" : "none",
+                        borderColor:
+                          currentChapter === chapter
+                            ? selectedColor
+                            : selectedColor,
+                      }}
                     >
                       {chapter}
                     </div>
@@ -579,7 +648,7 @@ const ScriptureContent: React.FC = () => {
                 setIsChapterDropdownOpen(false);
               }}
             >
-              <span className="text-[12px] font-medium text-stone-500 dark:text-gray-50">
+              <span className="text-[12px] font-medium font-bitter text-stone-500 dark:text-gray-50">
                 v {selectedVerse || "🤐"}
               </span>
               <ChevronDown
@@ -588,6 +657,7 @@ const ScriptureContent: React.FC = () => {
                   isVerseDropdownOpen ? "rotate-180" : ""
                 }`}
               />
+              {/* <Upload className="" onClick={setV} /> */}
             </button>
 
             {isVerseDropdownOpen && (
@@ -596,12 +666,21 @@ const ScriptureContent: React.FC = () => {
                   {getVerses().map((verse) => (
                     <div
                       key={verse}
-                      className={`p-2 text-[12px] flex items-center justify-center text-stone-400 dark:shadow-black cursor-pointer shadow rounded hover:bg-gray-500 dark:hover:bg-bgray/30 hover:text-white transition-colors duration-150 ${
+                      className={`p-2 text-[12px] flex items-center justify-center  dark:shadow-black  shadow rounded   transition-colors duration-150 ${
                         selectedVerse === verse
-                          ? "bg-gray-500 text-white font-medium"
-                          : ""
+                          ? "bg-transparent text-stone-500  hover:text-stone-900 cursor-not-allowed dark:text-gray-50 font-medium"
+                          : "text-stone-400 dark:text-gray-400 cursor-pointer   hover:text-stone-500 dark:hover:text-gray-200"
                       }`}
                       onClick={() => handleVerseSelect(verse)}
+                      style={{
+                        borderWidth: 2,
+                        borderStyle:
+                          selectedVerse === verse ? "dotted" : "none",
+                        borderColor:
+                          selectedVerse === verse
+                            ? selectedColor
+                            : selectedColor,
+                      }}
                     >
                       {verse}
                     </div>

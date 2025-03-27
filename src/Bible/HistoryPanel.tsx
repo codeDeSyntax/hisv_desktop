@@ -1,41 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import { X, Clock } from "lucide-react";
 import { useBibleContext } from "@/Provider/Bible";
 
 const HistoryPanel: React.FC = () => {
-  const { 
-    setActiveFeature, 
-    history, 
-    setCurrentBook, 
-    setCurrentChapter, 
-    setCurrentVerse 
+  const {
+    setActiveFeature,
+    history,
+    setCurrentBook,
+    setCurrentChapter,
+    currentVerse,
+    setCurrentVerse,
   } = useBibleContext();
+ 
 
   const handleHistoryClick = (reference: string) => {
     // Check if reference includes a verse (format: "Book Chapter:Verse")
     if (reference.includes(":")) {
       const [chapterPart, versePart] = reference.split(":");
       const verse = parseInt(versePart);
+  
       
+
       // Handle chapter part which contains book and chapter
       const parts = chapterPart.split(" ");
       const chapterNumber = parseInt(parts[parts.length - 1]);
       const bookName = parts.slice(0, parts.length - 1).join(" ");
-      
+
       setCurrentBook(bookName);
       setCurrentChapter(chapterNumber);
+      setCurrentVerse(null);
       setCurrentVerse(verse);
     } else {
       // Original handling for just book and chapter
       const parts = reference.split(" ");
       const chapterNumber = parseInt(parts[parts.length - 1]);
       const bookName = parts.slice(0, parts.length - 1).join(" ");
-      
+
       setCurrentBook(bookName);
       setCurrentChapter(chapterNumber);
-      setCurrentVerse(null); // Reset verse when navigating to just a chapter
+      setCurrentVerse(1); // Reset verse when navigating to just a chapter
     }
-    
+
     setActiveFeature(null);
   };
 

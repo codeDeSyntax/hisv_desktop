@@ -1,5 +1,6 @@
 import React from "react";
 import { X, Star } from "lucide-react";
+import { useState } from "react";
 import { useBibleContext } from "@/Provider/Bible";
 
 export const BookmarkPanel: React.FC = () => {
@@ -10,7 +11,9 @@ export const BookmarkPanel: React.FC = () => {
     setCurrentBook,
     setCurrentChapter,
     setCurrentVerse,
+    currentVerse,
   } = useBibleContext();
+
 
   const handleBookmarkClick = (bookmark: string) => {
     // Parse the bookmark format "Book Chapter:Verse"
@@ -22,12 +25,14 @@ export const BookmarkPanel: React.FC = () => {
       const [chapterStr, verseStr] = chapterVerse.split(":");
       const chapterNumber = parseInt(chapterStr);
       const verseNumber = parseInt(verseStr);
+     
 
       // Book name is everything except the last part
       const bookName = parts.slice(0, parts.length - 1).join(" ");
 
       setCurrentBook(bookName);
       setCurrentChapter(chapterNumber);
+      setCurrentVerse(null);
       setCurrentVerse(verseNumber);
     } else {
       // If no verse is specified, just navigate to the chapter
@@ -65,7 +70,7 @@ export const BookmarkPanel: React.FC = () => {
       </div>
       <div className="flex flex-col gap-4">
         {bookmarks.length > 0 ? (
-          bookmarks.map((bookmark, index) => (
+          bookmarks.reverse().map((bookmark, index) => (
             <button
               key={index}
               onClick={() => handleBookmarkClick(bookmark)}

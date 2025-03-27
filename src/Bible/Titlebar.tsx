@@ -40,7 +40,7 @@ const TitleBar: React.FC = () => {
         </div>
       </div>
       {/* Title text */}
-      <div className="text-sm font-medium flex-1 text-center text-gray-900 dark:text-gray-300">
+      <div className="text-sm  flex-1 text-center text-gray-900 dark:text-gray-300 font-serif font-cooper">
         Bible 300
       </div>
       <div

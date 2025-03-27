@@ -200,7 +200,7 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
   const [bookmarks, setBookmarks] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem("bibleBookmarks");
-      return saved ? JSON.parse(saved) : [];
+      return saved ? JSON.parse(saved).reverse() : [];
     } catch (e) {
       return [];
     }
@@ -287,169 +287,9 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
         setBookList(uniqueBooks);
       } catch (error) {
         console.error("Error fetching Bible data:", error);
-        // Use mock data for development
-        // const mockData = {
-        //   KJV: {
-        //     translation: "King James Version",
-        //     books: [
-        //       {
-        //         name: "1 Timothy",
-        //         testament: "new",
-        //         chapters: [
-        //           { chapter: 1, verses: [] },
-        //           { chapter: 2, verses: [] },
-        //           {
-        //             chapter: 3,
-        //             verses: [
-        //               {
-        //                 verse: 1,
-        //                 text: "This is a true saying, If a man desire the office of a bishop, he desireth a good work.",
-        //               },
-        //               {
-        //                 verse: 2,
-        //                 text: "A bishop then must be blameless, the husband of one wife, vigilant, sober, of good behaviour, given to hospitality, apt to teach;",
-        //               },
-        //               {
-        //                 verse: 3,
-        //                 text: "Not given to wine, no striker, not greedy of filthy lucre; but patient, not a brawler, not covetous;",
-        //               },
-        //               {
-        //                 verse: 4,
-        //                 text: "One that ruleth well his own house, having his children in subjection with all gravity;",
-        //               },
-        //               {
-        //                 verse: 5,
-        //                 text: "(For if a man know not how to rule his own house, how shall he take care of the church of God?)",
-        //               },
-        //               {
-        //                 verse: 6,
-        //                 text: "Not a novice, lest being lifted up with pride he fall into the condemnation of the devil.",
-        //               },
-        //               {
-        //                 verse: 7,
-        //                 text: "Moreover he must have a good report of them which are without; lest he fall into reproach and the snare of the devil.",
-        //               },
-        //               {
-        //                 verse: 8,
-        //                 text: "Likewise must the deacons be grave, not doubletongued, not given to much wine, not greedy of filthy lucre;",
-        //               },
-        //               {
-        //                 verse: 9,
-        //                 text: "Holding the mystery of the faith in a pure conscience.",
-        //               },
-        //               {
-        //                 verse: 10,
-        //                 text: "And let these also first be proved; then let them use the office of a deacon, being found blameless.",
-        //               },
-        //               {
-        //                 verse: 11,
-        //                 text: "Even so must their wives be grave, not slanderers, sober, faithful in all things.",
-        //               },
-        //               {
-        //                 verse: 12,
-        //                 text: "Let the deacons be the husbands of one wife, ruling their children and their own houses well.",
-        //               },
-        //               {
-        //                 verse: 13,
-        //                 text: "For they that have used the office of a deacon well purchase to themselves a good degree, and great boldness in the faith which is in Christ Jesus.",
-        //               },
-        //               {
-        //                 verse: 14,
-        //                 text: "These things write I unto thee, hoping to come unto thee shortly:",
-        //               },
-        //               {
-        //                 verse: 15,
-        //                 text: "But if I tarry long, that thou mayest know how thou oughtest to behave thyself in the house of God, which is the church of the living God, the pillar and ground of the truth.",
-        //               },
-        //             ],
-        //           },
-        //         ],
-        //       },
-        //     ],
-        //   },
-        //   TWI: {
-        //     translation: "Twi",
-        //     books: [
-        //       {
-        //         name: "1 Timoteo",
-        //         testament: "new",
-        //         chapters: [
-        //           { chapter: 1, verses: [] },
-        //           { chapter: 2, verses: [] },
-        //           {
-        //             chapter: 3,
-        //             verses: [
-        //               {
-        //                 verse: 1,
-        //                 text: "Sɛ obi pɛ asɔfo panyin adwuma a, ɔpɛ adwuma pa.",
-        //               },
-        //               {
-        //                 verse: 2,
-        //                 text: "Ɛsɛ sɛ ɔsɔfo panyin yɛ onipa a mfomso biara nni ne ho, ɔyɛ ɔbaa koro kunu a n'ani da hɔ, ɔwɔ ahohyɛso, ɔdwenkyerɛw pa a ɔwɔ anuonyam, ɔhwɛ ahɔho yiye, na obetumi akyerɛkyerɛ.",
-        //               },
-        //               {
-        //                 verse: 3,
-        //                 text: "Ɛnsɛ sɛ ɔyɛ ɔkɔwensani, ɔkofoni, na mmom, ɔyɛ odwo a ɔmpɛ ntɔkwaw, na ɔmpɛ sika.",
-        //               },
-        //               {
-        //                 verse: 4,
-        //                 text: "Ɛsɛ sɛ ɔhwɛ ɔno ara ne fifo yiye, ma ne mma di n'asɛm pɛpɛɛpɛ.",
-        //               },
-        //               {
-        //                 verse: 5,
-        //                 text: "Sɛ obi ntumi nhwɛ ɔno ara ne fi yiye a, ɔbɛyɛ dɛn ahwɛ Onyankopɔn asafo?",
-        //               },
-        //               {
-        //                 verse: 6,
-        //                 text: "Ɛnsɛ sɛ ɔyɛ obi a ɔnsɔɔ nye gyidini, anyɛ saa a, ɔbɛyɛ ahantan na wɔabu no fɔ sɛnea wobuu ɔbonsam fɔ no.",
-        //               },
-        //               {
-        //                 verse: 7,
-        //                 text: "Bio, ɛsɛ sɛ wɔn a wɔnye gyidifo no ka ne ho asɛmpa, sɛnea ɛbɛyɛ a, wɔrenhyɛ no aniwu, na ɔrenkɔtɔ ɔbonsam afidie mu.",
-        //               },
-        //               {
-        //                 verse: 8,
-        //                 text: "Saa ara na ɛsɛ sɛ asɔfo a wɔsom wɔ asafo no mu no yɛ nnipa a wɔwɔ anuonyam a wɔyɛ anokwafo, wɔnnom nsa bebree na wɔmpɛ ahonya kɛkɛ.",
-        //               },
-        //               {
-        //                 verse: 9,
-        //                 text: "Ɛsɛ sɛ wɔde adwenkyerɛw pa kura gyidi mu nokware a wɔada no adi no mu.",
-        //               },
-        //               {
-        //                 verse: 10,
-        //                 text: "Wonni kan nsɔ wɔn nhwɛ, na sɛ wonnya mfomso biara a, wɔnsom sɛ asɔfo wɔ asafo mu.",
-        //               },
-        //               {
-        //                 verse: 11,
-        //                 text: "Saa ara na ɛsɛ sɛ wɔn yerenom yɛ anuonyamfo a wɔnkasaboɔ, wɔwɔ ahohyɛso na wɔyɛ nokwafo wɔ ade nyinaa mu.",
-        //               },
-        //               {
-        //                 verse: 12,
-        //                 text: "Ɛsɛ sɛ asɔfo a wɔsom wɔ asafo mu no yɛ mmarima a wɔware mmaa baako na wɔhwɛ wɔn mma ne wɔn fifo yiye.",
-        //               },
-        //               {
-        //                 verse: 13,
-        //                 text: "Na wɔn a wɔsom wɔ asafo mu yiye no benya dibea pa ne akokoɔduru a ɛfata gyidi a wɔwɔ wɔ Kristo Yesu mu no.",
-        //               },
-        //               {
-        //                 verse: 14,
-        //                 text: "Merebɛba wo nkyɛn nnansa yi ara na merekyerɛw saa akwankyerɛ yi abrɛ wo.",
-        //               },
-        //               {
-        //                 verse: 15,
-        //                 text: "Na sɛ mikyɛ a, wobɛhu sɛnea ɛsɛ sɛ nnipa di wɔn ho wɔ Onyankopɔn a ɔte ase no fi a ɛyɛ asafo a ɛyɛ nokware dum ne ne nnyinaso mu no.",
-        //               },
-        //             ],
-        //           },
-        //         ],
-        //       },
-        //     ],
-        //   },
-        // };
-  
-        // setBibleData(mockData);
-        // setBookList(mockData[currentTranslation as keyof typeof mockData].books);
-      }
+
+        
+     }
     };
   
     fetchBibleData();
@@ -458,7 +298,7 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
   // Add a new bookmark
   const addBookmark = (bookmark: string) => {
     if (!bookmarks.includes(bookmark)) {
-      setBookmarks([...bookmarks, bookmark]);
+      setBookmarks([ bookmark,...bookmarks,]);
     }
   };
 

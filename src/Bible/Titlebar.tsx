@@ -1,21 +1,91 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { X, Minus, Square } from "lucide-react";
 import { useBibleContext } from "@/Provider/Bible";
 import { useEastVoiceContext } from "@/Provider/EastVoice";
-import { Settings, MoreHorizontal, FileText } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 
 const TitleBar: React.FC = () => {
-  const { handleClose, handleMaximize, handleMinimize } = useBibleContext();
+  const { handleClose, handleMaximize, handleMinimize, theme } =
+    useBibleContext();
   const { setAndSaveCurrentScreen } = useEastVoiceContext();
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const [selectedBg, setSelectedBg] = useState<string>('url("./wood2.jpg")');
+  const [nextBg, setNextBg] = useState<string>('url("./wood7.png")');
+  const [bgOpacity, setBgOpacity] = useState<number>(1);
+
+  const ltImages = [
+    'url("./wood2.jpg")',
+    'url("./wood7.png")',
+    'url("./wood6.jpg")',
+  ];
+
+  const randomImage = useCallback(() => {
+    const currentIndex = ltImages.indexOf(selectedBg);
+    let newIndex = currentIndex;
+
+    // Ensure we select a different image
+    while (newIndex === currentIndex) {
+      newIndex = Math.floor(Math.random() * ltImages.length);
+    }
+
+    setNextBg(ltImages[newIndex]);
+    // Start transition
+    setBgOpacity(0);
+  }, [selectedBg]);
+
+  useEffect(() => {
+    // Set up interval for image switching
+    const intervalId = setInterval(randomImage, 20000); // 5 minutes (300000 ms)
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [randomImage]);
+
+  useEffect(() => {
+    // When opacity reaches 0, switch background and reset opacity
+    if (bgOpacity === 0) {
+      const transitionTimer = setTimeout(() => {
+        setSelectedBg(nextBg);
+        setBgOpacity(1);
+      }, 5000); // Matches transition duration
+
+      return () => clearTimeout(transitionTimer);
+    }
+  }, [bgOpacity, nextBg]);
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
 
   return (
-    <div className="h-8 bg-gray-50 dark:bg-bgray flex items-center flex-row-reverse px-4 border-b border-gray-300 dark:border-gray-700 select-none">
+    <div
+      className="h-8 flex items-center flex-row-reverse px-4 border-b border-gray-300 dark:border-gray-700 select-none relative"
+      style={{
+        ...(theme === "light"
+          ? {
+              backgroundImage:
+                theme === "light"
+                  ? `linear-gradient(to bottom,
+             rgba(255, 255, 255, 0%) 0%,
+             rgba(255, 255, 255, 5) 60%),
+             ${selectedBg}`
+                  : undefined,
+              backgroundRepeat: "repeat",
+              backgroundSize: "50px", // Adjust size to control repeat pattern
+            }
+          : {
+              backgroundImage:
+                theme === "dark"
+                  ? `linear-gradient(to bottom,
+             rgba(255, 255, 255, 0%) 0%,
+             rgba(20, 20, 20, 5) 60%),
+             url(./snow2.jpg)`
+                  : undefined,
+              backgroundRepeat: "repeat",
+              backgroundSize: "200px", // Adjust size to control repeat pattern
+            }),
+      }}
+    >
       <div className="flex space-x-2 mr-4">
         {/* Close button */}
         <div
@@ -39,8 +109,8 @@ const TitleBar: React.FC = () => {
           <Square className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white" />
         </div>
       </div>
-      {/* Title text */}
-      <div className="text-sm  flex-1 text-center text-gray-900 dark:text-gray-300 font-serif font-cooper">
+      {/* Rest of the component remains the same */}
+      <div className="text-sm flex-1 text-center text-gray-900 dark:text-gray-300 font-cooper">
         Bible 300
       </div>
       <div

@@ -730,9 +730,9 @@ const ScriptureContent: React.FC = () => {
               >
                 <div className="flex items-start">
                   {/* Verse number */}
-                  <div className="flex-shrink-0 w-8 text-center pt-1">
+                  <div className="flex-shrink-0  text-center pt-1 mb-10 ml-4  ">
                     <span
-                      className="text-primary font-medium inline-block"
+                      className="text-primary font-cooper font- skew-   inline-block"
                       style={{ fontSize: "0.75em" }}
                     >
                       {verse.verse}

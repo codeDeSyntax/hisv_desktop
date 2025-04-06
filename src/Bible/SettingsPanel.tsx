@@ -120,7 +120,14 @@ const SettingsPanel: React.FC = () => {
   ];
 
   return (
-    <div className="h-full p-4 bg-gray-50 dark:bg-black font-serif overflow-hidden">
+    <div
+      className="h-full p-4 bg-gray-50 dark:bg-black font-serif border-none overflow-hidden"
+      style={{
+        borderRightWidth: 1,
+        borderRightColor: theme === "dark" ? "#202020" : "#20202020",
+        borderRightStyle: "dashed",
+      }}
+    >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
           Settings

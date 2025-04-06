@@ -189,21 +189,19 @@ const Sidebar = ({ activeTab, setActiveTab }: SideBarProps) => {
   ];
 
   const fontFamilyOptions = [
-    { value: "'Roboto Bold', serif", label: "Roboto Bold" },
-    { value: "'Anton SC', serif", label: "Anton SC" },
-    { value: "'Big Shoulder Thin', serif", label: "Big Shoulder Thin" },
     { value: "'Bitter Thin', serif", label: "Bitter Thin" },
     { value: "'Oswald ExtraLight', serif", label: "Oswald ExtraLight" },
-    { value: "'Haettenschweiler', serif", label: "Haetten" },
-    { value: "'Impact', serif", label: "Impact" },
-    { value: "'Cooper Black', serif", label: "CollPbl" },
-    { value: "'Teko', serif", label: "Teko" },
-    { value: "'Alumini Sans Black', serif", label: "Alumini" },
-    { value: "'Glarino DEMO', serif", label: "Glarino" },
-    { value: "'Tropical Organic Demo', serif", label: "Tropical" },
-    { value: "'Shrikhand', serif", label: "Shrikhand" },
-    { value: "'Staatliches', serif", label: "Staatliches" },
-    { value: "'LTFuzz', serif", label: "LtFuzz" },
+    { value: "'Haettenschweiler', sans-serif", label: "Haettenschweiler" },
+    { value: "'Impact', sans-serif", label: "Impact" },
+    { value: "'Alumini Sans Black', serif", label: "Alumini Sans Black" },
+    { value: "'LTFuzz', serif", label: "LTFuzz" },
+    { value: "'Palatino Linotype', serif", label: "Palatino Linotype" },
+    { value: "'Garamond', serif", label: "Garamond" },
+    { value: "'Segoe UI', sans-serif", label: "Segoe UI" },
+    {
+      value: "'Franklin Gothic Medium', sans-serif",
+      label: "Franklin Gothic Medium",
+    },
   ];
 
   const displayCountOptions = [

@@ -12,6 +12,8 @@ const SearchPanel: React.FC = () => {
     searchResults,
     setCurrentBook,
     setCurrentChapter,
+    currentVerse,
+    setCurrentVerse,
     exactMatch,
     setExactMatch,
     wholeWords,
@@ -35,6 +37,7 @@ const SearchPanel: React.FC = () => {
   const handleResultClick = (book: string, chapter: number, verse: number) => {
     setCurrentBook(book);
     setCurrentChapter(chapter);
+    setCurrentVerse(verse);
     setSearchOpen(false);
     // Scroll to the selected verse
     const verseElement = document.getElementById(`verse-${verse}`);
@@ -47,7 +50,7 @@ const SearchPanel: React.FC = () => {
     <div
       className={`fixed top-8 font-serif ${
         sidebarExpanded ? "left-48" : "left-12"
-      } w-64 md:w-80 bg-white dark:bg-bgray h-[calc(100vh-2rem)] 
+      } w-64 md:w-80 bg-white dark:bg-[#121212] h-[calc(100vh-2rem)] 
       border-r border-gray-300 dark:border-gray-700 
       transition-all duration-300 z-10 overflow-hidden flex flex-col`}
     >

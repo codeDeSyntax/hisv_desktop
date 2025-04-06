@@ -381,11 +381,13 @@ const ScriptureContent: React.FC = () => {
     return verses.map((verse) => verse.verse);
   };
 
-  const formatVerseText = (text: string) => {
+  const formatVerseText = (text: string, highlightColor: string | null) => {
+    // First handle the special Unicode character formatting (red text)
     // Split the text by the special Unicode characters
     const parts = text.trim().split(/[\u2039\u203a]/);
-    // If there are no splits (no special characters found), return the plain text
-    if (parts.length <= 1) return text;
+
+    // If there are no splits (no special characters found) and no highlight color, return the plain text
+    if (parts.length <= 1 && !highlightColor) return text;
 
     // Initialize result array to hold the formatted parts
     const result = [];
@@ -399,13 +401,32 @@ const ScriptureContent: React.FC = () => {
         if (isInside) {
           // If we're inside the special brackets, apply the red color
           result.push(
-            <span key={i} style={{ color: "red" }} className="underline">
+            <span
+              key={`red-${i}`}
+              style={{ color: "red" }}
+              className="underline"
+            >
               {parts[i]}
             </span>
           );
         } else {
-          // Otherwise, use the normal text color
-          result.push(<span key={i}>{parts[i]}</span>);
+          // Apply highlight if specified, otherwise use normal text
+          result.push(
+            <span
+              key={`normal-${i}`}
+              style={
+                highlightColor
+                  ? {
+                      backgroundColor: `${highlightColor}80`,
+                      color: `${verseTextColor}`,
+                      textDecoration: "underline",
+                    }
+                  : {}
+              }
+            >
+              {parts[i]}
+            </span>
+          );
         }
       }
       // Toggle the inside/outside state for the next part
@@ -414,7 +435,6 @@ const ScriptureContent: React.FC = () => {
 
     return result;
   };
-
   const handlePresentVerse = (text: string, bgSrc: string, verse: number) => {
     setPresentationText(text);
     setPresentationBg(bgSrc);
@@ -564,7 +584,7 @@ const ScriptureContent: React.FC = () => {
                         key={book.name}
                         className={`p-2 text-[12px] flex items-center justify-center  dark:shadow-black cursor-pointer shadow rounded   transition-colors duration-150 ${
                           currentBook === book.name
-                            ? "bg-transparent text-stone-500  hover:text-stone-900 cursor-not-allowed dark:text-gray-50 font-medium"
+                            ? "bg-transparent text-stone-500  hover:text-stone-900 pointer-events-none dark:text-gray-50 font-medium"
                             : "text-stone-400 dark:text-gray-400 cursor-pointer   hover:text-stone-500 dark:hover:text-gray-200"
                         }`}
                         onClick={() => handleBookSelect(book.name)}
@@ -616,7 +636,7 @@ const ScriptureContent: React.FC = () => {
                       key={chapter}
                       className={`p-2 text-[12px] flex items-center justify-center  dark:shadow-black shadow rounded   transition-colors duration-150 ${
                         currentChapter === chapter
-                          ? "bg-transparent text-stone-500  hover:text-stone-900 cursor-not-allowed dark:text-gray-50 font-medium"
+                          ? "bg-transparent text-stone-500  hover:text-stone-900 pointer-events-none hover:cursor-pointer dark:text-gray-50 font-medium"
                           : "text-stone-500 dark:text-gray-400 cursor-pointer   hover:text-stone-500 dark:hover:text-gray-200"
                       }`}
                       onClick={() => handleChapterSelect(chapter)}
@@ -667,8 +687,8 @@ const ScriptureContent: React.FC = () => {
                     <div
                       key={verse}
                       className={`p-2 text-[12px] flex items-center justify-center  dark:shadow-black  shadow rounded   transition-colors duration-150 ${
-                        selectedVerse === verse
-                          ? "bg-transparent text-stone-500  hover:text-stone-900 cursor-not-allowed dark:text-gray-50 font-medium"
+                        currentVerse === verse
+                          ? "bg-transparent text-stone-500  hover:text-stone-900 cursor-not-allowed pointer-events-none dark:text-gray-50 font-medium"
                           : "text-stone-400 dark:text-gray-400 cursor-pointer   hover:text-stone-500 dark:hover:text-gray-200"
                       }`}
                       onClick={() => handleVerseSelect(verse)}
@@ -751,14 +771,17 @@ const ScriptureContent: React.FC = () => {
                           (theme === "dark"
                             ? verseTextColor || "#f9fafb"
                             : verseTextColor || "#78716c"),
-                        backgroundColor: getVerseHighlight(verse.verse)
-                          ? `${getVerseHighlight(verse.verse)}22` // Add transparency to the highlight color
-                          : "transparent",
+                        // backgroundColor: getVerseHighlight(verse.verse)
+                        //   ? `${getVerseHighlight(verse.verse)}22` // Add transparency to the highlight color
+                        //   : "transparent",
                         fontSize: getFontSize(),
                         fontFamily: fontFamily,
                       }}
                     >
-                      {formatVerseText(verse.text)}
+                      {formatVerseText(
+                        verse.text,
+                        getVerseHighlight(verse.verse)
+                      )}
                     </p>
                   </div>
                 </div>
@@ -818,6 +841,12 @@ const ScriptureContent: React.FC = () => {
                                     bg || bibleBgs[0],
                                     verse.verse
                                   );
+                                }}
+                                style={{
+                                  borderWidth: 2,
+                                  borderStyle: "dashed",
+                                  borderColor:
+                                    theme === "dark" ? "#f9fafb" : "#78716c",
                                 }}
                                 src={bg}
                                 alt={`Bg ${index + 1}`}

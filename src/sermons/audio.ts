@@ -6,6 +6,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/be-unified/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-5-1970",
     
   },
@@ -16,6 +18,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/a-chosen-spot-part-1/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-7-1973",
   },
   {
@@ -25,6 +29,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/a-chosen-spot-part-2/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-7-1973",
   },
   {
@@ -34,6 +40,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/a-cross-to-bear/',
     year: "1964",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-19-1964",
   },
   {
@@ -43,6 +51,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/a-drink-from-the-well-of-bethleham/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-21-1969",
   },
   {
@@ -52,6 +62,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/a-dwelling-place-for-god/',
     year: "1964",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-18-1964",
   },
   {
@@ -61,6 +73,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/a-purpose-to-stand-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-28-1969",
   },
   {
@@ -70,6 +84,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/a-purpose-to-stand-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-28-1969",
   },
   {
@@ -79,6 +95,8 @@ const audioSermons = [
     audioUrl:'',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-8-1968",
   },
   {
@@ -88,6 +106,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/a-resting-place-for-the-ark-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-8-1968",
   },
   {
@@ -97,6 +117,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/a-spiritual-race/',
     year: "1964",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-11-1964",
   },
   {
@@ -106,6 +128,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/abels-sacrifice/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-9-1969",
   },
   {
@@ -115,6 +139,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/abraham-and-lot-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-11-1968",
   },
   {
@@ -124,6 +150,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/abraham-and-lot-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-11-1968",
   },
   {
@@ -133,6 +161,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/abraham-royal-seed-in-the-journey-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-18-1968",
   },
   {
@@ -142,6 +172,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/all-willing-to-pay-the-price-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-18-1968",
   },
   {
@@ -151,6 +183,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/all-willing-to-pay-the-price-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-4-1970",
   },
   {
@@ -160,6 +194,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/all-willing-to-pay-the-price-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-4-1970",
   },
   {
@@ -169,6 +205,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/an-open-door/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-19-1968",
   },
   {
@@ -178,6 +216,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/an-open-door-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-16-1971",
   },
   {
@@ -187,6 +227,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/an-open-door-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-16-1971",
   },
   {
@@ -196,6 +238,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/an-uncertain-sound/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-29-1970",
   },
   {
@@ -205,6 +249,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/and-israel-abode-at-kadesh/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-14-1969",
   },
   {
@@ -214,6 +260,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/apostasy-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-23-1969",
   },
   {
@@ -223,6 +271,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/apostasy-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-23-1969",
   },
   {
@@ -232,6 +282,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/attraction-in-the-bride-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-9-1969",
   },
   {
@@ -241,6 +293,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/attraction-in-the-bride-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-9-1969",
   },
   {
@@ -250,6 +304,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/awakening-gods-children/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-29-1973",
   },
   {
@@ -259,6 +315,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/baptism-of-the-holy-ghost-in-relation-to-the-new-birth-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-29-1971",
   },
   {
@@ -268,6 +326,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/baptism-of-the-holy-ghost-in-relation-to-the-new-birth-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-29-1971",
   },
   {
@@ -277,6 +337,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/beatitudes/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-1-1972",
   },
   {
@@ -286,6 +348,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/beginning-of-sorrows-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-11-1970",
   },
   {
@@ -295,6 +359,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/beginning-of-sorrows-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-11-1970",
   },
   {
@@ -304,6 +370,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/being-subject/',
     year: "1965",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-14-1965",
   },
   {
@@ -313,6 +381,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/believing-in-christ/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-17-1971",
   },
   {
@@ -322,6 +392,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bible-prophecy-1-rev-13/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-27-1973",
   },
   {
@@ -331,6 +403,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bible-prophecy-2-rev/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-27-1973",
   },
   {
@@ -340,6 +414,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bible-prophecy-3-red-dragon/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-3-1973",
   },
   {
@@ -349,6 +425,8 @@ const audioSermons = [
     audioUrl:'',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-10-1973",
   },
   {
@@ -358,6 +436,8 @@ const audioSermons = [
     audioUrl:'',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-10-1973",
   },
   {
@@ -367,6 +447,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bible-prophecy-4-70-wk/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-11-1973",
   },
   {
@@ -376,6 +458,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/birthright/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-25-1968",
   },
   {
@@ -385,6 +469,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/blind-laodicea-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-8-1968",
   },
   {
@@ -394,6 +480,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/blind-laodicea-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-8-1968",
   },
   {
@@ -403,6 +491,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bride-in-the-spirit-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-20-1971",
   },
   {
@@ -412,6 +502,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bride-in-the-spirit-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-20-1971",
   },
   {
@@ -421,6 +513,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bro-bobs-jamaica-trip-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-6-1969",
   },
   {
@@ -430,6 +524,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bro-bobs-jamaica-trip-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-6-1969",
   },
   {
@@ -439,6 +535,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bro-bobs-robert-lee-lamberts-testimony-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-26-1969",
   },
   {
@@ -448,6 +546,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bro-bobs-robert-lee-lamberts-testimony-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-26-1969",
   },
   {
@@ -457,6 +557,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bro-branhams-heavenly-vision/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-6-1970",
   },
   {
@@ -466,6 +568,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/bro-robert-lamberts-funeral/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-6-1973",
   },
   {
@@ -475,6 +579,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/broken-fellowship/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-30-1967",
   },
   {
@@ -484,6 +590,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/broken-fellowship-new-york/',
     year: "1964",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-21-1964",
   },
   {
@@ -493,6 +601,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/building-on-a-rock/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-14-1970",
   },
   {
@@ -502,6 +612,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/building-on-temple-of-god-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-15-1970",
   },
   {
@@ -511,6 +623,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/building-on-temple-of-god-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-15-1970",
   },
   {
@@ -520,6 +634,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/by-faith-noah-part-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-13-1972",
   },
   {
@@ -529,6 +645,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/by-faith-noah-part-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-13-1972",
   },
   {
@@ -538,6 +656,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/calling-upon-the-lord-to-be-saved-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-12-1971",
   },
   {
@@ -547,6 +667,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/calling-upon-the-lord-to-be-saved-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-12-1971",
   },
   {
@@ -556,6 +678,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/cast-away-your-old-garment/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-2-1969",
   },
   {
@@ -565,6 +689,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/cause-of-wrath-of-god-today-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-19-1971",
   },
   {
@@ -574,6 +700,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/cause-of-wrath-of-god-today-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-19-1971",
   },
   {
@@ -583,6 +711,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/children-of-disobedience-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-15-1970",
   },
   {
@@ -592,6 +722,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/children-of-disobedience-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-15-1970",
   },
   {
@@ -601,6 +733,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/church-age-book-message-to-the-church/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-28-1970",
   },
   {
@@ -610,6 +744,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/coming-of-christ/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-9-1968",
   },
   {
@@ -619,6 +755,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/communion/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-9-1972",
   },
   {
@@ -628,6 +766,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/compel-them-to-come-in/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-6-1970",
   },
   {
@@ -637,6 +777,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/conditioning-the-heart-to-receive-rev/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-24-1972",
   },
   {
@@ -646,6 +788,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/contend-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-1-1970",
   },
   {
@@ -655,6 +799,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/contend-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-1-1970",
   },
   {
@@ -664,6 +810,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/contend-for-the-faith/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-13-1972",
   },
   {
@@ -673,6 +821,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/crossing-the-jordan/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-17-1967",
   },
   {
@@ -682,6 +832,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/crucified-in-the-place-of-a-skull/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-11-1973",
   },
   {
@@ -691,6 +843,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/deception-of-satan-part-1/',
     year: "1966",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-25-1966",
   },
   {
@@ -700,6 +854,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/davids-first-love-2/',
     year: "1966",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-25-1966",
   },
   {
@@ -709,6 +865,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/davids-vision/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-24-1970",
   },
   {
@@ -718,6 +876,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/deception-of-satan-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-26-1968",
   },
   {
@@ -727,6 +887,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/deception-of-satan-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-26-1968",
   },
   {
@@ -736,6 +898,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/deliverance-from-the-power-of-darkness/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-12-1972",
   },
   {
@@ -745,6 +909,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/dreams-and-seven-church-ages-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-9-1969",
   },
   {
@@ -754,6 +920,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/dreams-and-seven-church-ages-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-9-1969",
   },
   {
@@ -763,6 +931,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/each-step-i-take/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-28-1968",
   },
   {
@@ -772,6 +942,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/eat-drink-be-merry/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-7-1971",
   },
   {
@@ -781,6 +953,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/eating-all-the-lamb/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-5-1967",
   },
   {
@@ -790,6 +964,8 @@ const audioSermons = [
     audioUrl:'',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-30-1967",
   },
   {
@@ -799,6 +975,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/elected-lady-nuggets-invisible-union-part-2/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-30-1967",
   },
   {
@@ -808,6 +986,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/election-of-abrahams-royal-seed-jacobs-ladder/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-21-1972",
   },
   {
@@ -817,6 +997,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/elisha/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-24-1970",
   },
   {
@@ -826,6 +1008,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/empty-vessels-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-19-1969",
   },
   {
@@ -835,6 +1019,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/empty-vessels-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-19-1969",
   },
   {
@@ -844,6 +1030,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/endtime-bride-of-christ-about-her-fathers-business/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-6-1970",
   },
   {
@@ -853,6 +1041,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/ephesians-parallels-joshua-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-1-1972",
   },
   {
@@ -862,6 +1052,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/ephesians-parallels-joshua-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-8-1972",
   },
   {
@@ -871,6 +1063,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/ephesians-parallels-joshua-3/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-8-1972",
   },
   {
@@ -880,6 +1074,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/ephesians-parallels-joshua-4/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-15-1972",
   },
   {
@@ -889,6 +1085,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/ephesians-parallels-joshua-5/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-15-1972",
   },
   {
@@ -898,6 +1096,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/ephesians-parallels-joshua-6/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-11-1973",
   },
   {
@@ -907,6 +1107,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/evening-light/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-29-1970",
   },
   {
@@ -916,6 +1118,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/ever-learning-never-able/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-10-1971",
   },
   {
@@ -925,6 +1129,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/evil-communication-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-5-1969",
   },
   {
@@ -934,6 +1140,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/evil-communication-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-5-1969",
   },
   {
@@ -943,6 +1151,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/evil-heart-of-unbelief/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-12-1970",
   },
   {
@@ -952,6 +1162,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/eye-to-the-body-diego-martin-trinidad-part-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-21-1972",
   },
   {
@@ -961,6 +1173,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/eye-to-the-body-diego-martin-trinidad-part-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-21-1972",
   },
   {
@@ -970,6 +1184,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/ezekiel-47/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-12-1970",
   },
   {
@@ -979,6 +1195,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/faith-for-the-supernatural-birth-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-31-1971",
   },
   {
@@ -988,6 +1206,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/faith-for-the-supernatural-birth-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-31-1971",
   },
   {
@@ -997,6 +1217,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/falling-away-from-the-faith/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-19-1968",
   },
   {
@@ -1006,6 +1228,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/false-christs/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-8-1973",
   },
   {
@@ -1015,6 +1239,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/fasting-for-revival/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-24-1972",
   },
   {
@@ -1024,6 +1250,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/fellowship-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-3-1971",
   },
   {
@@ -1033,6 +1261,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/fellowship-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-3-1971",
   },
   {
@@ -1042,6 +1272,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/following-apostolic-pattern/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-25-1967",
   },
   {
@@ -1052,6 +1284,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/following-the-son-of-man-in-regeneration-in-the-evening-time-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-12-1970",
   },
   {
@@ -1062,6 +1296,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/following-the-son-of-man-in-regeneration-in-the-evening-time-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-12-1970",
   },
   {
@@ -1071,6 +1307,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/foundation-was-laid/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-10-1967",
   },
   {
@@ -1080,6 +1318,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/from-darkness-to-light-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-20-1970",
   },
   {
@@ -1089,6 +1329,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/from-darkness-to-light-2-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-20-1970",
   },
   {
@@ -1098,6 +1340,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/from-darkness-to-light-2-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-20-1970",
   },
   {
@@ -1107,6 +1351,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/fullness-of-time/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-13-1970",
   },
   {
@@ -1116,6 +1362,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gathering-together-of-elected-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-16-1969",
   },
   {
@@ -1125,6 +1373,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gathering-together-of-elected-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-16-1969",
   },
   {
@@ -1134,6 +1384,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/god-creating-a-thirst-in-the-bride/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-11-1971",
   },
   {
@@ -1143,6 +1395,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/god-creating-a-thirst-in-the-elected-bride-jeff-ind/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-25-1972",
   },
   {
@@ -1152,6 +1406,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/god-honors-his-word-above-his-name/',
     year: "1961",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-31-1961",
   },
   {
@@ -1161,6 +1417,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/god-measuring-out-the-spirit/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-14-1972",
   },
   {
@@ -1170,6 +1428,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-faithful-servant-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-9-1972",
   },
   {
@@ -1179,6 +1439,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-faithful-servant-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-16-1972",
   },
   {
@@ -1188,6 +1450,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-unconditional-covenant-to-the-elected-bride-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-28-1971",
   },
   {
@@ -1197,6 +1461,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-unconditional-covenant-to-the-elected-bride-2-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-5-1971",
   },
   {
@@ -1206,6 +1472,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-unconditional-covenant-to-the-elected-bride-2-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-5-1971",
   },
   {
@@ -1215,6 +1483,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-unconditional-covenant-to-the-elected-bride-3/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-5-1971",
   },
   {
@@ -1224,6 +1494,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-day-of-wrath-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-23-1968",
   },
   {
@@ -1233,6 +1505,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-day-of-wrath-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-23-1968",
   },
   {
@@ -1242,6 +1516,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-end-time-sign/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-16-1967",
   },
   {
@@ -1251,6 +1527,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-gift/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-17-1967",
   },
   {
@@ -1260,6 +1538,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-only-way-of-escape-in-a-day-of-wrath-and-judgment-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-23-1969",
   },
   {
@@ -1269,6 +1549,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-only-way-of-escape-in-a-day-of-wrath-and-judgment-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-23-1969",
   },
   {
@@ -1278,6 +1560,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-perfect-love/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-7-1971",
   },
   {
@@ -1287,6 +1571,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-provided-way-to-bring-unity-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-12-1969",
   },
   {
@@ -1296,6 +1582,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-provided-way-to-bring-unity-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-12-1969",
   },
   {
@@ -1305,6 +1593,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/gods-sovereign-in-his-actions/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-27-1969",
   },
   {
@@ -1314,6 +1604,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/golden-nuggets/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-15-1968",
   },
   {
@@ -1323,6 +1615,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/goodman-of-the-house/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-6-1969",
   },
   {
@@ -1332,6 +1626,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/harvest-time-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-29-1972",
   },
   {
@@ -1341,6 +1637,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/harvest-time-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-30-1972",
   },
   {
@@ -1350,6 +1648,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/harvest-time-3/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-30-1972",
   },
   {
@@ -1359,6 +1659,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/hated-because-of-coat-of-many-colors/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-30-1970",
   },
   {
@@ -1368,6 +1670,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/he-must-need-go-through-samaria-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-12-1969",
   },
   {
@@ -1377,6 +1681,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/he-must-need-go-through-samaria-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-12-1969",
   },
   {
@@ -1386,6 +1692,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/hearers-of-the-prophet-of-mal-45/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-4-1970",
   },
   {
@@ -1395,6 +1703,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/hedged-in-with-god/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-1-1970",
   },
   {
@@ -1404,6 +1714,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/hour-of-satans-working/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-21-1969",
   },
   {
@@ -1413,6 +1725,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/hour-of-temptation-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-14-1970",
   },
   {
@@ -1422,6 +1736,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/hour-of-temptation-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-14-1970",
   },
   {
@@ -1431,6 +1747,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/how-to-be-born-again-and-how-to-enter-in-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-9-1969",
   },
   {
@@ -1440,6 +1758,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/how-to-be-born-again-and-how-to-enter-in-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-9-1969",
   },
   {
@@ -1449,6 +1769,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/how-to-enter-in-gods-ark-today-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-20-1969",
   },
   {
@@ -1458,6 +1780,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/how-to-enter-in-gods-ark-today-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-20-1969",
   },
   {
@@ -1467,6 +1791,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/how-to-receive-the-baptism-of-the-holy-ghost/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-13-1969",
   },
   {
@@ -1476,6 +1802,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/illegitimate-born-children-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-8-1969",
   },
   {
@@ -1485,6 +1813,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/illegitimate-born-children-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-8-1969",
   },
   {
@@ -1494,6 +1824,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/influence/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-14-1973",
   },
   {
@@ -1503,6 +1835,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/inheritance-in-christ-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-9-1970",
   },
   {
@@ -1512,6 +1846,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/inheritance-in-christ-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-9-1970",
   },
   {
@@ -1521,6 +1857,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/initial-evidence-of-the-holy-ghost/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-2-1972",
   },
   {
@@ -1530,6 +1868,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/introducing-the-messiah/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-17-1969",
   },
   {
@@ -1539,6 +1879,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/introduction-of-messiah-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-2-1970",
   },
   {
@@ -1548,6 +1890,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/introduction-of-messiah-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-2-1970",
   },
   {
@@ -1557,6 +1901,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/inviting-jesus-into-the-ship/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-7-1973",
   },
   {
@@ -1566,6 +1912,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/israel-trip/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-25-1969",
   },
   {
@@ -1575,6 +1923,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/jesus-and-peter/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-16-1969",
   },
   {
@@ -1584,6 +1934,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/joseph/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-28-1973",
   },
   {
@@ -1593,6 +1945,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/joy/',
     year: "1964",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-17-1964",
   },
   {
@@ -1602,6 +1956,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/joy-unspeakable/',
     year: "1964",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-15-1964",
   },
   {
@@ -1611,6 +1967,8 @@ const audioSermons = [
     audioUrl:'',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-19-1971",
   },
   {
@@ -1620,6 +1978,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/last-separation-before-promise-blessing/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-24-1969",
   },
   {
@@ -1629,6 +1989,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/led-by-the-spirit/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-16-1971",
   },
   {
@@ -1638,6 +2000,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/lesson-on-perfect-faith-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-24-1971",
   },
   {
@@ -1647,6 +2011,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/lesson-on-perfect-faith-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-24-1971",
   },
   {
@@ -1656,6 +2022,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/liberty/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-20-1972",
   },
   {
@@ -1665,6 +2033,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/light/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-8-1973",
   },
   {
@@ -1674,6 +2044,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/living-bread-body-of-the-lord-jesus/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-4-1968",
   },
   {
@@ -1683,6 +2055,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/living-temple/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-11-1968",
   },
   {
@@ -1692,6 +2066,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/looking-for-christ-to-come-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-8-1970",
   },
   {
@@ -1701,6 +2077,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/looking-for-christ-to-come-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-8-1970",
   },
   {
@@ -1710,6 +2088,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/mal-31-3-45-the-waymaker-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-28-1970",
   },
   {
@@ -1719,6 +2099,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/mal-31-3-45-the-waymaker-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June-28-1970",
   },
   {
@@ -1728,6 +2110,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/messages-come-to-shepherds-feed-my-sheep/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-12-1968",
   },
   {
@@ -1737,6 +2121,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/messenger-of-the-covenant/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-29-1968",
   },
   {
@@ -1746,6 +2132,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/ministry-of-the-bride-1-part-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-2-1972",
   },
   {
@@ -1755,6 +2143,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/ministry-of-the-bride-1-part-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-2-1972",
   },
   {
@@ -1764,6 +2154,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/ministry-of-the-bride-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-2-1972",
   },
   {
@@ -1773,6 +2165,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/moses-sin-smitten-rock-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-2-1969",
   },
   {
@@ -1782,6 +2176,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/moses-sin-smitten-rock-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-2-1969",
   },
   {
@@ -1791,6 +2187,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/mystery-of-gods-will/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-31-1970",
   },
   {
@@ -1800,6 +2198,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/new-years-eve-service-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-31-1970",
   },
   {
@@ -1809,6 +2209,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/new-years-eve-service-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-31-1970",
   },
   {
@@ -1818,6 +2220,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/no-condemnation-to-those-in-christ/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-2-1971",
   },
   {
@@ -1827,6 +2231,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/nuggets-bob-shirleys-dreams-of-mark/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-22-1971",
   },
   {
@@ -1836,6 +2242,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/obtaining-mercy-and-grace/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February-14-1973",
   },
   {
@@ -1845,6 +2253,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/oneness/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April-21-1968",
   },
   {
@@ -1854,6 +2264,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/our-foundation-today-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-31-1971",
   },
   {
@@ -1863,6 +2275,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/our-foundation-today-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-31-1971",
   },
   {
@@ -1872,6 +2286,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/our-redeemer-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-13-1968",
   },
   {
@@ -1881,6 +2297,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/our-redeemer-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-20-1968",
   },
   {
@@ -1890,6 +2308,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/our-redeemer-3-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-3-1968",
   },
   {
@@ -1899,6 +2319,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/our-redeemer-3-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-3-1968",
   },
   {
@@ -1908,6 +2330,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/our-redeemer-4/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-10-1968",
   },
   {
@@ -1917,6 +2341,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/parable-of-the-net/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January-3-1971",
   },
   {
@@ -1926,6 +2352,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/parable-of-the-vineyard-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-16-1972",
   },
   {
@@ -1935,6 +2363,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/parable-of-the-vineyard-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-16-1972",
   },
   {
@@ -1944,6 +2374,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/parable-on-eleventh-hour-gentile-worker-jeff-in-part-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-20-1972",
   },
   {
@@ -1953,6 +2385,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/parable-on-eleventh-hour-gentile-worker-jeff-in-part-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-20-1972",
   },
   {
@@ -1962,6 +2396,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/patience-part-1/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-5-1967",
   },
   {
@@ -1971,6 +2407,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/patience-part-2/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-5-1967",
   },
   {
@@ -1980,6 +2418,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/patience-to-inherit-the-promise/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-24-1969",
   },
   {
@@ -1989,6 +2429,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/patience-to-wait-on-gods-promise-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-8-1970",
   },
   {
@@ -1998,6 +2440,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/patience-to-wait-on-gods-promise-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March-8-1970",
   },
   {
@@ -2007,6 +2451,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/payday-payoff-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-25-1971",
   },
   {
@@ -2016,6 +2462,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/payday-payoff-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-25-1971",
   },
   {
@@ -2025,6 +2473,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/perfection/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-18-1968",
   },
   {
@@ -2034,6 +2484,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/perfection-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-25-1970",
   },
   {
@@ -2043,6 +2495,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/perfection-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-25-1970",
   },
   {
@@ -2052,6 +2506,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/persuasion-by-influence/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-10-1970",
   },
   {
@@ -2061,6 +2517,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/planted-by-god-1-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-27-1970",
   },
   {
@@ -2070,6 +2528,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/planted-by-god-1-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-27-1970",
   },
   {
@@ -2079,6 +2539,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/planted-by-god-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September-27-1970",
   },
   {
@@ -2088,6 +2550,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/planted-by-god-3/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October-1-1970",
   },
   {
@@ -2097,6 +2561,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/positionally-placed-last-time-bride-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-10-1970",
   },
   {
@@ -2106,6 +2572,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/positionally-placed-last-time-bride-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May-10-1970",
   },
   {
@@ -2115,6 +2583,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/potential/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August-27-1970",
   },
   {
@@ -2124,6 +2594,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/potential/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December-6-1970",
   },
   {
@@ -2133,6 +2605,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/power-to-loose-and-bind/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July-20-1969",
   },
   {
@@ -2142,6 +2616,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/prayer/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November-5-1969",
   },
   {
@@ -2151,6 +2627,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/preparation-for-fulfillment-of-the-reveled-promise/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 25-1971",
   },
   {
@@ -2160,6 +2638,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/proper-doctrine/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 19-1972",
   },
   {
@@ -2169,6 +2649,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/psalms-91-95/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 25-1970",
   },
   {
@@ -2178,6 +2660,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/questions-answers-1-tree-of-life/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 9-1971",
   },
   {
@@ -2187,6 +2671,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/questions-answers-10/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 12-1972",
   },
   {
@@ -2196,6 +2682,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/questions-answers-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 2-1971",
   },
   {
@@ -2205,6 +2693,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/questions-answers-3/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 16-1971",
   },
   {
@@ -2214,6 +2704,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/questions-answers-4/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 23-1971",
   },
   {
@@ -2223,6 +2715,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/questions-answers-5/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 28-1971",
   },
   {
@@ -2232,6 +2726,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/questions-answers-6-bride-serpent-seed/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 14-1971",
   },
   {
@@ -2241,6 +2737,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/questions-answers-7-new-birth/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 27-1971",
   },
   {
@@ -2250,6 +2748,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/questions-answers-8/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 3-1972",
   },
   {
@@ -2259,6 +2759,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/questions-answers-9/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 15-1972",
   },
   {
@@ -2268,6 +2770,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rahab-and-the-scarlet-cord-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 29-1971",
   },
   {
@@ -2277,6 +2781,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rahab-and-the-scarlet-cord-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 29-1971",
   },
   {
@@ -2286,6 +2792,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rapturing-faith-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 20-1969",
   },
   {
@@ -2295,6 +2803,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rapturing-faith-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 20-1969",
   },
   {
@@ -2304,6 +2814,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/recongnizing-the-promise-and-making-preparation-for-fulfillment/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 27-1971",
   },
   {
@@ -2313,6 +2825,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/redemption-by-the-blood-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 25-1970",
   },
   {
@@ -2322,6 +2836,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/redemption-by-the-blood-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 25-1970",
   },
   {
@@ -2331,6 +2847,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rejecting-gods-council-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 20-1969",
   },
   {
@@ -2340,6 +2858,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rejecting-gods-council-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 20-1969",
   },
   {
@@ -2349,6 +2869,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/remarks-to-the-church/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 5-1971",
   },
   {
@@ -2358,6 +2880,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/remember-lots-wife-part-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 4-1972",
   },
   {
@@ -2367,6 +2891,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/remember-lots-wife-part-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 4-1972",
   },
   {
@@ -2376,6 +2902,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/reproach-for-the-word/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 27-1969",
   },
   {
@@ -2385,6 +2913,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/respect-to-gods-anointed-servants-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 20-1970",
   },
   {
@@ -2394,6 +2924,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/respect-to-gods-anointed-servants-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 20-1970",
   },
   {
@@ -2403,6 +2935,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/restoration/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 11-1968",
   },
   {
@@ -2412,6 +2946,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/restoration-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 3-1970",
   },
   {
@@ -2421,6 +2957,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rev-of-his-will-for-us-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December- 26-1972",
   },
   {
@@ -2430,6 +2968,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rev-of-his-will-for-us-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December- 26-1972",
   },
   {
@@ -2439,6 +2979,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rev-of-the-son-of-man/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 28-1968",
   },
   {
@@ -2448,6 +2990,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rich-have-need-of-nothing/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 21-1968",
   },
   {
@@ -2457,6 +3001,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/righteousness-justification-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 9-1970",
   },
   {
@@ -2466,6 +3012,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/righteousness-justification-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 23-1970",
   },
   {
@@ -2475,6 +3023,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rivers-of-unbelief-bride-out-of-step-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 14-1968",
   },
   {
@@ -2484,6 +3034,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/rivers-of-unbelief-bride-out-of-step-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 14-1968",
   },
   {
@@ -2493,6 +3045,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/salt-without-savour/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 11-1968",
   },
   {
@@ -2502,6 +3056,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/satan-and-job-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 21-1969",
   },
   {
@@ -2511,6 +3067,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/satan-and-job-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 21-1969",
   },
   {
@@ -2520,6 +3078,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/scoffers-of-the-promise/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 7-1971",
   },
   {
@@ -2529,6 +3089,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/second-hand-religion/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 14-1972",
   },
   {
@@ -2538,6 +3100,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/seeking-love/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 8-1973",
   },
   {
@@ -2547,6 +3111,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/seeking-the-lord-for-revival/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 9-1972",
   },
   {
@@ -2556,6 +3122,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/seeking-to-find-jesus-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 6-1969",
   },
   {
@@ -2565,6 +3133,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/seeking-to-find-jesus-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 6-1969",
   },
   {
@@ -2574,6 +3144,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/shamgar/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 20-1968",
   },
   {
@@ -2583,6 +3155,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/sleepless-prayer/',
     year: "1964",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 14-1964",
   },
   {
@@ -2592,6 +3166,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/some-standing-here/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December- 3-1970",
   },
   {
@@ -2601,6 +3177,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/something-you-can-do/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 25-1973",
   },
   {
@@ -2610,6 +3188,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/son-of-man-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 21-1970",
   },
   {
@@ -2619,6 +3199,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/son-of-man-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 21-1970",
   },
   {
@@ -2628,6 +3210,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/son-of-man-and-his-angels-1-jeff-in-part-1/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 20-1973",
   },
   {
@@ -2637,6 +3221,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/son-of-man-and-his-angels-1-jeff-in-part-2/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 20-1973",
   },
   {
@@ -2646,6 +3232,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/son-of-man-and-his-angels-2-jeff-in/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 21-1973",
   },
   {
@@ -2655,6 +3243,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/son-of-man-and-the-little-book-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 21-1971",
   },
   {
@@ -2664,6 +3254,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/son-of-man-and-the-little-book-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 21-1971",
   },
   {
@@ -2673,6 +3265,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/son-of-man-ministry/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 28-1972",
   },
   {
@@ -2682,6 +3276,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/sons-back-to-eden/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 10-1967",
   },
   {
@@ -2691,6 +3287,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/sound-doctrine-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 2-1968",
   },
   {
@@ -2700,6 +3298,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/sound-doctrine-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 2-1968",
   },
   {
@@ -2709,6 +3309,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spirit-of-christ/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 30-1968",
   },
   {
@@ -2718,6 +3320,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spirit-of-elijah-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 16-1968",
   },
   {
@@ -2727,6 +3331,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spirit-of-elijah-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 16-1968",
   },
   {
@@ -2736,6 +3342,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spirit-of-moses-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 23-1968",
   },
   {
@@ -2745,6 +3353,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spirit-of-moses-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 23-1968",
   },
   {
@@ -2754,6 +3364,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spirit-of-the-son-of-man/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 7-1968",
   },
   {
@@ -2763,6 +3375,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spiritual-cancer/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 3-1967",
   },
   {
@@ -2772,6 +3386,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spoken-word-original-seed-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 23-1971",
   },
   {
@@ -2781,6 +3397,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spoken-word-original-seed-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 23-1971",
   },
   {
@@ -2790,6 +3408,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spoken-word-original-seed-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 23-1971",
   },
   {
@@ -2799,6 +3419,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spoken-word-original-seed-3-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 18-1971",
   },
   {
@@ -2808,6 +3430,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spoken-word-original-seed-3-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 18-1971",
   },
   {
@@ -2817,6 +3441,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spoken-word-original-seed-4-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 8-1971",
   },
   {
@@ -2826,6 +3452,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/spoken-word-original-seed-4-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 8-1971",
   },
   {
@@ -2835,6 +3463,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/study-christ-the-mystery-of-god-revealed-part/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 24-1968",
   },
   {
@@ -2844,6 +3474,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/study-christ-the-mystery-of-god-revealed-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 24-1968",
   },
   {
@@ -2853,6 +3485,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/substitute-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 15-1969",
   },
   {
@@ -2862,6 +3496,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/substitute-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 15-1969",
   },
   {
@@ -2871,6 +3507,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/sun-of-righteousness/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 9-1972",
   },
   {
@@ -2880,6 +3518,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/take-heed-how-you-hear-durham-ct/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 19-1972",
   },
   {
@@ -2889,6 +3529,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/take-heed-how-you-hearjeff-in/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 26-1972",
   },
   {
@@ -2898,6 +3540,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/tape-one-more-time-wmb-r-lambert-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 17-1971",
   },
   {
@@ -2907,6 +3551,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/tape-one-more-time-wmb-r-lambert-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 17-1971",
   },
   {
@@ -2916,6 +3562,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/tape-testing-time-wmb/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 31-1971",
   },
   {
@@ -2925,6 +3573,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/tender-mercies-of-god/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 16-1972",
   },
   {
@@ -2934,6 +3584,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/tender-mercies-of-god/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 4-1968",
   },
   {
@@ -2943,6 +3595,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/testing-for-discipleship-by-the-revealed-word/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 11-1971",
   },
   {
@@ -2952,6 +3606,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-blood-speaks-part-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 30-1972",
   },
   {
@@ -2961,6 +3617,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-blood-speaks-part-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 30-1972",
   },
   {
@@ -2970,6 +3628,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-capstone/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 16-1972",
   },
   {
@@ -2979,6 +3639,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-cares-of-this-life/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 10-1968",
   },
   {
@@ -2988,6 +3650,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-coming-of-the-king/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December- 6-1972",
   },
   {
@@ -2997,6 +3661,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-cup-of-salvation-1-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 15-1970",
   },
   {
@@ -3006,6 +3672,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-cup-of-salvation-1-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 15-1970",
   },
   {
@@ -3015,6 +3683,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-cup-of-salvation-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 15-1970",
   },
   {
@@ -3024,6 +3694,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-days-of-noe-last-message-preached/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 1-1973",
   },
   {
@@ -3033,6 +3705,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-divine-sculptors-masterpiece/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 26-1968",
   },
   {
@@ -3042,6 +3716,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/01-the-eunuchs-of-the-lord-jesus-christ/',
     year: "1966",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 1-1966",
   },
   {
@@ -3051,6 +3727,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-evil-nature/',
     year: "1964",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 11-1964",
   },
   {
@@ -3060,6 +3738,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-eye-to-the-body-jeff-in/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 20-1972",
   },
   {
@@ -3069,6 +3749,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-eyes-of-the-lord-in-relation-to-the-body-of-christ/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 3-1971",
   },
   {
@@ -3078,6 +3760,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-friend-of-the-bridegroom/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 12-1970",
   },
   {
@@ -3087,6 +3771,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-godhead/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 30-1969",
   },
   {
@@ -3096,6 +3782,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-good-samaritan/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 30-1967",
   },
   {
@@ -3105,6 +3793,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-great-physician-in-relation-to-pregnancy-birth-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 24-1971",
   },
   {
@@ -3114,6 +3804,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-great-physician-in-relation-to-pregnancy-birth-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 24-1971",
   },
   {
@@ -3123,6 +3815,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-great-whore-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 19-1969",
   },
   {
@@ -3132,6 +3826,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-great-whore-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 19-1969",
   },
   {
@@ -3141,6 +3837,8 @@ const audioSermons = [
     audioUrl:'',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 4-1972",
   },
   {
@@ -3150,6 +3848,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-great-word-test/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 7-1971",
   },
   {
@@ -3159,6 +3859,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-great-word-test-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 7-1971",
   },
   {
@@ -3168,6 +3870,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-hardening-heart/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 18-1968",
   },
   {
@@ -3177,6 +3881,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-hireling-shepherd/',
     year: "1965",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 11-1965",
   },
   {
@@ -3186,6 +3892,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-image-of-the-invisible-god/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 21-1971",
   },
   {
@@ -3195,6 +3903,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-invisible-god-made-visible/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 31-1971",
   },
   {
@@ -3204,6 +3914,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-kingdom-is-rent-from-thee-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 17-1968",
   },
   {
@@ -3213,6 +3925,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-kingdom-is-rent-from-thee-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 17-1968",
   },
   {
@@ -3222,6 +3936,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-last-day-ministry/',
     year: "1965",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 15-1965",
   },
   {
@@ -3231,6 +3947,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-latter-rain/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 11-1971",
   },
   {
@@ -3240,6 +3958,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-lightning-of-the-candle/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "June- 27-1971",
   },
   {
@@ -3249,6 +3969,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-lost-capstone/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 17-1972",
   },
   {
@@ -3258,6 +3980,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-man-child/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 22-1972",
   },
   {
@@ -3267,6 +3991,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-man-child-made-manifested-in-this-hour/',
     year: "1966",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 13-1966",
   },
   {
@@ -3276,6 +4002,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-mind-of-christ/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 1-1967",
   },
   {
@@ -3285,6 +4013,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-ministry-of-the-bride/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 23-1967",
   },
   {
@@ -3294,6 +4024,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-perfect-word-for-the-perfect-day-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 7-1971",
   },
   {
@@ -3303,6 +4035,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-perfect-word-for-the-perfect-day-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 7-1971",
   },
   {
@@ -3312,6 +4046,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-return-of-the-same-jesus-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 22-1971",
   },
   {
@@ -3321,6 +4057,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-return-of-the-same-jesus-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 22-1971",
   },
   {
@@ -3330,6 +4068,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-things-concerning-himself/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 30-1973",
   },
   {
@@ -3339,6 +4079,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-token-1-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 22-1970",
   },
   {
@@ -3348,6 +4090,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-token-1-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 22-1970",
   },
   {
@@ -3357,6 +4101,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-token-2-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 22-1970",
   },
   {
@@ -3366,6 +4112,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-token-2-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 22-1970",
   },
   {
@@ -3375,6 +4123,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-token-nuggets-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 23-1972",
   },
   {
@@ -3384,6 +4134,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-token-nuggets-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 23-1972",
   },
   {
@@ -3393,6 +4145,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-truth-shall-make-you-free-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 28-1971",
   },
   {
@@ -3402,6 +4156,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-truth-shall-make-you-free-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 28-1971",
   },
   {
@@ -3411,6 +4167,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-vision-today/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 22-1971",
   },
   {
@@ -3420,6 +4178,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-voice-of-the-archangel/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 22-1970",
   },
   {
@@ -3429,6 +4189,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-voice-of-the-archangel-1-part-1/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 14-1973",
   },
   {
@@ -3438,6 +4200,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-voice-of-the-archangel-1-part-2/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 14-1973",
   },
   {
@@ -3447,6 +4211,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-voice-of-the-archangel-2/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 14-1973",
   },
   {
@@ -3456,6 +4222,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-voice-that-catches-the-bride-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 22-1970",
   },
   {
@@ -3465,6 +4233,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-voice-that-catches-the-bride-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 22-1970",
   },
   {
@@ -3474,6 +4244,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-way-of-salvation/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 8-1970",
   },
   {
@@ -3483,6 +4255,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/the-word-of-his-patience/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 23-1973",
   },
   {
@@ -3492,6 +4266,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/things-reproved-are-made-manifested/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 4-1970",
   },
   {
@@ -3501,6 +4277,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/tormenting-the-ungodly-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 17-1968",
   },
   {
@@ -3510,6 +4288,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/tormenting-the-ungodly-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 17-1968",
   },
   {
@@ -3519,6 +4299,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/trinidad-service/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December- 23-1972",
   },
   {
@@ -3528,6 +4310,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/trinidad-service-son-of-man-part-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December- 24-1972",
   },
   {
@@ -3537,6 +4321,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/trinidad-service-son-of-man-part-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December- 24-1972",
   },
   {
@@ -3546,6 +4332,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/trinidad-trip-ministers-testimonies/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 19-1972",
   },
   {
@@ -3555,6 +4343,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/troubling-of-waters/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 1-1970",
   },
   {
@@ -3564,6 +4354,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/true-atonement-christ-rev-from-heaven-part-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 7-1972",
   },
   {
@@ -3573,6 +4365,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/true-atonement-christ-rev-from-heaven-part-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 7-1972",
   },
   {
@@ -3582,6 +4376,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/true-church/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 23-1970",
   },
   {
@@ -3591,6 +4387,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/trumpet-of-jubilee-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 16-1969",
   },
   {
@@ -3600,6 +4398,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/trumpet-of-jubilee-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 16-1969",
   },
   {
@@ -3609,6 +4409,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/truth/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 6-1973",
   },
   {
@@ -3618,6 +4420,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-great-women-and-their-reward/',
     year: "1967",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December- 10-1967",
   },
   {
@@ -3627,6 +4431,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-1-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 13-1970",
   },
   {
@@ -3636,6 +4442,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-1-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 13-1970",
   },
   {
@@ -3645,6 +4453,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-2-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 13-1970",
   },
   {
@@ -3654,6 +4464,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-2-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 13-1970",
   },
   {
@@ -3663,6 +4475,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-3-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 14-1970",
   },
   {
@@ -3672,6 +4486,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-3-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 14-1970",
   },
   {
@@ -3681,6 +4497,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-4-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 11-1971",
   },
   {
@@ -3690,6 +4508,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-4-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 11-1971",
   },
   {
@@ -3699,6 +4519,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-5-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 18-1970",
   },
   {
@@ -3708,6 +4530,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-5-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 18-1970",
   },
   {
@@ -3717,6 +4541,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-6-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 18-1971",
   },
   {
@@ -3726,6 +4552,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-kingdoms-6-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 18-1971",
   },
   {
@@ -3735,6 +4563,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-trees-in-eden-1/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 18-1973",
   },
   {
@@ -3744,6 +4574,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/two-trees-in-eden-2/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 18-1973",
   },
   {
@@ -3753,6 +4585,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/unclean-spirits-like-frogs-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 6-1972",
   },
   {
@@ -3762,6 +4596,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/unclean-spirits-like-frogs-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 6-1972",
   },
   {
@@ -3771,6 +4607,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/vain-jangling/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 25-1969",
   },
   {
@@ -3780,6 +4618,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/villa-capri/',
     year: "1961",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "July- 22-1961",
   },
   {
@@ -3789,6 +4629,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/walking-in-the-light-with-eye-single/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 19-1971",
   },
   {
@@ -3798,6 +4640,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/walking-on-the-water/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 9-1969",
   },
   {
@@ -3807,6 +4651,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/wandering-thoughts/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 6-1969",
   },
   {
@@ -3816,6 +4662,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/wedding-garment/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 15-1970",
   },
   {
@@ -3825,6 +4673,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/what-price-token-1-pearl-of-great-price/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 23-1970",
   },
   {
@@ -3834,6 +4684,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/what-price-token-2-parable-of-the-net/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "August- 23-1970",
   },
   {
@@ -3843,6 +4695,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/whats-upon-my-heart-1-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 27-1969",
   },
   {
@@ -3852,6 +4706,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/whats-upon-my-heart-1-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 27-1969",
   },
   {
@@ -3861,6 +4717,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/whats-upon-my-heart-2-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 27-1969",
   },
   {
@@ -3870,6 +4728,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/whats-upon-my-heart-2-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "April- 27-1969",
   },
   {
@@ -3879,6 +4739,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/who-can-be-saved/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 28-1971",
   },
   {
@@ -3888,6 +4750,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/who-gets-the-token-in-the-endtime/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 14-1971",
   },
   {
@@ -3897,6 +4761,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/who-hath-believed-our-report-part-1/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 29-1968",
   },
   {
@@ -3906,6 +4772,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/who-hath-believed-our-report-part-2/',
     year: "1968",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 29-1968",
   },
   {
@@ -3915,6 +4783,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/who-hath-belived-our-report-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 14-1971",
   },
   {
@@ -3924,6 +4794,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/who-hath-belived-our-report-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "March- 14-1971",
   },
   {
@@ -3933,6 +4805,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/who-understandeth-god/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 8-1970",
   },
   {
@@ -3942,6 +4816,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/why-did-god-hate-esau-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 26-1969",
   },
   {
@@ -3951,6 +4827,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/why-did-god-hate-esau-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 26-1969",
   },
   {
@@ -3960,6 +4838,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/why-god-hated-esau/',
     year: "1973",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 28-1973",
   },
   {
@@ -3969,6 +4849,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/why-is-christ-rejected-today/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "September- 3-1970",
   },
   {
@@ -3978,6 +4860,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/why-judas-was-not-saved/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "December- 22-1971",
   },
   {
@@ -3987,6 +4871,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/why-our-prayers-not-answered/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "November- 21-1971",
   },
   {
@@ -3996,6 +4882,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/woman-at-the-well-part-1/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 3-1971",
   },
   {
@@ -4005,6 +4893,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/woman-at-the-well-part-2/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 3-1971",
   },
   {
@@ -4014,6 +4904,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/woman-at-the-well-part-1-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 3-1970",
   },
   {
@@ -4023,6 +4915,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/woman-at-the-well-part-2-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 3-1970",
   },
   {
@@ -4032,6 +4926,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/women-at-the-well/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "May- 28-1972",
   },
   {
@@ -4041,6 +4937,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/word-atonement-for-the-bride-1/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 23-1972",
   },
   {
@@ -4050,6 +4948,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/word-atonement-for-the-bride-2/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 23-1972",
   },
   {
@@ -4059,6 +4959,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/word-atonement-for-the-bride-3/',
     year: "1972",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 26-1972",
   },
   {
@@ -4068,6 +4970,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/word-of-promise-part-1/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 8-1970",
   },
   {
@@ -4077,6 +4981,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/word-of-promise-part-2/',
     year: "1970",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "February- 8-1970",
   },
   {
@@ -4086,6 +4992,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/your-adversary/',
     year: "1971",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "January- 28-1971",
   },
   {
@@ -4095,6 +5003,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/your-revelation-is-the-victory-part-1/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 26-1969",
   },
   {
@@ -4104,6 +5014,8 @@ const audioSermons = [
     audioUrl:'https://robertlambert.org/audiopost/your-revelation-is-the-victory-part-2/',
     year: "1969",
     downloadLink:'https://robertlambert.org/sermons/audio/A%20CHOSEN%20SPOT%201-7-73%20AM.%20PART%201.mp3',
+   location:"",
+   sermon:"",
     date: "October- 26-1969",
   },
 ];

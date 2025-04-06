@@ -134,21 +134,36 @@ const BlessedMusic = () => {
     if (viewMode === "table") {
       return (
         <div className="overflow-y-scroll  w-full no-scrollbar">
-          <table className="w-full table-auto border-separate rounded-md ">
+          <table className="w-full table-auto  rounded-md ">
             <thead className="rounded-md">
               <tr className=" text-[#9a674a] rounded-md">
-                <th className="px-4 py- text-left flex justify-between items-center">
+                <th
+                  className="px-4  text-left flex justify-between items-center"
+                  style={{
+                    borderWidth: 2,
+                    borderColor: "#9a674a",
+                    borderStyle: "dashed",
+                    borderRadius: 10,
+                  }}
+                >
                   <p>Title</p>
+                  <p className="font-bold">
+                    ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+                  </p>
                   Modified
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className=" ">
               {songs.map((song, index) => (
                 <tr
                   key={index}
-                  className="border-b z-40 border-stone-200 shadow-inner flex items-center justify-between hover:bg-stone-100 transition-colors cursor-pointer"
-                  style={{ borderWidth: "10px", borderColor: "#9a674a" }}
+                  className="border-b z-0 border-stone-200 shadowinner flex items-center justify-between hover:bg-stone-100 transition-colors cursor-pointer"
+                  style={{
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#9a674a",
+                    borderBottomStyle: "dashed",
+                  }}
                   title={song.path}
                   onClick={() => onSingleClick(song)}
                   onDoubleClick={(e) => {
@@ -173,10 +188,19 @@ const BlessedMusic = () => {
     } else {
       return (
         <div className="space-y-4 w-full overflow-y-scroll no-scrollbar">
-          <div className="flex items-center justify-between space-x-4 px-8 bod rounded-lg shadow-md hover:shadow-md transition-all duration-200 border border-stone-200 cursor-pointer">
+          <div
+            className="flex items-center justify-between space-x-4 px-8 bod rounded-lg shadow-md
+           hover:shadow-md transition-all duration-200 cursor-pointer"
+            style={{
+              borderBottomWidth: 1,
+              borderBottomColor: "#9a674a",
+              borderBottomStyle: "solid",
+            }}
+          >
             <p className="text-[13px] font-bold font-mono text-[#9a674a]">
               Title
             </p>
+            |||||||||||||||||||||||
             <p className="text-[13px] font-bold font-mono text-[#9a674a]">
               {" "}
               Modified
@@ -185,13 +209,20 @@ const BlessedMusic = () => {
           {songs.map((song, index) => (
             <div
               key={index}
-              className="flex items-center justify-between space-x-4  px-4 bod rounded-lg shadow-md hover:shadow-md  duration-200 border border-stone-200 cursor-pointer  hover:bg-stone-100 transition-colors "
+              className="flex items-center justify-between space-x-4  px-4 bod
+               rounded-lg shadow-md hover:shadow-md  duration-200  cursor-pointer 
+                hover:bg-stone-100 transition-colors "
               title={song.path}
               onClick={() => onSingleClick(song)}
               onDoubleClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 onDoubleClick(song);
+              }}
+              style={{
+                borderWidth: 1,
+                borderColor: "#9a674a",
+                borderStyle: "dotted",
               }}
             >
               <div className="flex items-center gap-5">

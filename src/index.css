@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 body {
   margin: 0;
   padding: 0;
@@ -32,7 +30,6 @@ body {
     linear-gradient(to bottom, #fffdd5 1px, #faeed1 1px);
   background-size: 20px 20px; /* Adjust the size of the grid */
 }
-
 
 h1 {
   font-size: 3.2em;
@@ -75,71 +72,71 @@ button:hover {
 
 @font-face {
   font-family: "Anton SC";
-  src: url("./fonts/antonsc.ttf") format("truetype");
+  src: url("/fonts/antonsc.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Big Shoulders Thin";
-  src: url("./fonts/bigshouldsvw.ttf") format("truetype");
+  src: url("/fonts/bigshouldsvw.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Bitter Thin";
-  src: url("./fonts/bittervw.ttf") format("truetype");
+  src: url("/fonts/bittervw.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Oswald ExtraLight";
-  src: url("./fonts/oswaldv.ttf") format("truetype");
+  src: url("/fonts/oswaldv.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Archivo Black";
-  src: url("./fonts/archivoblack.ttf") format("truetype");
+  src: url("/fonts/archivoblack.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
   font-family: "Roboto Thin";
-  src: url("./fonts/robotovw.ttf") format("truetype");
+  src: url("/fonts/robotovw.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
   font-family: "Cooper Black";
-  src: url("./fonts/COOPBL.ttf") format("truetype");
+  src: url("/fonts/COOPBL.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
   font-family: "Haettenschweiler";
-  src: url("./fonts/HATTEN.ttf") format("truetype");
+  src: url("/fonts/HATTEN.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
   font-family: "Impact";
-  src: url("./fonts/impact.ttf") format("truetype");
+  src: url("/fonts/impact.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
   font-family: "Teko Light";
-  src: url("./fonts/teko.ttf") format("truetype");
+  src: url("/fonts/teko.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
   font-family: "Alumini Sans Black";
-  src: url("./fonts/aluminisans.ttf") format("truetype");
+  src: url("/fonts/aluminisans.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }

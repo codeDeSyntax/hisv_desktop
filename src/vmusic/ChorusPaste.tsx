@@ -1,6 +1,6 @@
 import { useEditor, EditorContent, Editor } from "@tiptap/react";
 
-const predefinedText = "<!-- Chorus -->"; // The text that will be inserted
+const predefinedText = "Chorus"; // The text that will be inserted
 
 // Custom Extension to insert predefined text at the cursor
 export const ChorusPaste = ({ editor }: { editor: Editor | null }) => {

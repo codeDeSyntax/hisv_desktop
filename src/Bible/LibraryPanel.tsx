@@ -10,6 +10,7 @@ const LibraryPanel: React.FC = () => {
     setCurrentTranslation,
     currentBook,
     setCurrentBook,
+    setCurrentVerse,
     currentChapter,
     setCurrentChapter,
     getBookChapterCount,
@@ -117,6 +118,7 @@ const LibraryPanel: React.FC = () => {
                         onClick={() => {
                           setCurrentBook(book.name);
                           setCurrentChapter(chapter);
+                          setCurrentVerse(1); // Reset verse to 1 when changing chapter
                           setActiveFeature(null);
                         }}
                       >

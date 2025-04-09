@@ -147,8 +147,11 @@ const BlessedMusic = () => {
                   }}
                 >
                   <p>Title</p>
-                  <p className="font-bold">
-                    ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+                  <p className="font-bold lg:hidden">
+                    ||||||||||||||||||||||||||||||||||||||||
+                  </p>
+                  <p className="font-bold hidden lg:block">
+                    |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
                   </p>
                   Modified
                 </th>

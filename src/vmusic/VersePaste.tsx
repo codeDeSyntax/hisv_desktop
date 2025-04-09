@@ -9,7 +9,7 @@ export const VersePaste = ({ editor }: { editor: Editor | null }) => {
     if (!editor || !editor.isEditable) return;
 
     // Create the predefined text with the current verse number
-    const predefinedText = `<!-- Verse ${verseNumber} -->`;
+    const predefinedText = `Verse ${verseNumber}`;
 
     // Insert the predefined text at the cursor
     editor

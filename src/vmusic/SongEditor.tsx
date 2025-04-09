@@ -35,14 +35,14 @@ const SongEditor = ({ formData, setFormData }: SongEditorProps) => {
       Placeholder.configure({
         placeholder: "Click to start typing...",
         emptyEditorClass:
-          "before:content-[attr(data-placeholder)] before:text-gray-300 dark:before:text-gray-600 before:float-left before:pointer-events-none before:h-0",
+          "before:content-[attr(data-placeholder)] before:text-stone-300 dark:before:text-stone-600 before:float-left before:pointer-events-none before:h-0",
       }),
     ],
     content: `<p></p>${formData.message}`,
     editorProps: {
       attributes: {
         class:
-          "dark:prose-invert prose-sm sm:prose-base text-text dark:text-dtext text-[12px] border  text-black lg:prose-lg max-w-none  px-6 py-4 h-[70vh] w-full focus:outline-none ",
+          "dark:prose-invert prose-sm sm:prose-base text-text dark:text-dtext text-[14px] border  text-black lg:prose-lg max-w-none  px-6 py-4 h-[70vh] w-full focus:outline-none ",
         "data-placeholder": "Click to start typing...",
         spellcheck: "false",
       },

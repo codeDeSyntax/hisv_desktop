@@ -31,16 +31,17 @@ const CustomEditor = ({ formData, setFormData }: CustomEditorProps) => {
         alignments: ["left", "center", "right", "justify"],
       }),
       Placeholder.configure({
-        placeholder: "Click to start typing...(paste verse/chorus indicator from the menubar",
+        placeholder:
+          "Click to start typing...(paste verse/chorus indicator from the menubar",
         emptyEditorClass:
-          "before:content-[attr(data-placeholder)] before:text-gray-300 dark:before:text-gray-600 before:float-left before:pointer-events-none before:h-0",
+          "before:content-[attr(data-placeholder)] before:text-stone-500 dark:before:text-stone-600 placeholder:stone-stone-500 before:float-left before:pointer-events-none before:h-0",
       }),
     ],
     content: formData.message,
     editorProps: {
       attributes: {
         class:
-          "dark:prose-invert prose-sm sm:prose-base text-text dark:text-dtext text-[12px] border  text-black lg:prose-lg max-w-none  px-6 py-4 h-[70vh] w-full focus:outline-none ",
+          "dark:prose-invert prose-sm sm:prose-base text-text dark:text-dtext text-[14px] border placehoder:text-stone-500  text-black lg:prose-lg max-w-none  px-6 py-4 h-[70vh] w-full focus:outline-none ",
         "data-placeholder": "Click to start typing...",
         spellcheck: "false",
       },
@@ -145,8 +146,8 @@ const CustomEditor = ({ formData, setFormData }: CustomEditorProps) => {
           >
             <BoldOutlined className="w-3 h-3 text-white" />
           </MenuButton>
-          <VersePaste editor={editor}/>
-          <ChorusPaste editor={editor}/>
+          <VersePaste editor={editor} />
+          <ChorusPaste editor={editor} />
         </div>
 
         {/* Editor Content */}

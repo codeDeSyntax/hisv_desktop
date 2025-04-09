@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -492,9 +492,20 @@ const ScriptureContent: React.FC = () => {
     };
   }, [isBookDropdownOpen, isChapterDropdownOpen, isVerseDropdownOpen]);
 
-  const selectedColor = `rgba(${Math.floor(Math.random() * 255)},${Math.floor(
-    Math.random() * 255
-  )},${Math.floor(Math.random() * 255)},1)`;
+  const iconColors = useMemo(() => {
+    const generateRandomColor = () => {
+      return `rgba(${Math.floor(Math.random() * 255)},${Math.floor(
+        Math.random() * 255
+      )},${Math.floor(Math.random() * 255)},1)`;
+    };
+
+    return {
+      color1: generateRandomColor(),
+      color2: generateRandomColor(),
+      color3: generateRandomColor(),
+      color4: generateRandomColor(),
+    };
+  }, []);
 
   return (
     <div className="flex flex-col h-full bg-red-500 dark:bg-black text-white font-serif">
@@ -538,12 +549,8 @@ const ScriptureContent: React.FC = () => {
                     Old Testament {"   "}
                     <span
                       className="underline font-serif"
-                      style={{
-                        color: `rgba(${Math.floor(
-                          Math.random() * 255
-                        )},${Math.floor(Math.random() * 255)},${Math.floor(
-                          Math.random() * 255
-                        )},1)`,
+                      style={{ 
+                        color: iconColors.color2,
                       }}
                     >
                       Bk:: {currentBook}
@@ -567,8 +574,8 @@ const ScriptureContent: React.FC = () => {
                             currentBook === book.name ? "dotted" : "none",
                           borderColor:
                             currentBook === book.name
-                              ? selectedColor
-                              : selectedColor,
+                              ? iconColors.color1
+                              : iconColors.color2,
                         }}
                       >
                         {book.name}
@@ -594,8 +601,8 @@ const ScriptureContent: React.FC = () => {
                             currentBook === book.name ? "dotted" : "none",
                           borderColor:
                             currentBook === book.name
-                              ? selectedColor
-                              : selectedColor,
+                              ? iconColors.color3
+                              : iconColors.color4,
                         }}
                       >
                         {book.name}
@@ -646,8 +653,8 @@ const ScriptureContent: React.FC = () => {
                           currentChapter === chapter ? "dotted" : "none",
                         borderColor:
                           currentChapter === chapter
-                            ? selectedColor
-                            : selectedColor,
+                            ? iconColors.color2
+                            : iconColors.color4,
                       }}
                     >
                       {chapter}
@@ -698,8 +705,8 @@ const ScriptureContent: React.FC = () => {
                           selectedVerse === verse ? "dotted" : "none",
                         borderColor:
                           selectedVerse === verse
-                            ? selectedColor
-                            : selectedColor,
+                            ? iconColors.color1
+                            : iconColors.color2,
                       }}
                     >
                       {verse}

@@ -252,14 +252,7 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
   ]);
 
   // Apply theme to document
-  useEffect(() => {
-      const bibleDiv = document.getElementById("biblediv")
-    if (theme === "dark") {
-      bibleDiv?.classList.add("dark");
-    } else {
-      bibleDiv?.classList.remove("dark");
-    }
-  }, [theme]);
+
 
   // Fetch Bible data
   useEffect(() => {

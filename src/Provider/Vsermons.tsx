@@ -78,19 +78,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     fontWeight: 'normal'
   });
 
-    // Apply theme to document
-    useEffect(() => {
-        const hisvoicediv = document.getElementById("hisvoicediv")
-      if (theme === "dark") {
-        hisvoicediv?.classList.add("dark");
-        localStorage.setItem("vsermontheme", theme)
-      } else {
-        hisvoicediv?.classList.remove("dark");
-        localStorage.setItem("vsermontheme", theme)
-      }
 
-
-    }, [theme]);
 
 
   // Generate random sermon

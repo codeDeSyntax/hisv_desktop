@@ -1,13 +1,5 @@
-import React, { useState } from "react";
-import {
-  Menu,
-  FileText,
-  Sun,
-  Moon,
-  ChevronLeft,
-  ChevronRight,
-  ArrowLeftCircle,
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowLeftCircle } from "lucide-react";
 import BlessedMusic from "./vmusic/BlessedMusic";
 import EditSong from "./vmusic/EditForm";
 import WorkspaceSelector from "./vmusic/Welcome";
@@ -20,8 +12,9 @@ import UserGuidePage from "./vmusic/Userguide";
 import PresentationBackgroundSelector from "./vmusic/BackgroundChoose";
 import Hisvoice from "./Hisvoice/Hisvoice";
 import BibleApp from "./Bible/Bible";
-import Biblelayout from './Bible/Bible';
+import Biblelayout from "./Bible/Bible";
 import { useEastVoiceContext } from "./Provider/EastVoice";
+import PresentationMasterPage from "./EvPresenter/MasterPresentApp";
 
 const App = () => {
   const { currentScreen, setCurrentScreen } = useEastVoiceContext();
@@ -32,6 +25,44 @@ const App = () => {
   //   title: `Song ${index + 1}`,
   // }));
 
+  // set up key combinations to navigate between screens
+  // ctrl + H ---- Home
+  // ctrl + B ---- Bible
+  // ctrl + W ---- Hisvoice
+  // ctrl + P ---- Presenter
+  // ctrl + S ---- Songs
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey) {
+        switch (event.key) {
+          case "h":
+            setCurrentScreen("Home");
+            break;
+          case "b":
+            setCurrentScreen("bible");
+            break;
+          case "l":
+            setCurrentScreen("hisvoice");
+            break;
+          case "p":
+            setCurrentScreen("Presentation");
+            break;
+          case "s":
+            setCurrentScreen("Songs");
+          case "m":
+            setCurrentScreen("mpresenter");
+            break;
+          default:
+            break;
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
   return (
     <div
       className={`flex flex-col h-screen w-screen thin-scrollbar no-scrollbar bg-[#292a2d]`}
@@ -56,11 +87,12 @@ const App = () => {
       ) : currentScreen === "backgrounds" ? (
         <PresentationBackgroundSelector />
       ) : currentScreen === "hisvoice" ? (
-        <Hisvoice/> 
+        <Hisvoice />
       ) : currentScreen === "bible" ? (
-        <Biblelayout/>
-      ):
-       (
+        <Biblelayout />
+      ) : currentScreen === "mpresenter" ? (
+        <PresentationMasterPage />
+      ) : (
         <ArrowLeftCircle
           className="size-6 text-white"
           onClick={() => setCurrentScreen("Home")}

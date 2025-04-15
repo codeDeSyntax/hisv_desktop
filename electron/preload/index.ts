@@ -1,5 +1,5 @@
 import { ipcRenderer, contextBridge, dialog } from "electron";
-
+import { Presentation } from "@/types";
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld("ipcRenderer", {
   on(...args: Parameters<typeof ipcRenderer.on>) {
@@ -59,6 +59,14 @@ minimizeProjection: () => ipcRenderer.send('minimizeProjection'),
     };
   },
   getImages: (dirPath:string) => ipcRenderer.invoke('get-images', dirPath),
+  loadPresentations: () => ipcRenderer.invoke('load-presentations'),
+  createEvPresentation: (presentation: Omit<Presentation, 'id' | 'createdAt' | 'updatedAt'>) => 
+    ipcRenderer.invoke('create-presentation', presentation),
+  updateEvPresentation: (id: string, presentation: Partial<Presentation>) => 
+    ipcRenderer.invoke('update-presentation', id, presentation),
+  deleteEvPresentation: (id: string) => 
+    ipcRenderer.invoke('delete-presentation', id),
+  
 });
 
 // --------- Preload scripts loading ---------

@@ -19,6 +19,7 @@ import { Switch } from "antd";
 import { useEffect } from "react";
 import { useBmusicContext } from "@/Provider/Bmusic";
 import { useEastVoiceContext } from "@/Provider/EastVoice";
+import { ThemeToggle } from "./ThemeToggler";
 
 const TitleBar = () => {
   const [isHovered, setIsHovered] = useState<string | null>(null);
@@ -149,7 +150,10 @@ const TitleBar = () => {
           <div
             onClick={() => setAndSaveCurrentScreen("backgrounds")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer items-center justify-center flex 
-               ${(currentScreen === "bible" || currentScreen === "hisvoice" ) && "hidden"}
+               ${
+                 (currentScreen === "bible" || currentScreen === "hisvoice") &&
+                 "hidden"
+               }
               `}
             title="Presentation backgrounds"
           >
@@ -178,7 +182,10 @@ const TitleBar = () => {
           <div
             onClick={() => setAndSaveCurrentScreen("categorize")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer items-center justify-center flex 
-              ${(currentScreen === "bible" || currentScreen === "hisvoice" ) && "hidden"}
+              ${
+                (currentScreen === "bible" || currentScreen === "hisvoice") &&
+                "hidden"
+              }
               `}
             title="Music categories"
           >
@@ -187,7 +194,9 @@ const TitleBar = () => {
           <div
             onClick={() => setAndSaveCurrentScreen("userguide")}
             className={`w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer  
-              items-center justify-center flex `}
+              items-center justify-center flex ${
+                currentScreen !== "Songs" && "hidden"
+              }`}
             title="User manual"
           >
             <User2Icon className="text-white z-20 size-3" />
@@ -197,13 +206,12 @@ const TitleBar = () => {
           <div
             onClick={toggleDropdown}
             className="w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer flex items-center justify-center relative"
-            
           >
             <MoreHorizontal className="text-white z-20 size-3" />
 
             {/* Dropdown menu */}
             {showDropdown && (
-              <div className="absolute top-5 right-0 bg-white shadow-md rounded-md p-1 z-50 w-32">
+              <div className="absolute top-5 right-0 left-0 bg-white shadow-md rounded-md p-1 z-50 w-32">
                 <div
                   className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
                   onClick={() => {
@@ -237,6 +245,7 @@ const TitleBar = () => {
               </div>
             )}
           </div>
+          <ThemeToggle />
         </div>
       </div>
     </div>

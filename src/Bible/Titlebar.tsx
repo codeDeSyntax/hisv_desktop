@@ -3,6 +3,7 @@ import { X, Minus, Square } from "lucide-react";
 import { useBibleContext } from "@/Provider/Bible";
 import { useEastVoiceContext } from "@/Provider/EastVoice";
 import { MoreHorizontal } from "lucide-react";
+import { ThemeToggle } from "@/shared/ThemeToggler";
 
 const TitleBar: React.FC = () => {
   const { handleClose, handleMaximize, handleMinimize, theme } =
@@ -86,7 +87,9 @@ const TitleBar: React.FC = () => {
             }),
       }}
     >
-      <div className="flex space-x-2 mr-4">
+      <div className=" space-x-2 mr-4 flex items-center justify-center">
+        {/* theme toggler */}
+        <ThemeToggle/>
         {/* Close button */}
         <div
           onClick={handleClose}

@@ -38,3 +38,31 @@ export interface Sermon {
   location?:string;
   lastRead?: string;
 }
+
+export type Scripture = {
+  text: string;
+};
+
+export type EvSermon = {
+  id: string;
+  type: 'sermon';
+  title: string;
+  scriptures: Scripture[];
+  mainMessage?: string;
+  preacher: string;
+  quote?: string;
+  date: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type EvOther = {
+  id: string;
+  type: 'other';
+  title: string;
+  message: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Presentation = EvSermon | EvOther;

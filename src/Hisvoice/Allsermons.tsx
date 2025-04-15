@@ -11,6 +11,7 @@ import { LetterTextIcon, Mic } from "lucide-react";
 import Search from "./Search.js";
 import { useSermonContext } from "@/Provider/Vsermons.js";
 import { Sermon } from "@/types/index.js";
+import { useTheme } from "@/Provider/Theme.js";
 
 const SermonList = () => {
   const {
@@ -25,6 +26,7 @@ const SermonList = () => {
   const [searchText, setSearchText] = useState("");
   const [sortKey, setSortKey] = useState("title");
   const [sortOrder, setSortOrder] = useState("ascend");
+  const { isDarkMode } = useTheme();
 
   const filteredSermons = useMemo(() => {
     return allSermons.filter((sermon) =>
@@ -85,7 +87,7 @@ const SermonList = () => {
 
   return (
     <div
-      className="flex h-screen overflow-y-scroll no-scrollbar px-10  font-serif bg-contain bg-center bg-white  dark:bg-bgray"
+      className="flex h-screen overflow-y-scroll no-scrollbar px-10  font-serif bg-contain bg-center bg-white  dark:bg-ltgray"
       // style={{
       //   backgroundImage: `
       //     linear-gradient(to top, rgba(250, 206, 137, 0.8) 0%, rgba(0, 0, 0, 0.8) 20%, rgba(0, 0, 0, 0.1) 100%),
@@ -96,10 +98,10 @@ const SermonList = () => {
       {/* Left side - Sermon List */}
 
       <div
-        className="w-1/2 overflow-y-auto no-scrollbar bg-white  dark:bg-bgray "
+        className="w-1/2 overflow-y-auto no-scrollbar bg-white  dark:bg-ltgray "
         style={{ height: "100vh" }}
       >
-        <div className="sticky   px-4 py-2 z-10 top-0 pt-10  rounded-b-md  bg-white  dark:bg-bgray ">
+        <div className="sticky   px-4 py-2 z-10 top-0 pt-10  rounded-b-md  bg-white  dark:bg-ltgray ">
           <h2 className="text-lg font-bold font-serif mb-2 text-stone-500 dark:text-gray-50">
             Sermon List
           </h2>
@@ -178,28 +180,39 @@ const SermonList = () => {
           {sortedSermons.map((sermon) => (
             <div
               key={sermon.id}
-              className=" border-b border-gray-500  cursor-pointer px-2 mb-1 hover:bg-gray-50 dark:hover:bg-ltgray shadow dark:shadow-black group rounded-lg w-full"
+              className=" border-b border-gray-500  cursor-pointer px-2 mb-1 hover:bg-gray-50 dark:hover:bg-ltgray shaow dark:shadow-bgra group rounded-lg w-full"
               onClick={() => handleSermonClick(sermon)}
+              style={{
+                borderWidth: 1,
+                borderColor: isDarkMode ? "#202020" : "#e0e0e0",
+                borderStyle: "solid",
+              }}
             >
-              <p className=" text-[12px] font-bold font-serif pt-1 group-hover:underline text-stone-500 dark:text-gray-50">
+              <p className=" text-[14px] font-bold font-serif pt-1 group-hover:underline text-stone-700 dark:text-gray-50 ">
                 {sermon.title}
               </p>
-              <div className="flex gap-3 text-gray-300 -mt-3">
-                <p className="flex items-center  text-[12px] font-mono text-gray-500">
-                  <CalendarOutlined className="mr-1 text-gray-300" />
+              <div className="flex gap-3 text-gray-50 -mt-3">
+                <p className="flex items-center  text-[12px] font-mono text-stone-700 dark:text-gray-50">
+                  <CalendarOutlined className="mr-1 text-stone-700 dark:text-gray-50" />
                   {sermon.year}
                 </p>
                 <p
-                  className={`flex items-center text-[12px] font-mono text-gray-500 `}
+                  className={`flex items-center text-[12px] font-mono text-gray-50 `}
                 >
-                  <EnvironmentOutlined className="mr-1 text-gray-300" />{" "}
+                  <EnvironmentOutlined className="mr-1 text-stone-700 dark:text-gray-50" />{" "}
                   {!sermon.location && "N/A"}
                 </p>
                 <p className="flex items-center text-[12px]">
                   {sermon.type === "mp3" ? (
-                    <Mic size={12} className="text-gray-300" />
+                    <Mic
+                      size={12}
+                      className="text-stone-700 dark:text-gray-500"
+                    />
                   ) : (
-                    <LetterTextIcon size={12} className="text-gray-300" />
+                    <LetterTextIcon
+                      size={12}
+                      className="text-stone-700 dark:text-gray-50"
+                    />
                   )}
                 </p>
               </div>

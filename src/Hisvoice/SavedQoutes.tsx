@@ -10,12 +10,14 @@ import {
   ArrowLeftCircleIcon,
 } from "lucide-react";
 import { useSermonContext } from "@/Provider/Vsermons";
+import { useTheme } from "../Provider/Theme";
 
 const QuotesManager = () => {
   const [quotes, setQuotes] = useState<
     { id: number; title: string; year: string; content: string }[]
   >([]);
   const { settings, theme } = useSermonContext();
+  const { isDarkMode } = useTheme();
   const [currentView, setCurrentView] = useState("list");
   const [selectedQuote, setSelectedQuote] = useState<{
     id: number;
@@ -102,19 +104,18 @@ const QuotesManager = () => {
 
   const renderListView = () => (
     <div
-      className="relative h-screen overfow-y-scroll no-scrollbar bg-ltgray mx-auto px-4 pt-10 "
+      className="relative h-screen overfow-y-scroll no-scrollbar bg-white/30 dark:bg-ltgray mx-auto px-4 pt-10 "
       style={{
         backgroundPosition: "center",
         backgroundSize: "contain",
-        backgroundImage:
-          theme === "light"
-            ? `linear-gradient(to bottom,
+        backgroundImage: !isDarkMode
+          ? `linear-gradient(to bottom,
                rgba(255, 255, 255, 0%) 0%,
           rgba(255, 255, 255, 5) 20%),
                 url("./snow2.jpg")`
-            : `linear-gradient(to bottom,
+          : `linear-gradient(to bottom,
                rgba(154, 103, 74, 0) 0%,
-          rgba(44,44, 44, 5) 20%),
+          rgba(0,0, 0, 5) 20%),
                 url("./snow2.jpg")`,
       }}
     >
@@ -122,15 +123,15 @@ const QuotesManager = () => {
         <EmptyState />
       ) : (
         <table className="w-full text-left">
-          <thead className="bg-white dark:bg-ltgray bg-opacity-50">
+          <thead className="bg-white dark:bg-bgray bg-opacity-70">
             <tr>
-              <th className="px-6 py-4 text-xs font-medium text-stone-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-xs font-medium text-stone-500 dark:text-gray-700 uppercase tracking-wider">
                 Title
               </th>
-              <th className="px-6 py-4 text-xs font-medium text-stone-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-xs font-medium text-stone-500 dark:text-gray-700 uppercase tracking-wider">
                 Year
               </th>
-              <th className="px-6 py-4 text-xs font-medium text-stone-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-xs font-medium text-stone-500 dark:text-black uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -139,31 +140,31 @@ const QuotesManager = () => {
             {quotes.map((quote) => (
               <tr
                 key={quote.id}
-                className=" dark:hover:bg-ltgray/20  hover:cursor-pointer hover:bg-opacity-30 transition-colors shadow"
+                className=" dark:hover:bg-ltgray/20 dark:shadow-bgray  hover:cursor-pointer hover:bg-opacity-30 transition-colors shadow py-0"
               >
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-2 whitespace-nowrap">
                   <div className="flex items-center">
                     <img
                       src="./icon.png"
                       alt=""
-                      className="h-10 w-10 mr-4 rounded-full shadow-md dark:bg-ltgray p-3"
+                      className="h-4 w-4 mr-4 rounded-full shadow-md dark:bg-ltgray p-2"
                     />
                     <span className="text-sm font-semibold text-stone-500 dark:text-gray-50 truncate">
                       {quote.title}
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                <td className=" text-[12px] whitespace-nowrap text-sm text-gray-400">
                   {quote.year}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="whitespace-nowrap">
                   <div className="flex space-x-2">
                     <button
                       onClick={() => handleEdit(quote)}
                       className="p-2 dark:bg-ltgray bg-gray-100 hover:bg-ltgray/50 hover:scale-105 rounded-lg transition-colors"
                     >
                       <Edit2
-                        size={20}
+                        size={14}
                         className="text-stone-500 dark:text-stone-500"
                       />
                     </button>
@@ -174,13 +175,13 @@ const QuotesManager = () => {
                       }}
                       className="p-2 dark:bg-ltgray bg-gray-100 hover:bg-ltgray/50 hover:scale-105 rounded-lg transition-colors"
                     >
-                      <Eye size={20} className="text-primary" />
+                      <Eye size={14} className="text-primary" />
                     </button>
                     <button
                       onClick={() => handleDelete(quote.id)}
                       className="p-2 dark:bg-ltgray bg-gray-100 hover:bg-ltgray/50 hover:scale-105 rounded-lg transition-colors"
                     >
-                      <Trash2 size={20} className="text-red-500" />
+                      <Trash2 size={14} className="text-red-500" />
                     </button>
                   </div>
                 </td>
@@ -319,7 +320,7 @@ const QuotesManager = () => {
   );
 
   return (
-    <div className="h-screen bg-background bg-cover overflow-scroll no-scrollbar  relative text-white font-serif ">
+    <div className="h-screen bg-background dark:bg-ltgray bg-cover overflow-scroll no-scrollbar  relative text-white font-serif ">
       {/* <div className="absolute inset-0 bg-gradient-to-b from-secondary via-secondary to-primary bg-opacity-50"></div> */}
       {currentView === "list" && renderListView()}
       {currentView === "form" && renderFormView()}

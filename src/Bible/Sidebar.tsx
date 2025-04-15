@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo,useEffect } from "react";
 import { Menu, X, Search, Star, RotateCcw, Book, Settings } from "lucide-react";
 import { useBibleContext } from "../Provider/Bible";
 
@@ -10,7 +10,19 @@ const BibleSidebar: React.FC = () => {
     setActiveFeature,
     searchOpen,
     setSearchOpen,
+    theme,
   } = useBibleContext();
+
+   useEffect(() => {
+      const hisvoicediv = document.getElementById("hisvoicediv");
+      if (theme === "dark") {
+        hisvoicediv?.classList.add("dark");
+        localStorage.setItem("vsermontheme", theme);
+      } else {
+        hisvoicediv?.classList.remove("dark");
+        localStorage.setItem("vsermontheme", theme);
+      }
+    }, [theme]);
 
   // Generate random colors only once on component mount using useMemo
   const iconColors = useMemo(() => {

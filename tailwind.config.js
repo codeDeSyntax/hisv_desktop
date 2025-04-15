@@ -10,7 +10,7 @@ export default {
         background:"#faeed1",
         primary: '#9a674a',
         bgray:"#202020",
-        ltgray:"#2c2c2c"
+        ltgray:"#080808"
 
       },
       fontFamily: {

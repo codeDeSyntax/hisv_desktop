@@ -80,7 +80,7 @@ const FontSettingsPage = () => {
                   Font Family
                 </label>
                 <div
-                  className="flex items-center justify-between p-3 bg-white bg-opacity-10 rounded-xl cursor-pointer hover:bg-opacity-20 transition-all duration-300 group"
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-bgray bg-opa0 rounded-xl cursor-pointer hover:bg-opacity-20 transition-all duration-300 group"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   <span className="text-stone-500 dark:text-white truncate mr-2">
@@ -116,7 +116,7 @@ const FontSettingsPage = () => {
               </div>
 
               {/* theme options */}
-              <div>
+              {/* <div>
                 <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                   Theme
                 </h3>
@@ -144,7 +144,7 @@ const FontSettingsPage = () => {
                     Dark
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               {/* Font Size Slider */}
               <div className="space-y-3">
@@ -158,13 +158,14 @@ const FontSettingsPage = () => {
                     max="120"
                     value={fontSize}
                     onChange={(e) => setFontSize(Number(e.target.value))}
-                    className="w-full h-2 rounded-full appearance-none bg-white bg-opacity-20 outline-none cursor-pointer slider"
+                    className="w-full h-2 rounded-full appearnce-none bg-bgray bg-opacit-20 outline-none cursor-pointer slider"
                     style={{
-                      background: `linear-gradient(to right, rgba(255,255,255,0.8) ${
-                        ((fontSize - 12) * 100) / 108
-                      }%, rgba(255,255,255,0.2) ${
-                        ((fontSize - 12) * 100) / 108
-                      }%)`,
+                      // background: `linear-gradient(to right, rgba(255,255,255,0.8) ${
+                      //   ((fontSize - 12) * 100) / 108
+                      // }%, rgba(255,255,255,0.2) ${
+                      //   ((fontSize - 12) * 100) / 108
+                      // }%)`,
+                      background: "#202020",
                     }}
                   />
                   <div className="flex justify-between text-[12px] text-stone-500 dark:text-white opacity-60 mt-2">
@@ -185,7 +186,7 @@ const FontSettingsPage = () => {
                       key={weight}
                       className={`flex items-center justify-center p-3 rounded-xl cursor-pointer transition-all duration-300 group ${
                         fontWeight === weight
-                          ? "bg-white bg-opacity-30 ring-2 ring-background/60"
+                          ? "bg-white bg-opacity-30 ring-2 ring-bgray/30"
                           : "bg-white bg-opacity-10 hover:bg-opacity-20"
                       }`}
                     >
@@ -216,7 +217,7 @@ const FontSettingsPage = () => {
                       key={style}
                       className={`flex items-center justify-center p-3 rounded-xl cursor-pointer transition-all duration-300 group font-serif ${
                         fontStyle === style
-                          ? "bg-white bg-opacity-30 ring-2 ring-background/60 "
+                          ? "bg-white bg-opacity-30 ring-2 ring-bgray/20 "
                           : "bg-white bg-opacity-10 hover:bg-opacity-20 shadow"
                       }`}
                     >
@@ -247,13 +248,13 @@ const FontSettingsPage = () => {
             </div>
 
             {/* Right Panel - Preview */}
-            <div className="md:col-span-3 p-8 bg-white bg-opacity-5">
+            <div className="md:col-span-3 p-8 bg-white bg-opacity-5 ">
               <div className="flex items-center space-x-4 mb-6">
                 <h2 className="text-xl font-semibold text-stone-500 dark:text-white flex-grow">
                   Live Preview
                 </h2>
               </div>
-              <div className="bg-white bg-opacity-10 rounded-2xl p-6 md:p-8 h-[500px] overflow-auto">
+              <div className=" rounded-2xl p-6 md:p-8 h-[500px] overflow-y-scroll no-scrollbar">
                 <div
                   style={{
                     fontFamily,

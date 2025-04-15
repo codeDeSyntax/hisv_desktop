@@ -349,7 +349,7 @@ const SelectedSermon = ({
                 <p className=" text-2xl font-serif text-stone-500 dark:text-gray-50 font-bold underline">
                   {selectedMessage.title}
                 </p>
-                <p className=" font-serif italic text-stone-500 dark:text-gray-50 ">
+                <p className=" font-serif italic text-stone-500 dark:text-gray-50 text-wrap">
                   {selectedMessage?.location}
                 </p>
                 {selectedMessage.sermon
@@ -357,7 +357,7 @@ const SelectedSermon = ({
                   .map((paragraph, index) => (
                     <p
                       key={index}
-                      className="mb-6 leading-relaxed text-stone-500 dark:text-gray-50 text-wrap text-left"
+                      className="mb-6 leading-relaxed text-stone-600 dark:text-gray-50 text-wrap break-words text-left"
                       style={{
                         fontFamily: settings.fontFamily,
                         fontWeight: settings.fontWeight,

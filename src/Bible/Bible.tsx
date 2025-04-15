@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import TitleBar from "./Titlebar";
 import BibleSidebar from "./Sidebar";
 import FeaturePanel from "./Features";
@@ -7,8 +7,19 @@ import { useBibleContext } from "@/Provider/Bible";
 import SearchPanel from "./SearchPanel";
 
 const Biblelayout: React.FC = () => {
-  const { sidebarExpanded, activeFeature, searchOpen } = useBibleContext();
+  const { sidebarExpanded, activeFeature, searchOpen, theme, currentScreen } =
+    useBibleContext();
 
+  useEffect(() => {
+    const hisvoicediv = document.getElementById("hisvoicediv");
+    if (theme === "dark") {
+      hisvoicediv?.classList.add("dark");
+      localStorage.setItem("vsermontheme", theme);
+    } else {
+      hisvoicediv?.classList.remove("dark");
+      localStorage.setItem("vsermontheme", theme);
+    }
+  }, []);
   // Calculate content padding based on sidebar and panel states
   const getContentClass = () => {
     if (activeFeature || searchOpen) {

@@ -1,12 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "@/Provider/Theme";
 
 const Home = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentScriptureIndex, setCurrentScriptureIndex] = useState(0);
-  const { randomSermons, setSelectedMessage, setActiveTab, setCB, theme } =
+  const { randomSermons, setSelectedMessage, setActiveTab, setCB } =
     useSermonContext();
+  const { isDarkMode } = useTheme();
+  const [hoveredSermon, setHoveredSermon] = useState<string | number | null>(
+    null
+  );
 
   const scriptures = useMemo(
     () => [
@@ -75,138 +80,71 @@ const Home = () => {
 
   return (
     <div
-      className="h-screen relative overflow-auto no-scrollbar w-full bg-gray-50 dark:bg-bgray   rounded-tl-3xl"
+      className="h-screen relative overflow-auto no-scrollbar w-full bg-gray-50 dark:bg-ltgray rounded-tl-3xl"
       style={{
         backgroundPosition: "center",
         backgroundSize: "cover",
-        backgroundImage:
-          theme === "light"
-            ? `linear-gradient(to bottom,
-             rgba(154, 103, 74, 0) 0%,
+        backgroundImage: !isDarkMode
+          ? `linear-gradient(to bottom,
+             rgba(255, 255, 255, 0) 0%,
         rgba(255, 255, 255, 5) 20%),
               url("./wood7.png")`
-            : `linear-gradient(to bottom,
-             rgba(154, 103, 74, 0) 0%,
-        rgba(44,44, 44, 5) 20%),
+          : `linear-gradient(to bottom,
+             rgba(8, 8, 8, 0) 0%,
+        rgba(0, 0, 0, 5) 20%),
               url("./snow2.jpg")`,
       }}
     >
-      {/* Content Container */}
-      <div className="relative z-10">
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-          {/* Sermons Section */}
-          <motion.section
+      {/* Main Content */}
+      <div className="relative z-10 h-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-full flex flex-col">
+          {/* Header Section with Profile */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center justify-between mb-12"
+          >
+            <div className="flex items-center space-x-4">
+              <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-white/30">
+                <img
+                  src="./bob.jpg"
+                  alt="Robert Lambert Lee"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-stone-500 dark:text-gray-50 font-serif">
+                  Robert Lambert Lee
+                </h1>
+                <p className="text-stone-500 dark:text-gray-300 font-serif italic">
+                  Preachings & Teachings
+                </p>
+              </div>
+            </div>
+
+            <div className="hidden md:block">
+              <div className="h-px w-32 bg-white/30"></div>
+            </div>
+          </motion.div>
+
+          {/* Scripture Timeline Bar */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mt-8"
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mb-12 w-full"
           >
-            <div className="flex items-center mb-8">
-              <h2 className="text-2xl md:text-2xl font-bold text-stone-500 dark:text-gray-50 white mb-0 font-serif">
-                Robert Lambert Lee Preachings
-              </h2>
-              <div className="h-px bg-white/30 flex-grow ml-6 hidden md:block"></div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 font-serif">
-              <AnimatePresence>
-                {randomSermons.map((sermon) => (
-                  <motion.div
-                    key={sermon.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    whileHover={{
-                      y: -8,
-                      transition: { duration: 0.2 },
-                    }}
-                    className="group relative bg-gray-50 dark:bg-ltgray backdrop-blur-md rounded-2xl hover:cursor-pointer overflow-hidden border border-white/20 shadow-lg"
-                    onClick={() => {
-                      setSelectedMessage(sermon);
-                      setActiveTab("message");
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-b dark:from- to-[#9a674a]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                    <div className="p-5 relative z-10">
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-14 h-14 flex items-center justify-center rounded-full overflow-hidden border-2 border-white/30">
-                          <img
-                            src="./icon.png"
-                            alt=""
-                            className="h-[5vh] w-[5vh] object-cover rounded-full  shadow hue-rotate-180"
-                          />
-                        </div>
-                        <h3 className="text-sm font-semibold text-stone-500 dark:text-gray-50  transition-colors duration-300">
-                          {sermon?.title.slice(0, 30)}
-                          {sermon?.title.length > 30 && "..."}
-                        </h3>
-                      </div>
-
-                      <div className="space-y-3 mt-4">
-                        <div className="flex items-center text-stone-500 dark:text-gray-50  text-sm">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 mr-2"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                          </svg>
-                          {sermon.location || "N/A"}
-                        </div>
-                        <div className="flex items-center text-stone-500 dark:text-gray-50 group-hover:text-white/90 text-sm">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 mr-2"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
-                          {sermon.year}
-                        </div>
-                      </div>
-
-                      {/* Accent line animation on hover */}
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/30 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </motion.section>
-
-          <div className="flex items-center justify-start pt-4 ">
-            {/* Scripture Display */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentScriptureIndex}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -30 }}
                 transition={{ duration: 0.5 }}
-                className="mb-12 p-6 mt-2 w-[50%] bg-white dark:bg-ltgray  backdrop-blur-sm rounded-lg border border-white/20 shadow-lg "
+                className="relative backdrop-blur-sm py- px-8 rounded-lg border-l-4 border-white/30 bg-white/5 dark:bg-ltgray/20"
               >
+                <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-white/50 to-white/10"></div>
                 <p className="italic text-stone-500 dark:text-gray-50 text-lg md:text-xl font-serif leading-relaxed mb-3">
                   &ldquo;{currentScripture.verse}&rdquo;
                 </p>
@@ -215,35 +153,123 @@ const Home = () => {
                 </p>
               </motion.div>
             </AnimatePresence>
-            {/* Footer with changing image display */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              // transition={{ delay: 1, duration: 0.8 }}
-              className=" text-center  w-[20%]"
-            >
-              {/* <AnimatePresence> */}
-              <motion.div
-                key={currentImageIndex}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                // transition={{ duration: 1 }}
-                className="inline-block w-16 h-16 rounded-full overflow-hidden border-2 border-white/30 mb-4"
-              >
-                <img
-                  src="./bob.jpg"
-                  alt="Featured"
-                  className="w-full h-full object-cover"
-                />
-              </motion.div>
-              {/* </AnimatePresence> */}
-              <p className="text-stone-500  text-sm font-serif">
-                Robert Lambert Lee
-              </p>
-            </motion.div>
-          </div>
-        </main>
+          </motion.div>
+
+          {/* Main Content Area - Timeline Style Sermons List */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex-grow pb-4"
+          >
+            <div className="relative">
+              {/* Vertical Timeline Line */}
+              <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-white/50 via-white/30 to-transparent"></div>
+
+              <div className="space-y-2">
+                {randomSermons.map((sermon, index) => (
+                  <motion.div
+                    key={sermon.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                    className="relative"
+                    onMouseEnter={() => setHoveredSermon(sermon.id)}
+                    onMouseLeave={() => setHoveredSermon(null)}
+                    onClick={() => {
+                      setSelectedMessage(sermon);
+                      setActiveTab("message");
+                    }}
+                  >
+                    <div className={`flex flex-col md:flex-row `}>
+                      {/* Timeline Node */}
+                      <div className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 w-4 h-4 rounded-full bg-stone-200 dark:bg-white/30 border-2 border-stone-500 dark:border-white/50"></div>
+
+                      {/* Content */}
+                      <div className={`ml-6 md:ml-0 md:w-1/2  relative`}>
+                        <div
+                          className={`
+                            p-6 rounded-lg backdrop-blur-sm cursor-pointer
+                            border border-stone-200 dark:border-white/10 
+                            hover:border-white/30
+                            transition-all duration-300
+                            bg-white/5 dark:bg-ltgray/10
+                            ${
+                              hoveredSermon === sermon.id
+                                ? "shadow-lg bg-white/10 dark:bg-ltgray/20"
+                                : ""
+                            }
+                          `}
+                        >
+                          <h3 className="font-serif text-lg font-semibold text-stone-500 dark:text-gray-50 mb-3">
+                            {sermon?.title}
+                          </h3>
+
+                          <div className="flex items-center justify-between text-stone-500 dark:text-gray-300 text-sm font-serif">
+                            <div className="flex items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 mr-2"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                />
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                />
+                              </svg>
+                              {sermon.location || "N/A"}
+                            </div>
+
+                            <div className="flex items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 mr-2"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                />
+                              </svg>
+                              {sermon.year}
+                            </div>
+                          </div>
+
+                          {/* Reveal animation line */}
+                          <div
+                            className={`
+                              absolute bottom-0 left-0 right-0 h-0.5 
+                              bg-gradient-to-r from-gray-100 dark:from-transparent via-gray-500 dark:via-white/70 to-transparent
+                              transform scale-x-0 
+                              ${
+                                hoveredSermon === sermon.id ? "scale-x-100" : ""
+                              }
+                              transition-transform duration-500
+                            `}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </div>
   );

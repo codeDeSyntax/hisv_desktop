@@ -13,7 +13,7 @@ interface SermonFormProps {
 }
 
 export const SermonForm: React.FC<SermonFormProps> = ({ initialData, onSave, onCancel }) => {
-  const { createPresentation, updatePresentation } = useEvPresentationContext();
+  const { createPresentation, updatePresentation ,selectedPath} = useEvPresentationContext();
   
   const [title, setTitle] = useState(initialData?.title || '');
   const [preacher, setPreacher] = useState((initialData as any)?.preacher || '');
@@ -51,9 +51,9 @@ export const SermonForm: React.FC<SermonFormProps> = ({ initialData, onSave, onC
     };
     
     if (initialData?.id) {
-      await updatePresentation(initialData.id, sermonData);
+      await updatePresentation(initialData.id,selectedPath, sermonData);
     } else {
-      await createPresentation(sermonData);
+      await createPresentation(selectedPath,sermonData);
     }
     
     onSave();
@@ -175,7 +175,7 @@ export const SermonForm: React.FC<SermonFormProps> = ({ initialData, onSave, onC
 };
 
 export const OtherForm: React.FC<SermonFormProps> = ({ initialData, onSave, onCancel }) => {
-  const { createPresentation, updatePresentation } = useEvPresentationContext();
+  const { createPresentation, updatePresentation ,selectedPath} = useEvPresentationContext();
   
   const [title, setTitle] = useState(initialData?.title || '');
   const [message, setMessage] = useState((initialData as any)?.message || '');
@@ -190,9 +190,9 @@ export const OtherForm: React.FC<SermonFormProps> = ({ initialData, onSave, onCa
     };
     
     if (initialData?.id) {
-      await updatePresentation(initialData.id, otherData);
+      await updatePresentation(initialData.id,selectedPath, otherData);
     } else {
-      await createPresentation(otherData);
+      await createPresentation(selectedPath,otherData);
     }
     
     onSave();

@@ -146,7 +146,7 @@ const SettingsPanel: React.FC = () => {
           <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
             Theme
           </h3>
-          <div className="flex space-x-2">
+          {/* <div className="flex space-x-2">
             <button
               onClick={() => setTheme("light")}
               className={`flex-1 py-2 hover:cursor-pointer px-4 rounded-md flex items-center justify-center ${
@@ -169,7 +169,7 @@ const SettingsPanel: React.FC = () => {
               <Moon size={18} className="mr-2" />
               Dark
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Font Size Setting */}

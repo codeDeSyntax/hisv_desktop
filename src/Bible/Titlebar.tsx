@@ -1,24 +1,46 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { X, Minus, Square } from "lucide-react";
+import { X, Minus, Square, Monitor } from "lucide-react";
 import { useBibleContext } from "@/Provider/Bible";
 import { useEastVoiceContext } from "@/Provider/EastVoice";
 import { MoreHorizontal } from "lucide-react";
 import { ThemeToggle } from "@/shared/ThemeToggler";
+import { useTheme } from "@/Provider/Theme";
+import { useEvPresentationContext } from "@/Provider/EvPresent";
 
 const TitleBar: React.FC = () => {
   const { handleClose, handleMaximize, handleMinimize, theme } =
     useBibleContext();
   const { setAndSaveCurrentScreen } = useEastVoiceContext();
+  const { selectedPath, setSelectedPath } = useEvPresentationContext();
+  const { isDarkMode } = useTheme();
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [selectedBg, setSelectedBg] = useState<string>('url("./wood2.jpg")');
   const [nextBg, setNextBg] = useState<string>('url("./wood7.png")');
   const [bgOpacity, setBgOpacity] = useState<number>(1);
+  // const [selectedPath, setSelectedPath] = useState<string>("");
 
   const ltImages = [
     'url("./wood2.jpg")',
     'url("./wood7.png")',
     'url("./wood6.jpg")',
   ];
+
+  // check for selectedPath from local storage
+
+  //function choose path an set it to local storage
+  const selectEvpd = async () => {
+    const path = await window.api.selectDirectory();
+    if (typeof path === "string") {
+      setSelectedPath(path);
+      if (path) {
+        if (path) {
+          localStorage.setItem("evpresenterfilespath", path);
+        }
+      }
+    } else {
+      console.error("Invalid path selected");
+    }
+  };
 
   const randomImage = useCallback(() => {
     const currentIndex = ltImages.indexOf(selectedBg);
@@ -62,15 +84,14 @@ const TitleBar: React.FC = () => {
     <div
       className="h-8 flex items-center flex-row-reverse px-4 border-b border-gray-300 dark:border-gray-700 select-none relative"
       style={{
-        ...(theme === "light"
+        ...(!isDarkMode
           ? {
-              backgroundImage:
-                theme === "light"
-                  ? `linear-gradient(to bottom,
+              backgroundImage: !isDarkMode
+                ? `linear-gradient(to bottom,
              rgba(255, 255, 255, 0%) 0%,
              rgba(255, 255, 255, 5) 60%),
              ${selectedBg}`
-                  : undefined,
+                : undefined,
               backgroundRepeat: "repeat",
               backgroundSize: "50px", // Adjust size to control repeat pattern
             }
@@ -89,7 +110,7 @@ const TitleBar: React.FC = () => {
     >
       <div className=" space-x-2 mr-4 flex items-center justify-center">
         {/* theme toggler */}
-        <ThemeToggle/>
+        <ThemeToggle />
         {/* Close button */}
         <div
           onClick={handleClose}
@@ -125,36 +146,60 @@ const TitleBar: React.FC = () => {
 
         {/* Dropdown menu */}
         {showDropdown && (
-          <div className="absolute top-5 left-0 bg-white shadow-md rounded-md p-1 z-50 w-32">
+          <div className="absolute top-5 left-0 bg-white dark:bg-bgray shadow-md rounded-md p-1 z-50 w-32">
             <div
-              className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+              className="flex items-center space-x-2 p-1 hover:bg-gray-100 dark:hover:bg-ltgray rounded cursor-pointer"
               onClick={() => {
                 setAndSaveCurrentScreen("hisvoice");
                 setShowDropdown(false);
               }}
             >
               <img src="./icon.png" className="h-4 w-4  text-gray-600" />
-              <span className="text-xs">His voice</span>
+              <span className="text-xs text-stone-500 dark:text-gray-200">
+                His voice
+              </span>
             </div>
             <div
-              className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+              className="flex items-center space-x-2 p-1 hover:bg-gray-100 dark:hover:bg-ltgray rounded cursor-pointer"
               onClick={() => {
                 setAndSaveCurrentScreen("Songs");
                 setShowDropdown(false);
               }}
             >
               <img src="./music2.png" className="h-4 w-4  text-gray-600" />
-              <span className="text-xs">Song app</span>
+              <span className="text-xs text-stone-500 dark:text-gray-200">
+                Song app
+              </span>
             </div>
             <div
-              className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+              className="flex items-center space-x-2 p-1 hover:bg-gray-100 dark:hover:bg-ltgray rounded cursor-pointer"
               onClick={() => {
                 setAndSaveCurrentScreen("bible");
                 setShowDropdown(false);
               }}
             >
               <img src="./music3.png" className="h-4 w-4  text-gray-600" />
-              <span className="text-xs">Bible</span>
+              <span className="text-xs text-stone-500 dark:text-gray-200">
+                Bible
+              </span>
+            </div>
+            <div className="flex items-center space-x-2 p-1 hover:bg-gray-100 dark:hover:bg-ltgray rounded cursor-pointer">
+              <Monitor
+                className="h-4 w-4  text-gray-600"
+                onClick={() => {
+                  setAndSaveCurrentScreen("mpresenter");
+                  setShowDropdown(false);
+                }}
+              />
+              <span className="text-xs text-stone-500 dark:text-gray-200 ">
+                {selectedPath ? (
+                  <p>PMaster {selectedPath.slice(0, 8)}</p>
+                ) : (
+                  <p onClick={selectEvpd} className="underline">
+                    Choose Path (PM)
+                  </p>
+                )}
+              </span>
             </div>
           </div>
         )}

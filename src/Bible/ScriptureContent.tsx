@@ -14,6 +14,7 @@ import {
 import { useBibleContext } from "@/Provider/Bible";
 import { useEastVoiceContext } from "@/Provider/EastVoice";
 import PresentationOverlay from "./PresentationOverlay";
+import { useTheme } from "@/Provider/Theme";
 
 interface Book {
   name: string;
@@ -45,7 +46,7 @@ const ScriptureContent: React.FC = () => {
   } = useBibleContext();
 
   const { bibleBgs } = useEastVoiceContext();
-
+  const {isDarkMode} = useTheme();
   const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
   const [isChapterDropdownOpen, setIsChapterDropdownOpen] = useState(false);
   const [isVerseDropdownOpen, setIsVerseDropdownOpen] = useState(false);
@@ -508,7 +509,7 @@ const ScriptureContent: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-red-500 dark:bg-black text-white font-serif">
+    <div className="flex flex-col h-full bg-white dark:bg-ltgray text-white font-serif ">
       {/* Single-row navigation bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-white dark:bg-black">
         <button
@@ -549,7 +550,7 @@ const ScriptureContent: React.FC = () => {
                     Old Testament {"   "}
                     <span
                       className="underline font-serif"
-                      style={{ 
+                      style={{
                         color: iconColors.color2,
                       }}
                     >
@@ -739,7 +740,7 @@ const ScriptureContent: React.FC = () => {
       {/* Scripture content */}
       <div
         ref={contentRef}
-        className="flex-1  p-4 md:p-6 lg:p-8 overflow-y-scroll no-scrollbar text-stone-500 bg-white dark:bg-black"
+        className={`flex-1  p-4 md:p-6 lg:p-8 overflow-y-scroll no-scrollbar text-stone-500 ${isDarkMode ? "dottedb1" : "dottedb"}`}
         onScroll={updateVisibleVerses}
       >
         {verses.length > 0 ? (

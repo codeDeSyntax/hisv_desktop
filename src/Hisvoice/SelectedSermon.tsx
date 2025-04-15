@@ -302,7 +302,7 @@ const SelectedSermon = ({
           )}
 
           <div
-            className="rounded-lg p-4 h-[80vh] overflow-y-scroll overflow-x-hidden text-wrap"
+            className="rounded-lg p-4 h-[80vh] overflow-y-scroll overflow-x-hidden no-scrollbar text-wrap"
             ref={scrollContainerRef}
             style={{
               scrollbarWidth: "thin",
@@ -312,7 +312,7 @@ const SelectedSermon = ({
             }}
           >
             {selectedMessage?.type === "text" ? (
-              <div className="h-full">
+              <div className="h-full over">
                 {selectedMessage?.lastRead && showLastReadCard && (
                   <Card
                     title="Welcome Back!"

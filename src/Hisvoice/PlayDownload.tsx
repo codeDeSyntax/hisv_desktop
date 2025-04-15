@@ -39,14 +39,14 @@ const DownloadSermon = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-ltgray mt-5 overflow-hidden h-screen  p-5 font-serif">
+    <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-ltgray mt-5  h-scren  p-5 font-serif">
       <div className="w-full max-w-lg">
         <button
           onClick={handleBack}
-          className="bg-gray-400 dark:bg-[#424242] focus:outline-none bg- underline text-stone-500 dark:text-gray-50 mb-4 hover:scale-105"
+          className="bg-gray-400 flex items-center justify-center p-2 dark:bg-bgray focus:outline-none bg- underline text-stone-500 dark:text-gray-50 mb-4 hover:scale-105"
         >
           <ArrowLeft size={24} />
-          <span className="ml-2">Back to Sermon List</span>
+          {/* <span className="ml-2">Back to Sermon List</span> */}
         </button>
 
         <h1 className="text-stone-600 text-3xl mb-4">Sermon Audio</h1>
@@ -65,7 +65,7 @@ const DownloadSermon = () => {
 
         <button
           onClick={handleDownload}
-          className="bg-gray-400 dark:bg-[#424242] focus:outline-none justify-center  text-white text-lg py-4 px-6 rounded-full mb-6 w-full hover:bg-secondary disabled:opacity-50"
+          className="bg-background dark:bg-bgray focus:outline-none justify-center  text-white text-lg py-4 px-6 rounded-full mb-6 w-full hover:bg-secondary disabled:opacity-50"
           disabled={isLoading || !downloadUrl}
         >
           {isLoading ? (

@@ -11,6 +11,8 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import os from "node:os";
+import { v4 as uuidv4 } from "uuid";
+import { Presentation, EvSermon, EvOther } from "@/types";
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -134,16 +136,16 @@ async function createProjectionWindow() {
   }
 
   // Track window state changes
-  projectionWin.on('minimize', () => {
+  projectionWin.on("minimize", () => {
     isProjectionMinimized = true;
   });
-  
-  projectionWin.on('restore', () => {
+
+  projectionWin.on("restore", () => {
     isProjectionMinimized = false;
   });
-  
+
   // Critical: Reset reference when window is closed
-  projectionWin.on('closed', () => {
+  projectionWin.on("closed", () => {
     projectionWin = null;
     isProjectionMinimized = false;
   });
@@ -167,7 +169,7 @@ ipcMain.on("minimizeProjection", () => {
   if (projectionWin && !projectionWin.isDestroyed()) {
     projectionWin.minimize();
     isProjectionMinimized = true;
-    
+
     // Focus the main window after minimizing the projection window
     if (mainWin && !mainWin.isDestroyed()) {
       mainWin.focus();
@@ -199,7 +201,7 @@ ipcMain.handle("project-song", async (event, songData) => {
     }, 300); // Short delay to ensure window is restored before sending data
     return;
   }
-  
+
   // If window doesn't exist or was destroyed, create a new one
   if (!projectionWin || projectionWin.isDestroyed()) {
     await createProjectionWindow();
@@ -341,3 +343,388 @@ async function loadImagesFromDirectory(dirPath: string) {
 ipcMain.handle("get-images", async (event, dirPath) => {
   return loadImagesFromDirectory(dirPath); // Return the list of base64-encoded images
 });
+
+// Presentation master handlers
+function sanitizeFilename(title: string): string {
+  // Remove invalid filename characters and replace spaces with underscores
+  return title
+    .replace(/[/\\?%*:|"<>]/g, "")
+    .replace(/\s+/g, "_")
+    .toLowerCase();
+}
+
+// Helper function to create a unique filename based on title
+function createUniqueFilename(title: string, id: string): string {
+  const sanitized = sanitizeFilename(title);
+  // Limit filename length and append ID to ensure uniqueness
+  const truncated = sanitized.substring(0, 50);
+  return `${truncated}_${id}.txt`;
+}
+
+ipcMain.handle("load-presentations", async (_, directoryPath: string) => {
+  console.log(directoryPath)
+  try {
+    const presentations: Presentation[] = [];
+
+    const files = fs.readdirSync(directoryPath);
+    for (const file of files) {
+      if (file.endsWith(".txt")) {
+        const filePath = path.join(directoryPath, file);
+        const content = fs.readFileSync(filePath, "utf8");
+
+        // Extract ID from filename (last part after underscore and before .txt)
+        const idMatch = file.match(/_([^_]+)\.txt$/);
+        const id = idMatch ? idMatch[1] : file.replace(".txt", "");
+
+        // Parse based on content type
+        if (content.includes("#TYPE: sermon")) {
+          presentations.push(parseSermonFile(content, id));
+        } else if (content.includes("#TYPE: other")) {
+          presentations.push(parseOtherFile(content, id));
+        } else if (content.includes("TYPE: sermon")) {
+          // Legacy format
+          presentations.push(parseSermonFile(content, id));
+        } else if (content.includes("TYPE: other")) {
+          // Legacy format
+          presentations.push(parseOtherFile(content, id));
+        }
+      }
+    }
+
+    return presentations;
+  } catch (error) {
+    console.error("Error loading presentations:", error);
+    return [];
+  }
+});
+
+ipcMain.handle(
+  "create-presentation",
+  async (
+    _,
+    directoryPath: string,
+    presentation: Omit<Presentation, "id" | "createdAt" | "updatedAt">
+  ) => {
+    try {
+      const id = uuidv4();
+      const now = new Date().toISOString();
+      const newPresentation = {
+        ...presentation,
+        id,
+        createdAt: now,
+        updatedAt: now,
+      } as Presentation;
+
+      let content: string;
+
+      if (newPresentation.type === "sermon") {
+        content = formatSermonToText(newPresentation);
+      } else {
+        content = formatOtherToText(newPresentation);
+      }
+
+      // Create filename based on title and ID
+      const filename = createUniqueFilename(newPresentation.title, id);
+      fs.writeFileSync(path.join(directoryPath, filename), content);
+
+      return newPresentation;
+    } catch (error) {
+      console.error("Error creating presentation:", error);
+      throw error;
+    }
+  }
+);
+
+ipcMain.handle(
+  "update-presentation",
+  async (
+    _,
+    id: string,
+    directoryPath: string,
+    updates: Partial<Presentation>
+  ) => {
+    try {
+      // Find the existing file by ID
+      const files = fs.readdirSync(directoryPath);
+      let existingFile = "";
+
+      for (const file of files) {
+        if (file.includes(id) && file.endsWith(".txt")) {
+          existingFile = file;
+          break;
+        }
+      }
+
+      if (!existingFile) {
+        // throw new Error(`Presentation with id ${id} not found`);
+        console.log("Presentation with id ${id} not found");
+        return null;
+      }
+
+      // Read the existing presentation
+      const filePath = path.join(directoryPath, existingFile);
+      const content = fs.readFileSync(filePath, "utf8");
+
+      let existingPresentation: Presentation;
+
+      if (
+        content.includes("#TYPE: sermon") ||
+        content.includes("TYPE: sermon")
+      ) {
+        existingPresentation = parseSermonFile(content, id);
+      } else {
+        existingPresentation = parseOtherFile(content, id);
+      }
+
+      // Merge updates with existing presentation
+      const updatedPresentation = {
+        ...existingPresentation,
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      };
+
+      // Create new content based on updated type
+      let newContent: string;
+      if (updatedPresentation.type === "sermon") {
+        if (updatedPresentation.type === "sermon") {
+          newContent = formatSermonToText(updatedPresentation as EvSermon);
+        } else {
+          throw new Error("Invalid type for formatSermonToText");
+        }
+      } else {
+        if (updatedPresentation.type === "other") {
+          newContent = formatOtherToText(updatedPresentation as EvOther);
+        } else {
+          throw new Error("Invalid type for formatOtherToText");
+        }
+      }
+
+      // If title changed, create new filename
+      if (updates.title && existingPresentation.title !== updates.title) {
+        // Delete old file
+        fs.unlinkSync(filePath);
+
+        // Create new file with updated title-based filename
+        const newFilename = createUniqueFilename(updatedPresentation.title, id);
+        fs.writeFileSync(path.join(directoryPath, newFilename), newContent);
+      } else {
+        // Just update existing file
+        fs.writeFileSync(filePath, newContent);
+      }
+
+      return updatedPresentation;
+    } catch (error) {
+      console.error("Error updating presentation:", error);
+      throw error;
+    }
+  }
+);
+
+ipcMain.handle(
+  "delete-presentation",
+  async (_, id: string, directoryPath: string) => {
+    try {
+      // Find the file by ID
+      const files = fs.readdirSync(directoryPath);
+      let fileToDelete = "";
+
+      for (const file of files) {
+        if (file.includes(id) && file.endsWith(".txt")) {
+          fileToDelete = file;
+          break;
+        }
+      }
+
+      if (!fileToDelete) {
+        throw new Error(`Presentation with id ${id} not found`);
+      }
+
+      fs.unlinkSync(path.join(directoryPath, fileToDelete));
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting presentation:", error);
+      throw error;
+    }
+  }
+);
+
+// Helper functions for file formatting - Enhanced for better structured data
+function formatSermonToText(sermon: Presentation): string {
+  if (sermon.type !== "sermon") throw new Error("Not a sermon presentation");
+
+  const EvSermon = sermon as EvSermon;
+
+  // Format structured data with clear section separators for easy parsing
+  return `#TYPE: sermon
+#METADATA
+ID: ${sermon.id}
+TITLE: ${sermon.title}
+PREACHER: ${EvSermon.preacher || ""}
+DATE: ${EvSermon.date || ""}
+CREATED_AT: ${sermon.createdAt}
+UPDATED_AT: ${sermon.updatedAt}
+
+#SCRIPTURES
+${
+  EvSermon.scriptures
+    ? EvSermon.scriptures
+        .map((s, index) => `SCRIPTURE_${index + 1}: ${s.text || ""}`)
+        .join("\n")
+    : ""
+}
+
+#CONTENT
+${EvSermon.mainMessage ? `MAIN_MESSAGE: ${EvSermon.mainMessage}` : ""}
+${EvSermon.quote ? `QUOTE: ${EvSermon.quote}` : ""}
+
+#END`;
+}
+
+function formatOtherToText(other: Presentation): string {
+  if (other.type !== "other") throw new Error("Not an other presentation");
+
+  const EvOther = other as EvOther;
+
+  // Format structured data with clear section separators for easy parsing
+  return `#TYPE: other
+#METADATA
+ID: ${other.id}
+TITLE: ${other.title}
+CREATED_AT: ${other.createdAt}
+UPDATED_AT: ${other.updatedAt}
+
+#CONTENT
+MESSAGE: ${EvOther.message || ""}
+
+#END`;
+}
+
+function parseSermonFile(content: string, id: string): EvSermon {
+  // Initialize with defaults
+  const sermon: Partial<EvSermon> = {
+    id,
+    type: "sermon",
+    title: "",
+    preacher: "",
+    date: "",
+    scriptures: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  // Handle both old and new format
+  if (content.includes("#METADATA")) {
+    // New structured format
+    const sections = content.split(/\n#[A-Z]+\n/);
+
+    // Parse metadata section
+    if (sections.length > 1) {
+      const metadataLines = sections[1].trim().split("\n");
+      metadataLines.forEach((line) => {
+        if (line.startsWith("TITLE: ")) sermon.title = line.substring(7);
+        else if (line.startsWith("PREACHER: "))
+          sermon.preacher = line.substring(10);
+        else if (line.startsWith("DATE: ")) sermon.date = line.substring(6);
+        else if (line.startsWith("CREATED_AT: "))
+          sermon.createdAt = line.substring(12);
+        else if (line.startsWith("UPDATED_AT: "))
+          sermon.updatedAt = line.substring(12);
+      });
+    }
+
+    // Parse scriptures section
+    if (sections.length > 2) {
+      const scriptureLines = sections[2].trim().split("\n");
+      sermon.scriptures = scriptureLines
+        .filter((line) => line.startsWith("SCRIPTURE_"))
+        .map((line) => {
+          const text = line.substring(line.indexOf(":") + 2);
+          return { text };
+        });
+    }
+
+    // Parse content section
+    if (sections.length > 3) {
+      const contentLines = sections[3].trim().split("\n");
+      contentLines.forEach((line) => {
+        if (line.startsWith("MAIN_MESSAGE: "))
+          sermon.mainMessage = line.substring(14);
+        else if (line.startsWith("QUOTE: ")) sermon.quote = line.substring(7);
+      });
+    }
+  } else {
+    // Legacy format
+    const lines = content.split("\n");
+
+    lines.forEach((line) => {
+      if (line.startsWith("TITLE: ")) sermon.title = line.substring(7);
+      else if (line.startsWith("PREACHER: "))
+        sermon.preacher = line.substring(10);
+      else if (line.startsWith("DATE: ")) sermon.date = line.substring(6);
+      else if (line.startsWith("SCRIPTURES: ")) {
+        const scriptures = line.substring(12).split("|");
+        sermon.scriptures = scriptures.map((text) => ({ text }));
+      } else if (line.startsWith("MAIN_MESSAGE: "))
+        sermon.mainMessage = line.substring(14);
+      else if (line.startsWith("QUOTE: ")) sermon.quote = line.substring(7);
+      else if (line.startsWith("CREATED_AT: "))
+        sermon.createdAt = line.substring(12);
+      else if (line.startsWith("UPDATED_AT: "))
+        sermon.updatedAt = line.substring(12);
+    });
+  }
+
+  return sermon as EvSermon;
+}
+
+function parseOtherFile(content: string, id: string): EvOther {
+  // Initialize with defaults
+  const other: Partial<EvOther> = {
+    id,
+    type: "other",
+    title: "",
+    message: "",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  // Handle both old and new format
+  if (content.includes("#METADATA")) {
+    // New structured format
+    const sections = content.split(/\n#[A-Z]+\n/);
+
+    // Parse metadata section
+    if (sections.length > 1) {
+      const metadataLines = sections[1].trim().split("\n");
+      metadataLines.forEach((line) => {
+        if (line.startsWith("TITLE: ")) other.title = line.substring(7);
+        else if (line.startsWith("CREATED_AT: "))
+          other.createdAt = line.substring(12);
+        else if (line.startsWith("UPDATED_AT: "))
+          other.updatedAt = line.substring(12);
+      });
+    }
+
+    // Parse content section
+    if (sections.length > 2) {
+      const contentLines = sections[2].trim().split("\n");
+      contentLines.forEach((line) => {
+        if (line.startsWith("MESSAGE: ")) other.message = line.substring(9);
+      });
+    }
+  } else {
+    // Legacy format
+    const lines = content.split("\n");
+
+    lines.forEach((line) => {
+      if (line.startsWith("TITLE: ")) other.title = line.substring(7);
+      else if (line.startsWith("MESSAGE: ")) other.message = line.substring(9);
+      else if (line.startsWith("CREATED_AT: "))
+        other.createdAt = line.substring(12);
+      else if (line.startsWith("UPDATED_AT: "))
+        other.updatedAt = line.substring(12);
+    });
+  }
+
+  return other as EvOther;
+}

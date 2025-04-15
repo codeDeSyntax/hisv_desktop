@@ -27,10 +27,10 @@ interface Window {
     projectSong: (songs: any) => void;
     onDisplaySong: (callback: (songData: Song) => void) => void;
     getImages: (dirPath:string) => Promise<string[]>,
-    createEvPresentation:(presentation: Omit<Presentation, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Presentation>,
-    loadEvPresentations: () => Promise<Presentation[]>,
+    createEvPresentation:(path:string,presentation: Omit<Presentation, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Presentation>,
+    loadEvPresentations: (path:string) => Promise<Presentation[]>,
     deleteEvPresentation: (id: string) => Promise<void>,
-    updateEvPresentation: (id: string, presentation: Partial<Presentation>) => Promise<Presentation>,
+    updateEvPresentation: (id: string,directoryPath:string, presentation: Partial<Presentation>) => Promise<Presentation>,
 
 
   };

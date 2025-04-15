@@ -59,11 +59,11 @@ minimizeProjection: () => ipcRenderer.send('minimizeProjection'),
     };
   },
   getImages: (dirPath:string) => ipcRenderer.invoke('get-images', dirPath),
-  loadPresentations: () => ipcRenderer.invoke('load-presentations'),
-  createEvPresentation: (presentation: Omit<Presentation, 'id' | 'createdAt' | 'updatedAt'>) => 
-    ipcRenderer.invoke('create-presentation', presentation),
-  updateEvPresentation: (id: string, presentation: Partial<Presentation>) => 
-    ipcRenderer.invoke('update-presentation', id, presentation),
+  loadEvPresentations: (path:string) => ipcRenderer.invoke('load-presentations',path),
+  createEvPresentation: (path:string,presentation: Omit<Presentation, 'id' | 'createdAt' | 'updatedAt'>) => 
+    ipcRenderer.invoke('create-presentation',path, presentation),
+  updateEvPresentation: (id: string,directoryPath:string, presentation: Partial<Presentation>) => 
+    ipcRenderer.invoke('update-presentation', id,directoryPath, presentation),
   deleteEvPresentation: (id: string) => 
     ipcRenderer.invoke('delete-presentation', id),
   

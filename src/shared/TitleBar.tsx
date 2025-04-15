@@ -205,13 +205,13 @@ const TitleBar = () => {
           {/* New dropdown toggle icon */}
           <div
             onClick={toggleDropdown}
-            className="w-4 h-4 rounded-full bg-gray-500 hover:bg-gray-600 hover:cursor-pointer flex items-center justify-center relative"
+            className="w-4 h-4 rounded-full bg-bgray hover:bg-gray-600 hover:cursor-pointer flex items-center justify-center relative"
           >
             <MoreHorizontal className="text-white z-20 size-3" />
 
             {/* Dropdown menu */}
             {showDropdown && (
-              <div className="absolute top-5 right-0 left-0 bg-white shadow-md rounded-md p-1 z-50 w-32">
+              <div className="absolute top-5 right-0 left-0 bg-white dark:bg-bgray shadow-md rounded-md p-1 z-50 w-32">
                 <div
                   className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
                   onClick={() => {
@@ -219,8 +219,8 @@ const TitleBar = () => {
                     setShowDropdown(false);
                   }}
                 >
-                  <img src="./icon.png" className="h-4 w-4  text-gray-600" />
-                  <span className="text-xs">His voice</span>
+                  <img src="./icon.png" className="h-4 w-4 " />
+                  <span className="text-xs text-stone-500 dark:text-gray-600">His voice</span>
                 </div>
                 <div
                   className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
@@ -229,8 +229,8 @@ const TitleBar = () => {
                     setShowDropdown(false);
                   }}
                 >
-                  <img src="./music2.png" className="h-4 w-4  text-gray-600" />
-                  <span className="text-xs">Bmusic</span>
+                  <img src="./music2.png" className="h-4 w-4 " />
+                  <span className="text-xs text-stone-500 dark:text-gray-600">Bmusic</span>
                 </div>
                 <div
                   className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
@@ -239,8 +239,8 @@ const TitleBar = () => {
                     setShowDropdown(false);
                   }}
                 >
-                  <img src="./music3.png" className="h-4 w-4  text-gray-600" />
-                  <span className="text-xs">Bible</span>
+                  <img src="./music3.png" className="h-4 w-4 " />
+                  <span className="text-xs text-stone-500 dark:text-gray-600">Bible</span>
                 </div>
               </div>
             )}

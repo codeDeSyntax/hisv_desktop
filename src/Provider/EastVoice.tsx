@@ -4,6 +4,7 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
 } from "react";
 
 type EastVoiceContextType = {
@@ -20,6 +21,7 @@ type EastVoiceContextType = {
   setPresentationbgs: React.Dispatch<React.SetStateAction<string[]>>;
   bibleBgs: string[];
   setBibleBgs: React.Dispatch<React.SetStateAction<string[]>>;
+  // fetchUserImages: () => void
 };
 
 const EastVoiceContext = createContext<EastVoiceContextType | undefined>(undefined);
@@ -33,17 +35,20 @@ export const EastVoiceProvider = ({ children }: BmusicProviderProps) => {
   const [currentScreen, setCurrentScreen] = useState(localStorage.getItem("lastScreen") || "Home");
   const [theme, setTheme] = useState("creamy");
   const [presentationbgs , setPresentationbgs] = useState<string[]>([])
+  const [userImages , setUserImages] = useState<string[]>([])
   const imagesUrl = localStorage.getItem("vmusicimages") || "";
   const [bibleBgs , setBibleBgs] = useState<string[]>([]);
-  
+  const [isLoadingImages, setIsLoadingImages] = useState(false)
+  const [imageError ,setImageError] = useState("")
   useEffect(() => {
-    // const previousScreen = 
-  })
+    localStorage.setItem("lastScreen", currentScreen)
+  },[currentScreen])
 
   useEffect(() => {
     const fetchImages = async () => {
       const images = await window.api.getImages(imagesUrl);
       setBibleBgs(images);
+      setPresentationbgs(images)
     };
 
     fetchImages();
@@ -69,6 +74,41 @@ export const EastVoiceProvider = ({ children }: BmusicProviderProps) => {
     localStorage.setItem("lastScreen", screen)
   }
 
+  //  const fetchUserImages = useCallback(async () => {
+  //     setIsLoadingImages(true);
+  //     setImageError("");
+  
+  //     try {
+  //       const imagesUrl = localStorage.getItem("vmusicimages");
+  //       if (!imagesUrl) {
+  //         setImageError("No image directory selected");
+  //         setIsLoadingImages(false);
+  //         return;
+  //       }
+  
+  //       const imageBase64List = await window.api.getImages(imagesUrl);
+  //       // if(imageBase64List){
+  //       //   setSysImages(imageBase64List);
+  //       // }
+  //       if (!imageBase64List || imageBase64List.length === 0) {
+  //         setImageError("No images found in selected directory");
+  //         setIsLoadingImages(false);
+  //         return;
+  //       }
+  
+  //       // Cache the images in localStorage
+  //       // localStorage.setItem("bmusicUserImages", JSON.stringify(imageBase64List));
+  
+  //       setUserImages(imageBase64List);
+  //       setPresentationbgs(imageBase64List);
+  //     } catch (error) {
+  //       console.error("Error loading images:", error);
+  //       setImageError("Failed to load images from directory");
+  //     } finally {
+  //       setIsLoadingImages(false);
+  //     }
+  //   }, [setPresentationbgs]);
+
 
   return (
     <EastVoiceContext.Provider
@@ -84,7 +124,8 @@ export const EastVoiceProvider = ({ children }: BmusicProviderProps) => {
         setPresentationbgs,
         setAndSaveCurrentScreen,
         bibleBgs,
-        setBibleBgs
+        setBibleBgs,
+        // fetchUserImages,
       }}
     >
       {children}

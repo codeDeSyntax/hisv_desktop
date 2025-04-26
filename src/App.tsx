@@ -46,13 +46,13 @@ const App = () => {
             setCurrentScreen("hisvoice");
             break;
           case "p":
-            setCurrentScreen("Presentation");
+            setCurrentScreen("mpresenter");
             break;
           case "s":
             setCurrentScreen("Songs");
-          case "m":
-            setCurrentScreen("mpresenter");
-            break;
+          // case "m":
+          //   setCurrentScreen("mpresenter");
+          //   break;
           default:
             break;
         }

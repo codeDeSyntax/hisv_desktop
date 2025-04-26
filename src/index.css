@@ -21,11 +21,11 @@ body {
   background-size: 20px 20px; /* Adjust the size of the background pattern */
 }
 .dottedb1 {
-  background: radial-gradient(circle, #2c2b2b 1px, #000000 0); /* Dots */
+  background: radial-gradient(circle, #2c2b2b20 1px, #000000 0); /* Dots */
   background-size: 20px 20px; /* Adjust the size of the background pattern */
 }
 .gridb {
-  background: linear-gradient(to right, #e6f4ff 1px, transparent 1px),
+  background: linear-gradient(to right, #d7d7da 1px, #d7d7da 1px),
     linear-gradient(to bottom, white 1px, #fafafa 1px);
   background-size: 20px 20px; /* Adjust the size of the grid */
 }

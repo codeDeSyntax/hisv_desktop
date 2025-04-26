@@ -1,10 +1,11 @@
 // components/PresentationLayout.tsx
 
-import React from 'react';
-import { useEvPresentationContext } from '@/Provider/EvPresent';
+import React, { useEffect } from "react";
+import { useEvPresentationContext } from "@/Provider/EvPresent";
 // import { usePresentationContext } from '@/contexts/PresentationContext';
-import { X, Minus, Maximize2, ArrowLeft } from 'lucide-react';
-import { useEastVoiceContext } from '@/Provider/EastVoice';
+import { X, Minus, Maximize2, ArrowLeft } from "lucide-react";
+import { useEastVoiceContext } from "@/Provider/EastVoice";
+import { ThemeToggle } from "@/shared/ThemeToggler";
 
 type PresentationLayoutProps = {
   children: React.ReactNode;
@@ -13,60 +14,80 @@ type PresentationLayoutProps = {
   onBackClick?: () => void;
 };
 
-export const PresentationLayout: React.FC<PresentationLayoutProps> = ({ 
-  children, 
+export const PresentationLayout: React.FC<PresentationLayoutProps> = ({
+  children,
   title,
   hasBackButton = false,
-  onBackClick
+  onBackClick,
 }) => {
+  const { handleClose, handleMaximize, handleMinimize, setCurrentScreen } =
+    useEastVoiceContext();
 
-  const {handleClose,handleMaximize,handleMinimize}  = useEastVoiceContext()
-//   const { isPresentationMode } = usePresentationContext();/
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // switch (event.key) {
+      //   case "Esc":
+      //     setCurrentScreen("bible");
+      //     break;
+      //   default:
+      //     break;
+      // }
+      if (event.key === "Space") {
+        setCurrentScreen("bible");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+  //   const { isPresentationMode } = usePresentationContext();/
 
   // Don't show window controls in presentation mode
-//   if (isPresentationMode) {
-//     return <div className="w-full h-full bg-white dark:bg-black">{children}</div>;
-//   }
+  //   if (isPresentationMode) {
+  //     return <div className="w-full h-full bg-white dark:bg-black">{children}</div>;
+  //   }
 
   return (
-    <div className="flex flex-col h-screen bg-white dark:bg-black text-black dark:text-white">
+    <div className="flex flex-col h-screen  bg-white dark:bg-black text-black dark:text-white">
       {/* Window Controls */}
-      <div className="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-900">
+      <div className="flex items-center justify-between px-2 h-[5%] z-40 bg-gray-100 dark:bg-ltgray">
         <div className="flex items-center">
           {hasBackButton && (
-            <button 
+            <button
               onClick={onBackClick}
               className="mr-4 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800"
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={14} />
             </button>
           )}
           <h1 className="text-lg font-semibold">{title}</h1>
         </div>
-        <div className="flex space-x-2">
-          <button 
+        <div className="flex space-x-2 items-center justce">
+          <ThemeToggle />
+          <div
             onClick={handleMinimize}
-            className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800"
+            className=" rounded-full h-6 w-6 flex items-center justify-center  hover:bg-gray-200 dark:hover:bg-gray-800"
           >
             <Minus size={16} />
-          </button>
-          <button 
+          </div>
+          <div
             onClick={handleMaximize}
-            className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800"
+            className=" rounded-full h-6 w-6 flex items-center justify-center  hover:bg-gray-200 dark:hover:bg-gray-800"
           >
             <Maximize2 size={16} />
-          </button>
-          <button 
+          </div>
+          <div
             onClick={handleClose}
-            className="p-1 rounded-full hover:bg-red-200 dark:hover:bg-red-900"
+            className=" rounded-full h-6 w-6 flex items-center justify-center   hover:bg-red-200 dark:hover:bg-red-900"
           >
             <X size={16} />
-          </button>
+          </div>
         </div>
       </div>
-      
+
       {/* Main Content */}
-      <div className="flex-1 overflow-auto p-4">
+      <div className=" overflow-y-scroll no-scrollbar p-3 h-[95%]">
         {children}
       </div>
     </div>

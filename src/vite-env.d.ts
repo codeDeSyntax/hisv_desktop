@@ -29,7 +29,7 @@ interface Window {
     getImages: (dirPath:string) => Promise<string[]>,
     createEvPresentation:(path:string,presentation: Omit<Presentation, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Presentation>,
     loadEvPresentations: (path:string) => Promise<Presentation[]>,
-    deleteEvPresentation: (id: string) => Promise<void>,
+    deleteEvPresentation: (id: string,directory:string) => Promise<void>,
     updateEvPresentation: (id: string,directoryPath:string, presentation: Partial<Presentation>) => Promise<Presentation>,
 
 

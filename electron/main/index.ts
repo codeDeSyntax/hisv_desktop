@@ -362,7 +362,7 @@ function createUniqueFilename(title: string, id: string): string {
 }
 
 ipcMain.handle("load-presentations", async (_, directoryPath: string) => {
-  console.log(directoryPath)
+  console.log(directoryPath);
   try {
     const presentations: Presentation[] = [];
 
@@ -445,6 +445,7 @@ ipcMain.handle(
   ) => {
     try {
       // Find the existing file by ID
+      console.log("path for update",directoryPath)
       const files = fs.readdirSync(directoryPath);
       let existingFile = "";
 
@@ -463,6 +464,7 @@ ipcMain.handle(
 
       // Read the existing presentation
       const filePath = path.join(directoryPath, existingFile);
+      console.log("filepath", filePath);
       const content = fs.readFileSync(filePath, "utf8");
 
       let existingPresentation: Presentation;

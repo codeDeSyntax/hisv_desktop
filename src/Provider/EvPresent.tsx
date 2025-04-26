@@ -19,10 +19,10 @@ type PresentationContextType = {
   ) => Promise<void>;
   updatePresentation: (
     id: string,
-    directoryPath:string,
+    directoryPath: string,
     presentation: Partial<Presentation>
   ) => Promise<void>;
-  deletePresentation: (id: string) => Promise<void>;
+  deletePresentation: (id: string,directory:string) => Promise<void>;
   setCurrentPresentation: (presentation: Presentation | null) => void;
   isPresentationMode: boolean;
   startPresentation: () => void;
@@ -104,14 +104,14 @@ export const EvPresentationProvider = ({ children }: EvPresenterProps) => {
 
   const updatePresentation = async (
     id: string,
-    selectedPath: string,
+    directoryPath: string,
     presentation: Partial<Presentation>
   ) => {
     setIsLoading(true);
     try {
       const updatedPresentation = await window.api.updateEvPresentation(
-        selectedPath,
         id,
+        directoryPath,
         presentation
       );
       setPresentations((prev) =>
@@ -128,10 +128,10 @@ export const EvPresentationProvider = ({ children }: EvPresenterProps) => {
     }
   };
 
-  const deletePresentation = async (id: string) => {
+  const deletePresentation = async (id: string,directory:string) => {
     setIsLoading(true);
     try {
-      await window.api.deleteEvPresentation(id);
+      await window.api.deleteEvPresentation(id,directory);
       setPresentations((prev) => prev.filter((p) => p.id !== id));
 
       if (currentPresentation?.id === id) {

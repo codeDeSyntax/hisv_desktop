@@ -493,13 +493,13 @@ const ScriptureContent: React.FC = () => {
     };
   }, [isBookDropdownOpen, isChapterDropdownOpen, isVerseDropdownOpen]);
 
-  const iconColors = useMemo(() => {
+ 
+ const iconColors = useMemo(() => {
     const generateRandomColor = () => {
       return `rgba(${Math.floor(Math.random() * 255)},${Math.floor(
         Math.random() * 255
       )},${Math.floor(Math.random() * 255)},1)`;
     };
-
     return {
       color1: generateRandomColor(),
       color2: generateRandomColor(),

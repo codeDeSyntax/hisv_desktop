@@ -64,8 +64,8 @@ minimizeProjection: () => ipcRenderer.send('minimizeProjection'),
     ipcRenderer.invoke('create-presentation',path, presentation),
   updateEvPresentation: (id: string,directoryPath:string, presentation: Partial<Presentation>) => 
     ipcRenderer.invoke('update-presentation', id,directoryPath, presentation),
-  deleteEvPresentation: (id: string) => 
-    ipcRenderer.invoke('delete-presentation', id),
+  deleteEvPresentation: (id: string,directory:string) => 
+    ipcRenderer.invoke('delete-presentation', id,directory),
   
 });
 

@@ -1,4 +1,10 @@
-import { createContext, useState, useEffect, ReactNode ,useContext} from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+} from "react";
 import earlySermons from "../sermons/1964-1969/firstset.js";
 import secondSet from "../sermons/1970/1970.js";
 import thirdSet from "../sermons/1971/1971";
@@ -70,16 +76,15 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const [randomSermons, setRandomSermons] = useState<Sermon[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [CB, setCB] = useState<number>(0);
-  const [theme,setTheme] = useState(localStorage.getItem("vsermontheme") || "light")
+  const [theme, setTheme] = useState(
+    localStorage.getItem("vsermontheme") || "light"
+  );
   const [settings, setSettings] = useState<SermonSettings>({
-    fontFamily: 'cursive',
-    fontStyle: 'normal',
-    fontSize: '20',
-    fontWeight: 'normal'
+    fontFamily: "cursive",
+    fontStyle: "normal",
+    fontSize: "20",
+    fontWeight: "normal",
   });
-
-
-
 
   // Generate random sermon
   const getRandomSermon = (): Sermon | null => {
@@ -104,19 +109,21 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
 
   // Get recently opened sermons
   useEffect(() => {
-    const savedSettings = localStorage.getItem('sermonSettings');
+    const savedSettings = localStorage.getItem("sermonSettings");
     if (savedSettings) {
       const parsedSettings = JSON.parse(savedSettings) as SermonSettings;
       setSettings({
         fontFamily: parsedSettings.fontFamily,
         fontStyle: parsedSettings.fontStyle,
         fontSize: parsedSettings.fontSize,
-        fontWeight: parsedSettings.fontWeight
+        fontWeight: parsedSettings.fontWeight,
       });
     }
 
     const recentSermonsJson = localStorage.getItem("recentSermons");
-    const recentSermons = recentSermonsJson ? JSON.parse(recentSermonsJson) as Sermon[] : [];
+    const recentSermons = recentSermonsJson
+      ? (JSON.parse(recentSermonsJson) as Sermon[])
+      : [];
     setRecentSermons(recentSermons);
   }, []);
 
@@ -131,7 +138,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
           ...thirdSet,
           ...fourthSet,
           ...lastSet,
-          ...audioSermons
+          ...audioSermons,
         ];
 
         setAllSermons(fetchedSermons);
@@ -145,11 +152,10 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
 
         setLoading(false);
         console.log("Sermons loaded:", fetchedSermons.length);
-        console.log("Three random sermons:", threeRandomSermons);
-
+        // console.log("Three random sermons:", threeRandomSermons);
       } catch (err) {
         console.error("Error loading sermons:", err);
-        setError('Failed to load sermons. Please try again later.');
+        setError("Failed to load sermons. Please try again later.");
         setLoading(false);
       }
     };
@@ -179,10 +185,10 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     isCollapsed,
     setIsCollapsed,
     theme,
-    setTheme
+    setTheme,
   };
 
-  console.log("SermonProvider rendering, context value:", contextValue);
+  // console.log("SermonProvider rendering, context value:", contextValue);
 
   return (
     <SermonContext.Provider value={contextValue}>
@@ -196,7 +202,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
 export const useSermonContext = (): SermonContextType => {
   const context = useContext(SermonContext);
   if (context === undefined) {
-    throw new Error('useSermonContext must be used within a SermonProvider');
+    throw new Error("useSermonContext must be used within a SermonProvider");
   }
   return context;
 };

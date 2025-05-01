@@ -14,10 +14,12 @@ import {
   User,
   FileText,
   Clock,
+  FolderEdit,
 } from "lucide-react";
 import { useEvPresentationContext } from "@/Provider/EvPresent";
 import { Presentation as PresentationType } from "@/types";
 import { useTheme } from "@/Provider/Theme";
+import { on } from "node:events";
 
 // Set of background images we'll use randomly for the cards
 const backgroundImages = [
@@ -79,7 +81,7 @@ const PresentationCard: React.FC<PresentationCardProps> = ({
     <motion.div
       whileHover={{ y: -5 }}
       whileTap={{ scale: 0.98 }}
-      className={`flex flex-col rounded-lg overflow-hidden shadow-lg hover:shadow-xl dark:shadow-${accentColor}-500/10 dark:hover:shadow-${accentColor}-500/20 transition-all duration-500 h-full bg-white dark:bg-ltgray border border-gray-100 dark:border-gray-800`}
+      className={`flex flex-col rounded-lg  shadow-lg hover:shadow-xl dark:shadow-${accentColor}-500/10 dark:hover:shadow-${accentColor}-500/20 transition-all duration-500 h-full bg-white dark:bg-ltgray border border-gray-100 dark:border-gray-800`}
       style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='20' viewBox='0 0 100 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21.184 20c.357-.13.72-.264.888-.14 1.652-1.1 2.782.14 3.68.14 1.074 0 2.14-.156 3.204-.156 1.23 0 2.46.156 3.7.156 1.326 0 2.4-.156 3.7-.156' stroke='%23${
           isDarkMode ? "555555" : "000000"
@@ -94,7 +96,7 @@ const PresentationCard: React.FC<PresentationCardProps> = ({
         onClick={() => onSelect(presentation)}
       >
         <div
-          className="h-12 bg-center bg-cover"
+          className="h-12 bg-center bg-cover rounded-t-lg"
           style={{
             backgroundImage: `url(${backgroundImage})`,
             backgroundPosition: "center",
@@ -261,6 +263,7 @@ export const PresentationList: React.FC<{
     setCurrentPresentation,
     startPresentation,
     selectedPath,
+    setSelectedPath,
   } = useEvPresentationContext();
   const { isDarkMode } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
@@ -291,6 +294,29 @@ export const PresentationList: React.FC<{
     startPresentation();
   };
 
+  //function choose path an set it to local storage
+  const selectEvpd = async () => {
+    const path = await window.api.selectDirectory();
+    if (typeof path === "string") {
+      setSelectedPath(path);
+      if (path) {
+        if (path) {
+          localStorage.setItem("evpresenterfilespath", path);
+        }
+      }
+    } else {
+      console.error("Invalid path selected");
+    }
+  };
+
+  const onClickNew = async () => {
+    if (!selectedPath) {
+      alert("Please select a path first to save presentations.");
+      return;
+    }
+    onNew();
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-50 dark:bg-black px-4 py-6">
       <div
@@ -304,8 +330,24 @@ export const PresentationList: React.FC<{
         <div className="relative z-10 flex flex-col h-full">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                {type === "sermon" ? "Sermons" : "Other Presentations"}
+              <h1 className="text-2xl flex items-center justify-cen font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <span>
+                  {type === "sermon" ? "Sermons" : "Other Presentations"}
+                </span>
+                {/* if selected path show path, else button to choose path */}
+                {selectedPath ? (
+                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                    {selectedPath}
+                  </span>
+                ) : (
+                  <button
+                    onClick={selectEvpd}
+                    className="text-sm text-gray-500 dark:text-gray-400 ml-2"
+                  >
+                    Choose path
+                  </button>
+                )}
+                <FolderEdit className="text-yellow-500 h-4 w-4 pl-4 animate-pulse cursor-pointer"  onClick={selectEvpd}/>
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {filteredPresentations.length}{" "}
@@ -331,7 +373,7 @@ export const PresentationList: React.FC<{
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={onNew}
+                onClick={onClickNew}
                 className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm rounded-lg shadow-md hover:shadow-lg transition-all duration-300 whitespace-nowrap"
               >
                 New {type === "sermon" ? "Sermon" : "Presentation"}
@@ -357,7 +399,7 @@ export const PresentationList: React.FC<{
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={onNew}
+                    onClick={onClickNew}
                     className="mt-4 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
                   >
                     Create your first{" "}

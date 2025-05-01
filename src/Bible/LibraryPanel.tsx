@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, ChevronDown, ChevronRight } from "lucide-react";
 import { useBibleContext } from "@/Provider/Bible";
+import { CustomSelect } from "@/shared/Selector";
 
 const LibraryPanel: React.FC = () => {
   const {
@@ -14,7 +15,7 @@ const LibraryPanel: React.FC = () => {
     currentChapter,
     setCurrentChapter,
     getBookChapterCount,
-    theme
+    theme,
   } = useBibleContext();
 
   // State for tracking which books are expanded
@@ -23,6 +24,7 @@ const LibraryPanel: React.FC = () => {
   }>({
     [currentBook]: true,
   });
+  const [translation, setTranslation] = useState(currentTranslation);
 
   // Toggle expanded state for a book
   const toggleExpandBook = (book: string) => {
@@ -35,6 +37,13 @@ const LibraryPanel: React.FC = () => {
   // Group books by testament
   const oldTestament = bookList.slice(0, 39); // First 39 books are Old Testament
   const newTestament = bookList.slice(39); // Rest are New Testament
+
+  const translations = [
+    { value: "KJV", text: "King James Version" },
+    { value: "TWI", text: "TWI version" },
+    { value: "EWE", text: "Ewe version" },
+    { value: "FRENCH", text: "French" },
+  ];
 
   return (
     <div className="h-full flex flex-col bg-gray-50 dark:bg-black font-serif">
@@ -51,32 +60,22 @@ const LibraryPanel: React.FC = () => {
           </button>
         </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-900 dark:text-white">
-            Translation
-          </label>
-          <select
-            value={currentTranslation}
-            onChange={(e) => setCurrentTranslation(e.target.value)}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-bgray focus:outline-none text-gray-900 dark:text-white"
-          >
-            <option value="KJV" className="py-2">
-              King James Version
-            </option>
-            <option value="TWI" className="py-2">
-              Twi
-            </option>
-          </select>
-        </div>
+        <CustomSelect
+          options={translations}
+          value={translation}
+          onChange={(value) => setCurrentTranslation(value)}
+        />
+
       </div>
 
-      <div className="flex-1 overflow-y-auto" 
-      style={{
-        scrollbarWidth: "thin",
-        scrollbarColor:
-          theme === "light" ? "#f9fafb #f3f4f6" : "#424242 #202020",
-        // scrollbarGutter: "stable",
-      }}
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{
+          scrollbarWidth: "thin",
+          scrollbarColor:
+            theme === "light" ? "#f9fafb #f3f4f6" : "#424242 #202020",
+          // scrollbarGutter: "stable",
+        }}
       >
         <div className="p-4">
           <h3 className="font-medium text-gray-900 dark:text-white mb-2">

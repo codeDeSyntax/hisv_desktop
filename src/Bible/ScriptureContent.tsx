@@ -15,6 +15,8 @@ import { useBibleContext } from "@/Provider/Bible";
 import { useEastVoiceContext } from "@/Provider/EastVoice";
 import PresentationOverlay from "./PresentationOverlay";
 import { useTheme } from "@/Provider/Theme";
+import Sociallinks from "./components/LanguagesToggle";
+import LanguageToggler from "./components/LanguagesToggle";
 
 interface Book {
   name: string;
@@ -46,7 +48,7 @@ const ScriptureContent: React.FC = () => {
   } = useBibleContext();
 
   const { bibleBgs } = useEastVoiceContext();
-  const {isDarkMode} = useTheme();
+  const { isDarkMode } = useTheme();
   const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
   const [isChapterDropdownOpen, setIsChapterDropdownOpen] = useState(false);
   const [isVerseDropdownOpen, setIsVerseDropdownOpen] = useState(false);
@@ -70,7 +72,10 @@ const ScriptureContent: React.FC = () => {
   });
   const [showDropdown, setShowdropdown] = useState(false);
 
-  const verses = getCurrentChapterVerses();
+  const verses = useMemo(() => {
+    return getCurrentChapterVerses();
+  }, [currentBook, currentChapter, currentTranslation, bibleData]);
+
   const contentRef = useRef<HTMLDivElement>(null);
   const verseRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const chapterCount = getBookChapterCount(currentBook);
@@ -164,35 +169,16 @@ const ScriptureContent: React.FC = () => {
     if (currentChapter > 1) {
       // Save to history before changing
       addToHistory(`${currentBook} ${currentChapter}:${selectedVerse || 1}`);
-      setCurrentChapter(currentChapter - 1);
+      setCurrentChapter(Number(currentChapter) - 1);
     }
     setCurrentVerse(1);
   };
-
-  // const setV = () => {
-  //   setSelectedVerse(currentVerse);
-  //   if (currentVerse && verseRefs.current[currentVerse]) {
-  //     // Use a small delay to ensure the DOM is ready
-  //     console.log("selectedV verse sc: ", selectedVerse);
-  //     setTimeout(() => {
-  //       verseRefs.current[currentVerse]?.scrollIntoView({
-  //         behavior: "smooth",
-  //         block: "start",
-  //         inline: "nearest",
-  //       });
-
-  //       // setSelectedVerse(currentVerse);
-  //       // Update selectedVerse to match the current verse
-  //       // Don't clear currentVerse for immediate navigation feedback
-  //     }, 100);
-  //   }
-  // };
 
   const handleNextChapter = () => {
     if (currentChapter < chapterCount) {
       // Save to history before changing
       addToHistory(`${currentBook} ${currentChapter}`);
-      setCurrentChapter(currentChapter + 1);
+      setCurrentChapter(Number(currentChapter) + 1);
       setCurrentVerse(1);
     }
   };
@@ -493,8 +479,7 @@ const ScriptureContent: React.FC = () => {
     };
   }, [isBookDropdownOpen, isChapterDropdownOpen, isVerseDropdownOpen]);
 
- 
- const iconColors = useMemo(() => {
+  const iconColors = useMemo(() => {
     const generateRandomColor = () => {
       return `rgba(${Math.floor(Math.random() * 255)},${Math.floor(
         Math.random() * 255
@@ -641,9 +626,9 @@ const ScriptureContent: React.FC = () => {
                 <div className="p-2 grid grid-cols-5 gap-1">
                   {getChapters().map((chapter) => (
                     <div
-                      key={chapter}
+                      key={Number(chapter)}
                       className={`p-2 text-[12px] flex items-center justify-center  dark:shadow-black shadow rounded   transition-colors duration-150 ${
-                        currentChapter === chapter
+                          Number(currentChapter) === Number(chapter)
                           ? "bg-transparent text-stone-500  hover:text-stone-900 pointer-events-none hover:cursor-pointer dark:text-gray-50 font-medium"
                           : "text-stone-500 dark:text-gray-400 cursor-pointer   hover:text-stone-500 dark:hover:text-gray-200"
                       }`}
@@ -651,9 +636,9 @@ const ScriptureContent: React.FC = () => {
                       style={{
                         borderWidth: 2,
                         borderStyle:
-                          currentChapter === chapter ? "dotted" : "none",
+                          Number(currentChapter) === Number(chapter) ? "dotted" : "none",
                         borderColor:
-                          currentChapter === chapter
+                          Number(currentChapter) === Number(chapter)
                             ? iconColors.color2
                             : iconColors.color4,
                       }}
@@ -740,9 +725,12 @@ const ScriptureContent: React.FC = () => {
       {/* Scripture content */}
       <div
         ref={contentRef}
-        className={`flex-1  p-4 md:p-6 lg:p-8 overflow-y-scroll no-scrollbar text-stone-500 ${isDarkMode ? "dottedb1" : "dottedb"}`}
+        className={`flex-1  p-4 md:p-6 lg:p-8 overflow-y-scroll no-scrollbar text-stone-500 ${
+          isDarkMode ? "dottedb1" : "dottedb"
+        }`}
         onScroll={updateVisibleVerses}
       >
+        <LanguageToggler/>
         {verses.length > 0 ? (
           <div
             className={`flex flex-col  ${getFontSize()} }`}
@@ -753,14 +741,14 @@ const ScriptureContent: React.FC = () => {
             {verses.map((verse) => (
               <div
                 key={verse.verse.toString().trim()}
-                className="relative group py-2 rounded-md hover:bg-gray-50 dark:hover:bg-bgray/40  transition-colors duration-150 bg-transparent"
+                className="relative group pt-2 pb-0   rounded-md hover:bg-white dark:hover:bg-bgray/40  transition-colors duration-150 bg-transparent"
                 ref={(el) => (verseRefs.current[verse.verse] = el)}
               >
                 <div className="flex items-start">
                   {/* Verse number */}
-                  <div className="flex-shrink-0  text-center pt-1 mb-10 ml-4  ">
+                  <div className="flex-shrink-0  text-center pt-1  ml-4  ">
                     <span
-                      className="text-primary font-cooper font- skew-   inline-block"
+                      className="text-primary font-cooper   inline-block"
                       style={{ fontSize: "0.75em" }}
                     >
                       {verse.verse}
@@ -770,7 +758,7 @@ const ScriptureContent: React.FC = () => {
                   {/* Verse text */}
                   <div className="flex-grow">
                     <p
-                      className={`text-left leading-normal p-2 px-3 ${
+                      className={`text-left leading-normal   pb-0 px-3 ${
                         theme === "dark" ? "text-gray-50" : "text-red-500"
                       } scripturetext pr-10`}
                       style={{
@@ -787,7 +775,7 @@ const ScriptureContent: React.FC = () => {
                       }}
                     >
                       {formatVerseText(
-                        verse.text,
+                        verse.text.trim(),
                         getVerseHighlight(verse.verse)
                       )}
                     </p>

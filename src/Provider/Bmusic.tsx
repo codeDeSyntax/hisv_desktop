@@ -8,7 +8,6 @@ import React, {
 
 import { Song } from "@/types";
 
-
 type BmusicContextType = {
   songRepo: string;
   setSongRepo: React.Dispatch<React.SetStateAction<string>>;
@@ -43,7 +42,6 @@ type BmusicProviderProps = {
 };
 
 export const BmusicProvider = ({ children }: BmusicProviderProps) => {
-
   const [currentScreen, setCurrentScreen] = useState("Home");
   const [songRepo, setSongRepo] = useState("");
   const [selectedHymnBackground, setSelectedHymnBackground] = useState("");
@@ -73,7 +71,7 @@ export const BmusicProvider = ({ children }: BmusicProviderProps) => {
 
     if (savedPresentationBg) {
       setSelectedHymnBackground(savedPresentationBg);
-      console.log("Saved presentation background:", savedPresentationBg);
+      // console.log("Saved presentation background:", savedPresentationBg);
     }
 
     if (savedFavorites) {
@@ -93,7 +91,6 @@ export const BmusicProvider = ({ children }: BmusicProviderProps) => {
   const handleClose = () => {
     window.api.closeApp();
   };
-
 
   useEffect(() => {
     if (!songRepo) {

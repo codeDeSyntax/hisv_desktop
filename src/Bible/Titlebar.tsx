@@ -21,6 +21,8 @@ const TitleBar: React.FC = () => {
 
   const ltImages = [
     'url("./wood2.jpg")',
+    'url("./wood10.jpg")',
+    'url("./wood11.jpg")',
     'url("./wood7.png")',
     'url("./wood6.jpg")',
   ];
@@ -93,7 +95,7 @@ const TitleBar: React.FC = () => {
              ${selectedBg}`
                 : undefined,
               backgroundRepeat: "repeat",
-              backgroundSize: "50px", // Adjust size to control repeat pattern
+              backgroundSize: "30px", // Adjust size to control repeat pattern
             }
           : {
               backgroundImage:

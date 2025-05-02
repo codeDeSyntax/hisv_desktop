@@ -12,6 +12,8 @@ const SettingsPanel: React.FC = () => {
     fontSize,
     setFontSize,
     fontFamily,
+    fontWeight,
+    setFontWeight,
     setFontFamily,
     verseTextColor,
     setVerseTextColor,
@@ -28,6 +30,13 @@ const SettingsPanel: React.FC = () => {
     { value: "'Monospace', monospace", text: "Monospace" },
     { value: "serif", text: "Serif" },
     { value: "sans-serif", text: "Sans-serif" },
+    { value: "Palatino", text: "Palatino" },
+    { value: "Garamond", text: "Garamond" },
+    { value: "Bookman", text: "Bookman" },
+    { value: "Comic Sans MS", text: "Comic Sans MS" },
+    { value: "Trebuchet MS", text: "Trebuchet MS" },
+    { value: "Arial Black", text: "Arial Black" },
+    { value: "cursive", text: "cursive" },
   ];
 
   const fontSizeOptions = [
@@ -36,6 +45,13 @@ const SettingsPanel: React.FC = () => {
     { value: "large", text: "Large" },
     { value: "xl", text: "Extra Large" },
     { value: "2xl", text: "XX-Large" },
+  ];
+
+  const fontWeightOptions = [
+    { value: "normal", text: "Normal" },
+    { value: "bold", text: "Bold" },
+    { value: "bolder", text: "Bolder" },
+    { value: "lighter", text: "Lighter" },
   ];
 
   return (
@@ -48,7 +64,8 @@ const SettingsPanel: React.FC = () => {
       }}
     >
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white" style={{fontWeight:"bolder" ,fontFamily:fontFamily}}>
+          
           Settings
         </h2>
         <button
@@ -62,7 +79,7 @@ const SettingsPanel: React.FC = () => {
       <div className="space-y-6">
         {/* Theme Setting */}
         <div>
-          <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+          <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300" style={{fontWeight:"bolder" ,fontFamily:fontFamily}}>
             Theme
           </h3>
           {/* <div className="flex space-x-2">
@@ -93,7 +110,10 @@ const SettingsPanel: React.FC = () => {
 
         {/* Font Size Setting */}
         <div>
-          <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+          <h3
+            className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+            style={{ fontWeight: "bolder", fontFamily: fontFamily }}
+          >
             Font Size
           </h3>
           <CustomSelect
@@ -105,7 +125,10 @@ const SettingsPanel: React.FC = () => {
 
         {/* Font Family Setting */}
         <div>
-          <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+          <h3
+            className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+            style={{ fontWeight: "bolder", fontFamily: fontFamily }}
+          >
             Font Family
           </h3>
           <CustomSelect
@@ -117,7 +140,10 @@ const SettingsPanel: React.FC = () => {
 
         {/* Text Color Setting */}
         <div>
-          <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+          <h3
+            className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+            style={{ fontWeight: "bolder", fontFamily: fontFamily }}
+          >
             Text Color
           </h3>
           <div className="flex items-center">
@@ -133,10 +159,27 @@ const SettingsPanel: React.FC = () => {
           </div>
         </div>
 
+        {/* font weight setting */}
+
+        <h3
+          className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+          style={{ fontWeight: "bolder", fontFamily: fontFamily }}
+        >
+          Font Weight
+        </h3>
+        <CustomSelect
+          options={fontWeightOptions}
+          value={fontWeight}
+          onChange={(value) => setFontWeight(value)}
+        />
+
         {/* About Section */}
         <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-          <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-            About
+          <h3
+            className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300"
+            style={{ fontWeight: fontWeight }}
+          >
+            𝓐𝓫𝓸𝓾𝓽
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Bible 300 - Version 1.0.0

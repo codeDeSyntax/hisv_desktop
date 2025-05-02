@@ -115,36 +115,7 @@ const FontSettingsPage = () => {
                 )}
               </div>
 
-              {/* theme options */}
-              {/* <div>
-                <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                  Theme
-                </h3>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => setTheme("light")}
-                    className={`flex-1 py-2 hover:cursor-pointer px-4 rounded-md flex items-center justify-center ${
-                      theme === "light"
-                        ? "bg-gray-50 dark:bg-bgray focus:outline-none text-stone-500 dark:text-gray-500 border-1 border-stone-500"
-                        : "bg-gray-100 dark:bg-bgray  shadow-black text-stone-500 dark:text-gray-50  focus:outline-none hover:bg-gray-200 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    <Sun size={18} className="mr-2" />
-                    Light
-                  </button>
-                  <button
-                    onClick={() => setTheme("dark")}
-                    className={`flex-1 py-2 px-4 rounded-md flex items-center hover:cursor-pointer justify-center ${
-                      theme === "dark"
-                        ? "bg-gray-50 dark:bg-bgray text-stone-500 dark:text-gray-500 border-1 border-stone-500 focus:outline-none"
-                        : "bg-gray-100 dark:bg-gray-800 focus:outline-none hover:bg-gray-200 dark:hover:bg-gray-700 shadow"
-                    }`}
-                  >
-                    <Moon size={18} className="mr-2" />
-                    Dark
-                  </button>
-                </div>
-              </div> */}
+             
 
               {/* Font Size Slider */}
               <div className="space-y-3">

@@ -72,7 +72,7 @@ export const CustomSelect = ({
                 }
               `}
             >
-              <span className="truncate">{option.text}</span>
+              <span className="truncate" style={{fontFamily:option.value}}>{option.text}</span>
               {value === option.value && (
                 <Check size={16} className="text-primary" />
               )}

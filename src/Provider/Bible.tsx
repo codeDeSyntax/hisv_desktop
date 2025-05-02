@@ -60,6 +60,8 @@ type BibleContextType = {
   // User preferences
   fontSize: string;
   setFontSize: React.Dispatch<React.SetStateAction<string>>;
+  fontWeight: string;
+  setFontWeight: React.Dispatch<React.SetStateAction<string>>;
   fontFamily: string;
   setFontFamily: React.Dispatch<React.SetStateAction<string>>;
   verseTextColor: string;
@@ -219,6 +221,9 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
   const [fontFamily, setFontFamily] = useState(() => {
     return localStorage.getItem("bibleFontFamily") || "serif";
   });
+  const [fontWeight, setFontWeight] = useState(() => {
+    return localStorage.getItem("bibleFontWeight") || "normal";
+  });
   const [verseTextColor, setVerseTextColor] = useState(() => {
     return localStorage.getItem("bibleVerseTextColor") || "#808080";
   });
@@ -261,6 +266,7 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
     localStorage.setItem("bibleCurrentBook", currentBook);
     localStorage.setItem("bibleCurrentChapter", String(currentChapter));
     localStorage.setItem("bibleFontSize", fontSize);
+    localStorage.setItem("bibleFontWeight", fontWeight);
     localStorage.setItem("bibleFontFamily", fontFamily);
     localStorage.setItem("bibleVerseTextColor", verseTextColor);
     localStorage.setItem("bibleBookmarks", JSON.stringify(bookmarks));
@@ -559,6 +565,8 @@ export const BibleProvider = ({ children }: BibleProviderProps) => {
         // User preferences
         fontSize,
         setFontSize,
+        fontWeight,
+        setFontWeight,
         fontFamily,
         setFontFamily,
         verseTextColor,

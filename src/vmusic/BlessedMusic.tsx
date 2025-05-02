@@ -17,6 +17,7 @@ import DeletePopup from "./DeletePopup";
 import { useBmusicContext } from "@/Provider/Bmusic";
 import { Song } from "@/types";
 import { useEastVoiceContext } from "@/Provider/EastVoice";
+import { useTheme } from "@/Provider/Theme";
 
 const BlessedMusic = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,6 +42,7 @@ const BlessedMusic = () => {
     refetch,
   } = useBmusicContext();
   const { setCurrentScreen } = useEastVoiceContext();
+  const {isDarkMode}  = useTheme()
   const [savedFavorites, setSavedFavorites] = useState<Song[]>(favorites);
 
   useEffect(() => {
@@ -246,7 +248,7 @@ const BlessedMusic = () => {
   };
 
   return (
-    <div className="w-screen h-screen overflow-y-scroll no-scrollbar bg-[#faeed1] bg-cover">
+    <div className="w-screen h-screen overflow-y-scroll no-scrollbar dark:bg-ltgray bg-cover">
       <TitleBar />
       {showDeleting && (
         <DeletePopup

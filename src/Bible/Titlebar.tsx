@@ -6,6 +6,7 @@ import { MoreHorizontal } from "lucide-react";
 import { ThemeToggle } from "@/shared/ThemeToggler";
 import { useTheme } from "@/Provider/Theme";
 import { useEvPresentationContext } from "@/Provider/EvPresent";
+import Help from "@/shared/Help";
 
 const TitleBar: React.FC = () => {
   const { handleClose, handleMaximize, handleMinimize, theme } =
@@ -113,6 +114,7 @@ const TitleBar: React.FC = () => {
       <div className=" space-x-2 mr-4 flex items-center justify-center">
         {/* theme toggler */}
         <ThemeToggle />
+        <Help />
         {/* Close button */}
         <div
           onClick={handleClose}

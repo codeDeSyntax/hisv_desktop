@@ -17,6 +17,7 @@ import PresentationOverlay from "./PresentationOverlay";
 import { useTheme } from "@/Provider/Theme";
 import Sociallinks from "./components/LanguagesToggle";
 import LanguageToggler from "./components/LanguagesToggle";
+// import VoiceListener from "./components/HeardMaster";
 
 interface Book {
   name: string;
@@ -37,6 +38,7 @@ const ScriptureContent: React.FC = () => {
     theme,
     fontSize,
     fontFamily,
+    fontWeight,
     verseTextColor,
     bookmarks,
     addBookmark,
@@ -493,6 +495,12 @@ const ScriptureContent: React.FC = () => {
     };
   }, []);
 
+  const handleTextCaptured = (text: string) => {
+    // Handle the captured text here
+    console.log("Captured text:", text);
+    // You can also set the captured text to state or perform any other action
+  };
+
   return (
     <div className="flex flex-col h-full bg-white dark:bg-ltgray text-white font-serif ">
       {/* Single-row navigation bar */}
@@ -628,7 +636,7 @@ const ScriptureContent: React.FC = () => {
                     <div
                       key={Number(chapter)}
                       className={`p-2 text-[12px] flex items-center justify-center  dark:shadow-black shadow rounded   transition-colors duration-150 ${
-                          Number(currentChapter) === Number(chapter)
+                        Number(currentChapter) === Number(chapter)
                           ? "bg-transparent text-stone-500  hover:text-stone-900 pointer-events-none hover:cursor-pointer dark:text-gray-50 font-medium"
                           : "text-stone-500 dark:text-gray-400 cursor-pointer   hover:text-stone-500 dark:hover:text-gray-200"
                       }`}
@@ -636,7 +644,9 @@ const ScriptureContent: React.FC = () => {
                       style={{
                         borderWidth: 2,
                         borderStyle:
-                          Number(currentChapter) === Number(chapter) ? "dotted" : "none",
+                          Number(currentChapter) === Number(chapter)
+                            ? "dotted"
+                            : "none",
                         borderColor:
                           Number(currentChapter) === Number(chapter)
                             ? iconColors.color2
@@ -730,12 +740,14 @@ const ScriptureContent: React.FC = () => {
         }`}
         onScroll={updateVisibleVerses}
       >
-        <LanguageToggler/>
+        <LanguageToggler />
+       
         {verses.length > 0 ? (
           <div
             className={`flex flex-col  ${getFontSize()} }`}
             style={{
               fontFamily: fontFamily,
+              fontWeight: fontWeight,
             }}
           >
             {verses.map((verse) => (

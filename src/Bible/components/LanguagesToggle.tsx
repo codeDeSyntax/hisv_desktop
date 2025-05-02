@@ -5,34 +5,34 @@ import { useBibleContext } from "@/Provider/Bible";
 
 const LanguageToggler = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const {setCurrentTranslation}  = useBibleContext()
+  const { setCurrentTranslation } = useBibleContext();
 
   // You can replace these functions with your actual language switching logic
   const switchToKJV = () => {
     console.log("Switching to KJV");
     // Implementation of language switch
-    setCurrentTranslation("KJV")
+    setCurrentTranslation("KJV");
     setIsOpen(false);
   };
 
   const switchToTWI = () => {
     console.log("Switching to TWI");
     // Implementation of language switch
-    setCurrentTranslation("TWI")
+    setCurrentTranslation("TWI");
     setIsOpen(false);
   };
 
   const switchToEWE = () => {
     console.log("Switching to EWE");
     // Implementation of language switch
-    setCurrentTranslation("EWE")
+    setCurrentTranslation("EWE");
     setIsOpen(false);
   };
 
   const switchToFrench = () => {
     console.log("Switching to French");
     // Implementation of language switch
-    setCurrentTranslation("FRENCH")
+    setCurrentTranslation("FRENCH");
     setIsOpen(false);
   };
 
@@ -114,7 +114,7 @@ const LanguageToggler = () => {
               <motion.button
                 key={language.id}
                 onClick={language.onClick}
-                className={`flex justify-between group items-center w-40 h-10 px-4 bg-gray-50 dark:bg-ltgray hover:bg-indigo-500 hover:text-white dark:hover:bg-primary dark:hover:text-white text-gray-800 dark:text-gray-200 text-[12px] font-medium transition-colors rounded-full duration-300 ${language.style}`}
+                className={`flex justify-between group items-center w-40 h-10 px-4 bg-gray-50 dark:bg-ltgray hover:bg-indigo-500 hover:text-white dark:hover:bg-primary dark:hover:text-white text-gray-800 dark:text-gray-200 text-[12px] font-medium transition-colors rounded-full duration-300  ${language.style}`}
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
@@ -124,6 +124,8 @@ const LanguageToggler = () => {
                   stiffness: 300,
                   damping: 20,
                 }}
+                style={{ fontFamily: "Palatino",fontWeight:"bolder" }}
+                aria-label={`Switch to ${language.text} language`}
               >
                 {language.text}
                 {language.icon}

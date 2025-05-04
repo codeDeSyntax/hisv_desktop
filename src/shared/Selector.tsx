@@ -39,12 +39,14 @@ export const CustomSelect = ({
     options.find((option) => option.value === value)?.text || placeholder;
 
   return (
-    <div ref={selectRef} className="relative w-full">
+    <div ref={selectRef} className="relative w-full ">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-bgray text-gray-900 dark:text-white ${className}`}
+        className={`w-full flex items-center justify-between p-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-bgray text-gray-900 dark:text-white ${className}`}
       >
-        <span className="truncate">{selectedOptionText}</span>
+        <span className="truncate" style={{ fontFamily: "Palatino" }}>
+          {selectedOptionText}
+        </span>
         <ChevronDown
           size={18}
           className={`transform transition-transform duration-200 ${
@@ -72,7 +74,9 @@ export const CustomSelect = ({
                 }
               `}
             >
-              <span className="truncate" style={{fontFamily:option.value}}>{option.text}</span>
+              <span className="truncate" style={{ fontFamily: option.value }}>
+                {option.text}
+              </span>
               {value === option.value && (
                 <Check size={16} className="text-primary" />
               )}

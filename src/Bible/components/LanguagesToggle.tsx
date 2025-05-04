@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Languages, Book, BookText, BookOpen, BookA } from "lucide-react";
 import { useBibleContext } from "@/Provider/Bible";
 
-const LanguageToggler = () => {
+const LanguageToggler = ({ color }: { color: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { setCurrentTranslation } = useBibleContext();
 
@@ -90,13 +90,19 @@ const LanguageToggler = () => {
   };
 
   return (
-    <div className="fixed bottom-10 md:bottom-24 left-20 z-50">
+    <div className="fixed bottom-10 md:bottom-24 right-20 z-50">
       <motion.button
-        className="bg-white h-16 w-16 flex items-center justify-center   dark:bg-bgray text-indigo-500 dark:text-indigo-300 p-4 rounded-full shadow-lg hover:bg-indigo-500 hover:text-white dark:hover:bg-primary dark:hover:text-white transition-colors duration-300"
+        className=" h-16 w-16 flex items-center justify-center  bg-gray-50 dark:bg-bgray text-indigo-500 dark:text-indigo-300 p-4 rounded-full shadow-lg hover:bg-indigo-500 hover:text-white dark:hover:bg-primary dark:hover:text-white transition-colors duration-300"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={toggleLanguages}
         aria-label="Toggle Language Menu"
+        style={{
+          borderWidth: 3,
+          borderColor: color,
+          borderStyle: "dashed",
+          color: color,
+        }}
       >
         <Languages size={20} />
       </motion.button>
@@ -124,7 +130,7 @@ const LanguageToggler = () => {
                   stiffness: 300,
                   damping: 20,
                 }}
-                style={{ fontFamily: "Palatino",fontWeight:"bolder" }}
+                style={{ fontFamily: "Palatino", fontWeight: "bolder" }}
                 aria-label={`Switch to ${language.text} language`}
               >
                 {language.text}

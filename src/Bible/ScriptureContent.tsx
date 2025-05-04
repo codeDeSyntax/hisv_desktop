@@ -735,12 +735,12 @@ const ScriptureContent: React.FC = () => {
       {/* Scripture content */}
       <div
         ref={contentRef}
-        className={`flex-1  p-4 md:p-6 lg:p-8 overflow-y-scroll no-scrollbar text-stone-500 ${
+        className={`flex-1  p-4 md:p-6 lg:p-8 overflow-y-scroll no-scrollbar text-stone-500 relative ${
           isDarkMode ? "dottedb1" : "dottedb"
         }`}
         onScroll={updateVisibleVerses}
       >
-        <LanguageToggler />
+        <LanguageToggler color={iconColors.color2}/>
        
         {verses.length > 0 ? (
           <div

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X, ChevronDown, ChevronRight } from "lucide-react";
 import { useBibleContext } from "@/Provider/Bible";
 import { CustomSelect } from "@/shared/Selector";
+import { useTheme } from "@/Provider/Theme";
 
 const LibraryPanel: React.FC = () => {
   const {
@@ -25,6 +26,7 @@ const LibraryPanel: React.FC = () => {
     [currentBook]: true,
   });
   const [translation, setTranslation] = useState(currentTranslation);
+  const { isDarkMode } = useTheme();
 
   // Toggle expanded state for a book
   const toggleExpandBook = (book: string) => {
@@ -46,7 +48,10 @@ const LibraryPanel: React.FC = () => {
   ];
 
   return (
-    <div className="h-full flex flex-col bg-gray-50 dark:bg-black font-serif">
+    <div
+      className="h-full flex flex-col bg-gray-50 dark:bg-black font-seri"
+      style={{ fontFamily: "Palatino" }}
+    >
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -65,17 +70,15 @@ const LibraryPanel: React.FC = () => {
           value={translation}
           onChange={(value) => setCurrentTranslation(value)}
         />
-
       </div>
 
       <div
-        className="flex-1 overflow-y-auto"
-        style={{
-          scrollbarWidth: "thin",
-          scrollbarColor:
-            theme === "light" ? "#f9fafb #f3f4f6" : "#424242 #202020",
-          // scrollbarGutter: "stable",
-        }}
+        className="flex-1 overflow-y-auto no-scrollbar"
+        // style={{
+        //   scrollbarWidth: "thin",
+        //   scrollbarColor: !isDarkMode ? "#f9fafb #3f63aa" : "#424242 #202020",
+        //   // scrollbarGutter: "stable",
+        // }}
       >
         <div className="p-4">
           <h3 className="font-medium text-gray-900 dark:text-white mb-2">
@@ -85,12 +88,13 @@ const LibraryPanel: React.FC = () => {
             {oldTestament.map((book) => (
               <div key={book.name}>
                 <button
-                  className={`flex items-center text-[12px] w-full text-left py-1 px-2 rounded-md focus:outline-none ${
+                  className={`flex items-center shadow text-[12px] w-full text-left py-2 px-2 rounded-full focus:outline-none ${
                     currentBook === book.name
-                      ? "bg-gray-200 dark:bg-bgray text-stone-500 dark:text-gray-50"
+                      ? "bg-gray-200 dark:bg-bgray text-stone-500 dark:text-gray-50 font-extrabold"
                       : "bg-gray-100 dark:bg-bgray text-stone-500 dark:text-gray-50 hover:bg-gray-100 dark:hover:bg-bgray/20 transition-colors"
                   }`}
                   onClick={() => toggleExpandBook(book.name)}
+                  style={{ fontFamily: "Palatino" }}
                 >
                   {expandedBooks[book.name] ? (
                     <ChevronDown size={16} />
@@ -139,7 +143,7 @@ const LibraryPanel: React.FC = () => {
             {newTestament.map((book) => (
               <div key={book.name}>
                 <button
-                  className={`flex items-center text-[12px] w-full text-left py-1 px-2 rounded-md ${
+                  className={`flex items-center text-[12px] shadow w-full text-left py-2 px-2 rounded-full ${
                     currentBook === book.name
                       ? "bg-gray-200 dark:bg-bgray text-stone-500 dark:text-gray-50"
                       : "bg-gray-100 dark:bg-bgray text-stone-500 dark:text-gray-50 hover:bg-gray-100 dark:hover:bg-bgray/30 transition-colors"

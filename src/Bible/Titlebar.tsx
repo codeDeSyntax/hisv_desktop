@@ -84,7 +84,10 @@ const TitleBar: React.FC = () => {
   };
 
   return (
-    <div
+   <div className="" 
+   style={{ WebkitAppRegion: 'drag' } as any}
+   >
+     <div
       className="h-8 flex items-center flex-row-reverse px-4 border-b border-gray-300 dark:border-gray-700 select-none relative"
       style={{
         ...(!isDarkMode
@@ -109,9 +112,13 @@ const TitleBar: React.FC = () => {
               backgroundRepeat: "repeat",
               backgroundSize: "200px", // Adjust size to control repeat pattern
             }),
+            
+            
       }}
     >
-      <div className=" space-x-2 mr-4 flex items-center justify-center">
+      <div className=" space-x-2 mr-4 flex items-center justify-center"
+      style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+      >
         {/* theme toggler */}
         <ThemeToggle />
         <Help />
@@ -209,6 +216,7 @@ const TitleBar: React.FC = () => {
         )}
       </div>
     </div>
+   </div>
   );
 };
 

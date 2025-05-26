@@ -3,16 +3,11 @@ import {
   BrowserWindow,
   shell,
   ipcMain,
-  dialog,
-  nativeImage,
 } from "electron";
-import fs from "node:fs";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import os from "node:os";
-import { v4 as uuidv4 } from "uuid";
-import { Presentation, EvSermon, EvOther } from "@/types";
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -50,19 +45,22 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 let mainWin: BrowserWindow | null = null;
-let projectionWin: BrowserWindow | null = null;
-let isProjectionMinimized = false;
 const preload = path.join(__dirname, "../preload/index.mjs");
 const indexHtml = path.join(RENDERER_DIST, "index.html");
-const projectionHtml = path.join(RENDERER_DIST, "projection.html");
 
 async function createMainWindow() {
+  // Prevent creating multiple windows
+  if (mainWin && !mainWin.isDestroyed()) {
+    mainWin.focus();
+    return mainWin;
+  }
+
   mainWin = new BrowserWindow({
     title: "Main window",
     frame: false,
     minWidth: 1000,
     minHeight: 800,
-    icon: path.join(process.env.VITE_PUBLIC, "evv.png"),
+    icon: path.join(process.env.VITE_PUBLIC, "icon.png"),
     webPreferences: {
       preload,
       // devTools: false,
@@ -82,6 +80,7 @@ async function createMainWindow() {
     mainWin.loadFile(indexHtml);
   }
 
+  // Disable certain keyboard shortcuts
   mainWin.webContents.on("before-input-event", (event, input) => {
     if (
       input.key === "F12" || // Disable F12 for dev tools
@@ -93,640 +92,118 @@ async function createMainWindow() {
     }
   });
 
+  // Handle window control IPC events
+  ipcMain.removeAllListeners("minimizeApp");
+  ipcMain.removeAllListeners("maximizeApp");
+  ipcMain.removeAllListeners("closeApp");
+
   ipcMain.on("minimizeApp", () => {
-    mainWin?.minimize();
-  });
-  ipcMain.on("maximizeApp", () => {
-    if (mainWin?.isMaximized()) {
-      mainWin?.unmaximize();
-    } else {
-      mainWin?.maximize();
+    if (mainWin && !mainWin.isDestroyed()) {
+      mainWin.minimize();
     }
   });
+
+  ipcMain.on("maximizeApp", () => {
+    if (mainWin && !mainWin.isDestroyed()) {
+      if (mainWin.isMaximized()) {
+        mainWin.unmaximize();
+      } else {
+        mainWin.maximize();
+      }
+    }
+  });
+
   ipcMain.on("closeApp", () => {
-    mainWin?.close();
+    if (mainWin && !mainWin.isDestroyed()) {
+      mainWin.close();
+    }
+  });
+
+  // Clean up when window is closed
+  mainWin.on("closed", () => {
+    mainWin = null;
+    // Clean up IPC listeners when window is closed
+    ipcMain.removeAllListeners("minimizeApp");
+    ipcMain.removeAllListeners("maximizeApp");
+    ipcMain.removeAllListeners("closeApp");
+  });
+
+  // Handle external links
+  mainWin.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: "deny" };
   });
 
   return mainWin;
 }
 
-async function createProjectionWindow() {
-  // Create a new projection window
-  projectionWin = new BrowserWindow({
-    title: "Projection",
-    frame: false,
-    show: true,
-    minimizable: true,
-    fullscreen: true,
-    alwaysOnTop: false,
-    icon: path.join("./dist/", "music2.png"),
-    webPreferences: {
-      preload,
-      devTools: false,
-      nodeIntegration: true,
-      contextIsolation: true,
-    },
-  });
-
-  if (VITE_DEV_SERVER_URL) {
-    projectionWin.loadURL(`${VITE_DEV_SERVER_URL}/projection.html`);
-    // projectionWin.webContents.openDevTools();
-  } else {
-    projectionWin.loadFile(projectionHtml);
-  }
-
-  // Track window state changes
-  projectionWin.on("minimize", () => {
-    isProjectionMinimized = true;
-  });
-
-  projectionWin.on("restore", () => {
-    isProjectionMinimized = false;
-  });
-
-  // Critical: Reset reference when window is closed
-  projectionWin.on("closed", () => {
-    projectionWin = null;
-    isProjectionMinimized = false;
-  });
-
-  projectionWin.webContents.on("before-input-event", (event, input) => {
-    if (
-      input.key === "F12" || // Disable F12 for dev tools
-      (input.key === "I" && input.control && input.shift) || // Disable Ctrl+Shift+I or Cmd+Opt+I
-      (input.key === "R" && input.control) || // Disable Ctrl+R for reload
-      (input.key === "R" && input.meta) // Disable Cmd+R for reload on macOS
-    ) {
-      event.preventDefault();
-    }
-  });
-
-  return projectionWin;
-}
-
-// Handle the escape key minimize functionality from the renderer
-ipcMain.on("minimizeProjection", () => {
-  if (projectionWin && !projectionWin.isDestroyed()) {
-    projectionWin.minimize();
-    isProjectionMinimized = true;
-
-    // Focus the main window after minimizing the projection window
-    if (mainWin && !mainWin.isDestroyed()) {
-      mainWin.focus();
-    }
-  }
-});
+// App event handlers
 app.whenReady().then(() => {
   createMainWindow();
+
+  // Handle app activation (macOS specific)
   app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+    // On macOS, re-create window when dock icon is clicked
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createMainWindow();
+    } else if (mainWin && !mainWin.isDestroyed()) {
+      // Focus existing window if it exists
+      mainWin.focus();
+    }
   });
+});
+
+// Handle second instance attempt
+app.on("second-instance", () => {
+  // Someone tried to run a second instance, focus our window instead
+  if (mainWin && !mainWin.isDestroyed()) {
+    if (mainWin.isMinimized()) {
+      mainWin.restore();
+    }
+    mainWin.focus();
+  } else {
+    // If window was closed, create a new one
+    createMainWindow();
+  }
 });
 
 // Ensure app quits when all windows are closed
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
-});
-
-ipcMain.handle("project-song", async (event, songData) => {
-  console.log(songData);
-
-  // First check if window exists but is minimized
-  if (projectionWin && !projectionWin.isDestroyed() && isProjectionMinimized) {
-    projectionWin.restore();
-    isProjectionMinimized = false;
-    setTimeout(() => {
-      projectionWin?.webContents.send("display-song", songData);
-      projectionWin?.focus();
-    }, 300); // Short delay to ensure window is restored before sending data
-    return;
-  }
-
-  // If window doesn't exist or was destroyed, create a new one
-  if (!projectionWin || projectionWin.isDestroyed()) {
-    await createProjectionWindow();
-    // Wait for window to be ready before sending data
-    projectionWin?.once("ready-to-show", () => {
-      projectionWin?.webContents.send("display-song", songData);
-      projectionWin?.focus();
-    });
-  } else {
-    // Window exists and is not minimized, just send the data
-    projectionWin.webContents.send("display-song", songData);
-    projectionWin.focus();
+  // On macOS, apps typically stay running even when all windows are closed
+  if (process.platform !== "darwin") {
+    app.quit();
   }
 });
 
-// Handle selecting a directory via the file dialog
-ipcMain.handle("select-directory", async () => {
-  const result = await dialog.showOpenDialog({
-    properties: ["openDirectory"],
-  });
-  return result.canceled ? null : result.filePaths[0];
-});
-
-// Handle saving a song as a text file
-ipcMain.handle("save-song", async (event, { directory, title, content }) => {
-  try {
-    const filePath = path.join(directory, `${title}.txt`);
-    fs.writeFileSync(filePath, content, "utf8");
-    return filePath;
-  } catch (error) {
-    console.error("Error saving song:", error);
-    throw error;
+// Handle app before quit
+app.on("before-quit", () => {
+  // Clean up any resources before quitting
+  if (mainWin && !mainWin.isDestroyed()) {
+    mainWin.removeAllListeners();
   }
 });
 
-// Handle fetching songs from a directory
-ipcMain.handle("fetch-songs", async (event, directory) => {
-  try {
-    const files = fs.readdirSync(directory);
-    const songs = await Promise.all(
-      files
-        .filter((file) => file.endsWith(".txt"))
-        .map(async (file, index) => {
-          const filePath = path.join(directory, file);
-          const fileStats = fs.statSync(filePath);
-          const content = fs.readFileSync(filePath, "utf8");
+// Security: Prevent new window creation from renderer
+// app.on("web-contents-created", (event, contents) => {
+//   contents.setWindowOpenHandler(({ url }) => {
+//     // Prevent new window creation
+//     shell.openExternal(url);
+//     return { action: "deny" };
+//   });
 
-          return {
-            id: `bmusic${index + 1}`,
-            title: path.basename(file, ".txt"),
-            path: filePath,
-            content,
-            dateModified: fileStats.mtime.toISOString(),
-          };
-        })
-    );
-    return songs;
-  } catch (error) {
-    console.error("Error fetching songs:", error);
-    throw new Error("Failed to fetch songs.");
-  }
-});
+//   contents.on("will-navigate", (event, navigationUrl) => {
+//     const parsedUrl = new URL(navigationUrl);
+    
+//     // Allow navigation to same origin or dev server
+//     if (
+//       parsedUrl.origin !== VITE_DEV_SERVER_URL &&
+//       parsedUrl.origin !== "file://"
+//     ) {
+//       event.preventDefault();
+//       shell.openExternal(navigationUrl);
+//     }
+//   });
+// });
 
-// Handle editing an existing song or renaming it
-ipcMain.handle(
-  "edit-song",
-  async (event, { directory, newTitle, content, originalPath }) => {
-    try {
-      const fileExists = fs.existsSync(originalPath);
-
-      if (fileExists) {
-        fs.writeFileSync(originalPath, content, "utf8");
-      } else {
-        fs.writeFileSync(originalPath, content, "utf8");
-      }
-
-      const newFilePath = path.join(directory, `${newTitle}.txt`);
-      if (newTitle && newFilePath !== originalPath) {
-        if (fileExists && fs.existsSync(originalPath)) {
-          fs.renameSync(originalPath, newFilePath);
-        }
-      }
-
-      return newFilePath;
-    } catch (error) {
-      console.error("Error editing song:", error);
-      throw error;
-    }
-  }
-);
-
-// Handle deleting a song
-ipcMain.handle("delete-song", async (event, filePath) => {
-  try {
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-      return true;
-    } else {
-      throw new Error("File not found");
-    }
-  } catch (error) {
-    console.error("Error deleting song:", error);
-    throw error;
-  }
-});
-
-async function loadImagesFromDirectory(dirPath: string) {
-  const allowedExtensions = [".png", ".jpg", ".jpeg"];
-
-  try {
-    const files = await new Promise<string[]>((resolve, reject) => {
-      fs.readdir(dirPath, (err, files) => {
-        if (err) reject(err);
-        else resolve(files);
-      });
-    });
-    const imageFiles = files
-      .filter((file) =>
-        allowedExtensions.includes(path.extname(file).toLowerCase())
-      )
-      .slice(0, 5); // Limit to the first 4 images
-    // Load images in parallel using Promise.all
-    const images = await Promise.all(
-      imageFiles.map(async (file) => {
-        const imagePath = path.join(dirPath, file);
-        const imageBuffer = await fs.promises.readFile(imagePath); // Read file as buffer
-        const image = nativeImage.createFromBuffer(imageBuffer); // Create nativeImage from buffer
-        return image.toDataURL(); // Convert to base64 DataURL
-      })
-    );
-
-    return images;
-  } catch (error) {
-    console.error("Error loading images:", error);
-    return [];
-  }
-}
-
-ipcMain.handle("get-images", async (event, dirPath) => {
-  return loadImagesFromDirectory(dirPath); // Return the list of base64-encoded images
-});
-
-// Presentation master handlers
-function sanitizeFilename(title: string): string {
-  // Remove invalid filename characters and replace spaces with underscores
-  return title
-    .replace(/[/\\?%*:|"<>]/g, "")
-    .replace(/\s+/g, "_")
-    .toLowerCase();
-}
-
-// Helper function to create a unique filename based on title
-function createUniqueFilename(title: string, id: string): string {
-  const sanitized = sanitizeFilename(title);
-  // Limit filename length and append ID to ensure uniqueness
-  const truncated = sanitized.substring(0, 50);
-  return `${truncated}_${id}.txt`;
-}
-
-ipcMain.handle("load-presentations", async (_, directoryPath: string) => {
-  console.log(directoryPath);
-  try {
-    const presentations: Presentation[] = [];
-
-    const files = fs.readdirSync(directoryPath);
-    for (const file of files) {
-      if (file.endsWith(".txt")) {
-        const filePath = path.join(directoryPath, file);
-        const content = fs.readFileSync(filePath, "utf8");
-
-        // Extract ID from filename (last part after underscore and before .txt)
-        const idMatch = file.match(/_([^_]+)\.txt$/);
-        const id = idMatch ? idMatch[1] : file.replace(".txt", "");
-
-        // Parse based on content type
-        if (content.includes("#TYPE: sermon")) {
-          presentations.push(parseSermonFile(content, id));
-        } else if (content.includes("#TYPE: other")) {
-          presentations.push(parseOtherFile(content, id));
-        } else if (content.includes("TYPE: sermon")) {
-          // Legacy format
-          presentations.push(parseSermonFile(content, id));
-        } else if (content.includes("TYPE: other")) {
-          // Legacy format
-          presentations.push(parseOtherFile(content, id));
-        }
-      }
-    }
-
-    return presentations;
-  } catch (error) {
-    console.error("Error loading presentations:", error);
-    return [];
-  }
-});
-
-ipcMain.handle(
-  "create-presentation",
-  async (
-    _,
-    directoryPath: string,
-    presentation: Omit<Presentation, "id" | "createdAt" | "updatedAt">
-  ) => {
-    try {
-      const id = uuidv4();
-      const now = new Date().toISOString();
-      const newPresentation = {
-        ...presentation,
-        id,
-        createdAt: now,
-        updatedAt: now,
-      } as Presentation;
-
-      let content: string;
-
-      if (newPresentation.type === "sermon") {
-        content = formatSermonToText(newPresentation);
-      } else {
-        content = formatOtherToText(newPresentation);
-      }
-
-      // Create filename based on title and ID
-      const filename = createUniqueFilename(newPresentation.title, id);
-      fs.writeFileSync(path.join(directoryPath, filename), content);
-
-      return newPresentation;
-    } catch (error) {
-      console.error("Error creating presentation:", error);
-      throw error;
-    }
-  }
-);
-
-ipcMain.handle(
-  "update-presentation",
-  async (
-    _,
-    id: string,
-    directoryPath: string,
-    updates: Partial<Presentation>
-  ) => {
-    try {
-      // Find the existing file by ID
-      console.log("path for update",directoryPath)
-      const files = fs.readdirSync(directoryPath);
-      let existingFile = "";
-
-      for (const file of files) {
-        if (file.includes(id) && file.endsWith(".txt")) {
-          existingFile = file;
-          break;
-        }
-      }
-
-      if (!existingFile) {
-        // throw new Error(`Presentation with id ${id} not found`);
-        console.log("Presentation with id ${id} not found");
-        return null;
-      }
-
-      // Read the existing presentation
-      const filePath = path.join(directoryPath, existingFile);
-      console.log("filepath", filePath);
-      const content = fs.readFileSync(filePath, "utf8");
-
-      let existingPresentation: Presentation;
-
-      if (
-        content.includes("#TYPE: sermon") ||
-        content.includes("TYPE: sermon")
-      ) {
-        existingPresentation = parseSermonFile(content, id);
-      } else {
-        existingPresentation = parseOtherFile(content, id);
-      }
-
-      // Merge updates with existing presentation
-      const updatedPresentation = {
-        ...existingPresentation,
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      };
-
-      // Create new content based on updated type
-      let newContent: string;
-      if (updatedPresentation.type === "sermon") {
-        if (updatedPresentation.type === "sermon") {
-          newContent = formatSermonToText(updatedPresentation as EvSermon);
-        } else {
-          throw new Error("Invalid type for formatSermonToText");
-        }
-      } else {
-        if (updatedPresentation.type === "other") {
-          newContent = formatOtherToText(updatedPresentation as EvOther);
-        } else {
-          throw new Error("Invalid type for formatOtherToText");
-        }
-      }
-
-      // If title changed, create new filename
-      if (updates.title && existingPresentation.title !== updates.title) {
-        // Delete old file
-        fs.unlinkSync(filePath);
-
-        // Create new file with updated title-based filename
-        const newFilename = createUniqueFilename(updatedPresentation.title, id);
-        fs.writeFileSync(path.join(directoryPath, newFilename), newContent);
-      } else {
-        // Just update existing file
-        fs.writeFileSync(filePath, newContent);
-      }
-
-      return updatedPresentation;
-    } catch (error) {
-      console.error("Error updating presentation:", error);
-      throw error;
-    }
-  }
-);
-
-ipcMain.handle(
-  "delete-presentation",
-  async (_, id: string, directoryPath: string) => {
-    try {
-      // Find the file by ID
-      const files = fs.readdirSync(directoryPath);
-      let fileToDelete = "";
-
-      for (const file of files) {
-        if (file.includes(id) && file.endsWith(".txt")) {
-          fileToDelete = file;
-          break;
-        }
-      }
-
-      if (!fileToDelete) {
-        throw new Error(`Presentation with id ${id} not found`);
-      }
-
-      fs.unlinkSync(path.join(directoryPath, fileToDelete));
-      return { success: true };
-    } catch (error) {
-      console.error("Error deleting presentation:", error);
-      throw error;
-    }
-  }
-);
-
-// Helper functions for file formatting - Enhanced for better structured data
-function formatSermonToText(sermon: Presentation): string {
-  if (sermon.type !== "sermon") throw new Error("Not a sermon presentation");
-
-  const EvSermon = sermon as EvSermon;
-
-  // Format structured data with clear section separators for easy parsing
-  return `#TYPE: sermon
-#METADATA
-ID: ${sermon.id}
-TITLE: ${sermon.title}
-PREACHER: ${EvSermon.preacher || ""}
-DATE: ${EvSermon.date || ""}
-CREATED_AT: ${sermon.createdAt}
-UPDATED_AT: ${sermon.updatedAt}
-
-#SCRIPTURES
-${
-  EvSermon.scriptures
-    ? EvSermon.scriptures
-        .map((s, index) => `SCRIPTURE_${index + 1}: ${s.text || ""}`)
-        .join("\n")
-    : ""
-}
-
-#CONTENT
-${EvSermon.mainMessage ? `MAIN_MESSAGE: ${EvSermon.mainMessage}` : ""}
-${EvSermon.quote ? `QUOTE: ${EvSermon.quote}` : ""}
-
-#END`;
-}
-
-function formatOtherToText(other: Presentation): string {
-  if (other.type !== "other") throw new Error("Not an other presentation");
-
-  const EvOther = other as EvOther;
-
-  // Format structured data with clear section separators for easy parsing
-  return `#TYPE: other
-#METADATA
-ID: ${other.id}
-TITLE: ${other.title}
-CREATED_AT: ${other.createdAt}
-UPDATED_AT: ${other.updatedAt}
-
-#CONTENT
-MESSAGE: ${EvOther.message || ""}
-
-#END`;
-}
-
-function parseSermonFile(content: string, id: string): EvSermon {
-  // Initialize with defaults
-  const sermon: Partial<EvSermon> = {
-    id,
-    type: "sermon",
-    title: "",
-    preacher: "",
-    date: "",
-    scriptures: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  // Handle both old and new format
-  if (content.includes("#METADATA")) {
-    // New structured format
-    const sections = content.split(/\n#[A-Z]+\n/);
-
-    // Parse metadata section
-    if (sections.length > 1) {
-      const metadataLines = sections[1].trim().split("\n");
-      metadataLines.forEach((line) => {
-        if (line.startsWith("TITLE: ")) sermon.title = line.substring(7);
-        else if (line.startsWith("PREACHER: "))
-          sermon.preacher = line.substring(10);
-        else if (line.startsWith("DATE: ")) sermon.date = line.substring(6);
-        else if (line.startsWith("CREATED_AT: "))
-          sermon.createdAt = line.substring(12);
-        else if (line.startsWith("UPDATED_AT: "))
-          sermon.updatedAt = line.substring(12);
-      });
-    }
-
-    // Parse scriptures section
-    if (sections.length > 2) {
-      const scriptureLines = sections[2].trim().split("\n");
-      sermon.scriptures = scriptureLines
-        .filter((line) => line.startsWith("SCRIPTURE_"))
-        .map((line) => {
-          const text = line.substring(line.indexOf(":") + 2);
-          return { text };
-        });
-    }
-
-    // Parse content section
-    if (sections.length > 3) {
-      const contentLines = sections[3].trim().split("\n");
-      contentLines.forEach((line) => {
-        if (line.startsWith("MAIN_MESSAGE: "))
-          sermon.mainMessage = line.substring(14);
-        else if (line.startsWith("QUOTE: ")) sermon.quote = line.substring(7);
-      });
-    }
-  } else {
-    // Legacy format
-    const lines = content.split("\n");
-
-    lines.forEach((line) => {
-      if (line.startsWith("TITLE: ")) sermon.title = line.substring(7);
-      else if (line.startsWith("PREACHER: "))
-        sermon.preacher = line.substring(10);
-      else if (line.startsWith("DATE: ")) sermon.date = line.substring(6);
-      else if (line.startsWith("SCRIPTURES: ")) {
-        const scriptures = line.substring(12).split("|");
-        sermon.scriptures = scriptures.map((text) => ({ text }));
-      } else if (line.startsWith("MAIN_MESSAGE: "))
-        sermon.mainMessage = line.substring(14);
-      else if (line.startsWith("QUOTE: ")) sermon.quote = line.substring(7);
-      else if (line.startsWith("CREATED_AT: "))
-        sermon.createdAt = line.substring(12);
-      else if (line.startsWith("UPDATED_AT: "))
-        sermon.updatedAt = line.substring(12);
-    });
-  }
-
-  return sermon as EvSermon;
-}
-
-function parseOtherFile(content: string, id: string): EvOther {
-  // Initialize with defaults
-  const other: Partial<EvOther> = {
-    id,
-    type: "other",
-    title: "",
-    message: "",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  // Handle both old and new format
-  if (content.includes("#METADATA")) {
-    // New structured format
-    const sections = content.split(/\n#[A-Z]+\n/);
-
-    // Parse metadata section
-    if (sections.length > 1) {
-      const metadataLines = sections[1].trim().split("\n");
-      metadataLines.forEach((line) => {
-        if (line.startsWith("TITLE: ")) other.title = line.substring(7);
-        else if (line.startsWith("CREATED_AT: "))
-          other.createdAt = line.substring(12);
-        else if (line.startsWith("UPDATED_AT: "))
-          other.updatedAt = line.substring(12);
-      });
-    }
-
-    // Parse content section
-    if (sections.length > 2) {
-      const contentLines = sections[2].trim().split("\n");
-      contentLines.forEach((line) => {
-        if (line.startsWith("MESSAGE: ")) other.message = line.substring(9);
-      });
-    }
-  } else {
-    // Legacy format
-    const lines = content.split("\n");
-
-    lines.forEach((line) => {
-      if (line.startsWith("TITLE: ")) other.title = line.substring(7);
-      else if (line.startsWith("MESSAGE: ")) other.message = line.substring(9);
-      else if (line.startsWith("CREATED_AT: "))
-        other.createdAt = line.substring(12);
-      else if (line.startsWith("UPDATED_AT: "))
-        other.updatedAt = line.substring(12);
-    });
-  }
-
-  return other as EvOther;
-}
+// Export for testing or external access
+export { createMainWindow, mainWin };

@@ -1,4 +1,4 @@
-import React, { useState, Suspense,useEffect } from "react";
+import React, { useState, Suspense, useEffect } from "react";
 import SideNav from "./Sidebar";
 import Home from "./Home";
 // import CustomTitleBar from "./TitleBar";
@@ -9,6 +9,7 @@ import Recents from "./Recents";
 import QuotesManager from "./SavedQoutes";
 import TitleBar from "@/shared/TitleBar";
 import LoadingScreen from "./Loading";
+import BookmarksPage from "./Bookmark";
 
 // Lazy-loaded components
 const Gallery = React.lazy(() => import("./Media"));
@@ -18,21 +19,23 @@ const DeveloperPage = React.lazy(() => import("./Developer"));
 
 const Hisvoice = () => {
   // const [isCollapsed, setIsCollapsed] = useState(true);
-  const { activeTab, isCollapsed, setIsCollapsed,theme } = useSermonContext();
+  const { activeTab, isCollapsed, setIsCollapsed, theme } = useSermonContext();
   const [background, setBackground] = useState(false);
 
-   // Apply theme to document
-     
+  // Apply theme to document
 
   return (
-    <div className="h-screen overflow-hidden no-scrollbar" id="hisvoicediv">
+    <div
+      className="h-screen overflow-hidden no-scrollbar bg-white dark:bg-background"
+      id="hisvoicediv"
+    >
       <TitleBar />
-      <div className={`h-full`}>
-        <div className="flex h-full  items-center overflow-hidden">
-          <SideNav isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+      <div className={`h-full `}>
+        <div className="  ">
+          {/* <SideNav isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} /> */}
 
           {/* Main content */}
-          <div className="w-[95%] ">
+          <div className=" ">
             {activeTab === "home" ? (
               <Home />
             ) : activeTab === "sermons" ? (
@@ -60,8 +63,12 @@ const Hisvoice = () => {
               </Suspense>
             ) : activeTab === "quotes" ? (
               <QuotesManager />
+            ) : activeTab === "bookmarks" ? (
+              <Suspense fallback={<LoadingScreen />}>
+                <BookmarksPage />
+              </Suspense>
             ) : (
-              <p className="text-center text-gray-500">Page not found</p>
+              "none"
             )}
           </div>
         </div>

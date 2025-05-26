@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useMemo } from "react";
 import { Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -10,32 +10,38 @@ import lastSet from "../sermons/1973/1973";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { useTheme } from "@/Provider/Theme.js";
 
+// Enhanced paragraph interface for search
+interface SearchParagraph {
+  id: number;
+  content: string;
+  originalIndex: number;
+}
+
+// Search result interface
+interface SearchMatch {
+  sermonId: string | number;
+  sermonTitle: string;
+  sermonYear?: string;
+  sermonLocation?: string;
+  sermonType?: string;
+  paragraphId: number;
+  paragraphContent: string;
+  contextBefore: string;
+  contextAfter: string;
+  matchedText: string;
+  fullSermonText: string;
+}
+
 const Search = () => {
-  const { setActiveTab, setSelectedMessage, setRecentSermons, setSearchQuery } =
-    useSermonContext();
-    const {isDarkMode} = useTheme();
-  const [rightSearchText, setRightSearchText] = useState("");
-  const [searchResults, setSearchResults] = useState<
-    {
-      id: string | number;
-      title: string;
-      year?: string;
-      location?: string;
-      shortSentence: string;
-      fullContext: {
-        pre: string;
-        match: string;
-        post: string;
-      };
-      sermon: string;
-      type?: string;
-    }[]
-  >([]);
-  const [expandedResults, setExpandedResults] = useState<{
+  const { navigateToSearchResult } = useSermonContext();
+  const { isDarkMode } = useTheme();
+  const [searchInput, setSearchInput] = useState("");
+  const [foundMatches, setFoundMatches] = useState<SearchMatch[]>([]);
+  const [expandedMatches, setExpandedMatches] = useState<{
     [key: string]: boolean | undefined;
   }>({});
 
-  const sermonCollection = [
+  const availableSermons = [
     ...earlySermons,
     ...secondSet,
     ...thirdSet,
@@ -43,196 +49,296 @@ const Search = () => {
     ...lastSet,
   ];
 
-  const handleRightSearch = () => {
-    const filtered = sermonCollection
-      .map((sermon) => {
-        const regex = new RegExp(`(${rightSearchText})`, "i");
-        const match = sermon.sermon.match(regex);
+  // Function to split sermon into paragraphs (same logic as SelectedSermon)
+  const createParagraphsFromSermon = (
+    sermonText: string
+  ): SearchParagraph[] => {
+    if (!sermonText) return [];
 
-        if (match) {
-          // Get more context for the match
-          const preContext =
-            match && match.index !== undefined
-              ? sermon.sermon.slice(Math.max(0, match.index - 200), match.index)
-              : "";
-          const postContext = sermon.sermon.slice(
-            match && match.index !== undefined
-              ? match.index + match[0].length
-              : 0,
-            match && match.index !== undefined
-              ? match.index + match[0].length + 200
-              : 200
-          );
-          let shortSentence = "";
-          if (match && match.index !== undefined) {
-            shortSentence = sermon.sermon.slice(
-              Math.max(0, match.index - 30),
-              match.index + match[0].length + 30
-            );
+    const rawParagraphs = sermonText.split("\n\n").filter((p) => p.trim());
+    const processedParagraphs: SearchParagraph[] = [];
+    let paragraphId = 1;
+
+    rawParagraphs.forEach((paragraph, originalIndex) => {
+      const words = paragraph.trim().split(/\s+/);
+      const sentences = paragraph.split(/[.!?]+/).filter((s) => s.trim());
+
+      // Determine optimal paragraph length based on content
+      let targetLength: number;
+      if (sentences.length <= 2 && words.length < 50) {
+        targetLength = words.length;
+      } else if (words.length <= 150) {
+        targetLength = words.length;
+      } else {
+        targetLength = Math.max(
+          100,
+          Math.min(
+            200,
+            Math.floor(words.length / Math.ceil(words.length / 150))
+          )
+        );
+      }
+
+      if (words.length <= targetLength) {
+        processedParagraphs.push({
+          id: paragraphId++,
+          content: paragraph.trim(),
+          originalIndex,
+        });
+      } else {
+        // Split long paragraphs intelligently
+        let currentChunk = "";
+        let wordCount = 0;
+
+        words.forEach((word) => {
+          if (
+            wordCount > 0 &&
+            (wordCount >= targetLength ||
+              (wordCount >= targetLength * 0.8 && /[.!?]$/.test(word)))
+          ) {
+            processedParagraphs.push({
+              id: paragraphId++,
+              content: currentChunk.trim(),
+              originalIndex,
+            });
+            currentChunk = word;
+            wordCount = 1;
+          } else {
+            currentChunk += (wordCount > 0 ? " " : "") + word;
+            wordCount++;
           }
+        });
 
-          return {
-            id: sermon.id,
-            title: sermon.title,
-            year: sermon.year,
-            location: sermon.location,
-            shortSentence: shortSentence.replace(
-              regex,
-              `<highlight class='highlight'>${match[0]}</highlight>`
-            ),
-            fullContext: {
-              pre: preContext,
-              match: match[0],
-              post: postContext,
-            },
-            sermon: sermon.sermon,
-            type: sermon.type,
-          };
+        if (currentChunk.trim()) {
+          processedParagraphs.push({
+            id: paragraphId++,
+            content: currentChunk.trim(),
+            originalIndex,
+          });
         }
-        return null;
-      })
-      .filter(Boolean);
+      }
+    });
 
-    setSearchResults(filtered.filter((result) => result !== null));
-    setExpandedResults({});
+    return processedParagraphs;
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent default form submission
-    handleRightSearch();
-  };
-
-  const handleSearchResultClick = (result: {
-    id: string | number;
-    title: string;
-    year?: string;
-    location?: string;
-    shortSentence: string;
-    fullContext: {
-      pre: string;
-      match: string;
-      post: string;
-    };
-    sermon: string;
-    type?: string;
-  }) => {
-    const sermon = sermonCollection.find((s) => s.id === result.id);
-    if (sermon) {
-      setSelectedMessage(sermon);
+  const performAdvancedSearch = () => {
+    if (!searchInput.trim()) {
+      setFoundMatches([]);
+      return;
     }
-    setActiveTab("message");
-    setSearchQuery(rightSearchText);
 
-    const recentSermons = JSON.parse(
-      localStorage.getItem("recentSermons") || "[]"
-    );
-    const updatedRecentSermons = recentSermons.filter(
-      (item: { id: string | number }) => sermon && item.id !== sermon.id
-    );
-    updatedRecentSermons.unshift(sermon);
-    const limitedRecentSermons = updatedRecentSermons.slice(0, 15);
-    localStorage.setItem("recentSermons", JSON.stringify(limitedRecentSermons));
-    setRecentSermons(limitedRecentSermons);
+    const searchMatches: SearchMatch[] = [];
+    const searchRegex = new RegExp(`(${searchInput.trim()})`, "i");
+
+    availableSermons.forEach((sermon) => {
+      const paragraphList = createParagraphsFromSermon(sermon.sermon);
+
+      paragraphList.forEach((para) => {
+        const matchResult = para.content.match(searchRegex);
+
+        if (matchResult && matchResult.index !== undefined) {
+          const beforeContext = para.content.slice(
+            Math.max(0, matchResult.index - 150),
+            matchResult.index
+          );
+          const afterContext = para.content.slice(
+            matchResult.index + matchResult[0].length,
+            matchResult.index + matchResult[0].length + 150
+          );
+
+          const previewText = para.content.slice(
+            Math.max(0, matchResult.index - 40),
+            matchResult.index + matchResult[0].length + 40
+          );
+
+          searchMatches.push({
+            sermonId: sermon.id,
+            sermonTitle: sermon.title,
+            sermonYear: sermon.year,
+            sermonLocation: sermon.location,
+            sermonType: sermon.type,
+            paragraphId: para.id,
+            paragraphContent: previewText,
+            contextBefore: beforeContext,
+            contextAfter: afterContext,
+            matchedText: matchResult[0],
+            fullSermonText: sermon.sermon,
+          });
+        }
+      });
+    });
+
+    setFoundMatches(searchMatches);
+    setExpandedMatches({});
   };
 
-  const toggleExpanded = (
-    resultId: string | number,
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    performAdvancedSearch();
+  };
+
+  const handleMatchClick = (match: SearchMatch) => {
+    navigateToSearchResult(
+      match.sermonId,
+      match.paragraphId,
+      searchInput.trim()
+    );
+  };
+
+  const toggleMatchExpansion = (
+    matchId: string,
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     event.stopPropagation();
-    setExpandedResults((prev) => ({
+    setExpandedMatches((prev) => ({
       ...prev,
-      [resultId]: !prev[resultId],
+      [matchId]: !prev[matchId],
     }));
   };
 
+  const highlightSearchTerm = (text: string, term: string) => {
+    if (!term.trim()) return text;
+
+    const regex = new RegExp(
+      `(${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+      "gi"
+    );
+    return text.replace(
+      regex,
+      `<span class='bg-blue-400 dark:bg-background px-1 rounded font-medium'>$1</span>`
+    );
+  };
+
   return (
-    <div
-      className="w-1/2 bg-white dark:bg-ltgray  flex flex-col overflow-y-scroll no-scrollbar"
-      style={{ height: "100vh" }}
-    >
-      <div className="sticky top-10  p-8 z-10  rounded-b-md pt-10 bg-white  dark:bg-ltgray">
-        <form onSubmit={handleSubmit}>
-          <div className="flex items-center">
+    <div className=" h-full relativ flex flex-col bg-gray-100 dark:bg-primary/50 p-4 rounded-[20px] font-zilla">
+      {/* Fixed Header */}
+      <div className="flex-shrink-0 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 className="text-lg font-bold font-serif mb-3 text-stone-700 dark:text-gray-50">
+          Advanced Search
+        </h2>
+
+        <form onSubmit={handleSearchSubmit} className="space-y-3">
+          <div className="flex gap-2">
             <input
               type="text"
               placeholder="Search quotes within all sermons"
-              className="flex-grow p-2 px-5 py-3 text-[12px] border-none   focus:border-b-2 focus:border-gray-500 focus:outline-none dark:text-gray-50 text-gray-500 placeholder-gray-500 bg-gray-50 dark:bg-ltgray rounded-full outline-none dark:placeholder-gray-50"
-              onChange={(e) => setRightSearchText(e.target.value)}
-              value={rightSearchText}
-              style={{
-                fontFamily: "cursive",
-                borderWidth: 1,
-                borderColor: isDarkMode ? "#202020" :"#20202020",
-                borderStyle: "solid",
-              }}
+              className="flex-1 p-3 text-sm bg-gray-50 dark:bg-primary border-none border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-700 text-stone-700 dark:text-white placeholder-gray-500"
+              onChange={(e) => setSearchInput(e.target.value)}
+              value={searchInput}
             />
-            <button className="ml-2 p-2 px-3 py-3 dark:bg-[#434343] bg-gray-50 shadow  text-stone-500 dark:text-gray-50">
+            <button
+              type="submit"
+              className="px-4 py-3 bg-stone-600 dark:bg-primary hover:bg-stone-700 dark:hover:bg-gray-500 text-white rounded-md transition-colors font-medium"
+            >
+              <SearchOutlined className="mr-1" />
               Search
             </button>
           </div>
         </form>
       </div>
-      <div className="flex-grow overflow-y-auto no-scrollbar p-4">
-        {searchResults.length > 1 ? (
-          searchResults.map((result, index) => (
-            <div
-              key={`${result.id}-${index}`}
-              className="mb-4 p-3 bg-white shadow dark:shadow-bgray dark:bg-ltgray rounded-lg cursor-pointer hover:bg-opacity-20 transition-all "
-              onClick={() => handleSearchResultClick(result)}
-            >
-              <h3 className="dark:text-stone-200 text-stone-500 font-bold mb-2 text-[14px] ">
-                {result.title}
-              </h3>
-              <div className="relative">
-                {expandedResults[result.id] ? (
-                  <div className=" text-[12px]">
-                    <span className=" text-stone-500 dark:text-gray-50 opacity-70">
-                      {result.fullContext.pre}
-                    </span>
-                    <span className=" text-stone-500 dark:text-gray-50 highlight">
-                      {result.fullContext.match}
-                    </span>
-                    <span className=" text-stone-500 dark:text-gray-50 opacity-70">
-                      {result.fullContext.post}
-                    </span>
-                  </div>
-                ) : (
-                  <p
-                    className="text-stone-500 opacity-70 dark:text-gray-50 text-[12px]"
-                    dangerouslySetInnerHTML={{ __html: result.shortSentence }}
-                  ></p>
-                )}
-                <button
-                  className=" right-0 bottom-0 flex items-center bg-gray-50 dark:bg-[#434343] text-stone-500 shadow focus:outline-none dark:text-gray-50 hover:text-stone-700 transition-colors p-1 text-[12px] mt-2"
-                  onClick={(e) => toggleExpanded(result.id, e)}
-                >
-                  {expandedResults[result.id] ? (
-                    <>
-                      <ChevronUp className="w-4 h-4 mr-1" />
-                      Show Less
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="w-4 h-4 mr-1" />
-                      Show More
-                    </>
-                  )}
-                </button>
-              </div>
+
+      {/* Scrollable Results */}
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        {foundMatches.length > 0 ? (
+          <div className="p-4 space-y-4">
+            <div className="text-sm text-stone-600 dark:text-gray-400 mb-4">
+              Found {foundMatches.length} match
+              {foundMatches.length !== 1 ? "es" : ""}
+              in {new Set(foundMatches.map((m) => m.sermonId)).size} sermon
+              {new Set(foundMatches.map((m) => m.sermonId)).size !== 1
+                ? "s"
+                : ""}
             </div>
-          ))
+
+            {foundMatches.map((match, index) => {
+              const uniqueMatchId = `${match.sermonId}-${match.paragraphId}-${index}`;
+
+              return (
+                <div
+                  key={uniqueMatchId}
+                  className="bg-white dark:bg-primary border border-gray-200 dark:border-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors shadow-sm"
+                  onClick={() => handleMatchClick(match)}
+                >
+                  <div className="flex justify-between items-start">
+                    <h1 className="font-bold text-stone-700 dark:text-orange-100 text-sm">
+                      {match.sermonTitle}
+                    </h1>
+                    <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-gray-400">
+                      {match.sermonYear && <span>{match.sermonYear}</span>}
+                      {match.sermonLocation && (
+                        <span>• {match.sermonLocation}</span>
+                      )}
+                      <span className="bg-blue-100 dark:bg-gray-700 text-blue-800 dark:text-blue-300 px-2 py-1 rounded-full text-xs">
+                        ¶{match.paragraphId}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    {expandedMatches[uniqueMatchId] ? (
+                      <div className="text-sm leading-relaxed">
+                        <span className="text-stone-600 dark:text-accent">
+                          {match.contextBefore}
+                        </span>
+                        <span className="bg-primary dark:bg-background px-1 rounded font-medium text-stone-800 dark:text-gray-100">
+                          {match.matchedText}
+                        </span>
+                        <span className="text-stone-600 dark:text-gray-300">
+                          {match.contextAfter}
+                        </span>
+                      </div>
+                    ) : (
+                      <p
+                        className="text-stone-600 dark:text-accent text-sm leading-relaxed"
+                        dangerouslySetInnerHTML={{
+                          __html: highlightSearchTerm(
+                            match.paragraphContent,
+                            searchInput.trim()
+                          ),
+                        }}
+                      />
+                    )}
+
+                    <button
+                      className="flex items-center mt-3 text-xs text-stone-500 dark:text-gray-400 hover:text-stone-700 dark:hover:text-gray-200 transition-colors bg-gray-100 dark:bg-background px-2 py-1 rounded"
+                      onClick={(e) => toggleMatchExpansion(uniqueMatchId, e)}
+                    >
+                      {expandedMatches[uniqueMatchId] ? (
+                        <>
+                          <ChevronUp className="w-3 h-3 mr-1" />
+                          Show Less
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-3 h-3 mr-1" />
+                          Show More
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         ) : (
-          <div className="flex items-center flex-col">
-            <img src="./nosong.png" alt="look" className="h-40 " />
-            <p className="text-stone-500 dark:text-gray-50"></p>
-            <p
-              className="text-center font-sans text-sm italic text-stone-500 dark:text-gray-50 mb-4 mt-10"
-              style={{ fontFamily: "cursive" }}
-            >
-              Search for quotes across all sermons preached by Robert Lambert
-              Lee
-            </p>
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center p-8">
+              <img
+                src="./nosong.png"
+                alt="No results"
+                className="h-32 mx-auto mb-4 opacity-60"
+              />
+              <p className="text-stone-600 dark:text-gray-300 font-serif italic text-sm max-w-xs">
+                Search for quotes across all sermons preached by Robert Lambert
+                Lee
+              </p>
+              {searchInput && foundMatches.length === 0 && (
+                <p className="text-stone-500 dark:text-gray-400 text-sm mt-2">
+                  No results found for "{searchInput}"
+                </p>
+              )}
+            </div>
           </div>
         )}
       </div>

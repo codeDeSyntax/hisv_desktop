@@ -14,6 +14,18 @@ import audioSermons from "@/sermons/audio.js";
 
 import { Sermon } from "@/types/index.js";
 
+// Define bookmark type
+interface Bookmark {
+  id: string;
+  sermonId: string;
+  sermonTitle: string;
+  paragraphId: number;
+  paragraphContent: string; // First 100 characters for preview
+  createdAt: string;
+  location?: string;
+  year?: string;
+}
+
 // Define settings type
 interface SermonSettings {
   fontFamily: string;
@@ -22,8 +34,18 @@ interface SermonSettings {
   fontWeight: string;
 }
 
+// Define search navigation type
+interface SearchNavigation {
+  targetSermonId: string | number;
+  targetParagraphId: number;
+  searchTerm: string;
+}
+
 // Define the context value type
 interface SermonContextType {
+  handleClose: () => void;
+  handleMaximize: () => void;
+  handleMinimize: () => void;
   selectedMessage: Sermon | null;
   allSermons: Sermon[];
   loading: boolean;
@@ -33,6 +55,8 @@ interface SermonContextType {
   setSelectedMessage: (sermon: Sermon | null) => void;
   setActiveTab: (tab: string) => void;
   activeTab: string;
+  prevScreen: string; 
+  setPrevScreen: (screen: string) => void;
   setTheme: (tab: string) => void;
   theme: string;
   randomSermons: Sermon[];
@@ -46,6 +70,18 @@ interface SermonContextType {
   setCB: (cb: number) => void;
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
+  // Bookmark functions
+  bookmarks: Bookmark[];
+  setBookmarks: (bookmarks: Bookmark[]) => void;
+  addBookmark: (sermonId: string, sermonTitle: string, paragraphId: number, paragraphContent: string, location?: string, year?: string) => void;
+  removeBookmark: (bookmarkId: string) => void;
+  isBookmarked: (sermonId: string, paragraphId: number) => boolean;
+  toggleBookmark: (sermonId: string, sermonTitle: string, paragraphId: number, paragraphContent: string, location?: string, year?: string) => void;
+  navigateToBookmark: (bookmark: Bookmark) => void;
+  // Search navigation
+  pendingSearchNav: SearchNavigation | null;
+  setPendingSearchNav: (nav: SearchNavigation | null) => void;
+  navigateToSearchResult: (sermonId: string | number, paragraphId: number, searchTerm: string) => void;
 }
 
 // Create the context with an initial undefined value
@@ -69,6 +105,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const [selectedMessage, setSelectedMessage] = useState<Sermon | null>(null);
   const [allSermons, setAllSermons] = useState<Sermon[]>([]);
   const [recentSermons, setRecentSermons] = useState<Sermon[]>([]);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,15 +113,34 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const [randomSermons, setRandomSermons] = useState<Sermon[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [CB, setCB] = useState<number>(0);
+  const [prevScreen ,setPrevScreen] = useState(activeTab)
+  const [pendingSearchNav, setPendingSearchNav] = useState<SearchNavigation | null>(null);
   const [theme, setTheme] = useState(
     localStorage.getItem("vsermontheme") || "light"
   );
   const [settings, setSettings] = useState<SermonSettings>({
-    fontFamily: "cursive",
+    fontFamily: "Zilla Slab",
     fontStyle: "normal",
     fontSize: "20",
     fontWeight: "normal",
   });
+
+  const handleMinimize = () => {
+    window.api.minimizeApp();
+  };
+
+  const handleMaximize = () => {
+    window.api.maximizeApp();
+  };
+
+  const handleClose = () => {
+    window.api.closeApp();
+  };
+
+  //always check for current screen and set it to prevScreen in local storage
+  useEffect(() => {
+    localStorage.setItem("prevScreen", activeTab);
+  }, [activeTab]);
 
   // Generate random sermon
   const getRandomSermon = (): Sermon | null => {
@@ -107,7 +163,108 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     return Array.from(sermons);
   };
 
-  // Get recently opened sermons
+  // Search navigation function
+  const navigateToSearchResult = (sermonId: string | number, paragraphId: number, searchTerm: string) => {
+    const targetSermon = allSermons.find(s => s.id === sermonId);
+    if (targetSermon) {
+      setSelectedMessage(targetSermon);
+      setSearchQuery(searchTerm);
+      setPendingSearchNav({
+        targetSermonId: sermonId,
+        targetParagraphId: paragraphId,
+        searchTerm: searchTerm
+      });
+      setActiveTab("message");
+
+      // Update recent sermons
+      const existingRecent = JSON.parse(localStorage.getItem("recentSermons") || "[]");
+      const filteredRecent = existingRecent.filter((item: { id: string | number }) => item.id !== sermonId);
+      filteredRecent.unshift(targetSermon);
+      const limitedRecent = filteredRecent.slice(0, 15);
+      localStorage.setItem("recentSermons", JSON.stringify(limitedRecent));
+      setRecentSermons(limitedRecent);
+    }
+  };
+
+  // Bookmark functions
+  const addBookmark = (
+    sermonId: string, 
+    sermonTitle: string, 
+    paragraphId: number, 
+    paragraphContent: string,
+    location?: string,
+    year?: string
+  ) => {
+    const newBookmark: Bookmark = {
+      id: `${sermonId}-${paragraphId}-${Date.now()}`,
+      sermonId,
+      sermonTitle,
+      paragraphId,
+      paragraphContent: paragraphContent.substring(0, 100) + (paragraphContent.length > 100 ? '...' : ''),
+      createdAt: new Date().toISOString(),
+      location,
+      year,
+    };
+
+    const updatedBookmarks = [...bookmarks, newBookmark];
+    setBookmarks(updatedBookmarks);
+    localStorage.setItem("sermonBookmarks", JSON.stringify(updatedBookmarks));
+  };
+
+  const removeBookmark = (bookmarkId: string) => {
+    const updatedBookmarks = bookmarks.filter(bookmark => bookmark.id !== bookmarkId);
+    setBookmarks(updatedBookmarks);
+    localStorage.setItem("sermonBookmarks", JSON.stringify(updatedBookmarks));
+  };
+
+  const isBookmarked = (sermonId: string, paragraphId: number): boolean => {
+    return bookmarks.some(bookmark => 
+      bookmark.sermonId === sermonId && bookmark.paragraphId === paragraphId
+    );
+  };
+
+  const toggleBookmark = (
+    sermonId: string, 
+    sermonTitle: string, 
+    paragraphId: number, 
+    paragraphContent: string,
+    location?: string,
+    year?: string
+  ) => {
+    const existingBookmark = bookmarks.find(bookmark => 
+      bookmark.sermonId === sermonId && bookmark.paragraphId === paragraphId
+    );
+
+    if (existingBookmark) {
+      removeBookmark(existingBookmark.id);
+    } else {
+      addBookmark(sermonId, sermonTitle, paragraphId, paragraphContent, location, year);
+    }
+  };
+
+  const navigateToBookmark = (bookmark: Bookmark) => {
+    // Find the sermon in allSermons
+    const sermon = allSermons.find(s => s.id === bookmark.sermonId);
+    if (sermon) {
+      setSelectedMessage(sermon);
+      setActiveTab("message"); // Assuming reader is the tab for reading sermons
+      
+      // Wait for the component to render then scroll to the paragraph
+      setTimeout(() => {
+        const element = document.getElementById(`paragraph-${bookmark.paragraphId}`);
+        if (element) {
+          element.scrollIntoView({ 
+            behavior: 'smooth', 
+            
+            block: 'end',  // Changed from 'center' to 'start'
+            inline: 'nearest'  // Added this for better positioning
+          });
+        }
+      }, 100);
+    }
+  };
+
+  // Load bookmarks and settings from localStorage
   useEffect(() => {
     const savedSettings = localStorage.getItem("sermonSettings");
     if (savedSettings) {
@@ -125,6 +282,13 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       ? (JSON.parse(recentSermonsJson) as Sermon[])
       : [];
     setRecentSermons(recentSermons);
+
+    // Load bookmarks
+    const savedBookmarks = localStorage.getItem("sermonBookmarks");
+    if (savedBookmarks) {
+      const parsedBookmarks = JSON.parse(savedBookmarks) as Bookmark[];
+      setBookmarks(parsedBookmarks);
+    }
   }, []);
 
   useEffect(() => {
@@ -164,6 +328,9 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   }, []);
 
   const contextValue: SermonContextType = {
+    handleClose,
+    handleMaximize,
+    handleMinimize,
     selectedMessage,
     allSermons,
     loading,
@@ -173,6 +340,8 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     setSelectedMessage,
     setActiveTab,
     activeTab,
+    prevScreen,
+    setPrevScreen,
     randomSermons,
     setRandomSermons,
     getThreeRandomSermons,
@@ -186,6 +355,18 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     setIsCollapsed,
     theme,
     setTheme,
+    // Bookmark functions
+    bookmarks,
+    setBookmarks,
+    addBookmark,
+    removeBookmark,
+    isBookmarked,
+    toggleBookmark,
+    navigateToBookmark,
+    // Search navigation
+    pendingSearchNav,
+    setPendingSearchNav,
+    navigateToSearchResult,
   };
 
   // console.log("SermonProvider rendering, context value:", contextValue);

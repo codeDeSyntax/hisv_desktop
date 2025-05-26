@@ -1,23 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeftCircle } from "lucide-react";
-import BlessedMusic from "./vmusic/BlessedMusic";
-import EditSong from "./vmusic/EditForm";
-import WorkspaceSelector from "./vmusic/Welcome";
-import CreateSong from "./vmusic/Form";
-import SongPresentation from "./vmusic/PresentationMode";
-import { useBmusicContext } from "./Provider/Bmusic";
-import InstrumentShowroom from "./vmusic/InstrumentShowRoom";
-import SongCollectionManager from "./vmusic/Categorize";
-import UserGuidePage from "./vmusic/Userguide";
-import PresentationBackgroundSelector from "./vmusic/BackgroundChoose";
+import { ArrowLeft, ArrowLeftCircle } from "lucide-react";
 import Hisvoice from "./Hisvoice/Hisvoice";
-import BibleApp from "./Bible/Bible";
-import Biblelayout from "./Bible/Bible";
-import { useEastVoiceContext } from "./Provider/EastVoice";
-import PresentationMasterPage from "./EvPresenter/MasterPresentApp";
+import FloatingButton from "./components/ButtonFloat";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import { useTheme } from "./Provider/Theme";
+import { useSermonContext } from "./Provider/Vsermons";
 
 const App = () => {
-  const { currentScreen, setCurrentScreen } = useEastVoiceContext();
+  const { activeTab, setActiveTab, prevScreen } = useSermonContext();
 
   // Mock song data for demonstration
   // const allSongs: Song[] = new Array(100).fill(null).map((_, index) => ({
@@ -32,74 +22,50 @@ const App = () => {
   // ctrl + P ---- Presenter
   // ctrl + S ---- Songs
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey) {
-        switch (event.key) {
-          case "h":
-            setCurrentScreen("Home");
-            break;
-          case "b":
-            setCurrentScreen("bible");
-            break;
-          case "l":
-            setCurrentScreen("hisvoice");
-            break;
-          case "p":
-            setCurrentScreen("mpresenter");
-            break;
-          case "s":
-            setCurrentScreen("Songs");
-          // case "m":
-          //   setCurrentScreen("mpresenter");
-          //   break;
-          default:
-            break;
-        }
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const handleKeyDown = (event: KeyboardEvent) => {
+  //     if (event.ctrlKey) {
+  //       switch (event.key) {
+  //         case "h":
+  //           setCurrentScreen("Home");
+  //           break;
+  //         case "b":
+  //           setCurrentScreen("bible");
+  //           break;
+  //         case "l":
+  //           setCurrentScreen("hisvoice");
+  //           break;
+  //         case "p":
+  //           setCurrentScreen("mpresenter");
+  //           break;
+  //         case "s":
+  //           setCurrentScreen("Songs");
+  //         // case "m":
+  //         //   setCurrentScreen("mpresenter");
+  //         //   break;
+  //         default:
+  //           break;
+  //       }
+  //     }
+  //   };
+  //   window.addEventListener("keydown", handleKeyDown);
+  //   return () => {
+  //     window.removeEventListener("keydown", handleKeyDown);
+  //   };
+  // }, []);
   return (
     <div
-      className={`flex flex-col h-screen w-screen thin-scrollbar no-scrollbar bg-[#292a2d]`}
-      style={{fontFamily:"Palatino"}}
+      className={`flex flex-col h-screen w-screen thin-scrollbar no-scrollbar bg-white dark:bg-ltgray overflow-hidden`}
+      style={{ fontFamily: "Palatino" }}
     >
-      {/* <BlessedMusic /> */}
-      {currentScreen === "Home" ? (
-        <WorkspaceSelector />
-      ) : currentScreen === "create" ? (
-        <CreateSong />
-      ) : currentScreen === "Songs" ? (
-        <BlessedMusic />
-      ) : currentScreen === "edit" ? (
-        <EditSong />
-      ) : currentScreen === "Presentation" ? (
-        <SongPresentation />
-      ) : currentScreen === "instRoom" ? (
-        <InstrumentShowroom />
-      ) : currentScreen === "categorize" ? (
-        <SongCollectionManager />
-      ) : currentScreen === "userguide" ? (
-        <UserGuidePage />
-      ) : currentScreen === "backgrounds" ? (
-        <PresentationBackgroundSelector />
-      ) : currentScreen === "hisvoice" ? (
-        <Hisvoice />
-      ) : currentScreen === "bible" ? (
-        <Biblelayout />
-      ) : currentScreen === "mpresenter" ? (
-        <PresentationMasterPage />
-      ) : (
-        <ArrowLeftCircle
-          className="size-6 text-white"
-          onClick={() => setCurrentScreen("Home")}
+      <Hisvoice />
+      {/* {activeTab !== "home" && (
+        <FloatingButton
+          icon={<ArrowLeftOutlined />}
+          position="bottom-left"
+          onClick={() => setActiveTab(prevScreen)}
         />
-      )}
-      {/* <SongPresentation/> */}
+      )} */}
     </div>
   );
 };

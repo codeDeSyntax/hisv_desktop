@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/Provider/Theme";
+import { SendHorizonal } from "lucide-react";
+import TypingVerse from "@/components/TypingText";
+import RandomSermonParagraph from "@/components/RandomParagraph";
 
 const Home = () => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentScriptureIndex, setCurrentScriptureIndex] = useState(0);
   const { randomSermons, setSelectedMessage, setActiveTab, setCB } =
     useSermonContext();
@@ -49,131 +51,144 @@ const Home = () => {
     []
   );
 
-  const images = useMemo(
-    () => ["./led.jpg", "./pic3.jpg", "./pi8.jpg", "./pic5.jpg"],
-    []
-  );
-
-  useEffect(() => {
-    const switchImage = () => {
-      const newIndex = Math.floor(Math.random() * images.length);
-      setCurrentImageIndex(newIndex);
-    };
-
-    const switchScripture = () => {
-      setCurrentScriptureIndex((prev) =>
-        prev === scriptures.length - 1 ? 0 : prev + 1
-      );
-    };
-
-    setCB(currentImageIndex);
-    const imageInterval = setInterval(switchImage, 20000);
-    const scriptureInterval = setInterval(switchScripture, 10000);
-
-    return () => {
-      clearInterval(imageInterval);
-      clearInterval(scriptureInterval);
-    };
-  }, [currentImageIndex, images, setCB, scriptures.length]);
-
   const currentScripture = scriptures[currentScriptureIndex];
 
   return (
-    <div
-      className="h-screen relative overflow-auto no-scrollbar w-full bg-gray-50 dark:bg-ltgray rounded-tl-3xl"
-      style={{
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        backgroundImage: !isDarkMode
-          ? `linear-gradient(to bottom,
-             rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 5) 20%),
-              url("./wood7.png")`
-          : `linear-gradient(to bottom,
-             rgba(8, 8, 8, 0) 0%,
-        rgba(0, 0, 0, 5) 20%),
-              url("./snow2.jpg")`,
-      }}
-    >
+    <div className="h-screen relative flex items-center overflow-auto no-scrollbar w-screen bg-white dark:bg-background ">
       {/* Main Content */}
-      <div className="relative z-10 h-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-full flex flex-col">
-          {/* Header Section with Profile */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center justify-between mb-12"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-white/30">
-                <img
-                  src="./bob.jpg"
-                  alt="Robert Lambert Lee"
-                  className="h-full w-full object-cover"
-                />
+      <div className="relative z-10 h-[85%] w-[95%] m-auto flex items-center justify-center gap-1 p-8">
+        <div
+          className=" mx-ato px-4 sm:px-6 lg:px-8 py-8  flex flex-col w-[45%] h-[90%] bg-gray-100 dark:bg-background  rounded-[20px]"
+          style={{
+            borderWidth: 6,
+            borderColor: isDarkMode ? "#292524" : "#20202050",
+            borderStyle: "dashed",
+          }}
+        >
+          <div className="bg-white dark:bg-primary rounded-[20px]">
+            {/* Header Section with Profile */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center justify-between mb-12 bg-whi"
+            >
+              <div className="flex items-center space-x-4 px-6">
+                <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-white/30">
+                  <img
+                    src="./bob.jpg"
+                    alt="Robert Lambert Lee"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h1
+                    className="text-2xl md:text-2xl font-bold font-cooper text-black truncate dark:text-gray-50 "
+                    style={{}}
+                  >
+                    Robert Lambert Lee
+                  </h1>
+                  <p className="text-stone-500 dark:text-gray-300  italic">
+                    Preachings & Teachings
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-stone-500 dark:text-gray-50 font-serif">
-                  Robert Lambert Lee
-                </h1>
-                <p className="text-stone-500 dark:text-gray-300 font-serif italic">
-                  Preachings & Teachings
-                </p>
+
+              <div className="hidden md:block">
+                <div className="h-px w-32 bg-white/30"></div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="hidden md:block">
-              <div className="h-px w-32 bg-white/30"></div>
-            </div>
-          </motion.div>
+            {/* Scripture Timeline Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="mb-12 w-full bg-white dark:bg-stone-800"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentScriptureIndex}
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -30 }}
+                  transition={{ duration: 0.5 }}
+                  className=" backdrop-blur-sm px-8 py- rounded-lg border-l-4 border-white/30   flex flex-col justify-between"
+                >
+                  <div className=" top-0 left-0 h-full w-full bg-gradient-to-b from-white/50 to-white/10"></div>
 
-          {/* Scripture Timeline Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="mb-12 w-full"
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentScriptureIndex}
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -30 }}
-                transition={{ duration: 0.5 }}
-                className="relative backdrop-blur-sm py- px-8 rounded-lg border-l-4 border-white/30 bg-white/5 dark:bg-ltgray/20"
-              >
-                <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-white/50 to-white/10"></div>
-                <p className="italic text-stone-500 dark:text-gray-50 text-lg md:text-xl font-serif leading-relaxed mb-3">
-                  &ldquo;{currentScripture.verse}&rdquo;
-                </p>
-                <p className="text-stone-500 dark:text-gray-50 font-semibold font-serif text-right">
-                  {currentScripture.reference}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-          </motion.div>
+                  <div className="  text-gray-50 rounded-3xl italic ">
+                    <TypingVerse
+                      verse={currentScripture.verse}
+                      typingSpeed={40}
+                      color={isDarkMode ? "#f2cdb4  " : ""}
+                      fontFamily="Palatino, serif"
+                    />
+                  </div>
+
+                  <p className="text-stone-500 dark:text-gray-300 font-semibold font-serif text-right mt-4">
+                    {currentScripture.reference}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* <div className="flex items-center justify-center">
+                <div
+                  className="border-dashed rounded-full p-5 bg-gray-50 dark:bg-background border-gray-200 dark:border-gray-300"
+                  style={{ borderWidth: 2 }}
+                >
+                  <SendHorizonal
+                    className="size-24"
+                    color={isDarkMode ? "#535252" : "#858585"}
+                  />
+                </div> */}
+              {/* </div> */}
+            </motion.div>
+          </div>
 
           {/* Main Content Area - Timeline Style Sermons List */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex-grow pb-4"
+            className="flex-grw pb-4"
           >
             <div className="relative">
               {/* Vertical Timeline Line */}
               <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-white/50 via-white/30 to-transparent"></div>
+            </div>
+          </motion.div>
+        </div>
 
-              <div className="space-y-2">
+        <div
+          className=" w-[45%] h-[90%]  bg-gray-100 dark:bg-background flex flex-col px-4 sm:px-6 lg:px-8 py-8 rounded-[20px]"
+          style={{
+            borderWidth: 6,
+            borderColor: isDarkMode ? "#292524" : "#664138",
+            borderStyle: "dashed",
+          }}
+        >
+          <div className="  bg-white dark:bg-primary shadow-2xl rounded-3xl">
+            {/* Receipt Header */}
+            <div className="text-center py-6 px-6 border border-dashed border-gray-700 dark:border-text rounded-t-3xl">
+              <h2 className="text-xs font-mono uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+                SERMON ARCHIVE
+              </h2>
+              <div className="text-xs font-mono text-gray-400 dark:text-gray-500">
+                ID: {new Date().getTime().toString().slice(-6)}
+              </div>
+            </div>
+
+            {/* Receipt Content */}
+            <div className="px-6 py-4 ">
+              <div className="space-y-1">
                 {randomSermons.map((sermon, index) => (
                   <motion.div
                     key={sermon.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.5 }}
-                    className="relative"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.4 }}
+                    className="group cursor-pointer"
                     onMouseEnter={() => setHoveredSermon(sermon.id)}
                     onMouseLeave={() => setHoveredSermon(null)}
                     onClick={() => {
@@ -181,94 +196,72 @@ const Home = () => {
                       setActiveTab("message");
                     }}
                   >
-                    <div className={`flex flex-col md:flex-row `}>
-                      {/* Timeline Node */}
-                      <div className="absolute left-0 md:left-1/2 transform md:-translate-x-1/2 w-4 h-4 rounded-full bg-stone-200 dark:bg-white/30 border-2 border-stone-500 dark:border-white/50"></div>
-
-                      {/* Content */}
-                      <div className={`ml-6 md:ml-0 md:w-1/2  relative`}>
-                        <div
-                          className={`
-                            p-6 rounded-lg backdrop-blur-sm cursor-pointer
-                            border border-stone-200 dark:border-white/10 
-                            hover:border-white/30
-                            transition-all duration-300
-                            bg-white/5 dark:bg-ltgray/10
-                            ${
-                              hoveredSermon === sermon.id
-                                ? "shadow-lg bg-white/10 dark:bg-ltgray/20"
-                                : ""
-                            }
-                          `}
-                        >
-                          <h3 className="font-serif text-lg font-semibold text-stone-500 dark:text-gray-50 mb-3">
-                            {sermon?.title}
-                          </h3>
-
-                          <div className="flex items-center justify-between text-stone-500 dark:text-gray-300 text-sm font-serif">
-                            <div className="flex items-center">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4 mr-2"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                />
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                />
-                              </svg>
-                              {sermon.location || "N/A"}
-                            </div>
-
-                            <div className="flex items-center">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4 mr-2"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                />
-                              </svg>
-                              {sermon.year}
-                            </div>
-                          </div>
-
-                          {/* Reveal animation line */}
+                    {/* Item Line */}
+                    <div className="py-3 border-b border-dottd bg-gray-50 dark:bg-background border-gray-600 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-stone-900 transition-colors duration-200 -mx-2 px-2 rounded-xl">
+                      {/* Title Row */}
+                      <div className="flex justify-between items-start mb-1">
+                        {/* <img
+                          src="./icon.png"
+                          className="rounded-full h-10 w-10"
+                        /> */}
+                        <div className="flex-1 pr-2">
                           <div
-                            className={`
-                              absolute bottom-0 left-0 right-0 h-0.5 
-                              bg-gradient-to-r from-gray-100 dark:from-transparent via-gray-500 dark:via-white/70 to-transparent
-                              transform scale-x-0 
-                              ${
-                                hoveredSermon === sermon.id ? "scale-x-100" : ""
-                              }
-                              transition-transform duration-500
-                            `}
-                          ></div>
+                            className=" text-sm  text-black dark:text-[#f2cdb4] leading-tight font-cooper"
+                            // style={{ fontFamily: "Palatino" }}
+                          >
+                            {sermon?.title}
+                          </div>
+                        </div>
+                        <div className="font-mono text-xs text-gray-500 dark:text-gray-400 tabular-nums">
+                          {sermon.year}
                         </div>
                       </div>
+
+                      {/* Details Row */}
+                      <div className="flex justify-between items-center text-xs">
+                        <div className="font-mono text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                          {sermon.location || "LOCATION N/A"}
+                        </div>
+                        <div className="font-mono text-gray-400 dark:text-gray-500">
+                          #{String(index + 1).padStart(3, "0")}
+                        </div>
+                      </div>
+
+                      {/* Hover Effect Bar */}
+                      <div
+                        className={`
+                        mt-2 h-px bg-gradient-to-r from-transparent via-gray-400 dark:via-gray-500 to-transparent
+                        transform transition-all duration-300 origin-center
+                        ${
+                          hoveredSermon === sermon.id
+                            ? "scale-x-100 opacity-100"
+                            : "scale-x-0 opacity-0"
+                        }
+                      `}
+                      ></div>
                     </div>
                   </motion.div>
                 ))}
               </div>
             </div>
-          </motion.div>
+
+            <RandomSermonParagraph sermon={randomSermons[0] as any} />
+
+            {/* Receipt Tear Line */}
+            <div className="relative rounded-b-3xl">
+              <div className="absolute inset-x-0 flex justify-center rounded-b-3xl">
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent"></div>
+              </div>
+              <div className="flex justify-center space-x-1 py-2 bg-white dark:bg-primary rounded-b-3xl">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600"
+                  ></div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

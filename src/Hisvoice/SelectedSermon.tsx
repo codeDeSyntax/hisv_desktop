@@ -7,35 +7,327 @@ import React, {
   useMemo,
 } from "react";
 import PropTypes from "prop-types";
-import { Card, Button } from "antd";
+import { Card, Button, theme } from "antd";
 import DownloadSermon from "./PlayDownload";
-import { ImageIcon, Search, X, Info } from "lucide-react";
+import {
+  ImageIcon,
+  Search,
+  X,
+  Info,
+  Menu,
+  ChevronUp,
+  ChevronDown,
+  BookOpen,
+  BookmarkCheck,
+  Bookmark,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
-import SearchModal from "./SermonSearchModal";
-import DarkModeToggle from "./ThemeSwitcher";
 import { Sermon } from "@/types";
 import { useSermonContext } from "@/Provider/Vsermons";
+import TypingVerse from "@/components/TypingText";
+import { useTheme } from "@/Provider/Theme";
 
-const SermonDetailsCard = ({ sermon }: { sermon: Sermon }) => {
+// Enhanced paragraph interface
+interface SermonParagraph {
+  id: number;
+  content: string;
+  originalIndex: number;
+}
+
+// Receipt-style control panel component
+const ReceiptStylePanel = ({
+  show,
+  onClose,
+  sermon,
+  onSearch,
+  searchResults,
+  currentMatch,
+  onNavigateSearch,
+  currentParagraph,
+  onJumpToParagraph,
+}: // theme,
+{
+  show: boolean;
+  onClose: () => void;
+  sermon: Sermon | null;
+  onSearch: (query: string) => void;
+  searchResults: { paragraphId: number; matches: number }[];
+  currentMatch: number;
+  onNavigateSearch: (direction: "next" | "prev") => void;
+  currentParagraph: number;
+  onJumpToParagraph: (paragraphId: number) => void;
+}) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [jumpToParagraph, setJumpToParagraph] = useState("");
+  const { isDarkMode } = useTheme();
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      onSearch(searchQuery);
+    }
+  };
+
+  const handleJump = () => {
+    const paragraphNum = parseInt(jumpToParagraph);
+    if (paragraphNum && paragraphNum > 0) {
+      onJumpToParagraph(paragraphNum);
+      setJumpToParagraph("");
+    }
+  };
+
   return (
-    <Card
-      className="absolute right-0 mr-14 mt-24 bg-primary text-white w-64 shadow-lg"
-      bordered={false}
-    >
-      <h3 className="text-lg font-bold mb-2">{sermon?.title}</h3>
-      <div className="text-sm space-y-2">
-        <p>
-          <span className="font-medium">Location:</span> {sermon?.location}
-        </p>
-        <p>
-          <span className="font-medium">Year:</span> {sermon?.year || "N/A"}
-        </p>
-        <p>
-          <span className="font-medium">Type:</span> {sermon?.type}
-        </p>
-      </div>
-    </Card>
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0, x: 300 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 300 }}
+          className={`absolute right-4 top-0 w-96 max-h-[80vh]  overflow-y-auto z-50  ${
+            isDarkMode ? "bg-primary" : "bg-white"
+          } border-2 border-dashed ${
+            isDarkMode ? "border-primary" : "border-gray-400"
+          } shadow-2xl font-mono text-sm`}
+          style={{
+            background: isDarkMode
+              ? "linear-gradient(to bottom, #292524  0%, #292524  100%)"
+              : "linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%)",
+            scrollbarWidth: "thin",
+            scrollbarColor: !isDarkMode ? "#c0c0c0 #f3f4f6" : "#1c1917 #292524",
+          }}
+        >
+          {/* Receipt Header */}
+          <div
+            className={`p-4 border-b-2 border-dashed ${
+              isDarkMode ? "border-accent" : "border-gray-400"
+            }`}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h3
+                className={`font-bold text-lg ${
+                  isDarkMode ? "text-accent" : "text-gray-800"
+                }`}
+              >
+                SERMON CONTROL
+              </h3>
+              <button
+                onClick={onClose}
+                className={`p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors ${
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                }`}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div
+              className={`text-center ${
+                isDarkMode ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
+              {"- ".repeat(20)}
+            </div>
+          </div>
+
+          {/* Sermon Details */}
+          {sermon && (
+            <div
+              className={`p-4 border-b border-dashed ${
+                isDarkMode ? "border-primary" : "border-gray-400"
+              }`}
+            >
+              <h4
+                className={`font-bold mb-2 ${
+                  isDarkMode ? "text-gray-200" : "text-gray-700"
+                }`}
+              >
+                SERMON DETAILS
+              </h4>
+              <div
+                className={`space-y-1 text-xs ${
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                }`}
+              >
+                <div>TITLE: {sermon.title}</div>
+                <div>LOCATION: {sermon.location}</div>
+                <div>YEAR: {sermon.year || "N/A"}</div>
+                <div>TYPE: {sermon.type}</div>
+              </div>
+              <div
+                className={`text-center mt-2 ${
+                  isDarkMode ? "text-gray-500" : "text-gray-500"
+                }`}
+              >
+                {"· ".repeat(15)}
+              </div>
+            </div>
+          )}
+
+          {/* Current Position */}
+          <div
+            className={`p-4 border-b border-dashed ${
+              isDarkMode ? "border-primary" : "border-gray-400"
+            }`}
+          >
+            <h4
+              className={`font-bold mb-2 ${
+                isDarkMode ? "text-gray-200" : "text-gray-700"
+              }`}
+            >
+              CURRENT POSITION
+            </h4>
+            <div
+              className={`text-center text-lg font-bold ${
+                isDarkMode ? "text-orange-200" : "text-orange-200"
+              }`}
+            >
+              PARAGRAPH #{currentParagraph}
+            </div>
+          </div>
+
+          {/* Jump to Paragraph */}
+          <div
+            className={`p-4 border-b  border-das ${
+              isDarkMode ? "border-accent " : "border-gray-400"
+            }`}
+          >
+            <h4
+              className={`font-bold mb-2 ${
+                isDarkMode ? "text-gray-200" : "text-gray-700"
+              }`}
+            >
+              JUMP TO PARAGRAPH
+            </h4>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                value={jumpToParagraph}
+                onChange={(e) => setJumpToParagraph(e.target.value)}
+                placeholder="Par. #"
+                className={`flex-1 px-2 py-2 border-none text-xs rounded-full ring-1 ring-accent outline-none ${
+                  isDarkMode
+                    ? "bg-background border-accent  text-gray-200"
+                    : "bg-white border-gray-300 text-gray-700"
+                }`}
+                onKeyDown={(e) => e.key === "Enter" && handleJump()}
+              />
+              <button
+                onClick={handleJump}
+                className={`px-3 py-1 text-xs font-bold border-2 border-dashed transition-colors ${
+                  isDarkMode
+                    ? "bg-stone-700 border-stone-500 text-accent hover:bg-stone-600"
+                    : "bg-gray-200 border-gray-400 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                GO
+              </button>
+            </div>
+          </div>
+
+          {/* Search Section */}
+          <div
+            className={`p-4 border-b border-dashed ${
+              isDarkMode ? "border-primary" : "border-gray-400"
+            }`}
+          >
+            <h4
+              className={`font-bold mb-2 ${
+                isDarkMode ? "text-gray-200" : "text-gray-700"
+              }`}
+            >
+              SEARCH SERMON
+            </h4>
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Enter search term..."
+                  className={`flex-1 px-2 py-2 border-none text-xs rounded-full  ${
+                    isDarkMode
+                      ? "bg-background border-primary text-gray-200 ring-red ring-accent outline-none"
+                      : "bg-gray-100 border-gray-300 text-gray-700"
+                  }`}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                />
+                <button
+                  onClick={handleSearch}
+                  className={`px-3 py-1 text-xs font-bold border-2 border-dashed transition-colors ${
+                    isDarkMode
+                      ? "bg-stone-800 border-stone-600 text-accent hover:bg-stone-700"
+                      : "bg-blue-200 border-blue-400 text-blue-700 hover:bg-blue-300"
+                  }`}
+                >
+                  <Search size={12} />
+                </button>
+              </div>
+
+              {searchResults.length > 0 && (
+                <div className="space-y-2">
+                  <div
+                    className={`text-xs ${
+                      isDarkMode ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    FOUND:{" "}
+                    {searchResults.reduce(
+                      (sum, result) => sum + result.matches,
+                      0
+                    )}{" "}
+                    matches in {searchResults.length} paragraphs
+                  </div>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => onNavigateSearch("prev")}
+                      className={`flex-1 px-2 py-1 text-xs border border-dashed transition-colors ${
+                        isDarkMode
+                          ? "border-primary text-gray-300 hover:bg-primary"
+                          : "border-gray-400 text-gray-600 hover:bg-gray-100"
+                      }`}
+                    >
+                      <ChevronUp size={12} className="inline mr-1" />
+                      PREV
+                    </button>
+                    <button
+                      onClick={() => onNavigateSearch("next")}
+                      className={`flex-1 px-2 py-1 text-xs border border-dashed transition-colors ${
+                        isDarkMode
+                          ? "border-primary text-gray-300 hover:bg-primary"
+                          : "border-gray-400 text-gray-600 hover:bg-gray-100"
+                      }`}
+                    >
+                      <ChevronDown size={12} className="inline mr-1" />
+                      NEXT
+                    </button>
+                  </div>
+                  <div
+                    className={`text-center text-xs ${
+                      isDarkMode ? "text-yellow-400" : "text-yellow-600"
+                    }`}
+                  >
+                    MATCH {currentMatch + 1} OF{" "}
+                    {searchResults.reduce(
+                      (sum, result) => sum + result.matches,
+                      0
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Receipt Footer */}
+          <div
+            className={`p-4 text-center ${
+              isDarkMode ? "text-gray-500" : "text-gray-500"
+            }`}
+          >
+            <div className="text-xs">{"* ".repeat(10)}</div>
+            <div className="text-xs mt-1">THANK YOU FOR READING</div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
@@ -60,7 +352,7 @@ const SaveNotification = ({
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
-          className="absolute z-30 bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg"
+          className="fixed z-30 bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg"
         >
           Progress saved successfully! ✓
         </motion.div>
@@ -76,24 +368,97 @@ const SelectedSermon = ({
   background: boolean;
   setBackground: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const {
-    selectedMessage,
-    searchQuery,
-    setSearchQuery,
-    settings,
-    setRecentSermons,
-    theme,
-  } = useSermonContext();
+  const { selectedMessage, settings, setRecentSermons,isBookmarked, 
+    toggleBookmark ,pendingSearchNav, setPendingSearchNav } = useSermonContext();
 
-  const [showSearch, setShowSearch] = useState(false);
+  const { isDarkMode } = useTheme();
+
+  const [showControlPanel, setShowControlPanel] = useState(false);
   const [scrollPosition, setScrollPosition] = useState<number>(
     Number(selectedMessage?.lastRead) || 0
   );
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showLastReadCard, setShowLastReadCard] = useState(true);
+  const [currentParagraph, setCurrentParagraph] = useState(1);
+  const [searchResults, setSearchResults] = useState<
+    { paragraphId: number; matches: number }[]
+  >([]);
+  const [currentSearchMatch, setCurrentSearchMatch] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
-  const [showDetailsCard, setShowDetailsCard] = useState(false);
+
+  // Function to split sermon into paragraphs with appropriate length
+  const sermonParagraphs = useMemo((): SermonParagraph[] => {
+    if (!selectedMessage?.sermon) return [];
+
+    const rawParagraphs = selectedMessage.sermon
+      .split("\n\n")
+      .filter((p) => p.trim());
+    const processedParagraphs: SermonParagraph[] = [];
+    let paragraphId = 1;
+
+    rawParagraphs.forEach((paragraph, originalIndex) => {
+      const words = paragraph.trim().split(/\s+/);
+      const sentences = paragraph.split(/[.!?]+/).filter((s) => s.trim());
+
+      // Determine optimal paragraph length based on content
+      let targetLength: number;
+      if (sentences.length <= 2 && words.length < 50) {
+        targetLength = words.length; // Keep short paragraphs as is
+      } else if (words.length <= 150) {
+        targetLength = words.length; // Medium paragraphs stay whole
+      } else {
+        targetLength = Math.max(
+          100,
+          Math.min(
+            200,
+            Math.floor(words.length / Math.ceil(words.length / 150))
+          )
+        );
+      }
+
+      if (words.length <= targetLength) {
+        processedParagraphs.push({
+          id: paragraphId++,
+          content: paragraph.trim(),
+          originalIndex,
+        });
+      } else {
+        // Split long paragraphs intelligently
+        let currentChunk = "";
+        let wordCount = 0;
+
+        words.forEach((word) => {
+          if (
+            wordCount > 0 &&
+            (wordCount >= targetLength ||
+              (wordCount >= targetLength * 0.8 && /[.!?]$/.test(word)))
+          ) {
+            processedParagraphs.push({
+              id: paragraphId++,
+              content: currentChunk.trim(),
+              originalIndex,
+            });
+            currentChunk = word;
+            wordCount = 1;
+          } else {
+            currentChunk += (wordCount > 0 ? " " : "") + word;
+            wordCount++;
+          }
+        });
+
+        if (currentChunk.trim()) {
+          processedParagraphs.push({
+            id: paragraphId++,
+            content: currentChunk.trim(),
+            originalIndex,
+          });
+        }
+      }
+    });
+
+    return processedParagraphs;
+  }, [selectedMessage?.sermon]);
 
   const highlightEndnotes = (text: string) => {
     const endnoteRegex = /Endnote/gi;
@@ -106,8 +471,8 @@ const SelectedSermon = ({
             <React.Fragment key={i}>
               {part}
               <span
-                className="bg-yellow-500 text-black px-1 rounded"
-                title="William branham qoute.🗝️🗝️ WMB qoute ends when you dont find the paragraph numbers anymore"
+                className="bg-yellow-500 text-orange-900 px-1 rounded"
+                title="William branham quote.🗝️🗝️ WMB quote ends when you dont find the paragraph numbers anymore"
               >
                 Endnote
               </span>
@@ -120,10 +485,13 @@ const SelectedSermon = ({
     );
   };
 
-  const highlightText = useCallback((text: string, highlight: string) => {
-    if (!highlight?.trim()) return <span>{text}</span>;
+  const highlightSearchText = useCallback((text: string, query: string) => {
+    if (!query?.trim()) return highlightEndnotes(text);
 
-    const regex = new RegExp(`(${highlight})`, "gi");
+    const regex = new RegExp(
+      `(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+      "gi"
+    );
     const parts = text.split(regex);
 
     return (
@@ -132,7 +500,7 @@ const SelectedSermon = ({
           regex.test(part) ? (
             <mark
               key={i}
-              className="text-background border border-green-600 rounded-md"
+              className="text-backgroun text-white rounded-md"
               style={{
                 backgroundColor: "#9a674a",
                 padding: "4px",
@@ -141,42 +509,128 @@ const SelectedSermon = ({
               {part}
             </mark>
           ) : (
-            <span key={i}>{part}</span>
+            <span key={i}>{highlightEndnotes(part)}</span>
           )
         )}
       </span>
     );
   }, []);
 
-  useEffect(() => {
-    if (searchQuery && scrollContainerRef.current) {
-      const highlights = scrollContainerRef.current.querySelectorAll("mark");
-      if (highlights.length > 0) {
-        highlights[0].scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+  // Search function
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (!query.trim()) {
+      setSearchResults([]);
+      setCurrentSearchMatch(0);
+      return;
     }
 
-    const timer = setTimeout(() => setSearchQuery(""), 60000);
-    return () => clearTimeout(timer);
-  }, [searchQuery, setSearchQuery]);
+    const results: { paragraphId: number; matches: number }[] = [];
+    const regex = new RegExp(
+      query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+      "gi"
+    );
 
-  // function to navigate to previous and next matches
+    sermonParagraphs.forEach((paragraph) => {
+      const matches = (paragraph.content.match(regex) || []).length;
+      if (matches > 0) {
+        results.push({ paragraphId: paragraph.id, matches });
+      }
+    });
 
-  // Modified scroll handling logic
+    setSearchResults(results);
+    setCurrentSearchMatch(0);
+
+    // Navigate to first match
+    if (results.length > 0) {
+      jumpToParagraph(results[0].paragraphId);
+    }
+  };
+
+  // Navigate search results
+  const handleNavigateSearch = (direction: "next" | "prev") => {
+    if (searchResults.length === 0) return;
+
+    const totalMatches = searchResults.reduce(
+      (sum, result) => sum + result.matches,
+      0
+    );
+    let newMatchIndex = currentSearchMatch;
+
+    if (direction === "next") {
+      newMatchIndex = (currentSearchMatch + 1) % totalMatches;
+    } else {
+      newMatchIndex =
+        currentSearchMatch === 0 ? totalMatches - 1 : currentSearchMatch - 1;
+    }
+
+    setCurrentSearchMatch(newMatchIndex);
+
+    // Find which paragraph this match belongs to
+    let matchCount = 0;
+    for (const result of searchResults) {
+      if (matchCount + result.matches > newMatchIndex) {
+        jumpToParagraph(result.paragraphId);
+        break;
+      }
+      matchCount += result.matches;
+    }
+  };
+
+  // Jump to specific paragraph
+  const jumpToParagraph = (paragraphId: number) => {
+    const element = document.getElementById(`paragraph-${paragraphId}`);
+    if (element && scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const elementTop = element.offsetTop;
+      const containerTop = container.scrollTop;
+      const containerHeight = container.clientHeight;
+
+      container.scrollTo({
+        top: elementTop - containerHeight / 2 + element.clientHeight / 2,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // Track current paragraph based on scroll position
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
     const handleScroll = () => {
-      setScrollPosition((container as HTMLElement).scrollTop);
+      const scrollTop = container.scrollTop;
+      setScrollPosition(scrollTop);
+
+      // Find current paragraph in view
+      const containerRect = container.getBoundingClientRect();
+      const centerY = containerRect.top + containerRect.height / 1;
+
+      let closestParagraph = 1;
+      let closestDistance = Infinity;
+
+      sermonParagraphs.forEach((paragraph) => {
+        const element = document.getElementById(`paragraph-${paragraph.id}`);
+        if (element) {
+          const elementRect = element.getBoundingClientRect();
+          const distance = Math.abs(
+            elementRect.top + elementRect.height / 2 - centerY
+          );
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestParagraph = paragraph.id;
+          }
+        }
+      });
+
+      setCurrentParagraph(closestParagraph);
     };
 
-    (container as HTMLElement).addEventListener("scroll", handleScroll);
-    return () =>
-      (container as HTMLElement).removeEventListener("scroll", handleScroll);
-  }, []);
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [sermonParagraphs]);
 
-  // Save scroll position when unmounting or changing sermons
+  // Save progress
   useEffect(() => {
     if (!selectedMessage?.id) return;
 
@@ -185,7 +639,7 @@ const SelectedSermon = ({
         localStorage.getItem("recentSermons") || "[]"
       );
       const currentSermonIndex = recentSermons.findIndex(
-        (sermon: Sermon) => sermon.id === selectedMessage.id
+        (sermon: Sermon) => sermon.id === selectedMessage.id as any
       );
 
       if (currentSermonIndex !== -1) {
@@ -193,42 +647,37 @@ const SelectedSermon = ({
         updatedSermons[currentSermonIndex] = {
           ...selectedMessage,
           lastRead: scrollPosition,
+          lastParagraph: currentParagraph,
         };
         localStorage.setItem("recentSermons", JSON.stringify(updatedSermons));
         setRecentSermons(updatedSermons);
       }
     };
 
-    // Save position when component unmounts or sermon changes
+    const interval = setInterval(saveScrollPosition, 5000); // Auto-save every 5 seconds
     return () => {
-      saveScrollPosition();
+      clearInterval(interval);
+      saveScrollPosition(); // Save on unmount
     };
-  }, [selectedMessage, scrollPosition, setRecentSermons]);
+  }, [selectedMessage, scrollPosition, currentParagraph, setRecentSermons]);
 
-  const handleSearchToggle = () => {
-    setShowSearch(!showSearch);
-    if (showSearch) setSearchQuery("");
-  };
+  // Handle pending search navigation
+useEffect(() => {
+  if (pendingSearchNav && selectedMessage?.id === pendingSearchNav.targetSermonId) {
+    // Set the search query for highlighting
+    setSearchQuery(pendingSearchNav.searchTerm);
+    
+    // Wait for paragraphs to render then navigate
+    const timer = setTimeout(() => {
+      jumpToParagraph(pendingSearchNav.targetParagraphId);
+      // Clear the pending navigation
+      setPendingSearchNav(null);
+    }, 100);
 
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-    setShowSearch(false);
-  };
+    return () => clearTimeout(timer);
+  }
+}, [pendingSearchNav, selectedMessage, setPendingSearchNav]);
 
-  const scrollToPosition = (height: number) => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({
-        top: height,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const handleCloseLastReadCard = () => {
-    setShowLastReadCard(false);
-  };
-
-  // Add manual save function
   const handleManualSave = () => {
     if (!selectedMessage?.id) return;
 
@@ -236,7 +685,7 @@ const SelectedSermon = ({
       localStorage.getItem("recentSermons") || "[]"
     );
     const currentSermonIndex = recentSermons.findIndex(
-      (sermon: Sermon) => sermon.id === selectedMessage.id
+      (sermon: Sermon) => sermon.id === selectedMessage.id as any
     );
 
     if (currentSermonIndex !== -1) {
@@ -244,6 +693,7 @@ const SelectedSermon = ({
       updatedSermons[currentSermonIndex] = {
         ...selectedMessage,
         lastRead: scrollPosition,
+        lastParagraph: currentParagraph,
       };
       localStorage.setItem("recentSermons", JSON.stringify(updatedSermons));
       setRecentSermons(updatedSermons);
@@ -251,125 +701,180 @@ const SelectedSermon = ({
     setShowSaveNotification(true);
   };
 
-  const toggleDetailsCard = () => {
-    setShowDetailsCard((prev) => !prev);
-  };
-
   return (
-    <div className=" bg-white dark:bg-ltgray h-screen overflow-hidden ">
-      <SearchModal
-        showSearch={showSearch}
-        onClose={handleSearchToggle}
-        onSearch={handleSearch}
-        searchQuery={searchQuery}
-      />
+    <div className="bg-white dark:bg-background h-screen  relative  w-screen">
       <SaveNotification
         show={showSaveNotification}
         onClose={() => setShowSaveNotification(false)}
       />
-      <div className="  bg-center flex flex-col   pb-10">
-        <div className=" mb-5 h-full">
-          {selectedMessage?.type === "text" && (
-            <div className=" flex items-center   gap-2 p-2 rounded-l-full mt-10 w-20">
-              <div
-                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300  shadow  text-primary font-bold text-center flex items-center justify-center"
-                title="Save progress"
-                onClick={handleManualSave}
-              >
-                📝
-              </div>
-              <div
-                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300  shadow-lg  text-primary font-bold text-center flex items-center justify-center"
-                title="Toggle sermon details"
-                onClick={toggleDetailsCard}
-              >
-                <Info size={20} className="text-stone-500 dark:text-gray-50" />
-              </div>
 
-              <div
-                className="rounded-full h-4 w-4 hover:cursor-pointer hover:scale-125 duration-300  shadow-lg dark:shadow-black  text-primary font-bold text-center flex items-center justify-center"
-                title="Search in sermon"
-                onClick={handleSearchToggle}
-              >
-                <Search className="text-stone-500 dark:text-gray-50" />
-              </div>
-              {/* <DarkModeToggle /> */}
-            </div>
-          )}
+      {/* Floating Control Button */}
+      {selectedMessage?.type === "text" && (
+        <motion.button
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setShowControlPanel(!showControlPanel)}
+          className={`fixed right-6 bottom-3 z-40 w-14 h-14 rounded-full shadow-lg transition-all duration-300 ${
+            isDarkMode
+              ? "bg-primary hover:bg-gray-700 text-gray-200"
+              : "bg-white hover:bg-gray-50 text-gray-700"
+          } border-2 ${
+            showControlPanel
+              ? isDarkMode
+                ? "border-blue-500"
+                : "border-blue-500"
+              : isDarkMode
+              ? "border-primary"
+              : "border-gray-300"
+          }`}
+        >
+          <BookOpen size={24} className="mx-auto" />
+        </motion.button>
+      )}
 
-          {showDetailsCard && selectedMessage?.type === "text" && (
-            <SermonDetailsCard sermon={selectedMessage} />
-          )}
+      {/* Receipt Style Control Panel */}
+      <ReceiptStylePanel
+        show={showControlPanel}
+        onClose={() => setShowControlPanel(false)}
+        sermon={selectedMessage}
+        onSearch={handleSearch}
+        searchResults={searchResults}
+        currentMatch={currentSearchMatch}
+        onNavigateSearch={handleNavigateSearch}
+        currentParagraph={currentParagraph}
+        onJumpToParagraph={jumpToParagraph}
+        // theme={isDarkMode}
+      />
 
+      <div className="bg-center flex flex-col pb-10 ">
+        <div className="mb-5 h-full">
           <div
-            className="rounded-lg p-4 h-[80vh] overflow-y-scroll overflow-x-hidden no-scrollbar text-wrap"
+            className="rounded-lg px-4 h-[100vh] overflow-y-scroll overflow-x-hidden no-scrollbar text-wrap"
             ref={scrollContainerRef}
             style={{
               scrollbarWidth: "thin",
-              scrollbarColor:
-                theme === "light" ? "#c0c0c0 #f3f4f6" : "#424242 #202020",
-              // scrollbarGutter: "stable",
+              scrollbarColor: !isDarkMode
+                ? "#c0c0c0 #f3f4f6"
+                : "#422e22 #202020",
             }}
           >
             {selectedMessage?.type === "text" ? (
-              <div className="h-full over">
-                {selectedMessage?.lastRead && showLastReadCard && (
-                  <Card
-                    title="Welcome Back!"
-                    bordered={false}
-                    className="absolute right-0 mr-14 mb-4  text-text"
-                    style={{ width: 300, textAlign: "center" }}
-                    actions={[
-                      <Button
-                        type="text"
-                        className="text-background bg-primary hover:bg-primary hover:scale-105"
-                        onClick={() => {
-                          scrollToPosition(scrollPosition);
-                          setShowLastReadCard(false);
-                        }}
-                        key="continue"
-                      >
-                        Continue
-                      </Button>,
-                      <Button
-                        type="primary"
-                        onClick={handleCloseLastReadCard}
-                        key="close"
-                        className="text-white bg-primary hover:bg-primary hover:scale-105 hover:text-gray-300"
-                      >
-                        <X size={18} />
-                      </Button>,
-                    ]}
-                  >
-                    <p className="text-black">
-                      You left off at this point in the sermon.
-                    </p>
-                  </Card>
-                )}
-                <p className=" text-2xl font-serif text-stone-500 dark:text-gray-50 font-bold underline">
-                  {selectedMessage.title}
-                </p>
-                <p className=" font-serif italic text-stone-500 dark:text-gray-50 text-wrap">
-                  {selectedMessage?.location}
-                </p>
-                {selectedMessage.sermon
-                  ?.split("\n\n")
-                  .map((paragraph, index) => (
-                    <p
-                      key={index}
-                      className="mb-6 leading-relaxed text-stone-600 dark:text-gray-50 text-wrap break-words text-left"
-                      style={{
-                        fontFamily: settings.fontFamily,
-                        fontWeight: settings.fontWeight,
-                        fontSize: `${settings.fontSize}px`,
-                        fontStyle: settings.fontStyle,
-                      }}
-                    >
-                      {searchQuery
-                        ? highlightText(paragraph, searchQuery)
-                        : highlightEndnotes(paragraph)}
-                    </p>
-                  ))}
+              <div className="h-full  mx-auto px-12 ">
+                {/* Sermon Header */}
+                <div className="mb-4 text-center">
+                  {/* <h1 className="text-4xl font-serif text-stone-500 dark:text-gray-50 font-bold mb-4">
+                    {selectedMessage.title}
+                  </h1> */}
+                  <TypingVerse
+                    verse={selectedMessage.title}
+                    typingSpeed={40}
+                    minHeight={0}
+                    fontFamily="Zilla Slab"
+                    fontSize={30}
+                    color={isDarkMode ? "#cbcbcb " : "black "}
+                    align="center"
+                  />
+                  {/* <p className="text-lg font-serif italic text-center text-stone-500 dark:text-gray-50">
+                    {selectedMessage?.location}
+                  </p> */}
+                </div>
+
+                {/* Paragraphed Content */}
+                <div className="space-y-6">
+  {sermonParagraphs.map((paragraph) => (
+    <div
+      key={paragraph.id}
+      id={`paragraph-${paragraph.id}`}
+      className="relative group bg-transparent"
+    >
+      {/* Paragraph Number */}
+      <div
+        className={`absolute flex items-center ${
+          Number(settings.fontSize) > 40 ? "-top-10" : "-top-4"
+        } -left-10 font-zilla font-bold pb-3 w-12 text-right ${
+          currentParagraph === paragraph.id
+            ? isDarkMode
+              ? "text-blue-400 font-bold"
+              : "text-blue-600 font-bold"
+            : isDarkMode
+            ? "text-stone-900"
+            : "text-stone-900"
+        } transition-colors duration-200`}
+      >
+        #{" "}
+        <span style={{ fontSize: settings.fontSize + "px" }}>
+          {paragraph.id}
+        </span>
+      </div>
+
+      {/* Bookmark Button - Shows on hover */}
+      <button
+        onClick={() => {
+          if (selectedMessage) {
+            toggleBookmark(
+              selectedMessage.id as any,
+              selectedMessage.title,
+              paragraph.id,
+              paragraph.content,
+              selectedMessage.location,
+              selectedMessage.year?.toString()
+            );
+          }
+        }}
+        className={`absolute -right-12 top-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 ${
+          selectedMessage && isBookmarked(selectedMessage.id as any, paragraph.id)
+            ? isDarkMode
+              ? "bg-yellow-600 hover:bg-yellow-500 text-yellow-100"
+              : "bg-yellow-500 hover:bg-yellow-400 text-white"
+            : isDarkMode
+            ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
+            : "bg-gray-200 hover:bg-gray-300 text-gray-600"
+        } shadow-lg border-2 ${
+          selectedMessage && isBookmarked(selectedMessage.id as any, paragraph.id)
+            ? "border-yellow-400"
+            : isDarkMode
+            ? "border-gray-600"
+            : "border-gray-300"
+        }`}
+        title={
+          selectedMessage && isBookmarked(selectedMessage.id as any, paragraph.id)
+            ? "Remove bookmark"
+            : "Add bookmark"
+        }
+      >
+        {selectedMessage && isBookmarked(selectedMessage.id as any, paragraph.id) ? (
+          <BookmarkCheck size={14} />
+        ) : (
+          <Bookmark size={14} />
+        )}
+      </button>
+
+      {/* Paragraph Content */}
+      <div
+        className={`leading-relaxed bg-transparent text-stone-600 dark:text-accent text-wrap break-words text-left py-2 rounded-r-lg transition-all duration-200 hover:underline ${
+          currentParagraph === paragraph.id
+            ? isDarkMode
+              ? "bg-primary dark:bg-transparent border-l-4 border-blue-500"
+              : "bg-blue-50 border-l-4 border-blue-500"
+            : "border-l-4 border-transparent"
+        }`}
+        style={{
+          fontFamily: settings.fontFamily || "Zilla Slab",
+          fontWeight: settings.fontWeight,
+          fontSize: `${settings.fontSize}px`,
+          fontStyle: settings.fontStyle,
+        }}
+      >
+        {searchQuery
+          ? highlightSearchText(paragraph.content, searchQuery)
+          : highlightEndnotes(paragraph.content)}
+      </div>
+    </div>
+  ))}
+</div>
+
               </div>
             ) : (
               <DownloadSermon />
@@ -386,20 +891,9 @@ SelectedSermon.propTypes = {
   setBackground: PropTypes.func.isRequired,
 };
 
-SearchModal.propTypes = {
-  showSearch: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onSearch: PropTypes.func.isRequired,
-  searchQuery: PropTypes.string,
-};
-
 SaveNotification.propTypes = {
   show: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-};
-
-SermonDetailsCard.propTypes = {
-  sermon: PropTypes.object.isRequired,
 };
 
 export default SelectedSermon;

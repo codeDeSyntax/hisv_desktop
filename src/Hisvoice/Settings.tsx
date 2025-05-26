@@ -61,12 +61,12 @@ const FontSettingsPage = () => {
   const handleModalOk = () => setIsModalVisible(false);
 
   return (
-    <div className="h-screen bg-white dark:bg-ltgray font-serif flex items-center justify-center p-4">
+    <div className="h-screen bg-white dark:bg-background font-serif flex items-center justify-center p-4">
       <div className=" h-[90%] mx-auto max-w-6xl">
         <div className=" rounded-3xl shadow-2xl overflow-scroll no-scrollbar h-full">
           <div className="grid md:grid-cols-5 gap-0">
             {/* Left Panel - Controls */}
-            <div className="md:col-span-2 bg-white dark:bg-ltgray bg-opacity-5 p-8 space-y-6">
+            <div className="md:col-span-2 bg-white dark:bg-background bg-opacity-5 p-8 space-y-6">
               <div className="flex items-center space-x-4 mb-6">
                 <Settings className="text-stone-500  dark:text-white w-8 h-8" />
                 <h1 className="text-3xl font-bold text-stone-500 dark:text-white flex-grow">
@@ -80,7 +80,7 @@ const FontSettingsPage = () => {
                   Font Family
                 </label>
                 <div
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-bgray bg-opa0 rounded-xl cursor-pointer hover:bg-opacity-20 transition-all duration-300 group"
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-primary bg-opa0 rounded-xl cursor-pointer hover:bg-opacity-20 transition-all duration-300 group"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   <span className="text-stone-500 dark:text-white truncate mr-2">
@@ -93,7 +93,7 @@ const FontSettingsPage = () => {
                 </div>
 
                 {isDropdownOpen && (
-                  <div className="absolute z-50 w-full mt-2 bg-white dark:bg-ltgray  no-scrollbar rounded-xl shadow-2xl max-h-64 overflow-auto animate-fade-in">
+                  <div className="absolute z-50 w-full mt-2 bg-white dark:bg-background  no-scrollbar rounded-xl shadow-2xl max-h-64 overflow-auto animate-fade-in">
                     {fontFamilies.map((font) => (
                       <div
                         key={font}
@@ -115,8 +115,6 @@ const FontSettingsPage = () => {
                 )}
               </div>
 
-             
-
               {/* Font Size Slider */}
               <div className="space-y-3">
                 <label className="text-stone-500 dark:text-white text-sm font-medium block opacity-80">
@@ -129,7 +127,7 @@ const FontSettingsPage = () => {
                     max="120"
                     value={fontSize}
                     onChange={(e) => setFontSize(Number(e.target.value))}
-                    className="w-full h-2 rounded-full appearnce-none bg-bgray bg-opacit-20 outline-none cursor-pointer slider"
+                    className="w-full h-2 rounded-full appearnce-none bg-primary bg-opacit-20 outline-none cursor-pointer slider"
                     style={{
                       // background: `linear-gradient(to right, rgba(255,255,255,0.8) ${
                       //   ((fontSize - 12) * 100) / 108
@@ -157,7 +155,7 @@ const FontSettingsPage = () => {
                       key={weight}
                       className={`flex items-center justify-center p-3 rounded-xl cursor-pointer transition-all duration-300 group ${
                         fontWeight === weight
-                          ? "bg-white bg-opacity-30 ring-2 ring-bgray/30"
+                          ? "bg-white bg-opacity-30 ring-2 ring-primary/30"
                           : "bg-white bg-opacity-10 hover:bg-opacity-20"
                       }`}
                     >
@@ -188,7 +186,7 @@ const FontSettingsPage = () => {
                       key={style}
                       className={`flex items-center justify-center p-3 rounded-xl cursor-pointer transition-all duration-300 group font-serif ${
                         fontStyle === style
-                          ? "bg-white bg-opacity-30 ring-2 ring-bgray/20 "
+                          ? "bg-white bg-opacity-30 ring-2 ring-primary/20 "
                           : "bg-white bg-opacity-10 hover:bg-opacity-20 shadow"
                       }`}
                     >
@@ -211,7 +209,7 @@ const FontSettingsPage = () => {
               {/* Save Button */}
               <button
                 onClick={saveSettings}
-                className="w-full py-4 mt-6 bg-gray-100  text-stone-500 dark:bg-bgray dark:text-gray-50 rounded-xl font-semibold transition-all duration-300 hover:shadow-xl hover:primary/40 transform hover:-translate-y-1 flex items-center justify-center space-x-2"
+                className="w-full py-4 mt-6 bg-gray-100  text-stone-500 dark:bg-primary dark:text-gray-50 rounded-xl font-semibold transition-all duration-300 hover:shadow-xl hover:primary/40 transform hover:-translate-y-1 flex items-center justify-center space-x-2"
               >
                 <Save size={20} />
                 <span>Save Settings</span>
@@ -255,21 +253,23 @@ const FontSettingsPage = () => {
 
       {/* Modal */}
       {isModalVisible && (
-        <div className="fixed inset-0 dark:bg-ltgray bg-white bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white bg-opacity-20 backdrop-blur-xl text-stone-500 dark:text-white rounded-2xl p-8 max-w-sm w-full shadow-2xl">
-            <div className="flex flex-col items-center">
-              <Check className="text-accent w-16 h-16 mb-4" />
-              <h2 className="text-2xl font-bold mb-4 text-center">
-                Settings Saved
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-white/20 dark:border-gray-700/30 transform animate-pulse">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Check className="text-green-600 dark:text-green-400 w-6 h-6" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                Configuration Saved
               </h2>
-              <p className="mb-6 text-center opacity-80">
-                Your font settings have been saved successfully!
+              <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
+                Your font settings have been applied successfully!
               </p>
               <button
                 onClick={handleModalOk}
-                className="w-full py-3 bg-primary text-background rounded-xl font-semibold transition-all duration-300 hover:shadow-lg"
+                className="w-full py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] text-sm"
               >
-                Close
+                Perfect!
               </button>
             </div>
           </div>

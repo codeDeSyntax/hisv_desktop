@@ -1,5 +1,5 @@
 import { ipcRenderer, contextBridge, dialog } from "electron";
-import { Presentation } from "@/types";
+// import { Presentation } from "@/types";
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld("ipcRenderer", {
   on(...args: Parameters<typeof ipcRenderer.on>) {
@@ -37,35 +37,6 @@ minimizeProjection: () => ipcRenderer.send('minimizeProjection'),
     console.log("Close action triggered");
     ipcRenderer.send("closeApp");
   },
-  selectDirectory: () => ipcRenderer.invoke("select-directory"),
-  saveSong: (directory: string, title: string, content: string) =>
-    ipcRenderer.invoke("save-song", { directory, title, content }),
-  editSong: (songData: any) => ipcRenderer.invoke("edit-song", songData),
-  fetchSongs: (directory: string) =>
-    ipcRenderer.invoke("fetch-songs", directory),
-  deleteSong: (filePath: string) => ipcRenderer.invoke("delete-song", filePath),
-  searchSong: (directory: string, query: string) =>
-    ipcRenderer.invoke("search-songs", directory, query),
-  onSongsLoaded: (
-    callback: (event: Electron.IpcRendererEvent, ...args: any[]) => void
-  ) => ipcRenderer.on("songs-loaded", callback),
-  getPresentationImages: (directory: string) =>
-    ipcRenderer.invoke("get-presentation-images", directory),
-  projectSong: (song: Song) => ipcRenderer.invoke("project-song", song),
-  onDisplaySong: (callback: (songData: any) => void) => {
-    ipcRenderer.on("display-song", (event, songData) => callback(songData));
-    return () => {
-      ipcRenderer.removeAllListeners("display-song");
-    };
-  },
-  getImages: (dirPath:string) => ipcRenderer.invoke('get-images', dirPath),
-  loadEvPresentations: (path:string) => ipcRenderer.invoke('load-presentations',path),
-  createEvPresentation: (path:string,presentation: Omit<Presentation, 'id' | 'createdAt' | 'updatedAt'>) => 
-    ipcRenderer.invoke('create-presentation',path, presentation),
-  updateEvPresentation: (id: string,directoryPath:string, presentation: Partial<Presentation>) => 
-    ipcRenderer.invoke('update-presentation', id,directoryPath, presentation),
-  deleteEvPresentation: (id: string,directory:string) => 
-    ipcRenderer.invoke('delete-presentation', id,directory),
   
 });
 

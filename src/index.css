@@ -6,7 +6,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Palatino";
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;;
   overflow-x: hidden;
 }
 .wqoute {
@@ -93,6 +93,12 @@ button:hover {
   src: url("/fonts/bittervw.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
+}
+@font-face {
+  font-family: "Zilla Slab";
+  src: url("/fonts/ZillaSlab-Regular.ttf") format("truetype");
+  /* font-weight: normal;
+  font-style: normal; */
 }
 
 @font-face {

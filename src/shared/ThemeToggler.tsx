@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
 import { useTheme } from "@/Provider/Theme";
+import { Tooltip } from "antd";
 
 export const ThemeToggle: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -18,12 +19,14 @@ export const ThemeToggle: React.FC = () => {
     // >
     //   {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
     // </motion.button>
-    <div
+  <Tooltip title="Toggle theme">
+      <div
       onClick={toggleDarkMode}
       className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-bgray"
     >
       {isDarkMode ? <Sun size={20} className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white"/> : 
       <Moon size={20} className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white"/>}
     </div>
+  </Tooltip>
   );
 };

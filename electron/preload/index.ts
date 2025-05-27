@@ -322,7 +322,7 @@ function useLoading() {
     <div class="loading-content">
       <div class="${className}">
         <div class="main-logo-container">
-          <img src="./hisv.png" alt="Loading..." class="main-logo" />
+          <img src="./cloud.png" alt="Loading..." class="main-logo" />
         </div>
       </div>
       <div class="loading-text">Loading your experience...</div>

@@ -100,7 +100,7 @@ const Help: React.FC = () => {
       {/* Minimal Help Button */}
       <div
         onClick={toggleHelp}
-        className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-bgray"
+        className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer pointer-events-none cursor-not-allowed  hover:bg-gray-50 dark:hover:bg-bgray"
         aria-label="Help"
       >
         <HelpCircle className="h-5 w-5 text-gray-600 dark:text-gray-300" />
@@ -131,7 +131,11 @@ const Help: React.FC = () => {
             {/* Help Content */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               <div className="bg-gray-50 dark:bg-bgray/20 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden transition-all hover:shadow-sm dark:hover:shadow-gray-800/10">
-               <img src="./something-lost.png" className="w-full h-32 object-cover" alt="Help Center" />
+                <img
+                  src="./something-lost.png"
+                  className="w-full h-32 object-cover"
+                  alt="Help Center"
+                />
                 <div className="p-4">
                   <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
                     Help Center

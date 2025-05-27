@@ -20,6 +20,8 @@ import {
   BookOpen,
   BookmarkCheck,
   Bookmark,
+  TextIcon,
+  TextSelectIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
@@ -83,7 +85,7 @@ const ReceiptStylePanel = ({
           initial={{ opacity: 0, x: 300 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 300 }}
-          className={`absolute right-4 top-0 w-96 max-h-[80vh]  overflow-y-auto z-50  ${
+          className={`absolute right-4 top-10 w-96 max-h-[80vh]  overflow-y-auto z-50  ${
             isDarkMode ? "bg-primary" : "bg-white"
           } border-2 border-dashed ${
             isDarkMode ? "border-primary" : "border-gray-400"
@@ -368,8 +370,15 @@ const SelectedSermon = ({
   background: boolean;
   setBackground: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { selectedMessage, settings, setRecentSermons,isBookmarked, 
-    toggleBookmark ,pendingSearchNav, setPendingSearchNav } = useSermonContext();
+  const {
+    selectedMessage,
+    settings,
+    setRecentSermons,
+    isBookmarked,
+    toggleBookmark,
+    pendingSearchNav,
+    setPendingSearchNav,
+  } = useSermonContext();
 
   const { isDarkMode } = useTheme();
 
@@ -386,6 +395,8 @@ const SelectedSermon = ({
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
+
+  const [sermonTColor, setSermonTColor] = useState("#a8a29e ");
 
   // Function to split sermon into paragraphs with appropriate length
   const sermonParagraphs = useMemo((): SermonParagraph[] => {
@@ -639,7 +650,7 @@ const SelectedSermon = ({
         localStorage.getItem("recentSermons") || "[]"
       );
       const currentSermonIndex = recentSermons.findIndex(
-        (sermon: Sermon) => sermon.id === selectedMessage.id as any
+        (sermon: Sermon) => sermon.id === (selectedMessage.id as any)
       );
 
       if (currentSermonIndex !== -1) {
@@ -661,22 +672,28 @@ const SelectedSermon = ({
     };
   }, [selectedMessage, scrollPosition, currentParagraph, setRecentSermons]);
 
+  useEffect(() => {
+    setSermonTColor(isDarkMode ? "#a8a29e" : "#6c6c6c");
+  }, [isDarkMode]);
   // Handle pending search navigation
-useEffect(() => {
-  if (pendingSearchNav && selectedMessage?.id === pendingSearchNav.targetSermonId) {
-    // Set the search query for highlighting
-    setSearchQuery(pendingSearchNav.searchTerm);
-    
-    // Wait for paragraphs to render then navigate
-    const timer = setTimeout(() => {
-      jumpToParagraph(pendingSearchNav.targetParagraphId);
-      // Clear the pending navigation
-      setPendingSearchNav(null);
-    }, 100);
+  useEffect(() => {
+    if (
+      pendingSearchNav &&
+      selectedMessage?.id === pendingSearchNav.targetSermonId
+    ) {
+      // Set the search query for highlighting
+      setSearchQuery(pendingSearchNav.searchTerm);
 
-    return () => clearTimeout(timer);
-  }
-}, [pendingSearchNav, selectedMessage, setPendingSearchNav]);
+      // Wait for paragraphs to render then navigate
+      const timer = setTimeout(() => {
+        jumpToParagraph(pendingSearchNav.targetParagraphId);
+        // Clear the pending navigation
+        setPendingSearchNav(null);
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [pendingSearchNav, selectedMessage, setPendingSearchNav]);
 
   const handleManualSave = () => {
     if (!selectedMessage?.id) return;
@@ -685,7 +702,7 @@ useEffect(() => {
       localStorage.getItem("recentSermons") || "[]"
     );
     const currentSermonIndex = recentSermons.findIndex(
-      (sermon: Sermon) => sermon.id === selectedMessage.id as any
+      (sermon: Sermon) => sermon.id === (selectedMessage.id as any)
     );
 
     if (currentSermonIndex !== -1) {
@@ -762,8 +779,48 @@ useEffect(() => {
           >
             {selectedMessage?.type === "text" ? (
               <div className="h-full  mx-auto px-12 ">
+                <div className="absolute flex-col items-center gap-10 top-60 left-4 ">
+                  {/* two colors rounded cricles verticall arranage */}
+                  <div
+                    className={`h-2 w-2 rounded-full mb-5 left-0 hover:scale-105 duration-75 cursor-pointer ${
+                      isDarkMode ? "bg-[#f9fafb]" : "bg-[#1c1917]"
+                    }`}
+                    onClick={() => {
+                      setSermonTColor("");
+                      setSermonTColor((prev) =>
+                        isDarkMode ? "#f9fafb" : "#1c1917"
+                      );
+                    }}
+                  >
+                    <TextSelectIcon
+                      className={` ${
+                        isDarkMode
+                          ? " text-[#f2b084]"
+                          : "text-background textst"
+                      }`}
+                    />
+                  </div>
+                  <div
+                    className={`w-2 h-2 rounded-full mb-2 hover:scale-105 duration-75 cursor-pointer ${
+                      isDarkMode ? "bg-[#a8a29e]" : "bg-[#57534e]"
+                    }`}
+                    onClick={() => {
+                      setSermonTColor("");
+                      setSermonTColor((prev) =>
+                        isDarkMode ? "#a8a29e" : "#6c6c6c"
+                      );
+                    }}
+                  >
+                    {" "}
+                    <TextSelectIcon
+                      className={` ${
+                        isDarkMode ? " text-[#f2b084]" : "text-background "
+                      }`}
+                    />
+                  </div>
+                </div>
                 {/* Sermon Header */}
-                <div className="mb-4 text-center">
+                <div className="mb-4 text-center text-background">
                   {/* <h1 className="text-4xl font-serif text-stone-500 dark:text-gray-50 font-bold mb-4">
                     {selectedMessage.title}
                   </h1> */}
@@ -782,99 +839,106 @@ useEffect(() => {
                 </div>
 
                 {/* Paragraphed Content */}
-                <div className="space-y-6">
-  {sermonParagraphs.map((paragraph) => (
-    <div
-      key={paragraph.id}
-      id={`paragraph-${paragraph.id}`}
-      className="relative group bg-transparent"
-    >
-      {/* Paragraph Number */}
-      <div
-        className={`absolute flex items-center ${
-          Number(settings.fontSize) > 40 ? "-top-10" : "-top-4"
-        } -left-10 font-zilla font-bold pb-3 w-12 text-right ${
-          currentParagraph === paragraph.id
-            ? isDarkMode
-              ? "text-blue-400 font-bold"
-              : "text-blue-600 font-bold"
-            : isDarkMode
-            ? "text-stone-900"
-            : "text-stone-900"
-        } transition-colors duration-200`}
-      >
-        #{" "}
-        <span style={{ fontSize: settings.fontSize + "px" }}>
-          {paragraph.id}
-        </span>
-      </div>
+                <div className="space-y-6 relative ">
+                  {sermonParagraphs.map((paragraph) => (
+                    <div
+                      key={paragraph.id}
+                      id={`paragraph-${paragraph.id}`}
+                      className="relative group bg-transparent"
+                    >
+                      {/* Paragraph Number */}
+                      <div
+                        className={`absolute flex items-center ${
+                          Number(settings.fontSize) > 40 ? "-top-10" : "-top-4"
+                        } -left-10 font-zilla font-bold pb-3 w-12 text-right ${
+                          currentParagraph === paragraph.id
+                            ? isDarkMode
+                              ? "text-[#d57a3e] font-bold"
+                              : "text-[#4b2a14] font-bold"
+                            : isDarkMode
+                            ? "text-[#eba373]"
+                            : "text-[#4b2a14]"
+                        } transition-colors duration-200`}
+                      >
+                        #{" "}
+                        <span style={{ fontSize: settings.fontSize + "px" }}>
+                          {paragraph.id}
+                        </span>
+                      </div>
 
-      {/* Bookmark Button - Shows on hover */}
-      <button
-        onClick={() => {
-          if (selectedMessage) {
-            toggleBookmark(
-              selectedMessage.id as any,
-              selectedMessage.title,
-              paragraph.id,
-              paragraph.content,
-              selectedMessage.location,
-              selectedMessage.year?.toString()
-            );
-          }
-        }}
-        className={`absolute -right-12 top-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 ${
-          selectedMessage && isBookmarked(selectedMessage.id as any, paragraph.id)
-            ? isDarkMode
-              ? "bg-yellow-600 hover:bg-yellow-500 text-yellow-100"
-              : "bg-yellow-500 hover:bg-yellow-400 text-white"
-            : isDarkMode
-            ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
-            : "bg-gray-200 hover:bg-gray-300 text-gray-600"
-        } shadow-lg border-2 ${
-          selectedMessage && isBookmarked(selectedMessage.id as any, paragraph.id)
-            ? "border-yellow-400"
-            : isDarkMode
-            ? "border-gray-600"
-            : "border-gray-300"
-        }`}
-        title={
-          selectedMessage && isBookmarked(selectedMessage.id as any, paragraph.id)
-            ? "Remove bookmark"
-            : "Add bookmark"
-        }
-      >
-        {selectedMessage && isBookmarked(selectedMessage.id as any, paragraph.id) ? (
-          <BookmarkCheck size={14} />
-        ) : (
-          <Bookmark size={14} />
-        )}
-      </button>
+                      {/* Bookmark Button - Shows on hover */}
+                      <button
+                        onClick={() => {
+                          if (selectedMessage) {
+                            toggleBookmark(
+                              selectedMessage.id as any,
+                              selectedMessage.title,
+                              paragraph.id,
+                              paragraph.content,
+                              selectedMessage.location,
+                              selectedMessage.year?.toString()
+                            );
+                          }
+                        }}
+                        className={`absolute -right-12 top-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 ${
+                          selectedMessage &&
+                          isBookmarked(selectedMessage.id as any, paragraph.id)
+                            ? isDarkMode
+                              ? "bg-yellow-600 hover:bg-yellow-500 text-yellow-100"
+                              : "bg-yellow-500 hover:bg-yellow-400 text-white"
+                            : isDarkMode
+                            ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                            : "bg-gray-200 hover:bg-gray-300 text-gray-600"
+                        } shadow-lg border-2 ${
+                          selectedMessage &&
+                          isBookmarked(selectedMessage.id as any, paragraph.id)
+                            ? "border-yellow-400"
+                            : isDarkMode
+                            ? "border-gray-600"
+                            : "border-gray-300"
+                        }`}
+                        title={
+                          selectedMessage &&
+                          isBookmarked(selectedMessage.id as any, paragraph.id)
+                            ? "Remove bookmark"
+                            : "Add bookmark"
+                        }
+                      >
+                        {selectedMessage &&
+                        isBookmarked(
+                          selectedMessage.id as any,
+                          paragraph.id
+                        ) ? (
+                          <BookmarkCheck size={14} />
+                        ) : (
+                          <Bookmark size={14} />
+                        )}
+                      </button>
 
-      {/* Paragraph Content */}
-      <div
-        className={`leading-relaxed bg-transparent text-stone-600 dark:text-accent text-wrap break-words text-left py-2 rounded-r-lg transition-all duration-200 hover:underline ${
-          currentParagraph === paragraph.id
-            ? isDarkMode
-              ? "bg-primary dark:bg-transparent border-l-4 border-blue-500"
-              : "bg-blue-50 border-l-4 border-blue-500"
-            : "border-l-4 border-transparent"
-        }`}
-        style={{
-          fontFamily: settings.fontFamily || "Zilla Slab",
-          fontWeight: settings.fontWeight,
-          fontSize: `${settings.fontSize}px`,
-          fontStyle: settings.fontStyle,
-        }}
-      >
-        {searchQuery
-          ? highlightSearchText(paragraph.content, searchQuery)
-          : highlightEndnotes(paragraph.content)}
-      </div>
-    </div>
-  ))}
-</div>
-
+                      {/* Paragraph Content */}
+                      <div
+                        className={`leading-relaxed bg-transparent text-stone-600 dark:text-accent text-wrap break-words text-left py-2 rounded-r-lg transition-all duration-200 hover:underline ${
+                          currentParagraph === paragraph.id
+                            ? isDarkMode
+                              ? "bg-primary dark:bg-transparent border-l-4 border-blue-500"
+                              : "bg-blue-50 border-l-4 border-blue-500"
+                            : "border-l-4 border-transparent"
+                        }`}
+                        style={{
+                          fontFamily: settings.fontFamily || "Zilla Slab",
+                          fontWeight: settings.fontWeight,
+                          fontSize: `${settings.fontSize}px`,
+                          fontStyle: settings.fontStyle,
+                          color: sermonTColor,
+                        }}
+                      >
+                        {searchQuery
+                          ? highlightSearchText(paragraph.content, searchQuery)
+                          : highlightEndnotes(paragraph.content)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
               <DownloadSermon />

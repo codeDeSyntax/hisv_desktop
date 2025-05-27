@@ -206,7 +206,7 @@ const Search = () => {
     );
     return text.replace(
       regex,
-      `<span class='bg-blue-400 dark:bg-background px-1 rounded font-medium'>$1</span>`
+      `<span class='bg-[#4b2a14] dark:bg-background px-1 text-gray-50 dark:text-[#df9e72] rounded font-medium'>$1</span>`
     );
   };
 
@@ -223,7 +223,7 @@ const Search = () => {
             <input
               type="text"
               placeholder="Search quotes within all sermons"
-              className="flex-1 p-3 text-sm bg-gray-50 dark:bg-primary border-none border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-700 text-stone-700 dark:text-white placeholder-gray-500"
+              className="flex-1 p-3 text-sm bg-gray-50 dark:bg-primary border-none border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-700 text-stone-700 dark:text-white placeholder-gray-500"
               onChange={(e) => setSearchInput(e.target.value)}
               value={searchInput}
             />
@@ -269,7 +269,7 @@ const Search = () => {
                       {match.sermonLocation && (
                         <span>• {match.sermonLocation}</span>
                       )}
-                      <span className="bg-blue-100 dark:bg-gray-700 text-blue-800 dark:text-blue-300 px-2 py-1 rounded-full text-xs">
+                      <span className="bg-[#4b2a14]  text-stone-200 dark:text-orange-300 px-2 py-1 rounded-full text-xs">
                         ¶{match.paragraphId}
                       </span>
                     </div>
@@ -281,7 +281,7 @@ const Search = () => {
                         <span className="text-stone-600 dark:text-accent">
                           {match.contextBefore}
                         </span>
-                        <span className="bg-primary dark:bg-background px-1 rounded font-medium text-stone-800 dark:text-gray-100">
+                        <span className="bg-[#804a26] dark:bg-background px-1 rounded font-medium text-stone-200 dark:text-gray-100">
                           {match.matchedText}
                         </span>
                         <span className="text-stone-600 dark:text-gray-300">

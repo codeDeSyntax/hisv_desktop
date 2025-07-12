@@ -60,7 +60,7 @@ async function createMainWindow() {
     frame: false,
     minWidth: 1000,
     minHeight: 800,
-    icon: path.join(process.env.VITE_PUBLIC, "icon.png"),
+    icon: path.join(process.env.VITE_PUBLIC, "hisv.png"),
     webPreferences: {
       preload,
       // devTools: false,

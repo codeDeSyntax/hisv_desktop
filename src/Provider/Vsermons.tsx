@@ -55,7 +55,7 @@ interface SermonContextType {
   setSelectedMessage: (sermon: Sermon | null) => void;
   setActiveTab: (tab: string) => void;
   activeTab: string;
-  prevScreen: string; 
+  prevScreen: string;
   setPrevScreen: (screen: string) => void;
   setTheme: (tab: string) => void;
   theme: string;
@@ -73,15 +73,33 @@ interface SermonContextType {
   // Bookmark functions
   bookmarks: Bookmark[];
   setBookmarks: (bookmarks: Bookmark[]) => void;
-  addBookmark: (sermonId: string, sermonTitle: string, paragraphId: number, paragraphContent: string, location?: string, year?: string) => void;
+  addBookmark: (
+    sermonId: string,
+    sermonTitle: string,
+    paragraphId: number,
+    paragraphContent: string,
+    location?: string,
+    year?: string
+  ) => void;
   removeBookmark: (bookmarkId: string) => void;
   isBookmarked: (sermonId: string, paragraphId: number) => boolean;
-  toggleBookmark: (sermonId: string, sermonTitle: string, paragraphId: number, paragraphContent: string, location?: string, year?: string) => void;
+  toggleBookmark: (
+    sermonId: string,
+    sermonTitle: string,
+    paragraphId: number,
+    paragraphContent: string,
+    location?: string,
+    year?: string
+  ) => void;
   navigateToBookmark: (bookmark: Bookmark) => void;
   // Search navigation
   pendingSearchNav: SearchNavigation | null;
   setPendingSearchNav: (nav: SearchNavigation | null) => void;
-  navigateToSearchResult: (sermonId: string | number, paragraphId: number, searchTerm: string) => void;
+  navigateToSearchResult: (
+    sermonId: string | number,
+    paragraphId: number,
+    searchTerm: string
+  ) => void;
 }
 
 // Create the context with an initial undefined value
@@ -113,8 +131,9 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const [randomSermons, setRandomSermons] = useState<Sermon[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [CB, setCB] = useState<number>(0);
-  const [prevScreen ,setPrevScreen] = useState(activeTab)
-  const [pendingSearchNav, setPendingSearchNav] = useState<SearchNavigation | null>(null);
+  const [prevScreen, setPrevScreen] = useState(activeTab);
+  const [pendingSearchNav, setPendingSearchNav] =
+    useState<SearchNavigation | null>(null);
   const [theme, setTheme] = useState(
     localStorage.getItem("vsermontheme") || "light"
   );
@@ -164,21 +183,29 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   };
 
   // Search navigation function
-  const navigateToSearchResult = (sermonId: string | number, paragraphId: number, searchTerm: string) => {
-    const targetSermon = allSermons.find(s => s.id === sermonId);
+  const navigateToSearchResult = (
+    sermonId: string | number,
+    paragraphId: number,
+    searchTerm: string
+  ) => {
+    const targetSermon = allSermons.find((s) => s.id === sermonId);
     if (targetSermon) {
       setSelectedMessage(targetSermon);
       setSearchQuery(searchTerm);
       setPendingSearchNav({
         targetSermonId: sermonId,
         targetParagraphId: paragraphId,
-        searchTerm: searchTerm
+        searchTerm: searchTerm,
       });
       setActiveTab("message");
 
       // Update recent sermons
-      const existingRecent = JSON.parse(localStorage.getItem("recentSermons") || "[]");
-      const filteredRecent = existingRecent.filter((item: { id: string | number }) => item.id !== sermonId);
+      const existingRecent = JSON.parse(
+        localStorage.getItem("recentSermons") || "[]"
+      );
+      const filteredRecent = existingRecent.filter(
+        (item: { id: string | number }) => item.id !== sermonId
+      );
       filteredRecent.unshift(targetSermon);
       const limitedRecent = filteredRecent.slice(0, 15);
       localStorage.setItem("recentSermons", JSON.stringify(limitedRecent));
@@ -188,9 +215,9 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
 
   // Bookmark functions
   const addBookmark = (
-    sermonId: string, 
-    sermonTitle: string, 
-    paragraphId: number, 
+    sermonId: string,
+    sermonTitle: string,
+    paragraphId: number,
     paragraphContent: string,
     location?: string,
     year?: string
@@ -200,7 +227,9 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       sermonId,
       sermonTitle,
       paragraphId,
-      paragraphContent: paragraphContent.substring(0, 100) + (paragraphContent.length > 100 ? '...' : ''),
+      paragraphContent:
+        paragraphContent.substring(0, 100) +
+        (paragraphContent.length > 100 ? "..." : ""),
       createdAt: new Date().toISOString(),
       location,
       year,
@@ -212,52 +241,64 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   };
 
   const removeBookmark = (bookmarkId: string) => {
-    const updatedBookmarks = bookmarks.filter(bookmark => bookmark.id !== bookmarkId);
+    const updatedBookmarks = bookmarks.filter(
+      (bookmark) => bookmark.id !== bookmarkId
+    );
     setBookmarks(updatedBookmarks);
     localStorage.setItem("sermonBookmarks", JSON.stringify(updatedBookmarks));
   };
 
   const isBookmarked = (sermonId: string, paragraphId: number): boolean => {
-    return bookmarks.some(bookmark => 
-      bookmark.sermonId === sermonId && bookmark.paragraphId === paragraphId
+    return bookmarks.some(
+      (bookmark) =>
+        bookmark.sermonId === sermonId && bookmark.paragraphId === paragraphId
     );
   };
 
   const toggleBookmark = (
-    sermonId: string, 
-    sermonTitle: string, 
-    paragraphId: number, 
+    sermonId: string,
+    sermonTitle: string,
+    paragraphId: number,
     paragraphContent: string,
     location?: string,
     year?: string
   ) => {
-    const existingBookmark = bookmarks.find(bookmark => 
-      bookmark.sermonId === sermonId && bookmark.paragraphId === paragraphId
+    const existingBookmark = bookmarks.find(
+      (bookmark) =>
+        bookmark.sermonId === sermonId && bookmark.paragraphId === paragraphId
     );
 
     if (existingBookmark) {
       removeBookmark(existingBookmark.id);
     } else {
-      addBookmark(sermonId, sermonTitle, paragraphId, paragraphContent, location, year);
+      addBookmark(
+        sermonId,
+        sermonTitle,
+        paragraphId,
+        paragraphContent,
+        location,
+        year
+      );
     }
   };
 
   const navigateToBookmark = (bookmark: Bookmark) => {
     // Find the sermon in allSermons
-    const sermon = allSermons.find(s => s.id === bookmark.sermonId);
+    const sermon = allSermons.find((s) => s.id === bookmark.sermonId);
     if (sermon) {
       setSelectedMessage(sermon);
       setActiveTab("message"); // Assuming reader is the tab for reading sermons
-      
+
       // Wait for the component to render then scroll to the paragraph
       setTimeout(() => {
-        const element = document.getElementById(`paragraph-${bookmark.paragraphId}`);
+        const element = document.getElementById(
+          `paragraph-${bookmark.paragraphId}`
+        );
         if (element) {
-          element.scrollIntoView({ 
-            behavior: 'smooth', 
-            
-            block: 'end',  // Changed from 'center' to 'start'
-            inline: 'nearest'  // Added this for better positioning
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "start", // Changed from 'end' to 'start' to show paragraph at top
+            inline: "nearest", // Keep this for better positioning
           });
         }
       }, 100);

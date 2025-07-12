@@ -172,7 +172,7 @@ function useLoading() {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.08);
+  background: #1c191714;
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   z-index: 2;
@@ -202,7 +202,7 @@ function useLoading() {
   display: inline-block;
   padding: 20px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  background: #1c19171a;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
 

@@ -1,9 +1,22 @@
-import { useState, useContext, useEffect } from "react";
-import { ChevronDown, Check, Settings, Save, Sun, Moon } from "lucide-react";
+import { useState } from "react";
+import {
+  Check,
+  Save,
+  Palette,
+  Type,
+  Eye,
+  ChevronDown,
+  Settings,
+} from "lucide-react";
 import { useSermonContext } from "@/Provider/Vsermons";
+import { Switch, Slider, Select, Card, Button, Divider } from "antd";
+import { useTheme } from "@/Provider/Theme";
+
+const { Option } = Select;
 
 const FontSettingsPage = () => {
-  const { settings, setSettings, theme, setTheme } = useSermonContext();
+  const { settings, setSettings } = useSermonContext();
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const [fontFamily, setFontFamily] = useState(settings.fontFamily);
   const [fontSize, setFontSize] = useState<number>(Number(settings.fontSize));
   const [fontWeight, setFontWeight] = useState(settings.fontWeight);
@@ -28,23 +41,6 @@ const FontSettingsPage = () => {
     "Impact",
     "cursive",
   ];
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        isDropdownOpen &&
-        event.target &&
-        !(event.target as Element).closest(".font-dropdown")
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isDropdownOpen]);
 
   const saveSettings = () => {
     const newSettings = {

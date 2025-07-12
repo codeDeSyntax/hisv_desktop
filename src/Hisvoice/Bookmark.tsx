@@ -187,7 +187,7 @@ const BookmarksPage = () => {
       </div>
 
       {/* Bookmarks List */}
-      <div className="max-w-4xl mx-auto space-y-4 grid grid-cols-2 gap-2">
+      <div className="max-w-4xl mx-auto space-y-4 grid grid-cols-3 gap-2">
         {filteredBookmarks.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

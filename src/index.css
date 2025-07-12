@@ -6,7 +6,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   overflow-x: hidden;
 }
 .wqoute {
@@ -149,4 +149,35 @@ button:hover {
   src: url("/fonts/aluminisans.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
+}
+
+/* Hide scrollbars */
+.no-scrollbar {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+/* Modern floating label input styles */
+.floating-label-input:focus + .floating-label,
+.floating-label-input:not(:placeholder-shown) + .floating-label {
+  transform: translateY(-1.5rem) scale(0.85);
+  background-color: inherit;
+  padding: 0 0.25rem;
+}
+
+/* Enhanced focus states for modern inputs */
+.modern-input:focus {
+  transform: scale(1.02);
+}
+
+.modern-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modern-button:active {
+  transform: translateY(0);
 }

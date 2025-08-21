@@ -151,13 +151,18 @@ button:hover {
   font-style: normal;
 }
 
-/* Hide scrollbars */
-.no-scrollbar {
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
-  scrollbar-width: none; /* Firefox */
+.custom-table {
+  scrollbar-width: none;
 }
-.no-scrollbar::-webkit-scrollbar {
-  display: none; /* Safari and Chrome */
+
+/* Additional scrollbar hiding for Ant Design table */
+.custom-table .ant-table-body::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-table .ant-table-body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 /* Modern floating label input styles */

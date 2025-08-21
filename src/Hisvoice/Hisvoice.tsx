@@ -10,12 +10,18 @@ import QuotesManager from "./SavedQoutes";
 import TitleBar from "@/shared/TitleBar";
 import LoadingScreen from "./Loading";
 import BookmarksPage from "./Bookmark";
+import SermonLoadSkeleton from "@/components/SermonLoadSkeleton";
+import SermonContentSkeleton from "@/components/SermonContentSkeleton";
+import HomeSideSkeleton from "@/components/HomeSkeleton";
+import CompactSkeleton from "@/components/CompactSkeleton";
 
-// Lazy-loaded components
+// Lazy-loaded components (keeping heavy ones lazy)
 const Gallery = React.lazy(() => import("./Media"));
-const SermonList = React.lazy(() => import("./Allsermons"));
-const SelectedSermon = React.lazy(() => import("./SelectedSermon"));
 const DeveloperPage = React.lazy(() => import("./Developer"));
+
+// Import SermonList directly since it's frequently used
+import SermonList from "./Allsermons";
+import SelectedSermon from "./SelectedSermon";
 
 const Hisvoice = () => {
   // const [isCollapsed, setIsCollapsed] = useState(true);
@@ -39,32 +45,46 @@ const Hisvoice = () => {
             {activeTab === "home" ? (
               <Home />
             ) : activeTab === "sermons" ? (
-              <Suspense fallback={<LoadingScreen />}>
-                <SermonList />
-              </Suspense>
+              <SermonList />
             ) : activeTab === "message" ? (
-              <Suspense fallback={<LoadingScreen />}>
-                <SelectedSermon
-                  background={background}
-                  setBackground={setBackground}
-                />
-              </Suspense>
+              <SelectedSermon
+                background={background}
+                setBackground={setBackground}
+              />
             ) : activeTab === "settings" ? (
               <FontSettingsPage />
             ) : activeTab === "recents" ? (
               <Recents />
             ) : activeTab === "about" ? (
-              <Suspense fallback={<LoadingScreen />}>
+              <Suspense
+                fallback={
+                  <div className="p-8">
+                    <CompactSkeleton variant="card" lines={6} />
+                  </div>
+                }
+              >
                 <DeveloperPage />
               </Suspense>
             ) : activeTab === "media" ? (
-              <Suspense fallback={<LoadingScreen />}>
+              <Suspense
+                fallback={
+                  <div className="p-8">
+                    <CompactSkeleton variant="list" lines={4} />
+                  </div>
+                }
+              >
                 <Gallery />
               </Suspense>
             ) : activeTab === "quotes" ? (
               <QuotesManager />
             ) : activeTab === "bookmarks" ? (
-              <Suspense fallback={<LoadingScreen />}>
+              <Suspense
+                fallback={
+                  <div className="p-8">
+                    <CompactSkeleton variant="list" lines={5} />
+                  </div>
+                }
+              >
                 <BookmarksPage />
               </Suspense>
             ) : (

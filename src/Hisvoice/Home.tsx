@@ -1,12 +1,23 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  memo,
+  Suspense,
+  lazy,
+} from "react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/Provider/Theme";
 import { SendHorizonal } from "lucide-react";
-import TypingVerse from "@/components/TypingText";
+
+// Lazy load heavy components for better initial performance
+const TypingVerse = lazy(() => import("@/components/TypingText"));
+// Remove lazy loading for RandomSermonParagraph since it's needed immediately
 import RandomSermonParagraph from "@/components/RandomParagraph";
 
-const Home = () => {
+const Home = memo(() => {
   const [currentScriptureIndex, setCurrentScriptureIndex] = useState(0);
   const { randomSermons, setSelectedMessage, setActiveTab, setCB } =
     useSermonContext();
@@ -15,6 +26,14 @@ const Home = () => {
     null
   );
 
+  // Debug log to see randomSermons
+  console.log(
+    "Home component - randomSermons:",
+    randomSermons.length,
+    randomSermons[0]?.title
+  );
+
+  // Memoize scriptures to prevent recreation on every render
   const scriptures = useMemo(
     () => [
       {
@@ -51,7 +70,21 @@ const Home = () => {
     []
   );
 
-  const currentScripture = scriptures[currentScriptureIndex];
+  // Memoize current scripture to prevent unnecessary recalculations
+  const currentScripture = useMemo(
+    () => scriptures[currentScriptureIndex],
+    [scriptures, currentScriptureIndex]
+  );
+
+  // Memoize sermon click handler to prevent recreation
+  const handleSermonClick = useCallback(
+    (sermon: any) => {
+      setSelectedMessage(sermon);
+      setActiveTab("message");
+      setCB(1);
+    },
+    [setSelectedMessage, setActiveTab, setCB]
+  );
 
   return (
     <div className="h-screen relative flex items-center overflow-auto no-scrollbar w-screen bg-white dark:bg-background ">
@@ -65,7 +98,20 @@ const Home = () => {
             borderStyle: "dashed",
           }}
         >
-          <div className="bg-white dark:bg-primary rounded-[20px]">
+          <div
+            className="bg-white dark:bg-primary rounded-[20px]"
+            // image background
+            style={{
+              backgroundImage: `${
+                isDarkMode ? "url('./gradbg.png')" : "url('./wood11.jpg')"
+              }`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            {/* light blur over image */}
+            {/* <div className="absolute inset-0 bg-white/30 dark:bg-black/30 backdrop-blur-md rounded-[20px]"></div> */}
+
             {/* Header Section with Profile */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -104,7 +150,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="mb-12 w-full bg-white dark:bg-stone-800"
+              className="mb-12 w-full bg-white dark:bg-transparent"
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -117,13 +163,24 @@ const Home = () => {
                 >
                   <div className=" top-0 left-0 h-full w-full bg-gradient-to-b from-white/50 to-white/10"></div>
 
-                  <div className="  text-gray-50 rounded-3xl italic ">
-                    <TypingVerse
-                      verse={currentScripture.verse}
-                      typingSpeed={40}
-                      color={isDarkMode ? "#f2cdb4  " : ""}
-                      fontFamily="Palatino, serif"
-                    />
+                  <div className="  text-gray-50 font-mono rounded-3xl italic ">
+                    <Suspense
+                      fallback={
+                        <div className="h-16 space-y-2">
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full animate-pulse"></div>
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5 animate-pulse"></div>
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse"></div>
+                        </div>
+                      }
+                    >
+                      <TypingVerse
+                        verse={currentScripture.verse}
+                        typingSpeed={40}
+                        color={isDarkMode ? "#f2cdb4  " : ""}
+
+                        // fontFamily="Palatino, serif"
+                      />
+                    </Suspense>
                   </div>
 
                   <p className="text-stone-500 dark:text-gray-300 font-semibold font-serif text-right mt-4">
@@ -174,9 +231,9 @@ const Home = () => {
               <h2 className="text-xs font-mono uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
                 SERMON ARCHIVE
               </h2>
-              <div className="text-xs font-mono text-gray-400 dark:text-gray-500">
+              {/* <div className="text-xs font-mono text-gray-400 dark:text-gray-500">
                 ID: {new Date().getTime().toString().slice(-6)}
-              </div>
+              </div> */}
             </div>
 
             {/* Receipt Content */}
@@ -191,10 +248,7 @@ const Home = () => {
                     className="group cursor-pointer"
                     onMouseEnter={() => setHoveredSermon(sermon.id)}
                     onMouseLeave={() => setHoveredSermon(null)}
-                    onClick={() => {
-                      setSelectedMessage(sermon);
-                      setActiveTab("message");
-                    }}
+                    onClick={() => handleSermonClick(sermon)}
                   >
                     {/* Item Line */}
                     <div className="py-3 border-b border-dottd bg-gray-50 dark:bg-background border-gray-600 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-stone-900 transition-colors duration-200 -mx-2 px-2 rounded-xl">
@@ -206,7 +260,7 @@ const Home = () => {
                         /> */}
                         <div className="flex-1 pr-2">
                           <div
-                            className=" text-sm  text-black dark:text-[#f2cdb4] leading-tight font-cooper"
+                            className=" text-sm  text-black dark:text-[#f2cdb4] leading-tight font-zilla"
                             // style={{ fontFamily: "Palatino" }}
                           >
                             {sermon?.title}
@@ -245,7 +299,17 @@ const Home = () => {
               </div>
             </div>
 
-            <RandomSermonParagraph sermon={randomSermons[0] as any} />
+            {randomSermons.length > 0 && randomSermons[0] ? (
+              <RandomSermonParagraph sermon={randomSermons[0] as any} />
+            ) : (
+              <div className="h-20 px-6 py-4">
+                <div className="space-y-2">
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full animate-pulse"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6 animate-pulse"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/5 animate-pulse"></div>
+                </div>
+              </div>
+            )}
 
             {/* Receipt Tear Line */}
             <div className="relative rounded-b-3xl">
@@ -266,6 +330,6 @@ const Home = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Home;

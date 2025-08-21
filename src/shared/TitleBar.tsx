@@ -37,13 +37,7 @@ const TitleBar: React.FC = () => {
   const [bgOpacity, setBgOpacity] = useState<number>(1);
   // const [selectedPath, setSelectedPath] = useState<string>("");
 
-  const ltImages = [
-    'url("./wood2.jpg")',
-    'url("./wood10.jpg")',
-    'url("./wood11.jpg")',
-    'url("./wood7.png")',
-    'url("./wood6.jpg")',
-  ];
+  const ltImages = ['url("./wood7.png")', 'url("./wood6.jpg")'];
 
   // check for selectedPath from local storage
 
@@ -100,21 +94,21 @@ const TitleBar: React.FC = () => {
                 backgroundImage: !isDarkMode
                   ? `linear-gradient(to bottom,
              #ffffff00 0%,
-             rgba(255, 255, 255, 5) 60%),
+             rgba(255, 255, 255, 5) 50%),
              ${selectedBg}`
                   : undefined,
                 backgroundRepeat: "repeat",
-                backgroundSize: "30px", // Adjust size to control repeat pattern
+                backgroundSize: "15px", // Adjust size to control repeat pattern
               }
             : {
                 backgroundImage: isDarkMode
                   ? `linear-gradient(to bottom,
              rgba(255, 255, 255, 0%) 0%,
-             #1c1917ff 60%),
-             url(./wood6.jpg)`
+             #1c1917ff 50%),
+             ${selectedBg}`
                   : undefined,
                 backgroundRepeat: "repeat",
-                backgroundSize: "30px", // Adjust size to control repeat pattern
+                backgroundSize: "15px", // Adjust size to control repeat pattern
               }),
         }}
       >

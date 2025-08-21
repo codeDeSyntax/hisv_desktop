@@ -4,15 +4,17 @@ import {
   useEffect,
   ReactNode,
   useContext,
+  useMemo,
 } from "react";
-import earlySermons from "../sermons/1964-1969/firstset.js";
-import secondSet from "../sermons/1970/1970.js";
-import thirdSet from "../sermons/1971/1971";
-import fourthSet from "../sermons/1972/1972";
-import lastSet from "../sermons/1973/1973";
-import audioSermons from "@/sermons/audio.js";
-
 import { Sermon } from "@/types/index.js";
+
+// Lazy imports for sermon data - only load when needed
+const loadEarlySermons = () => import("../sermons/1964-1969/firstset.js");
+const loadSecondSet = () => import("../sermons/1970/1970.js");
+const loadThirdSet = () => import("../sermons/1971/1971");
+const loadFourthSet = () => import("../sermons/1972/1972");
+const loadLastSet = () => import("../sermons/1973/1973");
+const loadAudioSermons = () => import("@/sermons/audio.js");
 
 // Define bookmark type
 interface Bookmark {
@@ -49,6 +51,8 @@ interface SermonContextType {
   selectedMessage: Sermon | null;
   allSermons: Sermon[];
   loading: boolean;
+  loadingProgress: number;
+  loadingMessage: string;
   error: string | null;
   recentSermons: Sermon[];
   setRecentSermons: (sermons: Sermon[]) => void;
@@ -110,14 +114,8 @@ interface SermonProviderProps {
   children: ReactNode;
 }
 
-// Ensure sermon collection is properly typed
-const sermonCollection: Sermon[] = [
-  ...earlySermons,
-  ...secondSet,
-  ...thirdSet,
-  ...fourthSet,
-  ...lastSet,
-];
+// Ensure sermon collection is properly typed - will be loaded lazily
+let sermonCollection: Sermon[] = [];
 
 const SermonProvider = ({ children }: SermonProviderProps) => {
   const [selectedMessage, setSelectedMessage] = useState<Sermon | null>(null);
@@ -125,6 +123,9 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const [recentSermons, setRecentSermons] = useState<Sermon[]>([]);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingProgress, setLoadingProgress] = useState<number>(0);
+  const [loadingMessage, setLoadingMessage] =
+    useState<string>("Starting up...");
   const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("home");
@@ -161,20 +162,31 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     localStorage.setItem("prevScreen", activeTab);
   }, [activeTab]);
 
-  // Generate random sermon
+  // Generate random sermon (text sermons only)
   const getRandomSermon = (): Sermon | null => {
-    if (sermonCollection.length > 0) {
-      const randomIndex = Math.floor(Math.random() * sermonCollection.length);
-      return sermonCollection[randomIndex];
+    // Filter for text sermons only (exclude audio/video/mp3)
+    const textSermons = sermonCollection.filter(
+      (sermon) => sermon.type === "text"
+    );
+
+    if (textSermons.length > 0) {
+      const randomIndex = Math.floor(Math.random() * textSermons.length);
+      return textSermons[randomIndex];
     }
     return null;
   };
 
-  // Generate three random sermons
+  // Generate three random sermons (text sermons only)
   const getThreeRandomSermons = (): Sermon[] => {
+    // Filter for text sermons only (exclude audio/video/mp3)
+    const textSermons = sermonCollection.filter(
+      (sermon) => sermon.type === "text"
+    );
+
     const sermons = new Set<Sermon>();
-    while (sermons.size < 3 && sermons.size < sermonCollection.length) {
-      const sermon = getRandomSermon();
+    while (sermons.size < 3 && sermons.size < textSermons.length) {
+      const randomIndex = Math.floor(Math.random() * textSermons.length);
+      const sermon = textSermons[randomIndex];
       if (sermon) {
         sermons.add(sermon);
       }
@@ -332,40 +344,124 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     }
   }, []);
 
+  // Load sermons progressively for better performance
   useEffect(() => {
-    const loadSermons = async () => {
+    const loadSermonsProgressively = async () => {
       try {
         setLoading(true);
+        setLoadingProgress(0);
+        setLoadingMessage("Loading audio sermons...");
 
-        const fetchedSermons: Sermon[] = [
-          ...earlySermons,
-          ...secondSet,
-          ...thirdSet,
-          ...fourthSet,
-          ...lastSet,
-          ...audioSermons,
-        ];
+        // First load lightweight data for quick startup
+        const audioData = await loadAudioSermons();
+        const audioSermons = audioData.default || audioData;
 
-        setAllSermons(fetchedSermons);
+        setLoadingProgress(20);
+        setLoadingMessage("Setting up initial sermons...");
 
-        // Wait until allSermons is set before getting random sermons
-        const randomSermon = getRandomSermon();
-        setSelectedMessage(randomSermon);
+        // Set initial sermons with just audio sermons for quick startup
+        const initialSermons: Sermon[] = [...audioSermons];
+        setAllSermons(initialSermons);
+        sermonCollection = [...initialSermons];
 
-        const threeRandomSermons = getThreeRandomSermons();
-        setRandomSermons(threeRandomSermons);
+        // Don't set random sermons from audio - wait for text sermons
+        // Set a placeholder selected message from audio for now
+        if (initialSermons.length > 0) {
+          setSelectedMessage(initialSermons[0]);
+        }
 
-        setLoading(false);
-        console.log("Sermons loaded:", fetchedSermons.length);
-        // console.log("Three random sermons:", threeRandomSermons);
+        setLoadingProgress(40);
+        setLoadingMessage("Ready! Loading text sermons in background...");
+        setLoading(false); // App is ready to use with audio sermons
+
+        // Now load text sermons in background chunks
+        const loadTextSermonsInBackground = async () => {
+          try {
+            // Load sermons in order of size (smallest first for faster perception)
+            const sermonLoaders = [
+              {
+                loader: loadEarlySermons,
+                name: "Early Sermons (1964-1969)",
+                weight: 15,
+              },
+              { loader: loadThirdSet, name: "1971 Sermons", weight: 10 },
+              { loader: loadLastSet, name: "1973 Sermons", weight: 15 },
+              { loader: loadFourthSet, name: "1972 Sermons", weight: 15 },
+              { loader: loadSecondSet, name: "1970 Sermons", weight: 25 }, // Largest last
+            ];
+
+            let loadedSermons: Sermon[] = [...initialSermons];
+            let currentProgress = 40;
+            let randomSermonsSet = false; // Track if we've set random sermons yet
+
+            for (const { loader, name, weight } of sermonLoaders) {
+              try {
+                setLoadingMessage(`Loading ${name}...`);
+
+                const data = await loader();
+                const sermons = data.default || data;
+                loadedSermons = [...loadedSermons, ...sermons];
+
+                // Update sermons progressively
+                setAllSermons([...loadedSermons]);
+                sermonCollection = [...loadedSermons];
+
+                // Set random sermons only once when first text sermons are loaded
+                const textSermons = loadedSermons.filter(
+                  (sermon) => sermon.type === "text"
+                );
+
+                if (textSermons.length > 0 && !randomSermonsSet) {
+                  const allRandomSermons = textSermons
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 3);
+                  console.log(
+                    "Setting random sermons (text) for first time:",
+                    allRandomSermons.map((s) => s.title)
+                  );
+                  setRandomSermons(allRandomSermons);
+
+                  // Set the first random text sermon as the selected message
+                  setSelectedMessage(allRandomSermons[0]);
+                  randomSermonsSet = true; // Mark as set
+                }
+
+                currentProgress += weight;
+                setLoadingProgress(currentProgress);
+
+                // Small delay to prevent UI blocking
+                await new Promise((resolve) => setTimeout(resolve, 10));
+
+                console.log(`✅ Loaded ${name}: ${sermons.length} sermons`);
+              } catch (error) {
+                console.warn(`⚠️ Failed to load ${name}:`, error);
+              }
+            }
+
+            setLoadingProgress(100);
+            setLoadingMessage("All sermons loaded successfully!");
+
+            // Clear loading message after a short delay
+            setTimeout(() => {
+              setLoadingMessage("");
+            }, 2000);
+
+            console.log(`🎉 All sermons loaded: ${loadedSermons.length} total`);
+          } catch (error) {
+            console.error("❌ Error loading text sermons:", error);
+          }
+        };
+
+        // Start background loading after a short delay
+        setTimeout(loadTextSermonsInBackground, 100);
       } catch (err) {
-        console.error("Error loading sermons:", err);
+        console.error("❌ Error loading initial sermons:", err);
         setError("Failed to load sermons. Please try again later.");
         setLoading(false);
       }
     };
 
-    loadSermons(); // Call the function to load sermons on component mount
+    loadSermonsProgressively();
   }, []);
 
   const contextValue: SermonContextType = {
@@ -375,6 +471,8 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     selectedMessage,
     allSermons,
     loading,
+    loadingProgress,
+    loadingMessage,
     error,
     recentSermons,
     setRecentSermons,

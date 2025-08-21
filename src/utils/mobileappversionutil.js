@@ -5,12 +5,10 @@
 /**
  * Ultra-fast async formatter using chunked processing for large sermon texts
  * Optimized for low-resource devices with progressive processing
- * @param text - Raw sermon text
- * @returns Promise<Array> - Array of paragraph strings
+ * @param {string} text - Raw sermon text
+ * @returns {Promise<Array>} - Array of paragraph strings
  */
-export const formatSermonIntoParagraphsAsync = async (
-  text: string
-): Promise<string[]> => {
+export const formatSermonIntoParagraphsAsync = async (text) => {
   if (!text) return [];
 
   return new Promise((resolve) => {
@@ -42,10 +40,10 @@ export const formatSermonIntoParagraphsAsync = async (
 
 /**
  * Process very large texts in smaller batches for better performance
- * @param text - Raw sermon text
- * @returns Promise<Array> - Array of paragraph strings
+ * @param {string} text - Raw sermon text
+ * @returns {Promise<Array>} - Array of paragraph strings
  */
-const processLargeTextInBatches = async (text: string): Promise<string[]> => {
+const processLargeTextInBatches = async (text) => {
   // For very large texts, we need to be smarter about batching
   // to maintain paragraph coherence across batches
 
@@ -54,7 +52,7 @@ const processLargeTextInBatches = async (text: string): Promise<string[]> => {
     .split(/\n\s*\n/)
     .filter((p) => p.trim().length > 0);
 
-  let allParagraphs: string[] = [];
+  let allParagraphs = [];
   const batchSize = 3; // Process 3 major paragraphs at a time
 
   for (let i = 0; i < majorParagraphs.length; i += batchSize) {
@@ -71,10 +69,10 @@ const processLargeTextInBatches = async (text: string): Promise<string[]> => {
 
 /**
  * Creates equal-volume paragraphs ensuring words are never broken
- * @param text - Text to split into equal-volume paragraphs
- * @returns Array - Array of balanced paragraph strings
+ * @param {string} text - Text to split into equal-volume paragraphs
+ * @returns {Array} - Array of balanced paragraph strings
  */
-const createEqualVolumeParagraphs = (text: string): string[] => {
+const createEqualVolumeParagraphs = (text) => {
   if (!text || text.length < 200) {
     return [text];
   }
@@ -100,7 +98,7 @@ const createEqualVolumeParagraphs = (text: string): string[] => {
     totalWords / estimatedParagraphs
   );
 
-  const result: string[] = [];
+  const result = [];
   let currentParagraph = "";
   let currentWordCount = 0;
 
@@ -141,7 +139,7 @@ const createEqualVolumeParagraphs = (text: string): string[] => {
   if (currentParagraph.trim()) {
     // If the last paragraph is too small, try to merge with previous
     if (currentWordCount < minWordsPerParagraph / 2 && result.length > 0) {
-      const lastParagraph = result.pop()!;
+      const lastParagraph = result.pop();
       result.push(lastParagraph + " " + currentParagraph.trim());
     } else {
       result.push(currentParagraph.trim());
@@ -153,10 +151,10 @@ const createEqualVolumeParagraphs = (text: string): string[] => {
 
 /**
  * Optimized fast formatter for sermon texts - Enhanced for equal-volume paragraphs
- * @param text - Raw sermon text
- * @returns Array - Array of paragraph strings
+ * @param {string} text - Raw sermon text
+ * @returns {Array} - Array of paragraph strings
  */
-const formatSermonIntoParagraphsFast = (text: string): string[] => {
+const formatSermonIntoParagraphsFast = (text) => {
   if (!text) return [];
 
   // Early return for small texts
@@ -173,7 +171,7 @@ const formatSermonIntoParagraphsFast = (text: string): string[] => {
     .filter((p) => p.trim().length > 5); // Lower threshold for faster processing
 
   // Process using equal-volume algorithm
-  const result: string[] = [];
+  const result = [];
 
   for (const paragraph of paragraphs) {
     const trimmed = paragraph.trim();
@@ -186,10 +184,10 @@ const formatSermonIntoParagraphsFast = (text: string): string[] => {
 
 /**
  * Formats sermon text into properly sized paragraphs (optimized for equal volume)
- * @param text - Raw sermon text
- * @returns Array - Array of paragraph strings
+ * @param {string} text - Raw sermon text
+ * @returns {Array} - Array of paragraph strings
  */
-export const formatSermonIntoParagraphs = (text: string): string[] => {
+export const formatSermonIntoParagraphs = (text) => {
   if (!text) return [];
 
   // Early return for small texts
@@ -206,7 +204,7 @@ export const formatSermonIntoParagraphs = (text: string): string[] => {
     .filter((p) => p.trim().length > 0);
 
   // Process paragraphs using equal-volume algorithm
-  const formattedParagraphs: string[] = [];
+  const formattedParagraphs = [];
 
   for (let i = 0; i < paragraphs.length; i++) {
     const paragraph = paragraphs[i].trim();
@@ -219,14 +217,11 @@ export const formatSermonIntoParagraphs = (text: string): string[] => {
 
 /**
  * Optimized search for text in paragraphs or by paragraph number
- * @param paragraphs - Array of paragraph strings
- * @param searchPhrase - Text to search for or paragraph number
- * @returns Array - Array of search result indices
+ * @param {Array} paragraphs - Array of paragraph strings
+ * @param {string} searchPhrase - Text to search for or paragraph number
+ * @returns {Array} - Array of search result indices
  */
-export const searchSermon = (
-  paragraphs: string[],
-  searchPhrase: string
-): number[] => {
+export const searchSermon = (paragraphs, searchPhrase) => {
   if (!searchPhrase || !paragraphs || paragraphs.length === 0) {
     return [];
   }
@@ -236,7 +231,7 @@ export const searchSermon = (
     return [];
   }
 
-  const searchResults: number[] = [];
+  const searchResults = [];
   const lowerSearchPhrase = trimmedPhrase.toLowerCase();
 
   // Check if search phrase is a paragraph number
@@ -261,16 +256,16 @@ export const searchSermon = (
 
 /**
  * Debounced search function to prevent excessive searching
- * @param paragraphs - Array of paragraph strings
- * @param searchPhrase - Text to search for
- * @param delay - Delay in milliseconds
- * @returns Promise<Array> - Promise that resolves to search results
+ * @param {Array} paragraphs - Array of paragraph strings
+ * @param {string} searchPhrase - Text to search for
+ * @param {number} delay - Delay in milliseconds
+ * @returns {Promise<Array>} - Promise that resolves to search results
  */
 export const searchSermonDebounced = (
-  paragraphs: string[],
-  searchPhrase: string,
-  delay: number = 300
-): Promise<number[]> => {
+  paragraphs,
+  searchPhrase,
+  delay = 300
+) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(searchSermon(paragraphs, searchPhrase));

@@ -36,7 +36,7 @@ const App = () => {
             setActiveTab("bookmarks");
             showToast("🔖 Bookmarks");
             break;
-          case "r":
+          case "h":
             setActiveTab("recents");
             showToast("🕒 Recent Sermons");
             break;

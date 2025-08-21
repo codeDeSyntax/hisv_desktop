@@ -37,7 +37,7 @@ const TypingVerse = ({
       style={{ minHeight: minHeight + "px" }}
     >
       <p
-        className="typing-text  font-bold underline  text-black dark:text-gray-50 "
+        className="typing-text  text-black dark:text-gray-50 "
         style={{
           fontFamily: fontFamily,
           fontSize: fontSize + "px",

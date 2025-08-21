@@ -58,10 +58,14 @@ const RandomSermonParagraph: React.FC<RandomSermonParagraphProps> = ({
     return sermonParagraphs[randomIndex];
   }, [sermonParagraphs]);
 
-  if (!sermon?.sermon) {
+  if (!sermon?.sermon || sermon.sermon.trim() === "") {
     return (
-      <div className="p-4 text-gray-500 dark:text-gray-400 italic">
-        No sermon content available
+      <div className="h-20 px-6 py-4">
+        <div className="space-y-2">
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full animate-pulse"></div>
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6 animate-pulse"></div>
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/5 animate-pulse"></div>
+        </div>
       </div>
     );
   }
@@ -75,19 +79,19 @@ const RandomSermonParagraph: React.FC<RandomSermonParagraphProps> = ({
   }
 
   return (
-    <div className="px-6  rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 rounded-b-3xl">
+    <div className="px-6  rounded-lg shadow-sm border  border-gray-200 dark:border-gray-700 rounded-b-3xl">
       <div className="text-sm text-gray-500 dark:text-gray-400 mb-1 font-medium">
         Random Excerpt
       </div>
-      <div className=" leading-relaxed h-28 overflow-y-auto no-scrollbar text-gray-100">
+      <div className="leading-relaxed h-28 font-zilla overflow-y-auto no-scrollbar text-gray-100">
         <TypingVerse
           verse={randomParagraph.content}
           typingSpeed={40}
-          fontFamily="Garamond"
+          // fontFamily="Zilla"
           fontSize={13}
           align="left"
           minHeight={20}
-          color={isDarkMode ? "white" : "black"}
+          color={isDarkMode ? "white" : "#553b1d"}
         />
       </div>
       <div className="mt-4 text-xs text-gray-400 dark:text-gray-500">

@@ -43,7 +43,7 @@ const CompactSkeleton = memo(
     };
 
     const baseClasses = `
-    bg-gray-200 dark:bg-gray-700 rounded
+    bg-stone-200 dark:bg-stone-700 rounded
     ${animated ? "animate-pulse" : ""}
     ${getHeightClass()}
   `;
@@ -56,7 +56,7 @@ const CompactSkeleton = memo(
 
     if (variant === "card") {
       return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div className="bg-white dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700 p-4">
           <div className="space-y-3">
             <div className={`${baseClasses} w-3/4`} />
             <div className={`${baseClasses} w-full`} />
@@ -71,7 +71,7 @@ const CompactSkeleton = memo(
         <div className="space-y-2">
           {Array.from({ length: lines }).map((_, index) => (
             <div key={index} className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse flex-shrink-0" />
+              <div className="w-8 h-8 bg-stone-200 dark:bg-stone-700 rounded-full animate-pulse flex-shrink-0" />
               <div className="flex-1 space-y-1">
                 <div className={`${baseClasses} w-3/4`} />
                 <div className={`${baseClasses} w-1/2 h-3`} />

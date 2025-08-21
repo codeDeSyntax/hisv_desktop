@@ -7,6 +7,7 @@ export { default as SermonHeader } from "./SermonHeader";
 export { default as TextColorSelector } from "./TextColorSelector";
 export { SermonParagraph } from "./SermonParagraph";
 export { SermonContent } from "./SermonContent";
+export { default as ChromeStyleSearch } from "./ChromeStyleSearch";
 
 // Export hooks
 export { useSermonHighlighting } from "./hooks/useSermonHighlighting";

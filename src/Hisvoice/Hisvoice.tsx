@@ -5,11 +5,9 @@ import Home from "./Home";
 import { useContext } from "react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import FontSettingsPage from "./Settings";
-import Recents from "./Recents";
 import QuotesManager from "./SavedQoutes";
 import TitleBar from "@/shared/TitleBar";
 import LoadingScreen from "./Loading";
-import BookmarksPage from "./Bookmark";
 import SermonLoadSkeleton from "@/components/SermonLoadSkeleton";
 import SermonContentSkeleton from "@/components/SermonContentSkeleton";
 import HomeSideSkeleton from "@/components/HomeSkeleton";
@@ -22,6 +20,7 @@ const DeveloperPage = React.lazy(() => import("./Developer"));
 // Import SermonList directly since it's frequently used
 import SermonList from "./Allsermons";
 import SelectedSermon from "./SelectedSermon";
+import CombinedBookmarksRecents from "./CombinedBookmarksRecents";
 
 const Hisvoice = () => {
   // const [isCollapsed, setIsCollapsed] = useState(true);
@@ -53,8 +52,8 @@ const Hisvoice = () => {
               />
             ) : activeTab === "settings" ? (
               <FontSettingsPage />
-            ) : activeTab === "recents" ? (
-              <Recents />
+            ) : activeTab === "library" ? (
+              <CombinedBookmarksRecents />
             ) : activeTab === "about" ? (
               <Suspense
                 fallback={
@@ -77,16 +76,6 @@ const Hisvoice = () => {
               </Suspense>
             ) : activeTab === "quotes" ? (
               <QuotesManager />
-            ) : activeTab === "bookmarks" ? (
-              <Suspense
-                fallback={
-                  <div className="p-8">
-                    <CompactSkeleton variant="list" lines={5} />
-                  </div>
-                }
-              >
-                <BookmarksPage />
-              </Suspense>
             ) : (
               "none"
             )}

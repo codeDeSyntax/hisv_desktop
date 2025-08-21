@@ -163,7 +163,7 @@ const Home = memo(() => {
                 >
                   <div className=" top-0 left-0 h-full w-full bg-gradient-to-b from-white/50 to-white/10"></div>
 
-                  <div className="  text-gray-50 font-mono rounded-3xl italic ">
+                  <div className="  text-gray-50 font-zilla rounded-3xl italic ">
                     <Suspense
                       fallback={
                         <div className="h-16 space-y-2">

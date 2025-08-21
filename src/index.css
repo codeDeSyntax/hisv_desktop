@@ -186,3 +186,76 @@ button:hover {
 .modern-button:active {
   transform: translateY(0);
 }
+
+/* Custom slider styling for Settings */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-track {
+  background: #e5e7eb;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #d97706;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #b45309;
+  transform: scale(1.1);
+}
+
+.slider::-moz-range-track {
+  background: #e5e7eb;
+  height: 8px;
+  border-radius: 4px;
+  border: none;
+}
+
+.slider::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #d97706;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  background: #b45309;
+  transform: scale(1.1);
+}
+
+/* Dark mode slider styles */
+.dark .slider::-webkit-slider-track {
+  background: rgba(217, 119, 6, 0.3);
+}
+
+.dark .slider::-moz-range-track {
+  background: rgba(217, 119, 6, 0.3);
+}
+
+/* Ensure search highlights don't cause horizontal overflow */
+.search-highlight {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+  max-width: 100% !important;
+  display: inline !important;
+}

@@ -5,8 +5,7 @@ import {
   Square,
   HeartPulse,
   LucideLibraryBig,
-  ClockArrowUp,
-  BookmarkCheck,
+  Archive,
   CogIcon,
   LucideHome,
 } from "lucide-react";
@@ -170,24 +169,14 @@ const TitleBar: React.FC = () => {
             </div>
           </Tooltip>
 
-          {/* Bookmarks */}
+          {/* Bookmarks & Recents Combined */}
 
-          <Tooltip title="Bookmarks" style={{ fontFamily: "fantasy" }}>
+          <Tooltip title="Library" style={{ fontFamily: "fantasy" }}>
             <div
-              onClick={() => setActiveTab("bookmarks")}
+              onClick={() => setActiveTab("library")}
               className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
             >
-              <BookmarkCheck className="w-4 h-4 text-gray-600 dark:text-[#a8a29e] group-hover:text-black dark:group-hover:text-white" />
-            </div>
-          </Tooltip>
-          {/* recents */}
-
-          <Tooltip title="Recents">
-            <div
-              onClick={() => setActiveTab("recents")}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
-            >
-              <ClockArrowUp className="w-4 h-4 text-gray-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
+              <Archive className="w-4 h-4 text-gray-600 dark:text-[#a8a29e] group-hover:text-black dark:group-hover:text-white" />
             </div>
           </Tooltip>
           {/* read */}

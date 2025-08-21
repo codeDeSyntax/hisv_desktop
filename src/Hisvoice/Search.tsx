@@ -74,38 +74,85 @@ const Search = () => {
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const searchCacheRef = useRef<Map<string, GroupedSermonMatch[]>>(new Map());
 
-  // Memoize and preprocess all sermons once for faster searching
-  const processedSermons = useMemo<ProcessedSermon[]>(() => {
-    // Only process text sermons for search (filter out audio sermons)
-    const textSermons = allSermons.filter(
-      (sermon) =>
-        sermon.type === "text" &&
-        sermon.sermon &&
-        typeof sermon.sermon === "string"
-    );
+  // Lazy preprocessing - only process sermons when search is actually performed
+  const processedSermonsRef = useRef<ProcessedSermon[]>([]);
+  const preprocessingPromiseRef = useRef<Promise<ProcessedSermon[]> | null>(
+    null
+  );
 
-    return textSermons.map((sermon) => {
-      const formattedParagraphs = formatSermonIntoParagraphs(sermon.sermon!);
-      const paragraphs: SearchParagraph[] = formattedParagraphs.map(
-        (content, index) => ({
-          id: index + 1,
-          content: content,
-          originalIndex: index,
-          lowerContent: content.toLowerCase(), // Pre-compute for faster searching
-        })
-      );
+  // Function to process sermons asynchronously in chunks to avoid blocking UI
+  const preprocessSermons = useCallback(async (): Promise<
+    ProcessedSermon[]
+  > => {
+    if (preprocessingPromiseRef.current) {
+      return preprocessingPromiseRef.current;
+    }
 
-      return {
-        id: sermon.id,
-        title: sermon.title,
-        year: sermon.year,
-        location: sermon.location,
-        type: sermon.type,
-        paragraphs,
-        sermon: sermon.sermon!,
+    preprocessingPromiseRef.current = new Promise((resolve) => {
+      const processInChunks = () => {
+        // Only process text sermons for search (filter out audio sermons)
+        const textSermons = allSermons.filter(
+          (sermon) =>
+            sermon.type === "text" &&
+            sermon.sermon &&
+            typeof sermon.sermon === "string"
+        );
+
+        const processed: ProcessedSermon[] = [];
+        const CHUNK_SIZE = 10; // Process 10 sermons at a time
+        let currentIndex = 0;
+
+        const processChunk = () => {
+          const endIndex = Math.min(
+            currentIndex + CHUNK_SIZE,
+            textSermons.length
+          );
+
+          for (let i = currentIndex; i < endIndex; i++) {
+            const sermon = textSermons[i];
+            const formattedParagraphs = formatSermonIntoParagraphs(
+              sermon.sermon!
+            );
+            const paragraphs: SearchParagraph[] = formattedParagraphs.map(
+              (content, index) => ({
+                id: index + 1,
+                content: content,
+                originalIndex: index,
+                lowerContent: content.toLowerCase(),
+              })
+            );
+
+            processed.push({
+              id: sermon.id,
+              title: sermon.title,
+              year: sermon.year,
+              location: sermon.location,
+              type: sermon.type,
+              paragraphs,
+              sermon: sermon.sermon!,
+            });
+          }
+
+          currentIndex = endIndex;
+
+          if (currentIndex < textSermons.length) {
+            // Use setTimeout to yield control back to the browser
+            setTimeout(processChunk, 0);
+          } else {
+            processedSermonsRef.current = processed;
+            resolve(processed);
+          }
+        };
+
+        processChunk();
       };
+
+      // Start processing on next tick to avoid blocking initial render
+      setTimeout(processInChunks, 0);
     });
-  }, [allSermons]); // Depend on allSermons so it updates when sermons are loaded
+
+    return preprocessingPromiseRef.current;
+  }, [allSermons]);
 
   // Function to group matches by sermon
   const groupMatchesBySermon = useCallback(
@@ -138,20 +185,22 @@ const Search = () => {
     []
   );
 
-  // Optimized search function using Web Workers concept (simulated with setTimeout)
+  // Optimized search function using lazy preprocessing
   const performOptimizedSearch = useCallback(
     async (searchTerm: string): Promise<GroupedSermonMatch[]> => {
+      // Early exit for very short terms
+      const normalizedTerm = searchTerm.trim().toLowerCase();
+      if (normalizedTerm.length < 2) {
+        return [];
+      }
+
+      // Get processed sermons (this will trigger async preprocessing if needed)
+      const processedSermons = await preprocessSermons();
+
       return new Promise((resolve) => {
         // Use setTimeout to prevent UI blocking
         setTimeout(() => {
-          const normalizedTerm = searchTerm.trim().toLowerCase();
           const matches: SearchMatch[] = [];
-
-          // Early exit for very short terms
-          if (normalizedTerm.length < 2) {
-            resolve([]);
-            return;
-          }
 
           // Optimized search - process in chunks to prevent blocking
           const processChunk = (
@@ -227,7 +276,7 @@ const Search = () => {
         }, 0);
       });
     },
-    [processedSermons, groupMatchesBySermon]
+    [preprocessSermons, groupMatchesBySermon]
   );
 
   // Debounced search with caching

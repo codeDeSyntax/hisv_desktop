@@ -46,6 +46,7 @@ import {
   SermonContent,
   useSermonHighlighting,
   useSermonNavigation,
+  ChromeStyleSearch,
 } from "@/components/SermonReader";
 
 // Local interface for sermon paragraphs
@@ -124,6 +125,10 @@ const SelectedSermon = ({
     goToPreviousParagraph,
     goToNextParagraph,
     setSearchQuery,
+    isSearchVisible,
+    setIsSearchVisible,
+    showSearch,
+    hideSearch,
   } = useSermonNavigation(sermonParagraphs, scrollContainerRef);
 
   // Legacy search results format for compatibility
@@ -433,7 +438,7 @@ const SelectedSermon = ({
   };
 
   return (
-    <div className="bg-white dark:bg-background h-screen  relative  w-screen">
+    <div className="bg-white dark:bg-background h-screen   relative  w-screen">
       <SaveNotification
         show={showSaveNotification}
         onClose={() => setShowSaveNotification(false)}
@@ -471,11 +476,26 @@ const SelectedSermon = ({
         onApplyHighlight={applyHighlight}
       />
 
-      <div className="bg-center flex flex-col pb-10 ">
+      {/* Chrome-Style Search Bar */}
+      <ChromeStyleSearch
+        isVisible={isSearchVisible}
+        onClose={hideSearch}
+        onSearch={handleSearch}
+        searchResultsCount={searchResultsCount}
+        currentSearchIndex={currentSearchIndex}
+        onNavigateNext={goToNextSearchResult}
+        onNavigatePrevious={goToPreviousSearchResult}
+      />
+
+      <div className="bg-center flex flex-col pb-10">
         <div className="mb-5 h-full">
           <div
-            className="rounded-lg px-4 h-[100vh] overflow-y-scroll no-scrollbar text-wrap"
+            className="rounded-lg px-4 h-[100vh] overflow-y-scroll overflow-x-hidden no-scrollbar text-wrap max-w-full"
             ref={scrollContainerRef}
+            style={{
+              overflowWrap: "break-word",
+              wordBreak: "break-word",
+            }}
             // style={{
             //   scrollbarWidth: "thin",
             //   scrollbarColor: !isDarkMode
@@ -484,7 +504,7 @@ const SelectedSermon = ({
             // }}
           >
             {selectedMessage?.type === "text" ? (
-              <div className="h-full  mx-auto px-12 ">
+              <div className="mx-auto px-12 max-w-full">
                 {/* Text Color Selector */}
                 <TextColorSelector onColorChange={setSermonTColor} />
 
@@ -492,7 +512,10 @@ const SelectedSermon = ({
                 <SermonHeader title={selectedMessage?.title || ""} />
 
                 {/* Sermon Content with Paragraphs */}
-                <div className="space-y-6 relative overflow-y-scroll no-scrollbar">
+                <div
+                  className="space-y-6 relative max-w-full"
+                  style={{ overflowX: "hidden" }}
+                >
                   {sermonParagraphs.map((paragraph) => (
                     <div
                       key={paragraph.id}
@@ -513,7 +536,7 @@ const SelectedSermon = ({
                             );
                           }
                         }}
-                        className={`absolute -right-12 top-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 ${
+                        className={`absolute right-0 top-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 z-10 ${
                           selectedMessage &&
                           isBookmarked(selectedMessage.id as any, paragraph.id)
                             ? isDarkMode
@@ -550,7 +573,7 @@ const SelectedSermon = ({
 
                       {/* Paragraph Content with inline number */}
                       <div
-                        className={`leading-relaxed bg-transparent text-stone-600 dark:text-accent text-wrap break-words text-justify py-2 rounded-r-lg transition-all duration-200  ${
+                        className={`leading-relaxed bg-transparent text-stone-600 dark:text-accent text-wrap break-words justify-center text-center py-2 rounded-r-lg transition-all duration-200 max-w-full overflow-hidden ${
                           currentParagraph === paragraph.id
                             ? isDarkMode
                               ? "bg-primary dark:bg-transparent border-l-4 border-blue-500"
@@ -563,6 +586,9 @@ const SelectedSermon = ({
                           fontSize: `${settings.fontSize}px`,
                           fontStyle: settings.fontStyle,
                           color: isDarkMode ? sermonTColor : "#000000",
+                          overflowWrap: "break-word",
+                          wordBreak: "break-word",
+                          hyphens: "auto",
                         }}
                         onMouseUp={handleTextSelection}
                       >

@@ -1,5 +1,3 @@
-
-
 export interface Sermon {
   id: number | string;
   title: string;
@@ -8,8 +6,8 @@ export interface Sermon {
   sermon?: string;
   type?: string;
   audioUrl?: string;
-  downloadLink?:string;
-  location?:string;
+  downloadLink?: string;
+  location?: string;
   lastRead?: string;
+  lastParagraph?: number;
 }
-

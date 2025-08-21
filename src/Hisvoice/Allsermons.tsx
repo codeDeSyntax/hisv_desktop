@@ -1,4 +1,4 @@
-import { useContext, useState, useMemo, useCallback, memo, useRef, useEffect } from "react";
+import { useContext, useState, useMemo, useCallback, memo } from "react";
 import { Tooltip } from "antd";
 import { CalendarOutlined, EnvironmentOutlined } from "@ant-design/icons";
 import {
@@ -16,10 +16,6 @@ import { Sermon } from "@/types/index.js";
 import { useTheme } from "@/Provider/Theme.js";
 import SermonLoadSkeleton from "@/components/SermonLoadSkeleton";
 
-// Virtual scrolling constants
-const ITEM_HEIGHT = 45; // Height of each table row
-const BUFFER_SIZE = 5; // Extra items to render outside viewport
-
 const SermonList = memo(() => {
   const {
     allSermons,
@@ -35,42 +31,11 @@ const SermonList = memo(() => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const { isDarkMode } = useTheme();
 
-  // Virtual scrolling state
-  const [scrollTop, setScrollTop] = useState(0);
-  const [containerHeight, setContainerHeight] = useState(0);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  // Update container height on mount and resize
-  useEffect(() => {
-    const updateHeight = () => {
-      if (scrollContainerRef.current) {
-        setContainerHeight(scrollContainerRef.current.clientHeight);
-      }
-    };
-    
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
-  }, []);
-
-  // Debounced search to improve performance
-  const [debouncedSearchText, setDebouncedSearchText] = useState("");
-  
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchText(searchText);
-    }, 300); // 300ms delay
-    
-    return () => clearTimeout(timer);
-  }, [searchText]);
-
   const filteredSermons = useMemo(() => {
-    if (!debouncedSearchText) return allSermons;
-    
     return allSermons.filter((sermon) =>
-      sermon.title.toString().toLowerCase().includes(debouncedSearchText.toLowerCase())
+      sermon.title.toString().toLowerCase().includes(searchText.toLowerCase())
     );
-  }, [allSermons, debouncedSearchText]);
+  }, [allSermons, searchText]);
 
   const sortedSermons = useMemo(() => {
     let sorted = [...filteredSermons];
@@ -162,7 +127,7 @@ const SermonList = memo(() => {
       {/* Main Container - Centered with proper gap */}
       <div className="flex items-center justify-center w-[95%] h-[88vh]  gap-4 px-6 pb-2 ">
         {/* Left side - Sermon List (50%) */}
-        <div className="w-1/2 h-full flex flex-col relative  dark:shadow-[#543915] shadow rounded-3xl bg-white dark:bg-primary">
+        <div className="w-1/2 h-full flex flex-col relative   rounded-3xl bg-white dark:bg-primary/20">
           {/* Background Image */}
           {/* <di className="absolute inset-0 rounded-[20px] overflow-hidden">
             {/* <div
@@ -174,7 +139,7 @@ const SermonList = memo(() => {
               }}
             /> */}
 
-          <div className="backdrop-blur-md bg-white dark:bg-primary/70 p-4 relative z-10 flex flex-col h-full">
+          <div className="backdrop-blur-md bg-white dark:bg-primary/70 p-4 relative z-10 flex flex-col h-full rounded-3xl dark:shadow-[#543915] shadow">
             {/* Fixed Header */}
             <div className="flex-shrink-0 py-4 border-b border-gray-200 dark:border-gray-700">
               {/* Search Input */}

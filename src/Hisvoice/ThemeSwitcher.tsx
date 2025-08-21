@@ -1,23 +1,8 @@
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
+import { useTheme } from '@/Provider/Theme';
 
 const DarkModeToggle = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    const savedMode = localStorage.getItem('darkMode');
-    if (savedMode) {
-      setIsDarkMode(savedMode === 'true');
-      document.documentElement.classList.toggle('dark', savedMode === 'true');
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    document.documentElement.classList.toggle('dark', newMode);
-    localStorage.setItem('darkMode', JSON.stringify(newMode));
-  };
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   return (
     <button onClick={toggleDarkMode} className="p-2 rounded-full ">

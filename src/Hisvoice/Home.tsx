@@ -26,13 +26,6 @@ const Home = memo(() => {
     null
   );
 
-  // Debug log to see randomSermons
-  console.log(
-    "Home component - randomSermons:",
-    randomSermons.length,
-    randomSermons[0]?.title
-  );
-
   // Memoize scriptures to prevent recreation on every render
   const scriptures = useMemo(
     () => [

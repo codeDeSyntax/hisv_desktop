@@ -1,35 +1,60 @@
-import { useState, useContext, useRef } from "react";
-import { Play, Download, ArrowLeft } from "lucide-react";
+import { useState, useRef } from "react";
+import { Play, Pause, Download, ArrowLeft, Globe, Music } from "lucide-react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { useTheme } from "@/Provider/Theme";
 
 const DownloadSermon = () => {
   const { selectedMessage, setActiveTab } = useSermonContext();
   const { isDarkMode } = useTheme();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const audioRef = useRef(null);
+  const [showWebsite, setShowWebsite] = useState(true); // Default to web view
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const downloadUrl =
-    selectedMessage &&
-    selectedMessage.type === "mp3" &&
-    selectedMessage.downloadLink;
-  const audioUrl =
-    selectedMessage &&
-    selectedMessage.type === "mp3" &&
-    selectedMessage.audioUrl;
+    selectedMessage?.type === "mp3" && selectedMessage.downloadLink;
+  const audioUrl = selectedMessage?.type === "mp3" && selectedMessage.audioUrl;
+  const webUrl = selectedMessage?.downloadLink; // Using downloadLink as web URL
 
-  const togglePlayPause = () => {
-    if (audioUrl) {
-      setIsLoading(true);
-      window.open(audioUrl, "_blank");
-      setIsLoading(false);
+  const handlePlayPause = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
     }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
+    setCurrentTime(audioRef.current.currentTime);
+    setProgress(
+      (audioRef.current.currentTime / (audioRef.current.duration || 1)) * 100
+    );
+  };
+
+  const handleLoadedMetadata = () => {
+    if (!audioRef.current) return;
+    setDuration(audioRef.current.duration);
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!audioRef.current) return;
+    const seekTime =
+      (Number(e.target.value) / 100) * (audioRef.current.duration || 1);
+    audioRef.current.currentTime = seekTime;
+    setCurrentTime(seekTime);
+    setProgress(Number(e.target.value));
   };
 
   const handleDownload = () => {
-    if (audioUrl) {
+    if (downloadUrl) {
       setIsLoading(true);
-      window.open(audioUrl, "_blank");
+      window.open(downloadUrl, "_blank");
       setIsLoading(false);
     } else {
       alert("Download link not available");
@@ -40,220 +65,143 @@ const DownloadSermon = () => {
     setActiveTab("sermons");
   };
 
+  const formatTime = (sec: number) => {
+    if (!sec || isNaN(sec)) return "0:00";
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
   return (
     <div
-      className={`h-[90vh] p-6 pt-12 font-cooper transition-colors duration-300 ${
-        isDarkMode ? "bg-[#1c1917]" : "bg-stone-50"
-      }`}
+      className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/30 to-stone-100 dark:from-[#1c1917] dark:via-[#292016] dark:to-[#1f1e1a] flex items-center justify-center p-6"
+      // image background
+      style={{
+        backgroundImage: `${isDarkMode ? "url('./gradbg.png')" : "url('./wood11.jpg')"} `,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
-      <div className="flex justify-center ">
-        <div
-          className={`w-full max-w-md relative  ${
-            isDarkMode
-              ? "bg-[#1c1917] border-[#292524] text-[#f5f5f4]"
-              : "bg-white border-stone-200 text-stone-800"
-          } border-2 shadow-2xl`}
-        >
-          {/* Receipt Header Pattern */}
-          <div
-            className={`h-3 ${
-              isDarkMode ? "bg-[#292524]" : "bg-stone-100"
-            } border-b-2 border-dashed ${
-              isDarkMode ? "border-[#a8a29e]" : "border-stone-300"
-            } relative overflow-hidden`}
-          >
-            <div className="absolute inset-0 flex">
-              {[...Array(20)].map((_, i) => (
-                <div
-                  key={i}
-                  className={`w-4 h-full ${
-                    isDarkMode ? "bg-[#a8a29e]" : "bg-stone-200"
-                  } ${i % 2 === 0 ? "opacity-30" : "opacity-10"}`}
-                />
-              ))}
-            </div>
-          </div>
+      {/* Back Button - Fixed Position */}
+      <button
+        onClick={handleBack}
+        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-3 py-2 rounded-lg bg-white/80 dark:bg-[#1c1917]/80 backdrop-blur-xl text-stone-600 dark:text-amber-200 hover:bg-white dark:hover:bg-[#1c1917] transition-all duration-200 shadow-lg border border-stone-200/50 dark:border-amber-900/20 text-sm"
+      >
+        <ArrowLeft size={16} />
+        <span>Back</span>
+      </button>
 
-          {/* Receipt Content */}
-          <div className="px-6">
-            {/* Back Button */}
-            <button
-              onClick={handleBack}
-              className={`flex items-center justify-center w-full p-3 mb-3 ${
-                isDarkMode
-                  ? "bg-[#292524] hover:bg-[#a8a29e] text-[#f5f5f4]"
-                  : "bg-stone-100 hover:bg-stone-200 text-stone-700"
-              } border-2 ${
-                isDarkMode ? "border-[#a8a29e]" : "border-stone-300"
-              } border-dashed transition-all duration-300 hover:scale-105 font-bold uppercase tracking-wider text-sm`}
-            >
-              <ArrowLeft size={18} className="mr-2" />
-              Back to List
-            </button>
-
-            {/* Receipt Title */}
-            <div className="text-center mb-6">
-              <div
-                className={`border-b-2 border-dashed ${
-                  isDarkMode ? "border-[#a8a29e]" : "border-stone-300"
-                } pb-3 mb-2`}
-              >
-                <h1 className="text-xl font-bold uppercase tracking-widest">
-                  Sermon Audio
-                </h1>
-              </div>
-              <div
-                className={`text-xs uppercase tracking-wider ${
-                  isDarkMode ? "text-[#a8a29e]" : "text-stone-500"
-                }`}
-              >
-                Download Receipt
-              </div>
-            </div>
-
-            {/* Sermon Details */}
-            <div
-              className={`border-2 border-dashed ${
-                isDarkMode ? "border-[#292524]" : "border-stone-200"
-              } p-4 mb-6 ${isDarkMode ? "bg-[#292524]/20" : "bg-stone-50"}`}
-            >
-              <div className="text-center">
-                <div
-                  className={`text-xs uppercase tracking-wider mb-2 ${
-                    isDarkMode ? "text-[#a8a29e]" : "text-stone-500"
-                  }`}
-                >
-                  Item Description
-                </div>
-                <h2 className="text-lg font-bold break-words">
-                  {selectedMessage?.title || "Untitled Sermon"}
-                </h2>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="space-y-4 mb-3  ">
-              <button
-                onClick={togglePlayPause}
-                disabled={!audioUrl}
-                className={`w-full flex items-center justify-center p-4 font-bold uppercase tracking-wider text-sm transition-all duration-300 ${
-                  isDarkMode
-                    ? "bg-[#292524] hover:bg-[#a8a29e] text-[#f5f5f4] border-[#a8a29e]"
-                    : "bg-stone-700 hover:bg-stone-800 text-white border-stone-500"
-                } border-2 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105`}
-              >
-                <Play size={20} className="mr-3" />
-                Play Audio
-              </button>
-
-              <button
-                onClick={handleDownload}
-                disabled={isLoading || !downloadUrl}
-                className={`w-full flex items-center justify-center p-4 font-bold uppercase tracking-wider text-sm transition-all duration-300 border-2 border-dashed ${
-                  isDarkMode
-                    ? "bg-transparent hover:bg-[#292524] text-[#f5f5f4] border-[#a8a29e]"
-                    : "bg-transparent hover:bg-stone-100 text-stone-700 border-stone-400"
-                } disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105`}
-              >
-                {isLoading ? (
-                  <>
-                    <div className="animate-spin w-5 h-5 border-2 border-current border-t-transparent rounded-full mr-3"></div>
-                    Opening...
-                  </>
-                ) : (
-                  <>
-                    <Download size={20} className="mr-3" />
-                    Download
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Audio Player */}
-            {audioUrl && (
-              <div
-                className={`border-2 border-dashed ${
-                  isDarkMode ? "border-[#292524]" : "border-stone-200"
-                } p-4 ${isDarkMode ? "bg-[#292524]/20" : "bg-stone-50"}`}
-              >
-                <div
-                  className={`text-xs uppercase tracking-wider mb-3 text-center ${
-                    isDarkMode ? "text-[#a8a29e]" : "text-stone-500"
-                  }`}
-                >
-                  Audio Player
-                </div>
-                <audio
-                  ref={audioRef}
+      {/* Compact Audio Player Layout */}
+      <div className="w-[30%] rounded-xl shadow-2xl border border-stone-200/50 dark:border-amber-900/20 p-4 max-w-4xl">
+        {/* Audio URL Embed - Full Width */}
+        <div className="mb-4">
+          {audioUrl ? (
+            <div className="w-full h-96 rounded-lg overflow-hidden border border-stone-300 dark:border-amber-800/40 shadow-sm relative">
+              <div className="w-full h-full overflow-hidden">
+                <iframe
                   src={audioUrl}
-                  className="w-full"
-                  controls
+                  className="w-full border-none"
+                  title="Audio Player"
+                  sandbox="allow-scripts allow-same-origin"
                   style={{
-                    filter: isDarkMode
-                      ? "invert(1) hue-rotate(180deg)"
-                      : "none",
+                    height: "calc(100% + 17px)",
+                    marginRight: "-17px",
+                    border: "none",
                   }}
-                >
-                  Your browser does not support the audio element.
-                </audio>
-              </div>
-            )}
-
-            {/* Receipt Footer Pattern */}
-            <div
-              className={`mt-6 pt-4 border-t-2 border-dashed ${
-                isDarkMode ? "border-[#a8a29e]" : "border-stone-300"
-              }`}
-            >
-              <div
-                className={`text-center text-xs uppercase tracking-widest ${
-                  isDarkMode ? "text-[#a8a29e]" : "text-stone-400"
-                }`}
-              >
-                Thank You
+                />
               </div>
             </div>
-          </div>
-
-          {/* Bottom Receipt Edge */}
-          <div
-            className={`h-4 ${
-              isDarkMode ? "bg-[#292524]" : "bg-stone-100"
-            } border-t-2 border-dashed ${
-              isDarkMode ? "border-[#a8a29e]" : "border-stone-300"
-            } relative overflow-hidden`}
-          >
-            <div className="absolute inset-0 flex">
-              {[...Array(20)].map((_, i) => (
-                <div
-                  key={i}
-                  className={`w-4 h-full ${
-                    isDarkMode ? "bg-[#a8a29e]" : "bg-stone-200"
-                  } ${i % 2 === 0 ? "opacity-30" : "opacity-10"}`}
+          ) : (
+            <div className="w-full h-96 rounded-lg border border-stone-300 dark:border-amber-800/40 shadow-sm bg-gradient-to-br from-amber-100 to-stone-100 dark:from-amber-900/30 dark:to-stone-800/30 flex items-center justify-center">
+              <div className="text-center">
+                <Music
+                  size={48}
+                  className="text-amber-600 dark:text-amber-400 mx-auto mb-4"
                 />
-              ))}
+                <div className="text-lg text-stone-600 dark:text-amber-300 mb-2">
+                  No Audio URL Available
+                </div>
+                <div className="text-sm text-stone-500 dark:text-amber-400/70">
+                  Audio player will appear here when available
+                </div>
+              </div>
             </div>
-          </div>
-
-          {/* Receipt Tear Effect */}
-          <div
-            className={`absolute -bottom-2 left-0 right-0 h-4 ${
-              isDarkMode ? "bg-[#1c1917]" : "bg-stone-50"
-            }`}
-          >
-            <div className="flex justify-center">
-              {[...Array(12)].map((_, i) => (
-                <div
-                  key={i}
-                  className={`w-4 h-4 ${
-                    isDarkMode ? "bg-[#1c1917]" : "bg-stone-50"
-                  } transform rotate-45 -mt-2`}
-                  style={{ marginLeft: i === 0 ? 0 : "-8px" }}
-                />
-              ))}
-            </div>
-          </div>
+          )}
         </div>
+
+        {/* Title and Info */}
+        <div className="mb-3">
+          <h3 className="text-sm font-semibold text-stone-800 dark:text-amber-100 truncate">
+            {selectedMessage?.title || "Untitled Sermon"}
+          </h3>
+          <p className="text-xs text-stone-600 dark:text-amber-300/80">
+            {selectedMessage?.location || "Unknown Location"}
+          </p>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="mb-3">
+          <div className="flex items-center justify-between text-xs text-stone-500 dark:text-amber-300/70 mb-1">
+            <span>{formatTime(currentTime)}</span>
+            <span>{duration ? formatTime(duration) : "0:00"}</span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={progress}
+            onChange={handleSeek}
+            className="w-full h-1 bg-stone-200 dark:bg-amber-900/30 rounded-full appearance-none cursor-pointer focus:outline-none accent-amber-500"
+          />
+        </div>
+
+        {/* Control Buttons */}
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={handleDownload}
+            disabled={isLoading || !downloadUrl}
+            className="p-2 rounded-lg bg-stone-100 dark:bg-amber-900/20 text-stone-600 dark:text-amber-300 hover:bg-stone-200 dark:hover:bg-amber-800/30 transition-all duration-200 disabled:opacity-50"
+            aria-label="Download"
+          >
+            {isLoading ? (
+              <div className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full"></div>
+            ) : (
+              <Download size={16} />
+            )}
+          </button>
+
+          <button
+            onClick={handlePlayPause}
+            disabled={!audioUrl}
+            className="p-3 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700 text-white shadow-lg hover:from-amber-600 hover:to-amber-700 transition-all duration-200 transform hover:scale-105 disabled:opacity-50"
+            aria-label={isPlaying ? "Pause" : "Play"}
+          >
+            {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+          </button>
+
+          {webUrl && (
+            <button
+              onClick={() => window.open(webUrl, "_blank")}
+              className="p-2 rounded-lg bg-stone-100 dark:bg-amber-900/20 text-stone-600 dark:text-amber-300 hover:bg-stone-200 dark:hover:bg-amber-800/30 transition-all duration-200"
+              aria-label="Open Website"
+            >
+              <Globe size={16} />
+            </button>
+          )}
+        </div>
+
+        {/* Audio Element (hidden) */}
+        {audioUrl && (
+          <audio
+            ref={audioRef}
+            src={audioUrl}
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            className="hidden"
+          />
+        )}
       </div>
     </div>
   );

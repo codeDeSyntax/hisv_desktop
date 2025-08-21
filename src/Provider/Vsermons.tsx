@@ -415,10 +415,6 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
                   const allRandomSermons = textSermons
                     .sort(() => 0.5 - Math.random())
                     .slice(0, 3);
-                  console.log(
-                    "Setting random sermons (text) for first time:",
-                    allRandomSermons.map((s) => s.title)
-                  );
                   setRandomSermons(allRandomSermons);
 
                   // Set the first random text sermon as the selected message
@@ -431,8 +427,6 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
 
                 // Small delay to prevent UI blocking
                 await new Promise((resolve) => setTimeout(resolve, 10));
-
-                console.log(`✅ Loaded ${name}: ${sermons.length} sermons`);
               } catch (error) {
                 console.warn(`⚠️ Failed to load ${name}:`, error);
               }
@@ -445,8 +439,6 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
             setTimeout(() => {
               setLoadingMessage("");
             }, 2000);
-
-            console.log(`🎉 All sermons loaded: ${loadedSermons.length} total`);
           } catch (error) {
             console.error("❌ Error loading text sermons:", error);
           }

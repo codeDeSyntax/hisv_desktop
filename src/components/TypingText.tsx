@@ -43,7 +43,7 @@ const TypingVerse = ({
           fontSize: fontSize + "px",
           color: color,
           textAlign: align as React.CSSProperties["textAlign"],
-          lineHeight: "1.5",
+          // lineHeight: "1.5",
         }}
       >
         “{displayedText}”

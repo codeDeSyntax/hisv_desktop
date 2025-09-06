@@ -10,7 +10,7 @@ const SermonHeader = ({ title }: SermonHeaderProps) => {
   const { isDarkMode } = useTheme();
 
   return (
-    <div className="mb-4 text-center text-background">
+    <div className="pt-6 text-center text-background">
       <TypingVerse
         verse={title}
         typingSpeed={40}

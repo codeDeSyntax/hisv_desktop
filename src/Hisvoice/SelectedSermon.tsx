@@ -512,8 +512,8 @@ const SelectedSermon = ({
                 <SermonHeader title={selectedMessage?.title || ""} />
 
                 {/* Sermon Content with Paragraphs */}
-                <div
-                  className="space-y-6 relative max-w-full"
+                <span
+                  className="space-y-3 relative max-w-full"
                   style={{ overflowX: "hidden" }}
                 >
                   {sermonParagraphs.map((paragraph) => (
@@ -572,7 +572,7 @@ const SelectedSermon = ({
                       </button>
 
                       {/* Paragraph Content with inline number */}
-                      <div
+                      <span
                         className={`leading-relaxed bg-transparent text-stone-600 dark:text-accent text-wrap break-words justify-center text-center py-2 rounded-r-lg transition-all duration-200 max-w-full overflow-hidden ${
                           currentParagraph === paragraph.id
                             ? isDarkMode
@@ -613,10 +613,10 @@ const SelectedSermon = ({
                           {paragraph.id}.
                         </span>
                         {highlightEndnotesAndQuotes(paragraph.content)}
-                      </div>
+                      </span>
                     </div>
                   ))}
-                </div>
+                </span>
               </div>
             ) : (
               <DownloadSermon />

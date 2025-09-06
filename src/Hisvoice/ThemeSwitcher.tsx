@@ -1,5 +1,5 @@
-import { MoonOutlined, SunOutlined } from '@ant-design/icons';
-import { useTheme } from '@/Provider/Theme';
+import { MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { useTheme } from "@/Provider/Theme";
 
 const DarkModeToggle = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();

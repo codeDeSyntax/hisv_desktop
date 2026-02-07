@@ -32,7 +32,7 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
-    null
+    null,
   );
 
   // Filter and sort bookmarks
@@ -46,7 +46,7 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
           .toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
         (bookmark.location &&
-          bookmark.location.toLowerCase().includes(searchQuery.toLowerCase()))
+          bookmark.location.toLowerCase().includes(searchQuery.toLowerCase())),
     )
     .sort((a, b) => {
       switch (sortBy) {
@@ -100,19 +100,19 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
         <div className="flex-shrink-0 py-4 border-b border-gray-200 dark:border-gray-700">
           {/* Stats Section */}
           <div className="grid grid-cols-2 gap-2 mb-4 text-center text-xs">
-            <div className="p-2 border border-dashed border-stone-200 dark:border-amber-900/30 rounded">
-              <div className="font-bold text-amber-600 dark:text-amber-400">
+            <div className="p-2 border border-dashed border-stone-200 dark:border-stone-700 rounded">
+              <div className="font-bold text-stone-700 dark:text-stone-300">
                 {stats.totalBookmarks}
               </div>
-              <div className="text-stone-600 dark:text-orange-200">
+              <div className="text-stone-600 dark:text-stone-400">
                 BOOKMARKS
               </div>
             </div>
-            <div className="p-2 border border-dashed border-stone-200 dark:border-amber-900/30 rounded">
-              <div className="font-bold text-amber-600 dark:text-amber-400">
+            <div className="p-2 border border-dashed border-stone-200 dark:border-stone-700 rounded">
+              <div className="font-bold text-stone-700 dark:text-stone-300">
                 {stats.uniqueSermons}
               </div>
-              <div className="text-stone-600 dark:text-amber-200">SERMONS</div>
+              <div className="text-stone-600 dark:text-stone-400">SERMONS</div>
             </div>
           </div>
 
@@ -122,13 +122,13 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
               placeholder="Search bookmarks..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 p-2 text-sm bg-white dark:bg-primary border-none border-gray-300 dark:border-stone-600 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-[#42413f] text-stone-700 dark:text-white placeholder-gray-500"
+              className="flex-1 p-2 text-sm bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-full focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-600 text-stone-700 dark:text-stone-100 placeholder-stone-400"
               spellCheck={false}
             />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 text-xs bg-gray-50 dark:bg-primary border border-stone-200 dark:border-amber-900/30 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-700 dark:text-white"
+              className="px-3 py-2 text-xs bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded focus:outline-none focus:ring-2 focus:ring-stone-500 text-stone-700 dark:text-stone-100"
             >
               <option value="newest">Newest</option>
               <option value="oldest">Oldest</option>
@@ -148,19 +148,19 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
             </span>
           </div>
         ) : (
-          <div className="h-full flex flex-col font-zilla backdrop-blur-sm rounded-lg border border-stone-200 dark:border-amber-900/30">
+          <div className="h-full flex flex-col font-zilla backdrop-blur-sm rounded-lg border border-stone-200 dark:border-stone-700">
             {/* Fixed Table Header */}
             <div className="flex-shrink-0">
               <table className="w-full">
-                <thead className="bg-gradient-to-r from-stone-50 to-stone-100 dark:from-amber-950/50 dark:to-stone-900/80">
-                  <tr className="border-b border-stone-200 dark:border-amber-900/40">
-                    <th className="text-left px-3 py-2.5 text-stone-700 dark:text-orange-200 font-medium text-sm font-zilla">
+                <thead className="bg-gradient-to-r from-stone-100 to-stone-200 dark:from-stone-800 dark:to-stone-700">
+                  <tr className="border-b border-stone-200 dark:border-stone-600">
+                    <th className="text-left px-3 py-2.5 text-stone-700 dark:text-stone-300 font-medium text-sm font-zilla">
                       <span>Sermon & Content</span>
                     </th>
-                    <th className="text-left px-3 py-2.5 text-stone-700 dark:text-amber-200 font-medium text-sm font-zilla w-24">
+                    <th className="text-left px-3 py-2.5 text-stone-700 dark:text-stone-300 font-medium text-sm font-zilla w-24">
                       <span>Details</span>
                     </th>
-                    <th className="text-center px-3 py-2.5 text-stone-700 dark:text-orange-200 font-medium text-sm font-zilla w-16">
+                    <th className="text-center px-3 py-2.5 text-stone-700 dark:text-stone-300 font-medium text-sm font-zilla w-16">
                       Actions
                     </th>
                   </tr>
@@ -171,7 +171,7 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
             {/* Scrollable Table Body */}
             <div className="flex-1 overflow-y-auto no-scrollbar">
               <table className="w-full">
-                <tbody className="divide-y divide-stone-100 dark:divide-amber-900/20">
+                <tbody className="divide-y divide-stone-200 dark:divide-stone-700">
                   <AnimatePresence>
                     {filteredBookmarks.map((bookmark, index) => (
                       <motion.tr
@@ -180,21 +180,21 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -100 }}
                         transition={{ duration: 0.2, delay: index * 0.05 }}
-                        className="cursor-pointer group transition-all duration-200 hover:bg-gradient-to-r hover:from-amber-50/80 hover:to-stone-50/80 dark:hover:from-amber-950/20 dark:hover:to-stone-900/20 hover:shadow-sm"
+                        className="cursor-pointer group transition-all duration-200 hover:bg-gradient-to-r hover:from-stone-100/80 hover:to-stone-50/80 dark:hover:from-stone-800/50 dark:hover:to-stone-700/50 hover:shadow-sm"
                         onClick={() => handleBookmarkClick(bookmark)}
                       >
-                        <td className="px-3 text-stone-800 dark:text-text group-hover:text-amber-700 dark:group-hover:text-text/60 transition-colors text-sm leading-tight font-zilla border-x-0 border-t-0 border-b border-solid border-stone-200 dark:border-text/20">
+                        <td className="px-3 text-stone-800 dark:text-stone-200 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors text-sm leading-tight font-zilla border-x-0 border-t-0 border-b border-solid border-stone-200 dark:border-stone-700">
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2">
                               <BookmarkCheck
                                 size={12}
-                                className="text-amber-600 dark:text-amber-400"
+                                className="text-stone-600 dark:text-stone-400"
                               />
-                              <span className="font-medium line-clamp-1 text-yellow-800 dark:text-orange-300 overflow-hidden text-sm">
+                              <span className="font-medium line-clamp-1 text-stone-800 dark:text-stone-200 overflow-hidden text-sm">
                                 {bookmark.sermonTitle}
                               </span>
                             </div>
-                            <span className="text-xs text-stone-600 dark:text-orange-100 line-clamp-2 ml-5">
+                            <span className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2 ml-5">
                               "{bookmark.paragraphContent}"
                             </span>
                             {bookmark.location && (
@@ -204,7 +204,7 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
                                 {bookmark.paragraphId && (
                                   <>
                                     <span className="mx-1">•</span>
-                                    <span className="text-orange-900 dark:text-stone-400 font-bold">
+                                    <span className="text-stone-700 dark:text-stone-400 font-bold">
                                       Para #{bookmark.paragraphId}
                                     </span>
                                   </>
@@ -213,7 +213,7 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
                             )}
                           </div>
                         </td>
-                        <td className="px-3 text-stone-600 dark:text-amber-200 font-medium text-xs font-zilla w-24">
+                        <td className="px-3 text-stone-600 dark:text-stone-400 font-medium text-xs font-zilla w-24">
                           <div className="flex flex-col gap-1">
                             {bookmark.year && (
                               <div className="flex items-center gap-1">

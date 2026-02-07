@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 export const useSermonNavigation = (
   sermonParagraphs: any[],
-  scrollContainerRef: React.RefObject<HTMLDivElement>
+  scrollContainerRef: React.RefObject<HTMLDivElement>,
 ) => {
   const [currentParagraph, setCurrentParagraph] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -11,6 +11,26 @@ export const useSermonNavigation = (
   const [searchResultElements, setSearchResultElements] =
     useState<NodeListOf<Element> | null>(null);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+
+  // Track sermon identity to detect changes
+  const lastSermonLengthRef = useRef(sermonParagraphs.length);
+  const lastFirstParagraphRef = useRef(sermonParagraphs[0]?.content || "");
+
+  // Reset currentParagraph when sermon changes
+  useEffect(() => {
+    const currentLength = sermonParagraphs.length;
+    const currentFirstContent = sermonParagraphs[0]?.content || "";
+
+    // If sermon length or first paragraph content changed, it's a new sermon
+    if (
+      currentLength !== lastSermonLengthRef.current ||
+      currentFirstContent !== lastFirstParagraphRef.current
+    ) {
+      setCurrentParagraph(0);
+      lastSermonLengthRef.current = currentLength;
+      lastFirstParagraphRef.current = currentFirstContent;
+    }
+  }, [sermonParagraphs]);
 
   // Handle Ctrl+F keyboard shortcut
   useEffect(() => {
@@ -43,7 +63,7 @@ export const useSermonNavigation = (
           if (parent) {
             parent.replaceChild(
               document.createTextNode(el.textContent || ""),
-              el
+              el,
             );
             parent.normalize();
           }
@@ -56,11 +76,11 @@ export const useSermonNavigation = (
       if (!isNaN(paragraphNumber) && paragraphNumber > 0) {
         // Navigate to specific paragraph
         const targetParagraph = sermonParagraphs.find(
-          (p) => p.id === paragraphNumber
+          (p) => p.id === paragraphNumber,
         );
         if (targetParagraph) {
           const element = document.getElementById(
-            `paragraph-${paragraphNumber}`
+            `paragraph-${paragraphNumber}`,
           );
           if (element) {
             element.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -83,13 +103,13 @@ export const useSermonNavigation = (
       // Find and highlight search results while preserving original styling
       const searchRegex = new RegExp(
         `(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
-        "gi"
+        "gi",
       );
       let resultCount = 0;
 
       sermonParagraphs.forEach((paragraph) => {
         const paragraphElement = document.getElementById(
-          `paragraph-${paragraph.id}`
+          `paragraph-${paragraph.id}`,
         );
         if (paragraphElement) {
           // Remove existing search highlights first
@@ -100,7 +120,7 @@ export const useSermonNavigation = (
             if (parent) {
               parent.replaceChild(
                 document.createTextNode(el.textContent || ""),
-                el
+                el,
               );
               parent.normalize();
             }
@@ -110,7 +130,7 @@ export const useSermonNavigation = (
           const walker = document.createTreeWalker(
             paragraphElement,
             NodeFilter.SHOW_TEXT,
-            null
+            null,
           );
 
           const textNodes: Text[] = [];
@@ -157,23 +177,57 @@ export const useSermonNavigation = (
 
       // Navigate to first result if any
       if (results.length > 0) {
-        results[0].scrollIntoView({ behavior: "smooth", block: "center" });
+        const element = results[0] as HTMLElement;
+        const scrollContainer = element.closest(".overflow-y-auto");
+
+        if (scrollContainer && element) {
+          const containerRect = scrollContainer.getBoundingClientRect();
+          const elementRect = element.getBoundingClientRect();
+
+          const scrollTop = scrollContainer.scrollTop;
+          const elementRelativeTop = elementRect.top - containerRect.top;
+          const centerOffset = (containerRect.height - elementRect.height) / 2;
+          const targetScroll = scrollTop + elementRelativeTop - centerOffset;
+
+          scrollContainer.scrollTo({
+            top: targetScroll,
+            behavior: "smooth",
+          });
+        }
       }
     },
-    [sermonParagraphs]
+    [sermonParagraphs],
   );
 
   // Navigate to next search result
   const goToNextSearchResult = useCallback(() => {
     if (!searchResultElements || searchResultElements.length === 0) return;
 
+    // Move to next result, wrap around to 1 if at the end
     const nextIndex =
-      currentSearchIndex < searchResultElements.length ? currentSearchIndex : 1;
+      currentSearchIndex >= searchResultElements.length
+        ? 1
+        : currentSearchIndex + 1;
     setCurrentSearchIndex(nextIndex);
 
-    const targetElement = searchResultElements[nextIndex - 1];
+    const targetElement = searchResultElements[nextIndex - 1] as HTMLElement;
     if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      const scrollContainer = targetElement.closest(".overflow-y-auto");
+
+      if (scrollContainer) {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const elementRect = targetElement.getBoundingClientRect();
+
+        const scrollTop = scrollContainer.scrollTop;
+        const elementRelativeTop = elementRect.top - containerRect.top;
+        const centerOffset = (containerRect.height - elementRect.height) / 2;
+        const targetScroll = scrollTop + elementRelativeTop - centerOffset;
+
+        scrollContainer.scrollTo({
+          top: targetScroll,
+          behavior: "smooth",
+        });
+      }
     }
   }, [searchResultElements, currentSearchIndex]);
 
@@ -181,26 +235,73 @@ export const useSermonNavigation = (
   const goToPreviousSearchResult = useCallback(() => {
     if (!searchResultElements || searchResultElements.length === 0) return;
 
+    // Move to previous result, wrap around to last if at the beginning
     const prevIndex =
-      currentSearchIndex > 1
-        ? currentSearchIndex - 2
-        : searchResultElements.length - 1;
-    setCurrentSearchIndex(prevIndex + 1);
+      currentSearchIndex <= 1
+        ? searchResultElements.length
+        : currentSearchIndex - 1;
+    setCurrentSearchIndex(prevIndex);
 
-    const targetElement = searchResultElements[prevIndex];
+    const targetElement = searchResultElements[prevIndex - 1] as HTMLElement;
     if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      const scrollContainer = targetElement.closest(".overflow-y-auto");
+
+      if (scrollContainer) {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const elementRect = targetElement.getBoundingClientRect();
+
+        const scrollTop = scrollContainer.scrollTop;
+        const elementRelativeTop = elementRect.top - containerRect.top;
+        const centerOffset = (containerRect.height - elementRect.height) / 2;
+        const targetScroll = scrollTop + elementRelativeTop - centerOffset;
+
+        scrollContainer.scrollTo({
+          top: targetScroll,
+          behavior: "smooth",
+        });
+      }
     }
   }, [searchResultElements, currentSearchIndex]);
 
   // Navigate to specific paragraph
-  const goToParagraph = useCallback((paragraphId: number) => {
-    const element = document.getElementById(`paragraph-${paragraphId}`);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
-      setCurrentParagraph(paragraphId);
-    }
-  }, []);
+  const goToParagraph = useCallback(
+    (paragraphId: number) => {
+      const scrollToElement = () => {
+        const element = document.getElementById(`paragraph-${paragraphId}`);
+        const container = scrollContainerRef.current;
+
+        if (element && container) {
+          // Get the container's scroll parent (the overflow-y-auto div)
+          const scrollParent = container.parentElement;
+
+          if (scrollParent) {
+            // Calculate the element's position relative to the scroll parent
+            const containerRect = scrollParent.getBoundingClientRect();
+            const elementRect = element.getBoundingClientRect();
+
+            // Calculate scroll position to center the element
+            const scrollTop = scrollParent.scrollTop;
+            const elementRelativeTop = elementRect.top - containerRect.top;
+            const centerOffset =
+              (containerRect.height - elementRect.height) / 2;
+            const targetScroll = scrollTop + elementRelativeTop - centerOffset;
+
+            // Smooth scroll to the calculated position
+            scrollParent.scrollTo({
+              top: targetScroll,
+              behavior: "smooth",
+            });
+
+            setCurrentParagraph(paragraphId);
+          }
+        }
+      };
+
+      // Add a small delay to let any layout transitions complete
+      setTimeout(scrollToElement, 100);
+    },
+    [scrollContainerRef],
+  );
 
   // Navigate to previous paragraph
   const goToPreviousParagraph = useCallback(() => {

@@ -6,7 +6,7 @@ export { default as ReceiptStylePanel } from "./ReceiptStylePanel";
 export { default as SermonHeader } from "./SermonHeader";
 export { default as TextColorSelector } from "./TextColorSelector";
 export { SermonParagraph } from "./SermonParagraph";
-export { SermonContent } from "./SermonContent";
+
 export { default as ChromeStyleSearch } from "./ChromeStyleSearch";
 
 // Export hooks

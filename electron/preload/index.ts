@@ -5,7 +5,7 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
   on(...args: Parameters<typeof ipcRenderer.on>) {
     const [channel, listener] = args;
     return ipcRenderer.on(channel, (event, ...args) =>
-      listener(event, ...args)
+      listener(event, ...args),
     );
   },
   off(...args: Parameters<typeof ipcRenderer.off>) {
@@ -41,7 +41,7 @@ contextBridge.exposeInMainWorld("api", {
 
 // --------- Preload scripts loading ---------
 function domReady(
-  condition: DocumentReadyState[] = ["complete", "interactive"]
+  condition: DocumentReadyState[] = ["complete", "interactive"],
 ) {
   return new Promise((resolve) => {
     if (condition.includes(document.readyState)) {
@@ -325,10 +325,7 @@ function useLoading() {
           <img src="./cloud.png" alt="Loading..." class="main-logo" />
         </div>
       </div>
-      <div class="loading-text">Loading your experience...</div>
-      <div class="progress-container">
-        <div class="progress-bar"></div>
-      </div>
+     
     </div>
   `;
 
@@ -336,16 +333,6 @@ function useLoading() {
     appendLoading() {
       safeDOM.append(document.head, oStyle);
       safeDOM.append(document.body, oDiv);
-
-      // Animate progress bar
-      setTimeout(() => {
-        const progressBar = document.querySelector(
-          ".progress-bar"
-        ) as HTMLElement;
-        if (progressBar) {
-          progressBar.style.width = "100%";
-        }
-      }, 500);
     },
     removeLoading() {
       safeDOM.remove(document.head, oStyle);
@@ -363,4 +350,5 @@ window.onmessage = (ev) => {
   ev.data.payload === "removeLoading" && removeLoading();
 };
 
-setTimeout(removeLoading, 4999);
+// Ensure loading is removed once app is truly ready
+setTimeout(removeLoading, 3500);

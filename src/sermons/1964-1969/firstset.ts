@@ -3,7 +3,7 @@ const earlySermons = [
     id: 1,
     title: "The Evil Nature",
     year: "1964",
-    type:'text',
+    type: "text",
     date: "October-11-1964",
     sermon: `
     (Brother Robert Lambert was invited to preach at Brother Coleman’s church in New York.)
@@ -2074,7 +2074,7 @@ const earlySermons = [
     id: 2,
     title: "A Spiritual Race (New York)",
     year: "1964",
-    type:'text',
+    type: "text",
     date: "October-11-1964  New York, NY.",
     sermon: `
    Let us remain standing. And if you’ll bow your heads with me in a word of prayer to the Lord.
@@ -2662,7 +2662,7 @@ const earlySermons = [
     id: 3,
     title: "Sleepless Prayer",
     year: "1964",
-    type:'text',
+    type: "text",
     date: "October-14-1964",
     sermon: `
    Let us remain standing. And if you’ll bow your heads with me in a word of prayer to the Lord.
@@ -3251,7 +3251,7 @@ const earlySermons = [
    Congregation sings, “What A Friend.”
    Brother George Parylla, would you dismiss us in prayer?
 
-   <br/><br/>
+   
    The End
    The Kings Sword
    Note: All messages are written from recorded tapes of Brother Robert Lambert. Even Brother Lambert’s southern language he used is printed
@@ -3265,7 +3265,7 @@ const earlySermons = [
     id: 4,
     title: "Broken Fellowship",
     year: "1964",
-    type:'text',
+    type: "text",
     date: "October-21-1964  New York, NY",
     sermon: ` 
    Let us remain standing just a moment, please for a word of prayer before we bring the
@@ -3806,10 +3806,10 @@ const earlySermons = [
     id: 5,
     title: " The Hireling Shepherd",
     year: "1965",
-    type:'text',
+    type: "text",
     date: "April-11-1965 Am New York, NY",
     sermon: `
-   Shall we bow our heads, <br/>
+   Shall we bow our heads, 
    please, in a word of prayer?
    Brother Lambert prays opening prayer;
    Heavenly Father, we gather here again this Sunday, Lord, they call it today, Lord Palm
@@ -6375,7 +6375,7 @@ const earlySermons = [
     id: 6,
     title: "The Last Day Ministry",
     year: "1965",
-    type:'text',
+    type: "text",
     date: "October-16-1965 Pm Beaumont, Texas",
     sermon: `
    Note: Brother Carlton McGhee gives a testimony, then Brother Perry Green speaks and then
@@ -8321,7 +8321,7 @@ const earlySermons = [
     id: 7,
     title: "The Eunuchs Of The Lord Jesus Christ",
     year: "1966",
-    type:'text',
+    type: "text",
     date: "April-1-1966  Pm. Shreveport, Louisiana",
     sermon: `
      How many would like to be remembered in prayer, tonight? You have something on
@@ -11037,7 +11037,7 @@ const earlySermons = [
     id: 8,
     title: "	The Man-Child Made Manifested In This Hour",
     year: "1966",
-    type:'text',
+    type: "text",
     date: "August-13-1966 Pm. Miami, Florida",
     sermon: `
    Amen. Praise the name of the Lord. Praise the Lord God.
@@ -13293,7 +13293,7 @@ const earlySermons = [
     id: 9,
     title: "The Ministry Of The Bride",
     year: "1967",
-    type:'text',
+    type: "text",
     date: "April-23-1967 Am Durham, Connecticut",
     sermon: ` 
     Let’s remain standing for a word of prayer. How many would like to be remembered in
@@ -17072,7 +17072,7 @@ const earlySermons = [
     id: 10,
     title: "Broken Fellowship",
     year: "1967",
-    type:'text',
+    type: "text",
     date: "April-30-1967 Pm. Durham, Connecticut",
     sermon: `
     It certainly is a pleasure, to be out here in this local assembly in this area. Whether there be
@@ -20068,12 +20068,12 @@ const earlySermons = [
     id: 11,
     title: "God’s End Time Sign",
     year: "1967",
-    type:'text',
+    type: "text",
     date: "July-16-1967",
     location: "A.M. - Durham, Connecticut",
     sermon: `Opening prayer by Brother Lambert:
 
-    Let us bow our heads in a word of prayer please. <br/>
+    Let us bow our heads in a word of prayer please. 
    Our gracious heavenly father, we’re very grateful Lord Jesus to have for freedom of religion still
    in this great nation of America Father God. We’re so thankful that we can come here this morning
    and assemble ourselves together in spirit and in truth father. Lord, it’s not enough to just assemble
@@ -23175,12 +23175,12 @@ const earlySermons = [
     id: 12,
     title: "Revelation Of The Son Of Man",
     year: "1968",
-    type:'text',
+    type: "text",
     date: "January-28-1968",
     location: "Am. Durham, Connecticut",
     sermon: ` 
    Let’s bow our heads in a word of prayer. How many would like to be remembered in prayer?
-   Brother Lambert prays opening prayer:<br/><br/>
+   Brother Lambert prays opening prayer:
     Our most gracious heavenly Father, we are indeed grateful to be back here again this morning
    Lord. One more week and one more day closer to the coming of the Lord Jesus Christ, to be
    manifested in his body. And to rapture his believers off of this earth, while wrath and destruction
@@ -26546,7 +26546,7 @@ const earlySermons = [
     id: 13,
     title: "Birthright",
     year: "1968",
-    type:'text',
+    type: "text",
     date: "February-25-1968",
     location: "PM Durham, Connecticut",
     sermon: `
@@ -28758,7 +28758,7 @@ const earlySermons = [
     id: 14,
     title: "	Spirit Of Elijah",
     year: "1968",
-    type:'text',
+    type: "text",
     date: "June-16-1968",
     location: "Am Durham, Connecticut",
     sermon: `
@@ -34847,7 +34847,7 @@ const earlySermons = [
     id: 15,
     title: "Our Redeemer 1",
     year: "1968",
-    type:'text',
+    type: "text",
     date: "October-13-1968",
     location: "AM Durham, Connecticut",
     sermon: ` How many this morning, if you have something that’s upon your heart you want Jesus to
@@ -36347,7 +36347,7 @@ const earlySermons = [
     id: 16,
     title: "Our Redeemer 2",
     year: "1968",
-    type:'text',
+    type: "text",
     date: "October-20-1968",
     location: "AM Durham, Connecticut",
     sermon: `How many would like to be remembered in prayer this morning? Alright, let us bow our heads.
@@ -39098,7 +39098,7 @@ const earlySermons = [
     id: 17,
     title: "Our Redeemer 3",
     year: "1968",
-    type:'text',
+    type: "text",
     date: "November-3-1968",
     location: "Am–Durham, Connecticut",
     sermon: `Opening Prayer by Brother Robert Lambert:
@@ -42697,7 +42697,7 @@ const earlySermons = [
     id: 18,
     title: "Our Redeemer 4",
     year: "1968",
-    type:'text',
+    type: "text",
     date: "November-10-1968",
     location: "Am – Durham, Connecticut",
     sermon: `
@@ -45825,7 +45825,7 @@ const earlySermons = [
     id: 19,
     title: "Gentile's Messiah",
     year: "1969",
-    type:'text',
+    type: "text",
     date: "January-19-1969",
     location: "Am – Durham, Connecticut",
     sermon: ` This is the hour when we need to come under the Token. That’s the only thing the devil
@@ -49405,7 +49405,7 @@ const earlySermons = [
     id: 20,
     title: "Bro Robert Lee Lambert Testimony",
     year: "1969",
-    type:'text',
+    type: "text",
     date: "January-26-1969",
     location: "Pm Durham, Connecticut",
     sermon: ` Jesus loves me. I’m glad He said, “Whosoever will, let him come”. If He just said it to
@@ -51490,7 +51490,7 @@ const earlySermons = [
     id: 21,
     title: "Mose's Sin And The Smitten Rock",
     year: "1969",
-    type:'text',
+    type: "text",
     date: "February-2-1969",
     location: "Am. Durham, Connecticut",
     sermon: ` 
@@ -56764,7 +56764,7 @@ const earlySermons = [
     id: 22,
     title: "Abel's Sacrifice",
     year: "1969",
-    type:'text',
+    type: "text",
     date: "March-9-1969",
     location: "Pm. Durham, Connecticut",
     sermon: `
@@ -58701,13 +58701,13 @@ const earlySermons = [
    from Brother William M Branham’s web-site and are just as it was typed, font is enlarged at times for reference to message. This is to show the
    Perfection in God’s Word as he used the mouth of his prophets. Scriptures are copied and pasted from the King James Bible. Where Brother
    Lambert quotes scriptures in preaching or in reference to, they are copied and pasted from Bible. Some unusual words sometimes are spoken by
-   Brother Lambert, they are Referenced to Dictionary for your understanding.`
+   Brother Lambert, they are Referenced to Dictionary for your understanding.`,
   },
   {
     id: 23,
     title: "Apostasy",
     year: "1969",
-    type:'text',
+    type: "text",
     date: "March-23-1969",
     location: "AM Durham, Connecticut",
     sermon: ` 
@@ -63332,7 +63332,7 @@ const earlySermons = [
     id: 24,
     title: "Introducing The Messiah",
     year: "1969",
-    type:'text',
+    type: "text",
     date: "July-17-1969	",
     location: "Pm Durham, Connecticut",
     sermon: ` 
@@ -66511,7 +66511,7 @@ const earlySermons = [
     id: 25,
     title: "	Attraction In The Bride",
     year: "1969",
-    type:'text',
+    type: "text",
     date: "November-9-1969",
     location: "",
     sermon: `
@@ -70860,7 +70860,7 @@ const earlySermons = [
    from Brother William M Branham’s web-site and are just as it was typed, font is enlarged at times for reference to message. This is to show the
    Perfection in God’s Word as he used the mouth of his prophets. Scriptures are copied and pasted from the King James Bible. Where Brother
    Lambert quotes scriptures in preaching or in reference to, they are copied and pasted from Bible. Some unusual words sometimes are spoken by
-   Brother Lambert, they are Referenced to Dictionary for your understanding.`
+   Brother Lambert, they are Referenced to Dictionary for your understanding.`,
   },
 ];
 export default earlySermons;

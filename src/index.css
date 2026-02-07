@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -9,6 +15,7 @@ body {
   font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   overflow-x: hidden;
 }
+
 .wqoute {
   font-family: "Brush Script MT", "Cursive", "Pacifico", cursive;
 }
@@ -25,12 +32,14 @@ body {
   background-size: 20px 20px; /* Adjust the size of the background pattern */
 }
 .gridb {
-  background: linear-gradient(to right, white 1px, white 1px),
+  background:
+    linear-gradient(to right, white 1px, white 1px),
     linear-gradient(to bottom, white 1px, #fafafa 1px);
   background-size: 20px 20px; /* Adjust the size of the grid */
 }
 .gridb1 {
-  background: linear-gradient(to right, #fffdd5 1px, transparent 1px),
+  background:
+    linear-gradient(to right, #fffdd5 1px, transparent 1px),
     linear-gradient(to bottom, #fffdd5 1px, #faeed1 1px);
   background-size: 20px 20px; /* Adjust the size of the grid */
 }
@@ -38,6 +47,28 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+/* Custom text selection globally - stone-themed instead of default blue */
+::selection {
+  background-color: rgba(168, 162, 158, 0.3); /* stone-400 with transparency */
+  color: inherit;
+}
+
+::-moz-selection {
+  background-color: rgba(168, 162, 158, 0.3);
+  color: inherit;
+}
+
+/* Dark mode custom selection */
+.dark ::selection {
+  background-color: rgba(120, 113, 108, 0.4); /* stone-600 with transparency */
+  color: inherit;
+}
+
+.dark ::-moz-selection {
+  background-color: rgba(120, 113, 108, 0.4);
+  color: inherit;
 }
 
 /* button {
@@ -258,4 +289,23 @@ button:hover {
   white-space: normal !important;
   max-width: 100% !important;
   display: inline !important;
+}
+
+/* Force all inline text elements to wrap properly */
+span,
+p,
+div {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+/* Hide scrollbars while keeping scrolling functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

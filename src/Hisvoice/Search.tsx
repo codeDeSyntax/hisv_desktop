@@ -77,7 +77,7 @@ const Search = () => {
   // Lazy preprocessing - only process sermons when search is actually performed
   const processedSermonsRef = useRef<ProcessedSermon[]>([]);
   const preprocessingPromiseRef = useRef<Promise<ProcessedSermon[]> | null>(
-    null
+    null,
   );
 
   // Function to process sermons asynchronously in chunks to avoid blocking UI
@@ -95,7 +95,7 @@ const Search = () => {
           (sermon) =>
             sermon.type === "text" &&
             sermon.sermon &&
-            typeof sermon.sermon === "string"
+            typeof sermon.sermon === "string",
         );
 
         const processed: ProcessedSermon[] = [];
@@ -105,13 +105,13 @@ const Search = () => {
         const processChunk = () => {
           const endIndex = Math.min(
             currentIndex + CHUNK_SIZE,
-            textSermons.length
+            textSermons.length,
           );
 
           for (let i = currentIndex; i < endIndex; i++) {
             const sermon = textSermons[i];
             const formattedParagraphs = formatSermonIntoParagraphs(
-              sermon.sermon!
+              sermon.sermon!,
             );
             const paragraphs: SearchParagraph[] = formattedParagraphs.map(
               (content, index) => ({
@@ -119,7 +119,7 @@ const Search = () => {
                 content: content,
                 originalIndex: index,
                 lowerContent: content.toLowerCase(),
-              })
+              }),
             );
 
             processed.push({
@@ -182,7 +182,7 @@ const Search = () => {
 
       return Array.from(groupedMap.values());
     },
-    []
+    [],
   );
 
   // Optimized search function using lazy preprocessing
@@ -206,7 +206,7 @@ const Search = () => {
           const processChunk = (
             sermons: ProcessedSermon[],
             startIndex: number,
-            chunkSize: number
+            chunkSize: number,
           ) => {
             const endIndex = Math.min(startIndex + chunkSize, sermons.length);
 
@@ -220,21 +220,21 @@ const Search = () => {
                 if (matchIndex !== -1) {
                   const beforeContext = paragraph.content.slice(
                     Math.max(0, matchIndex - 100),
-                    matchIndex
+                    matchIndex,
                   );
                   const afterContext = paragraph.content.slice(
                     matchIndex + searchTerm.length,
-                    matchIndex + searchTerm.length + 100
+                    matchIndex + searchTerm.length + 100,
                   );
 
                   const previewText = paragraph.content.slice(
                     Math.max(0, matchIndex - 30),
-                    matchIndex + searchTerm.length + 30
+                    matchIndex + searchTerm.length + 30,
                   );
 
                   const actualMatchedText = paragraph.content.slice(
                     matchIndex,
-                    matchIndex + searchTerm.length
+                    matchIndex + searchTerm.length,
                   );
 
                   matches.push({
@@ -276,7 +276,7 @@ const Search = () => {
         }, 0);
       });
     },
-    [preprocessSermons, groupMatchesBySermon]
+    [preprocessSermons, groupMatchesBySermon],
   );
 
   // Debounced search with caching
@@ -353,7 +353,7 @@ const Search = () => {
       const value = e.target.value;
       setSearchInput(value);
     },
-    []
+    [],
   );
 
   // Optimized search submit
@@ -393,7 +393,7 @@ const Search = () => {
           });
       }
     },
-    [searchInput, performOptimizedSearch]
+    [searchInput, performOptimizedSearch],
   );
 
   const handleMatchClick = useCallback(
@@ -401,10 +401,10 @@ const Search = () => {
       navigateToSearchResult(
         match.sermonId,
         match.paragraphId,
-        searchInput.trim()
+        searchInput.trim(),
       );
     },
-    [navigateToSearchResult, searchInput]
+    [navigateToSearchResult, searchInput],
   );
 
   const handleSermonGroupClick = useCallback(
@@ -415,7 +415,7 @@ const Search = () => {
         navigateToSearchResult(
           match.sermonId,
           match.paragraphId,
-          searchInput.trim()
+          searchInput.trim(),
         );
       } else {
         // Toggle the expansion of sermon matches
@@ -425,7 +425,7 @@ const Search = () => {
         }));
       }
     },
-    [navigateToSearchResult, searchInput]
+    [navigateToSearchResult, searchInput],
   );
 
   // Optimized highlight function with memoization
@@ -441,27 +441,23 @@ const Search = () => {
       const before = text.slice(0, index);
       const match = text.slice(index, index + searchTerm.length);
       const after = text.slice(index + searchTerm.length);
-      return `${before}<span class='bg-amber-200 dark:bg-amber-900/50 px-1 text-amber-900 dark:text-amber-200 rounded font-medium'>${match}</span>${after}`;
+      return `${before}<span class='bg-stone-300 dark:bg-stone-700 px-1 text-stone-900 dark:text-stone-200 rounded font-medium'>${match}</span>${after}`;
     }
 
     return text;
   }, []);
 
   return (
-    <div className=" h-full relativ flex flex-col bg-gray-100 dark:bg-primary/50 p-4 rounded-[20px] font-zilla">
+    <div className="h-full relative flex flex-col bg-stone-50 dark:bg-stone-900 p-4 rounded-[20px] font-zilla">
       {/* Fixed Header */}
-      <div className="flex-shrink-0 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-bold font-serif mb-3 text-stone-700 dark:text-gray-50">
-          Advanced Search
-        </h2>
-
+      <div className="flex-shrink-0 pb-4 border-b border-stone-200 dark:border-stone-700">
         <form onSubmit={handleSearchSubmit} className="space-y-3">
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <input
                 type="text"
                 placeholder="Search for quotes, phrases, or keywords..."
-                className="w-full p-3 pr-10 text-sm bg-gray-50 dark:bg-primary border-none border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-700 text-stone-700 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="w-full p-3 pr-10 text-sm bg-white dark:bg-stone-800 border-solid border border-stone-300 dark:border-stone-600 rounded-full focus:outline-none focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-500 text-stone-900 dark:text-stone-100 placeholder-stone-500 dark:placeholder-stone-400 shadow-sm"
                 onChange={handleSearchInput}
                 value={searchInput}
               />
@@ -474,7 +470,7 @@ const Search = () => {
             <button
               type="submit"
               disabled={isSearching}
-              className="px-4 py-3 bg-stone-600 dark:bg-primary hover:bg-stone-700 dark:hover:bg-gray-500 text-white rounded-md transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-3 bg-stone-700 dark:bg-stone-600 hover:bg-stone-800 dark:hover:bg-stone-700 text-white rounded-xl transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
             >
               {isSearching ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
@@ -486,11 +482,11 @@ const Search = () => {
               )}
             </button>
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="text-xs text-stone-500 dark:text-stone-400">
             <span className="font-medium">Tips:</span> Search supports fuzzy
             matching, punctuation variations, and partial phrases.
             {searchInput.length > 0 && searchInput.length < 2 && (
-              <span className="text-orange-500 dark:text-orange-400 ml-2">
+              <span className="text-stone-700 dark:text-stone-300 ml-2">
                 Enter at least 2 characters to search
               </span>
             )}
@@ -524,24 +520,30 @@ const Search = () => {
           </div>
         ) : foundMatches.length > 0 ? (
           <div className="p-2">
-            <div className="text-xs text-stone-600 dark:text-gray-400 mb-2 pb-1 border-b border-gray-200 dark:border-gray-600">
+            <div className="text-xs text-stone-700 dark:text-stone-300 mb-3 pb-2 border-b border-stone-200 dark:border-stone-700 font-medium">
               Found{" "}
-              {foundMatches.reduce(
-                (total, group) => total + group.totalMatches,
-                0
-              )}{" "}
+              <span className="text-stone-900 dark:text-stone-100 font-semibold">
+                {foundMatches.reduce(
+                  (total, group) => total + group.totalMatches,
+                  0,
+                )}
+              </span>{" "}
               match
               {foundMatches.reduce(
                 (total, group) => total + group.totalMatches,
-                0
+                0,
               ) !== 1
                 ? "es"
                 : ""}{" "}
-              in {foundMatches.length} sermon
+              in{" "}
+              <span className="text-stone-900 dark:text-stone-100 font-semibold">
+                {foundMatches.length}
+              </span>{" "}
+              sermon
               {foundMatches.length !== 1 ? "s" : ""} for "{searchInput.trim()}"
             </div>
 
-            <div className="space-y-0">
+            <div className="space-y-3">
               {foundMatches.map((groupedMatch, index) => {
                 const sermonId = groupedMatch.sermonId;
                 const isExpanded = expandedSermons[sermonId];
@@ -551,62 +553,78 @@ const Search = () => {
                     : [groupedMatch.matches[0]]; // Show only first match when collapsed
 
                 return (
-                  <div key={`sermon-${sermonId}-${index}`}>
-                    {/* Sermon Header */}
-                    <div
-                      className="py-1.5 px-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-primary/20 transition-colors border-b border-gray-100 dark:border-gray-700"
-                      onClick={() => handleSermonGroupClick(groupedMatch)}
-                    >
-                      <div className="flex justify-between items-center">
-                        <h1 className="font-medium text-stone-700 dark:text-orange-100 text-sm leading-tight italic  truncate">
-                          {groupedMatch.sermonTitle}
-                        </h1>
-                        <div className="flex items-center gap-1.5 text-xs text-stone-500 dark:text-gray-400 flex-shrink-0 ml-2">
-                          {groupedMatch.sermonYear && (
-                            <span>{groupedMatch.sermonYear}</span>
-                          )}
-
-                          <span className="bg-yellow-900 dark:bg-yellow-900 text-white px-1.5 py-0.5 rounded text-xs font-medium">
-                            {groupedMatch.totalMatches}
-                          </span>
-                          {groupedMatch.totalMatches > 1 && (
-                            <ChevronDown
-                              size={12}
-                              className={`transition-transform ${
-                                isExpanded ? "rotate-180" : ""
-                              }`}
-                            />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
+                  <div
+                    key={`sermon-${sermonId}-${index}`}
+                    className="bg-white dark:bg-stone-800/50 rounded-xl shadow-sm border border-stone-200 dark:border-stone-700 overflow-hidden"
+                  >
                     {/* Individual Matches */}
                     <div>
                       {displayMatches.map((match, matchIndex) => {
                         const uniqueMatchId = `${match.sermonId}-${match.paragraphId}-${matchIndex}`;
+                        const isFirstMatch = matchIndex === 0;
 
                         return (
                           <div
                             key={uniqueMatchId}
-                            className="py-2 px-3 cursor-pointer border-solid hover:bg-gray-50 dark:hover:bg-orange-300/10 transition-colors border-x-0 border-t-0 border-b  border-stone-200 dark:border-text/20"
+                            className="py-3 px-4 cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-700/30 transition-all duration-200 border-b border-stone-200 dark:border-stone-600 last:border-b-0"
                             onClick={() => handleMatchClick(match)}
                           >
-                            <div className="text-sm leading-relaxed">
-                              <span className="text-stone-600 dark:text-text">
-                                <span className=" text-yellow-800 dark:text-orange-500 px-1.5 py-0.5 rounded text-xs font-mono flex-shrink-0">
+                            <div className="flex items-start gap-3">
+                              {/* Left side: Paragraph number, badge, and expander */}
+                              <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+                                <span className="bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-300 px-2 py-0.5 rounded-md text-xs font-mono font-semibold">
                                   ¶{match.paragraphId}
                                 </span>
+                                <span className="bg-stone-700 dark:bg-stone-600 text-white px-1.5 py-0.5 rounded-full text-xs font-semibold shadow-sm">
+                                  {groupedMatch.totalMatches}
+                                </span>
+                                {groupedMatch.totalMatches > 1 && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleSermonGroupClick(groupedMatch);
+                                    }}
+                                    className="p-0.5 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors"
+                                  >
+                                    <ChevronDown
+                                      size={12}
+                                      className={`transition-transform text-stone-600 dark:text-stone-400 ${
+                                        isExpanded ? "rotate-180" : ""
+                                      }`}
+                                    />
+                                  </button>
+                                )}
+                              </div>
 
-                                {match.contextBefore}
-                              </span>
-
-                              <span className="bg-yellow-700 dark:bg-transparent px-1 text-white dark:text-yellow-700 rounded font-medium">
-                                {match.matchedText}
-                              </span>
-                              <span className="text-stone-600 dark:text-text">
-                                {match.contextAfter}
-                              </span>
+                              {/* Right side: Text content with sermon title and year/location at the beginning of first match */}
+                              <div className="text-sm leading-relaxed flex-1">
+                                {isFirstMatch && (
+                                  <div className="mb-1.5">
+                                    <span className="font-bold text-stone-900 dark:text-stone-100 text-sm">
+                                      {groupedMatch.sermonTitle}
+                                    </span>
+                                    {(groupedMatch.sermonYear ||
+                                      groupedMatch.sermonLocation) && (
+                                      <span className="font-semibold text-stone-700 dark:text-stone-300 text-xs ml-2">
+                                        [{groupedMatch.sermonLocation}
+                                        {groupedMatch.sermonYear
+                                          ? `, ${groupedMatch.sermonYear}`
+                                          : ""}
+                                        ]
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                                <span className="text-stone-600 dark:text-stone-400">
+                                  {match.contextBefore}
+                                </span>
+                                <span className="bg-stone-700 dark:bg-stone-600 px-1.5 py-0.5 text-white rounded font-semibold shadow-sm">
+                                  {match.matchedText}
+                                </span>
+                                <span className="text-stone-600 dark:text-stone-400">
+                                  {match.contextAfter}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         );
@@ -623,17 +641,19 @@ const Search = () => {
               <img
                 src="./nosong.png"
                 alt="No results"
-                className="h-32 mx-auto mb-4 opacity-60"
+                className="h-32 mx-auto mb-4 opacity-50"
               />
-              <p className="text-stone-600 dark:text-gray-300 font-serif italic text-sm max-w-xs mb-4">
+              <p className="text-stone-700 dark:text-stone-300 font-serif italic text-sm max-w-xs mb-4">
                 Search for quotes across all sermons preached by Robert Lambert
                 Lee
               </p>
               {searchInput && foundMatches.length === 0 && !isSearching && (
-                <div className="text-stone-500 dark:text-gray-400 text-sm">
-                  <p className="mb-2">No results found for "{searchInput}"</p>
-                  <div className="text-xs text-gray-400 dark:text-gray-500">
-                    <p>Try:</p>
+                <div className="text-stone-600 dark:text-stone-400 text-sm">
+                  <p className="mb-2 font-medium">
+                    No results found for "{searchInput}"
+                  </p>
+                  <div className="text-xs text-stone-500 dark:text-stone-400">
+                    <p className="font-medium mb-1">Try:</p>
                     <ul className="list-disc list-inside space-y-1 mt-1">
                       <li>Different keywords or phrases</li>
                       <li>Partial words or simpler terms</li>

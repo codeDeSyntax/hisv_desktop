@@ -1,5 +1,4 @@
 import React from "react";
-import TypingVerse from "@/components/TypingText";
 import { useTheme } from "@/Provider/Theme";
 
 interface SermonHeaderProps {
@@ -10,16 +9,16 @@ const SermonHeader = ({ title }: SermonHeaderProps) => {
   const { isDarkMode } = useTheme();
 
   return (
-    <div className="pt-6 text-center text-background">
-      <TypingVerse
-        verse={title}
-        typingSpeed={40}
-        minHeight={0}
-        fontFamily="Zilla Slab"
-        fontSize={30}
-        color={isDarkMode ? "#cbcbcb " : "black "}
-        align="center"
-      />
+    <div className="pt-3 text-center text-background">
+      <h1
+        className="text-3xl font-bold"
+        style={{
+          color: isDarkMode ? "#cbcbcb" : "black",
+          fontFamily: "Zilla Slab",
+        }}
+      >
+        {title}
+      </h1>
     </div>
   );
 };

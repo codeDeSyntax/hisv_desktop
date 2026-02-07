@@ -23,7 +23,7 @@ const BookmarksPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
-    null
+    null,
   );
 
   // Filter and sort bookmarks
@@ -37,7 +37,7 @@ const BookmarksPage = () => {
           .toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
         (bookmark.location &&
-          bookmark.location.toLowerCase().includes(searchQuery.toLowerCase()))
+          bookmark.location.toLowerCase().includes(searchQuery.toLowerCase())),
     )
     .sort((a, b) => {
       switch (sortBy) {
@@ -119,7 +119,7 @@ const BookmarksPage = () => {
                 : "border-gray-400 bg-gray-50"
             }`}
           >
-            <div className="text-2xl font-bold text-orange-500">
+            <div className="text-2xl font-bold text-stone-700 dark:text-stone-300">
               {stats.totalBookmarks}
             </div>
             <div className="text-xs">TOTAL BOOKMARKS</div>
@@ -157,7 +157,7 @@ const BookmarksPage = () => {
                   isDarkMode
                     ? "bg-stone-800 border-accent text-gray-200 placeholder-gray-500"
                     : "bg-white border-gray-400 text-gray-700 placeholder-gray-400"
-                } focus:outline-none focus:border-orange-500`}
+                } focus:outline-none focus:border-stone-500`}
               />
             </div>
             <select
@@ -167,7 +167,7 @@ const BookmarksPage = () => {
                 isDarkMode
                   ? "bg-stone-800 border-accent text-gray-200"
                   : "bg-white border-gray-400 text-gray-700"
-              } focus:outline-none focus:border-orange-500`}
+              } focus:outline-none focus:border-stone-500`}
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
@@ -228,8 +228,8 @@ const BookmarksPage = () => {
                 transition={{ delay: index * 0.1 }}
                 className={`relative font-mono border-2 border-dashed shadow-lg ${
                   isDarkMode
-                    ? "bg-primary border-accent hover:border-orange-500"
-                    : "bg-white border-gray-400 hover:border-orange-500"
+                    ? "bg-stone-900 border-stone-700 hover:border-stone-600"
+                    : "bg-white border-gray-300 hover:border-gray-400"
                 } transition-all duration-200 hover:shadow-xl group`}
               >
                 {/* Receipt Item Header */}
@@ -241,7 +241,10 @@ const BookmarksPage = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <BookmarkCheck size={16} className="text-yellow-500" />
+                        <BookmarkCheck
+                          size={16}
+                          className="text-stone-600 dark:text-stone-400"
+                        />
                         <span
                           className={`text-xs font-bold ${
                             isDarkMode ? "text-gray-400" : "text-gray-600"

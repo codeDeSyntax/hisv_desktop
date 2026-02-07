@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 const Loader = () => {
   const [showText, setShowText] = useState(false);
@@ -26,15 +26,14 @@ const Loader = () => {
           }
         `}
       </style>
-      <div className="flex flex-col items-center justify-center h-screen space-y-4 bg-primary" id="triggerElement">
-        <img
-          src="./cloud.png"
-          className="cloud h-40 w-40"
-          alt="cloud"
-        />
+      <div
+        className="flex flex-col items-center justify-center h-screen space-y-4 bg-primary"
+        id="triggerElement"
+      >
+        <img src="./cloud.png" className="cloud h-40 w-40" alt="cloud" />
         <div
           className={`text-white text-2xl font-mono transition-opacity duration-1000 ease-in-out ${
-            showText ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            showText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
           }`}
         >
           Welcome to His Voice....

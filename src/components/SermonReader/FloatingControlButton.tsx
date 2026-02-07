@@ -21,26 +21,26 @@ const FloatingControlButton = ({
 
   return (
     <motion.button
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.95 }}
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.92 }}
       onClick={onToggle}
-      className={`fixed left-3 bottom-1/2 z-40 w-8 h-8 rounded-full shadow-lg transition-all duration-300 ${
+      className={`fixed right-10 top-16 z-40 w-10 h-10 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center backdrop-blur-sm ${
         isDarkMode
-          ? "bg-primary hover:bg-gray-700 text-gray-200"
-          : "bg-white hover:bg-gray-50 text-gray-700"
+          ? "bg-stone-800/90 hover:bg-stone-700 text-stone-200"
+          : "bg-white/90 hover:bg-stone-50 text-stone-700"
       } border-2 ${
         showControlPanel
           ? isDarkMode
-            ? "border-blue-500"
-            : "border-blue-500"
+            ? "border-stone-500 shadow-stone-500/50"
+            : "border-stone-400 shadow-stone-400/30"
           : isDarkMode
-          ? "border-primary"
-          : "border-gray-300"
+            ? "border-stone-700"
+            : "border-stone-300"
       }`}
     >
-      <InfoCircleFilled size={24} className="mx-auto" />
+      <InfoCircleFilled size={20} className="mx-auto" />
     </motion.button>
   );
 };

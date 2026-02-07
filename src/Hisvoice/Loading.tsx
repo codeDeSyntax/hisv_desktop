@@ -1,5 +1,5 @@
 import { useSermonContext } from "@/Provider/Vsermons";
-import FastLoader from "@/components/FastLoader";
+// import FastLoader from "@/components/FastLoader";
 
 const LoadingScreen = () => {
   const { loadingProgress, loadingMessage } = useSermonContext();
@@ -21,10 +21,10 @@ const LoadingScreen = () => {
           </p>
         </div>
 
-        <FastLoader
+        {/* <FastLoader
           message={loadingMessage || "Loading sermons..."}
-          progress={loadingProgress}
-        />
+            progress={loadingProgress}
+          /> */}
 
         <div className="mt-6 text-xs text-stone-400 dark:text-gray-500">
           {loadingProgress < 40 && "Preparing your sermon library..."}

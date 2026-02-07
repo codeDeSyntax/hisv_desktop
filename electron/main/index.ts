@@ -1,13 +1,9 @@
-import {
-  app,
-  BrowserWindow,
-  shell,
-  ipcMain,
-} from "electron";
+import { app, BrowserWindow, shell, ipcMain } from "electron";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import os from "node:os";
+import { getSystemFonts } from "./fonts.js";
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -80,13 +76,45 @@ async function createMainWindow() {
     mainWin.loadFile(indexHtml);
   }
 
-  // Disable certain keyboard shortcuts
+  // Handle keyboard shortcuts
   mainWin.webContents.on("before-input-event", (event, input) => {
+    // In dev mode, allow F12 to toggle DevTools and Ctrl+R to reload
+    if (VITE_DEV_SERVER_URL) {
+      if (input.key === "F12") {
+        event.preventDefault();
+        if (mainWin && !mainWin.isDestroyed()) {
+          if (mainWin.webContents.isDevToolsOpened()) {
+            mainWin.webContents.closeDevTools();
+          } else {
+            mainWin.webContents.openDevTools();
+          }
+        }
+        return;
+      }
+
+      // Allow Ctrl+R or Cmd+R for reload in dev mode
+      if (
+        (input.key === "R" || input.key === "r") &&
+        (input.control || input.meta)
+      ) {
+        event.preventDefault();
+        if (mainWin && !mainWin.isDestroyed()) {
+          mainWin.webContents.reload();
+        }
+        return;
+      }
+    }
+
+    // Disable certain shortcuts in production
     if (
-      input.key === "F12" || // Disable F12 for dev tools
+      (!VITE_DEV_SERVER_URL && input.key === "F12") || // Disable F12 in production
       (input.key === "I" && input.control && input.shift) || // Disable Ctrl+Shift+I or Cmd+Opt+I
-      (input.key === "R" && input.control) || // Disable Ctrl+R for reload
-      (input.key === "R" && input.meta) // Disable Cmd+R for reload on macOS
+      (!VITE_DEV_SERVER_URL &&
+        (input.key === "R" || input.key === "r") &&
+        input.control) || // Disable Ctrl+R in production
+      (!VITE_DEV_SERVER_URL &&
+        (input.key === "R" || input.key === "r") &&
+        input.meta) // Disable Cmd+R in production on macOS
     ) {
       event.preventDefault();
     }
@@ -126,6 +154,18 @@ async function createMainWindow() {
     ipcMain.removeAllListeners("minimizeApp");
     ipcMain.removeAllListeners("maximizeApp");
     ipcMain.removeAllListeners("closeApp");
+    ipcMain.removeAllListeners("get-system-fonts");
+  });
+
+  // IPC handler for getting system fonts
+  ipcMain.handle("get-system-fonts", async () => {
+    try {
+      const fonts = await getSystemFonts();
+      return fonts;
+    } catch (error) {
+      console.error("Error in get-system-fonts handler:", error);
+      return [];
+    }
   });
 
   // Handle external links
@@ -193,7 +233,7 @@ app.on("before-quit", () => {
 
 //   contents.on("will-navigate", (event, navigationUrl) => {
 //     const parsedUrl = new URL(navigationUrl);
-    
+
 //     // Allow navigation to same origin or dev server
 //     if (
 //       parsedUrl.origin !== VITE_DEV_SERVER_URL &&

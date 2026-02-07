@@ -74,6 +74,8 @@ interface SermonContextType {
   setCB: (cb: number) => void;
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
+  isPresentationMode: boolean;
+  setIsPresentationMode: (mode: boolean) => void;
   // Bookmark functions
   bookmarks: Bookmark[];
   setBookmarks: (bookmarks: Bookmark[]) => void;
@@ -83,7 +85,7 @@ interface SermonContextType {
     paragraphId: number,
     paragraphContent: string,
     location?: string,
-    year?: string
+    year?: string,
   ) => void;
   removeBookmark: (bookmarkId: string) => void;
   isBookmarked: (sermonId: string, paragraphId: number) => boolean;
@@ -93,7 +95,7 @@ interface SermonContextType {
     paragraphId: number,
     paragraphContent: string,
     location?: string,
-    year?: string
+    year?: string,
   ) => void;
   navigateToBookmark: (bookmark: Bookmark) => void;
   // Search navigation
@@ -102,7 +104,7 @@ interface SermonContextType {
   navigateToSearchResult: (
     sermonId: string | number,
     paragraphId: number,
-    searchTerm: string
+    searchTerm: string,
   ) => void;
 }
 
@@ -127,6 +129,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const [loadingMessage, setLoadingMessage] =
     useState<string>("Starting up...");
   const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
+  const [isPresentationMode, setIsPresentationMode] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("home");
   const [randomSermons, setRandomSermons] = useState<Sermon[]>([]);
@@ -136,7 +139,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const [pendingSearchNav, setPendingSearchNav] =
     useState<SearchNavigation | null>(null);
   const [theme, setTheme] = useState(
-    localStorage.getItem("vsermontheme") || "light"
+    localStorage.getItem("vsermontheme") || "light",
   );
   const [settings, setSettings] = useState<SermonSettings>({
     fontFamily: "Zilla Slab",
@@ -166,7 +169,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const getRandomSermon = (): Sermon | null => {
     // Filter for text sermons only (exclude audio/video/mp3)
     const textSermons = sermonCollection.filter(
-      (sermon) => sermon.type === "text"
+      (sermon) => sermon.type === "text",
     );
 
     if (textSermons.length > 0) {
@@ -176,11 +179,39 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     return null;
   };
 
+  // Save last read sermon to localStorage
+  const saveLastReadSermon = (sermon: Sermon) => {
+    localStorage.setItem("lastReadSermon", JSON.stringify(sermon));
+  };
+
+  // Get last read sermon from localStorage
+  const getLastReadSermon = (): Sermon | null => {
+    const saved = localStorage.getItem("lastReadSermon");
+    return saved ? JSON.parse(saved) : null;
+  };
+
+  // Get first recent sermon if available
+  const getFirstRecentSermon = (allLoadedSermons: Sermon[]): Sermon | null => {
+    const recentSermonsJson = localStorage.getItem("recentSermons");
+    if (!recentSermonsJson) return null;
+
+    try {
+      const recentList = JSON.parse(recentSermonsJson) as Sermon[];
+      if (recentList.length === 0) return null;
+
+      // Verify the first recent sermon exists in the loaded sermons
+      const firstRecent = recentList[0];
+      return allLoadedSermons.find((s) => s.id === firstRecent.id) || null;
+    } catch {
+      return null;
+    }
+  };
+
   // Generate three random sermons (text sermons only)
   const getThreeRandomSermons = (): Sermon[] => {
     // Filter for text sermons only (exclude audio/video/mp3)
     const textSermons = sermonCollection.filter(
-      (sermon) => sermon.type === "text"
+      (sermon) => sermon.type === "text",
     );
 
     const sermons = new Set<Sermon>();
@@ -198,7 +229,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const navigateToSearchResult = (
     sermonId: string | number,
     paragraphId: number,
-    searchTerm: string
+    searchTerm: string,
   ) => {
     const targetSermon = allSermons.find((s) => s.id === sermonId);
     if (targetSermon) {
@@ -210,18 +241,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
         searchTerm: searchTerm,
       });
       setActiveTab("message");
-
-      // Update recent sermons
-      const existingRecent = JSON.parse(
-        localStorage.getItem("recentSermons") || "[]"
-      );
-      const filteredRecent = existingRecent.filter(
-        (item: { id: string | number }) => item.id !== sermonId
-      );
-      filteredRecent.unshift(targetSermon);
-      const limitedRecent = filteredRecent.slice(0, 15);
-      localStorage.setItem("recentSermons", JSON.stringify(limitedRecent));
-      setRecentSermons(limitedRecent);
+      // Note: Recent sermons are updated in SelectedSermon.tsx when selectedMessage changes
     }
   };
 
@@ -232,7 +252,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     paragraphId: number,
     paragraphContent: string,
     location?: string,
-    year?: string
+    year?: string,
   ) => {
     const newBookmark: Bookmark = {
       id: `${sermonId}-${paragraphId}-${Date.now()}`,
@@ -254,7 +274,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
 
   const removeBookmark = (bookmarkId: string) => {
     const updatedBookmarks = bookmarks.filter(
-      (bookmark) => bookmark.id !== bookmarkId
+      (bookmark) => bookmark.id !== bookmarkId,
     );
     setBookmarks(updatedBookmarks);
     localStorage.setItem("sermonBookmarks", JSON.stringify(updatedBookmarks));
@@ -263,7 +283,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const isBookmarked = (sermonId: string, paragraphId: number): boolean => {
     return bookmarks.some(
       (bookmark) =>
-        bookmark.sermonId === sermonId && bookmark.paragraphId === paragraphId
+        bookmark.sermonId === sermonId && bookmark.paragraphId === paragraphId,
     );
   };
 
@@ -273,11 +293,11 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     paragraphId: number,
     paragraphContent: string,
     location?: string,
-    year?: string
+    year?: string,
   ) => {
     const existingBookmark = bookmarks.find(
       (bookmark) =>
-        bookmark.sermonId === sermonId && bookmark.paragraphId === paragraphId
+        bookmark.sermonId === sermonId && bookmark.paragraphId === paragraphId,
     );
 
     if (existingBookmark) {
@@ -289,7 +309,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
         paragraphId,
         paragraphContent,
         location,
-        year
+        year,
       );
     }
   };
@@ -304,14 +324,30 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       // Wait for the component to render then scroll to the paragraph
       setTimeout(() => {
         const element = document.getElementById(
-          `paragraph-${bookmark.paragraphId}`
+          `paragraph-${bookmark.paragraphId}`,
         );
+
         if (element) {
-          element.scrollIntoView({
-            behavior: "smooth",
-            block: "start", // Changed from 'end' to 'start' to show paragraph at top
-            inline: "nearest", // Keep this for better positioning
-          });
+          // Find the scroll container (the overflow-y-auto parent)
+          const scrollContainer = element.closest(".overflow-y-auto");
+
+          if (scrollContainer) {
+            // Calculate position relative to scroll container
+            const containerRect = scrollContainer.getBoundingClientRect();
+            const elementRect = element.getBoundingClientRect();
+
+            const scrollTop = scrollContainer.scrollTop;
+            const elementRelativeTop = elementRect.top - containerRect.top;
+            const centerOffset =
+              (containerRect.height - elementRect.height) / 2;
+            const targetScroll = scrollTop + elementRelativeTop - centerOffset;
+
+            // Smooth scroll within the container
+            scrollContainer.scrollTo({
+              top: targetScroll,
+              behavior: "smooth",
+            });
+          }
         }
       }, 100);
     }
@@ -364,11 +400,8 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
         setAllSermons(initialSermons);
         sermonCollection = [...initialSermons];
 
-        // Don't set random sermons from audio - wait for text sermons
-        // Set a placeholder selected message from audio for now
-        if (initialSermons.length > 0) {
-          setSelectedMessage(initialSermons[0]);
-        }
+        // Don't set selected message yet - wait for text sermons to load
+        // so we can properly restore from recents/last read
 
         setLoadingProgress(40);
         setLoadingMessage("Ready! Loading text sermons in background...");
@@ -408,7 +441,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
 
                 // Set random sermons only once when first text sermons are loaded
                 const textSermons = loadedSermons.filter(
-                  (sermon) => sermon.type === "text"
+                  (sermon) => sermon.type === "text",
                 );
 
                 if (textSermons.length > 0 && !randomSermonsSet) {
@@ -417,8 +450,27 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
                     .slice(0, 3);
                   setRandomSermons(allRandomSermons);
 
-                  // Set the first random text sermon as the selected message
-                  setSelectedMessage(allRandomSermons[0]);
+                  // Priority 1: Try to load first recent sermon
+                  let sermonToLoad = getFirstRecentSermon(loadedSermons);
+
+                  // Priority 2: Fall back to last read sermon
+                  if (!sermonToLoad) {
+                    sermonToLoad = getLastReadSermon();
+                    // Verify it exists
+                    if (sermonToLoad) {
+                      const foundSermon = loadedSermons.find(
+                        (s) => s.id === sermonToLoad!.id,
+                      );
+                      sermonToLoad = foundSermon || null;
+                    }
+                  }
+
+                  // Priority 3: Use random sermon
+                  if (!sermonToLoad) {
+                    sermonToLoad = allRandomSermons[0];
+                  }
+
+                  setSelectedMessage(sermonToLoad);
                   randomSermonsSet = true; // Mark as set
                 }
 
@@ -484,6 +536,8 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     setCB,
     isCollapsed,
     setIsCollapsed,
+    isPresentationMode,
+    setIsPresentationMode,
     theme,
     setTheme,
     // Bookmark functions

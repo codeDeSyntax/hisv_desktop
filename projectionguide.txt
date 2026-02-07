@@ -1,0 +1,1375 @@
+# EXTERNAL WINDOW ARCHITECTURE GUIDE
+# Complete Implementation Guide for Multi-Display Electron Applications
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+1. Overview & Architecture
+2. Display Detection Strategy
+3. Main Window (Controller) Implementation
+4. Projection Window (External Display) Implementation
+5. IPC Communication Between Windows
+6. Window State Management
+7. Display Change Detection
+8. User Preferences & Persistence
+9. Complete Code Examples
+10. Testing & Troubleshooting
+
+================================================================================
+1. OVERVIEW & ARCHITECTURE
+================================================================================
+
+## Problem Solved
+Users need to project content to external displays while controlling it from a
+laptop/internal display, WITHOUT manually switching Windows display settings.
+
+## Solution Architecture
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         ELECTRON MAIN PROCESS                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                           │
+│  ┌──────────────────────────┐           ┌──────────────────────────┐   │
+│  │   Display Detection      │           │   IPC Communication      │   │
+│  │   Module                 │           │   Hub                    │   │
+│  │                          │           │                          │   │
+│  │  - screen.getAllDisplays │           │  - ipcMain.handle()      │   │
+│  │  - Find internal display │           │  - ipcMain.on()          │   │
+│  │  - Find external display │           │  - Send to windows       │   │
+│  └──────────────────────────┘           └──────────────────────────┘   │
+│              │                                       │                   │
+│              │                                       │                   │
+│  ┌───────────▼────────────┐           ┌─────────────▼──────────────┐   │
+│  │   Main Window          │           │   Projection Window        │   │
+│  │   (Controller)         │◄─────────►│   (External Display)       │   │
+│  │                        │    IPC    │                            │   │
+│  │  - Internal display    │           │  - External display        │   │
+│  │  - User interface      │           │  - Fullscreen content      │   │
+│  │  - Controls            │           │  - No controls             │   │
+│  └────────────────────────┘           └────────────────────────────┘   │
+│              │                                       │                   │
+└──────────────┼───────────────────────────────────────┼───────────────────┘
+               │                                       │
+               │                                       │
+    ┌──────────▼──────────┐                ┌──────────▼──────────┐
+    │  Laptop Display     │                │  External Monitor   │
+    │  (Internal)         │                │  (Projector/TV)     │
+    │                     │                │                     │
+    │  User sees controls │                │  Audience sees      │
+    │  and preview        │                │  fullscreen content │
+    └─────────────────────┘                └─────────────────────┘
+
+================================================================================
+2. DISPLAY DETECTION STRATEGY
+================================================================================
+
+## Key Principle
+Use the `display.internal` property to identify displays, NOT Windows primary
+display settings. This works regardless of which display is set as "primary".
+
+## Display Properties
+
+```typescript
+interface Display {
+  id: number;              // Unique display identifier
+  bounds: Rectangle;       // Position and size
+  workArea: Rectangle;     // Available area (minus taskbar)
+  scaleFactor: number;     // DPI scaling
+  rotation: number;        // Display rotation (0, 90, 180, 270)
+  internal: boolean;       // TRUE for laptop screen, FALSE for external
+}
+
+interface Rectangle {
+  x: number;      // Horizontal position from left
+  y: number;      // Vertical position from top
+  width: number;  // Display width in pixels
+  height: number; // Display height in pixels
+}
+```
+
+## Detection Algorithm
+
+```typescript
+import { screen } from "electron";
+
+function detectDisplays() {
+  const allDisplays = screen.getAllDisplays();
+  const primaryDisplay = screen.getPrimaryDisplay();
+  
+  console.log("Total displays:", allDisplays.length);
+  
+  // Log each display's properties
+  allDisplays.forEach((display, index) => {
+    console.log(`Display ${index}:`, {
+      id: display.id,
+      internal: display.internal,
+      isPrimary: display.id === primaryDisplay.id,
+      bounds: display.bounds,
+    });
+  });
+  
+  // Find internal (laptop) display
+  const internalDisplay = allDisplays.find(d => d.internal);
+  
+  // Find external (projector/monitor) display
+  const externalDisplay = allDisplays.find(d => !d.internal);
+  
+  return {
+    internal: internalDisplay || primaryDisplay,
+    external: externalDisplay || null,
+    allDisplays,
+    primaryDisplay
+  };
+}
+```
+
+## Multi-Strategy Detection (Robust Fallback)
+
+```typescript
+function detectExternalDisplay(): Display | null {
+  const displays = screen.getAllDisplays();
+  const primaryDisplay = screen.getPrimaryDisplay();
+  
+  // Only one display? No external
+  if (displays.length === 1) {
+    return null;
+  }
+  
+  // Strategy 1: Find non-internal display (BEST - works always)
+  const externalNonInternal = displays.find(d => !d.internal);
+  if (externalNonInternal) {
+    return externalNonInternal;
+  }
+  
+  // Strategy 2: Find display not at origin (0,0)
+  const externalNotAtOrigin = displays.find(
+    d => (d.bounds.x !== 0 || d.bounds.y !== 0) && 
+         d.id !== primaryDisplay.id
+  );
+  if (externalNotAtOrigin) {
+    return externalNotAtOrigin;
+  }
+  
+  // Strategy 3: Use any secondary display
+  const secondaryDisplay = displays.find(d => d.id !== primaryDisplay.id);
+  if (secondaryDisplay) {
+    return secondaryDisplay;
+  }
+  
+  // No external display found
+  return null;
+}
+```
+
+================================================================================
+3. MAIN WINDOW (CONTROLLER) IMPLEMENTATION
+================================================================================
+
+## File: electron/main/index.ts
+
+```typescript
+import { app, BrowserWindow, screen } from "electron";
+import path from "node:path";
+
+let mainWin: BrowserWindow | null = null;
+
+async function createMainWindow() {
+  // STEP 1: Detect displays
+  const displays = screen.getAllDisplays();
+  const primaryDisplay = screen.getPrimaryDisplay();
+  
+  // STEP 2: Find internal (laptop) display for controller
+  const internalDisplay = displays.find(d => d.internal);
+  const controllerDisplay = internalDisplay || primaryDisplay;
+  
+  console.log("🖥️ Main Window Display Selection:", {
+    totalDisplays: displays.length,
+    selectedDisplay: controllerDisplay.id,
+    isInternal: controllerDisplay.internal,
+    isPrimary: controllerDisplay.id === primaryDisplay.id,
+    bounds: controllerDisplay.bounds,
+  });
+  
+  // STEP 3: Create window configuration
+  const windowConfig: Electron.BrowserWindowConstructorOptions = {
+    title: "Controller",
+    frame: false,                    // Custom titlebar (optional)
+    minWidth: 1000,
+    minHeight: 800,
+    // Position on internal display
+    x: controllerDisplay.bounds.x + 50,
+    y: controllerDisplay.bounds.y + 50,
+    width: Math.min(1200, controllerDisplay.bounds.width - 100),
+    height: Math.min(900, controllerDisplay.bounds.height - 100),
+    icon: path.join(process.env.VITE_PUBLIC, "icon.png"),
+    webPreferences: {
+      preload: path.join(__dirname, "../preload/index.js"),
+      nodeIntegration: false,
+      contextIsolation: true,
+      devTools: true,
+    },
+  };
+  
+  // STEP 4: Create window
+  mainWin = new BrowserWindow(windowConfig);
+  
+  // STEP 5: Load content
+  if (process.env.VITE_DEV_SERVER_URL) {
+    await mainWin.loadURL(process.env.VITE_DEV_SERVER_URL);
+  } else {
+    await mainWin.loadFile(path.join(__dirname, "../renderer/index.html"));
+  }
+  
+  // STEP 6: Show window
+  mainWin.maximize(); // or mainWin.show()
+  
+  console.log("✅ Main window created at:", mainWin.getBounds());
+}
+
+// Initialize app
+app.whenReady().then(() => {
+  createMainWindow();
+  
+  // Recreate window if closed (macOS)
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createMainWindow();
+    }
+  });
+});
+
+// Quit when all windows closed (except macOS)
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
+```
+
+================================================================================
+4. PROJECTION WINDOW (EXTERNAL DISPLAY) IMPLEMENTATION
+================================================================================
+
+## File: electron/main/projection.ts
+
+```typescript
+import { BrowserWindow, screen, ipcMain } from "electron";
+import path from "node:path";
+
+// Global projection window reference
+let projectionWin: BrowserWindow | null = null;
+let isProjectionActive = false;
+
+// Export getters for other modules
+export function getProjectionWindow() {
+  return projectionWin;
+}
+
+export function getIsProjectionActive() {
+  return isProjectionActive;
+}
+
+// Detect external display
+function detectExternalDisplay(): Electron.Display | null {
+  const displays = screen.getAllDisplays();
+  const primaryDisplay = screen.getPrimaryDisplay();
+  
+  console.log("🔍 Detecting external display...", {
+    totalDisplays: displays.length,
+    primaryDisplayId: primaryDisplay.id,
+  });
+  
+  if (displays.length === 1) {
+    console.log("⚠️ Only one display detected");
+    return null;
+  }
+  
+  // Strategy 1: Find non-internal display (BEST)
+  const externalDisplay = displays.find(d => !d.internal);
+  if (externalDisplay) {
+    console.log("✅ Found external display:", {
+      id: externalDisplay.id,
+      bounds: externalDisplay.bounds,
+      isPrimary: externalDisplay.id === primaryDisplay.id,
+    });
+    return externalDisplay;
+  }
+  
+  // Fallback strategies (see section 2)
+  return null;
+}
+
+// Create projection window
+export async function createProjectionWindow(mainWin?: BrowserWindow) {
+  // STEP 1: Check if already exists
+  if (projectionWin && !projectionWin.isDestroyed()) {
+    console.log("⚠️ Projection window already exists");
+    projectionWin.focus();
+    return;
+  }
+  
+  // STEP 2: Detect external display
+  const displays = screen.getAllDisplays();
+  const primaryDisplay = screen.getPrimaryDisplay();
+  let targetDisplay = primaryDisplay; // Fallback
+  let isExternal = false;
+  
+  const externalDisplay = detectExternalDisplay();
+  if (externalDisplay) {
+    targetDisplay = externalDisplay;
+    isExternal = true;
+  }
+  
+  console.log("🎯 Projection target display:", {
+    id: targetDisplay.id,
+    bounds: targetDisplay.bounds,
+    isExternal,
+    isPrimary: targetDisplay.id === primaryDisplay.id,
+  });
+  
+  // STEP 3: Create window configuration
+  const windowConfig: Electron.BrowserWindowConstructorOptions = {
+    title: "Projection",
+    frame: false,                    // No window chrome
+    show: false,                     // Don't show until loaded
+    alwaysOnTop: false,              // Not always on top
+    skipTaskbar: false,              // Show in taskbar for easy access
+    resizable: false,
+    // Position on external display
+    x: targetDisplay.bounds.x,
+    y: targetDisplay.bounds.y,
+    width: targetDisplay.bounds.width,
+    height: targetDisplay.bounds.height,
+    fullscreen: true,                // Fullscreen on target display
+    backgroundColor: "#000000",      // Black background
+    icon: path.join(process.env.VITE_PUBLIC, "icon.png"),
+    webPreferences: {
+      preload: path.join(__dirname, "../preload/index.js"),
+      nodeIntegration: false,
+      contextIsolation: true,
+      devTools: false,               // Disable devtools in production
+    },
+  };
+  
+  // STEP 4: Create window
+  projectionWin = new BrowserWindow(windowConfig);
+  
+  // STEP 5: Load projection content
+  const projectionUrl = process.env.VITE_DEV_SERVER_URL 
+    ? `${process.env.VITE_DEV_SERVER_URL}#/projection`
+    : `file://${path.join(__dirname, "../renderer/projection.html")}`;
+  
+  await projectionWin.loadURL(projectionUrl);
+  
+  // STEP 6: Show when ready
+  projectionWin.once("ready-to-show", () => {
+    projectionWin?.show();
+    isProjectionActive = true;
+    
+    // Notify main window that projection is active
+    if (mainWin && !mainWin.isDestroyed()) {
+      mainWin.webContents.send("projection-state-changed", true);
+    }
+    
+    console.log("✅ Projection window shown");
+  });
+  
+  // STEP 7: Handle window close
+  projectionWin.on("closed", () => {
+    console.log("🔴 Projection window closed");
+    projectionWin = null;
+    isProjectionActive = false;
+    
+    // Notify main window
+    if (mainWin && !mainWin.isDestroyed()) {
+      mainWin.webContents.send("projection-state-changed", false);
+    }
+  });
+  
+  console.log("✅ Projection window created");
+}
+
+// Close projection window
+export async function closeProjectionWindow() {
+  if (projectionWin && !projectionWin.isDestroyed()) {
+    projectionWin.close();
+    projectionWin = null;
+    isProjectionActive = false;
+    return { success: true };
+  }
+  return { success: false, error: "No active projection window" };
+}
+```
+
+================================================================================
+5. IPC COMMUNICATION BETWEEN WINDOWS
+================================================================================
+
+## Communication Flow
+
+```
+Main Window (Controller)                    Projection Window (Display)
+       │                                              │
+       │  1. User clicks "Project Song"              │
+       │     ↓                                        │
+       │  2. Send IPC: "project-song"                │
+       │     ↓                                        │
+       ├──────────────────► Main Process ────────────┤
+       │                    (IPC Handler)            │
+       │                         ↓                    │
+       │                    Create/Update            │
+       │                    Projection Window        │
+       │                         │                    │
+       │                         ├────────────────────►
+       │                         │  3. Send data      │
+       │                         │     via IPC        │
+       │                         │                    │
+       │  ◄──────────────────────┤                    │
+       │  4. State update        │                    ▼
+       │     "projection-active" │              Display content
+       │                         │                    │
+       │  ──────────────────────►│                    │
+       │  5. Navigation command  │                    │
+       │     "next-slide"        ├────────────────────►
+       │                         │  6. Update display │
+       │                         │                    │
+```
+
+## A. Main Process IPC Handlers (electron/main/projection.ts)
+
+```typescript
+import { ipcMain, BrowserWindow } from "electron";
+
+// Store reference to main window
+let mainWindowRef: BrowserWindow | null = null;
+
+export function setupProjectionIPC(mainWin: BrowserWindow) {
+  mainWindowRef = mainWin;
+  
+  // ============================================================
+  // 1. CREATE PROJECTION WINDOW
+  // ============================================================
+  ipcMain.handle("project-song", async (event, songData) => {
+    try {
+      console.log("📡 Received project-song request:", songData.title);
+      
+      // Create projection window if it doesn't exist
+      if (!projectionWin || projectionWin.isDestroyed()) {
+        await createProjectionWindow(mainWin);
+      }
+      
+      // Wait for window to be ready
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Send song data to projection window
+      if (projectionWin && !projectionWin.isDestroyed()) {
+        projectionWin.webContents.send("display-song", songData);
+      }
+      
+      return { success: true };
+    } catch (error) {
+      console.error("❌ Error projecting song:", error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      };
+    }
+  });
+  
+  // ============================================================
+  // 2. SEND NAVIGATION COMMANDS TO PROJECTION
+  // ============================================================
+  ipcMain.handle("send-to-projection", async (event, data) => {
+    try {
+      if (!projectionWin || projectionWin.isDestroyed()) {
+        return { success: false, error: "No active projection window" };
+      }
+      
+      console.log("📡 Sending to projection:", data.type);
+      
+      // Send command to projection window
+      projectionWin.webContents.send("projection-command", data);
+      
+      return { success: true };
+    } catch (error) {
+      console.error("❌ Error sending to projection:", error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      };
+    }
+  });
+  
+  // ============================================================
+  // 3. CHECK PROJECTION STATUS
+  // ============================================================
+  ipcMain.handle("is-projection-active", async () => {
+    return {
+      isActive: isProjectionActive,
+      hasWindow: projectionWin !== null && !projectionWin?.isDestroyed(),
+    };
+  });
+  
+  // ============================================================
+  // 4. CLOSE PROJECTION WINDOW
+  // ============================================================
+  ipcMain.handle("close-projection", async () => {
+    return await closeProjectionWindow();
+  });
+  
+  // ============================================================
+  // 5. GET DISPLAY INFORMATION
+  // ============================================================
+  ipcMain.handle("get-display-info", async () => {
+    const displays = screen.getAllDisplays();
+    const primaryDisplay = screen.getPrimaryDisplay();
+    
+    return {
+      displays: displays.map(d => ({
+        id: d.id,
+        bounds: d.bounds,
+        workArea: d.workArea,
+        internal: d.internal,
+        isPrimary: d.id === primaryDisplay.id,
+      })),
+      primaryDisplayId: primaryDisplay.id,
+    };
+  });
+  
+  // ============================================================
+  // 6. SEND DATA FROM PROJECTION TO MAIN WINDOW
+  // ============================================================
+  ipcMain.handle("send-to-main-window", async (event, data) => {
+    try {
+      if (!mainWindowRef || mainWindowRef.isDestroyed()) {
+        return { success: false, error: "Main window not available" };
+      }
+      
+      console.log("📡 Sending to main window:", data.type);
+      mainWindowRef.webContents.send("main-window-message", data);
+      
+      return { success: true };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      };
+    }
+  });
+}
+```
+
+## B. Preload Script API (electron/preload/index.ts)
+
+```typescript
+import { contextBridge, ipcRenderer } from "electron";
+
+// Expose API to renderer process
+contextBridge.exposeInMainWorld("api", {
+  // ============================================================
+  // PROJECTION CONTROL
+  // ============================================================
+  
+  // Project a song
+  projectSong: (songData: any) => 
+    ipcRenderer.invoke("project-song", songData),
+  
+  // Send commands to projection window
+  sendToProjection: (data: { type: string; data?: any }) => 
+    ipcRenderer.invoke("send-to-projection", data),
+  
+  // Check if projection is active
+  isProjectionActive: () => 
+    ipcRenderer.invoke("is-projection-active"),
+  
+  // Close projection window
+  closeProjection: () => 
+    ipcRenderer.invoke("close-projection"),
+  
+  // Get display information
+  getDisplayInfo: () => 
+    ipcRenderer.invoke("get-display-info"),
+  
+  // ============================================================
+  // LISTEN TO EVENTS FROM MAIN PROCESS
+  // ============================================================
+  
+  // Listen for projection state changes
+  onProjectionStateChanged: (callback: (isActive: boolean) => void) => {
+    const listener = (event: any, isActive: boolean) => {
+      callback(isActive);
+    };
+    ipcRenderer.on("projection-state-changed", listener);
+    
+    // Return cleanup function
+    return () => {
+      ipcRenderer.removeListener("projection-state-changed", listener);
+    };
+  },
+  
+  // Listen for display song command (PROJECTION WINDOW)
+  onDisplaySong: (callback: (songData: any) => void) => {
+    const listener = (event: any, songData: any) => {
+      callback(songData);
+    };
+    ipcRenderer.on("display-song", listener);
+    
+    return () => {
+      ipcRenderer.removeListener("display-song", listener);
+    };
+  },
+  
+  // Listen for projection commands (PROJECTION WINDOW)
+  onProjectionCommand: (callback: (data: any) => void) => {
+    const listener = (event: any, data: any) => {
+      callback(data);
+    };
+    ipcRenderer.on("projection-command", listener);
+    
+    return () => {
+      ipcRenderer.removeListener("projection-command", listener);
+    };
+  },
+  
+  // Listen for main window messages (MAIN WINDOW)
+  onMainWindowMessage: (callback: (data: any) => void) => {
+    const listener = (event: any, data: any) => {
+      callback(data);
+    };
+    ipcRenderer.on("main-window-message", listener);
+    
+    return () => {
+      ipcRenderer.removeListener("main-window-message", listener);
+    };
+  },
+  
+  // Send message to main window (FROM PROJECTION)
+  sendToMainWindow: (data: { type: string; data?: any }) => 
+    ipcRenderer.invoke("send-to-main-window", data),
+});
+
+// TypeScript declaration
+declare global {
+  interface Window {
+    api: typeof api;
+  }
+}
+```
+
+## C. Renderer Process Usage (React/Vue/etc)
+
+### Main Window (Controller)
+
+```typescript
+// src/components/Controller.tsx
+import React, { useState, useEffect } from "react";
+
+export const Controller: React.FC = () => {
+  const [isProjecting, setIsProjecting] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  // Listen for projection state changes
+  useEffect(() => {
+    const cleanup = window.api.onProjectionStateChanged((isActive) => {
+      console.log("Projection state changed:", isActive);
+      setIsProjecting(isActive);
+    });
+    
+    // Check initial state
+    window.api.isProjectionActive().then((result) => {
+      setIsProjecting(result.isActive);
+    });
+    
+    return cleanup;
+  }, []);
+  
+  // Project a song
+  const handleProjectSong = async () => {
+    const songData = {
+      title: "Amazing Grace",
+      slides: [
+        { content: "Amazing grace how sweet the sound" },
+        { content: "That saved a wretch like me" },
+        { content: "I once was lost but now am found" },
+      ],
+      currentSlide: 0,
+    };
+    
+    const result = await window.api.projectSong(songData);
+    if (result.success) {
+      console.log("✅ Song projected");
+    }
+  };
+  
+  // Navigate slides
+  const handleNextSlide = async () => {
+    const newSlide = currentSlide + 1;
+    setCurrentSlide(newSlide);
+    
+    await window.api.sendToProjection({
+      type: "SLIDE_UPDATE",
+      data: { slideIndex: newSlide },
+    });
+  };
+  
+  const handlePrevSlide = async () => {
+    const newSlide = Math.max(0, currentSlide - 1);
+    setCurrentSlide(newSlide);
+    
+    await window.api.sendToProjection({
+      type: "SLIDE_UPDATE",
+      data: { slideIndex: newSlide },
+    });
+  };
+  
+  // Close projection
+  const handleCloseProjection = async () => {
+    await window.api.closeProjection();
+  };
+  
+  return (
+    <div className="controller">
+      <h1>Projection Controller</h1>
+      
+      <div className="status">
+        Status: {isProjecting ? "🟢 Projecting" : "🔴 Not projecting"}
+      </div>
+      
+      <div className="controls">
+        <button onClick={handleProjectSong}>
+          Project Song
+        </button>
+        
+        {isProjecting && (
+          <>
+            <button onClick={handlePrevSlide}>← Previous</button>
+            <button onClick={handleNextSlide}>Next →</button>
+            <button onClick={handleCloseProjection}>
+              Close Projection
+            </button>
+          </>
+        )}
+      </div>
+      
+      <div className="slide-preview">
+        Current Slide: {currentSlide}
+      </div>
+    </div>
+  );
+};
+```
+
+### Projection Window (Display)
+
+```typescript
+// src/components/Projection.tsx
+import React, { useState, useEffect } from "react";
+
+export const ProjectionDisplay: React.FC = () => {
+  const [songData, setSongData] = useState<any>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  // Listen for song display commands
+  useEffect(() => {
+    const cleanup1 = window.api.onDisplaySong((data) => {
+      console.log("📺 Received song to display:", data.title);
+      setSongData(data);
+      setCurrentSlide(data.currentSlide || 0);
+    });
+    
+    // Listen for projection commands
+    const cleanup2 = window.api.onProjectionCommand((data) => {
+      console.log("📺 Received projection command:", data.type);
+      
+      if (data.type === "SLIDE_UPDATE") {
+        setCurrentSlide(data.data.slideIndex);
+      }
+      
+      // Send feedback to main window
+      window.api.sendToMainWindow({
+        type: "SLIDE_CHANGED",
+        data: { slideIndex: data.data.slideIndex },
+      });
+    });
+    
+    return () => {
+      cleanup1();
+      cleanup2();
+    };
+  }, []);
+  
+  if (!songData) {
+    return (
+      <div className="projection-screen">
+        <div className="waiting">
+          Waiting for content...
+        </div>
+      </div>
+    );
+  }
+  
+  const currentSlideData = songData.slides[currentSlide];
+  
+  return (
+    <div className="projection-screen">
+      <div className="slide-content">
+        <h1>{songData.title}</h1>
+        <p>{currentSlideData?.content}</p>
+      </div>
+      
+      <div className="slide-indicator">
+        {currentSlide + 1} / {songData.slides.length}
+      </div>
+    </div>
+  );
+};
+```
+
+================================================================================
+6. WINDOW STATE MANAGEMENT
+================================================================================
+
+## Tracking Window States
+
+```typescript
+// electron/main/projection.ts
+
+interface WindowState {
+  isOpen: boolean;
+  isMinimized: boolean;
+  isFocused: boolean;
+  displayId: number | null;
+}
+
+let projectionState: WindowState = {
+  isOpen: false,
+  isMinimized: false,
+  isFocused: false,
+  displayId: null,
+};
+
+export function setupWindowStateTracking(win: BrowserWindow) {
+  // Track window events
+  win.on("show", () => {
+    projectionState.isOpen = true;
+    notifyStateChange();
+  });
+  
+  win.on("hide", () => {
+    projectionState.isOpen = false;
+    notifyStateChange();
+  });
+  
+  win.on("minimize", () => {
+    projectionState.isMinimized = true;
+    notifyStateChange();
+  });
+  
+  win.on("restore", () => {
+    projectionState.isMinimized = false;
+    notifyStateChange();
+  });
+  
+  win.on("focus", () => {
+    projectionState.isFocused = true;
+    notifyStateChange();
+  });
+  
+  win.on("blur", () => {
+    projectionState.isFocused = false;
+    notifyStateChange();
+  });
+  
+  win.on("closed", () => {
+    projectionState = {
+      isOpen: false,
+      isMinimized: false,
+      isFocused: false,
+      displayId: null,
+    };
+    notifyStateChange();
+  });
+}
+
+function notifyStateChange() {
+  if (mainWindowRef && !mainWindowRef.isDestroyed()) {
+    mainWindowRef.webContents.send("projection-state-changed", {
+      ...projectionState,
+      isProjectionActive,
+    });
+  }
+}
+
+// Get current state
+ipcMain.handle("get-projection-state", async () => {
+  return {
+    ...projectionState,
+    isProjectionActive,
+  };
+});
+```
+
+================================================================================
+7. DISPLAY CHANGE DETECTION
+================================================================================
+
+## Monitor Display Connection/Disconnection
+
+```typescript
+import { screen } from "electron";
+
+export function setupDisplayMonitoring(mainWin: BrowserWindow) {
+  // Listen for display changes
+  screen.on("display-added", (event, newDisplay) => {
+    console.log("🖥️ Display added:", newDisplay.id);
+    handleDisplayChange();
+  });
+  
+  screen.on("display-removed", (event, oldDisplay) => {
+    console.log("🖥️ Display removed:", oldDisplay.id);
+    handleDisplayChange();
+  });
+  
+  screen.on("display-metrics-changed", (event, display, changedMetrics) => {
+    console.log("🖥️ Display metrics changed:", display.id, changedMetrics);
+    handleDisplayChange();
+  });
+  
+  function handleDisplayChange() {
+    const displays = screen.getAllDisplays();
+    
+    // Notify main window
+    if (mainWin && !mainWin.isDestroyed()) {
+      mainWin.webContents.send("displays-changed", {
+        displayCount: displays.length,
+        displays: displays.map(d => ({
+          id: d.id,
+          bounds: d.bounds,
+          internal: d.internal,
+        })),
+      });
+    }
+    
+    // If projection window exists and target display was removed
+    if (projectionWin && !projectionWin.isDestroyed()) {
+      const currentDisplay = screen.getDisplayNearestPoint({
+        x: projectionWin.getBounds().x,
+        y: projectionWin.getBounds().y,
+      });
+      
+      // Check if projection is still on external display
+      if (currentDisplay.internal && displays.length > 1) {
+        // Move projection back to external display
+        const externalDisplay = displays.find(d => !d.internal);
+        if (externalDisplay) {
+          projectionWin.setBounds({
+            x: externalDisplay.bounds.x,
+            y: externalDisplay.bounds.y,
+            width: externalDisplay.bounds.width,
+            height: externalDisplay.bounds.height,
+          });
+        }
+      }
+    }
+  }
+}
+```
+
+================================================================================
+8. USER PREFERENCES & PERSISTENCE
+================================================================================
+
+## Save Display Preferences
+
+```typescript
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+
+interface DisplayPreferences {
+  displayId: number;
+  mode: "extend" | "duplicate";
+  position?: { x: number; y: number };
+  timestamp: number;
+}
+
+const PREFS_PATH = path.join(os.homedir(), ".app-display-config.json");
+
+// Save preferences
+export async function saveDisplayPreferences(prefs: DisplayPreferences) {
+  try {
+    const data = {
+      ...prefs,
+      timestamp: Date.now(),
+    };
+    
+    fs.writeFileSync(PREFS_PATH, JSON.stringify(data, null, 2), "utf8");
+    console.log("✅ Display preferences saved");
+    
+    return { success: true };
+  } catch (error) {
+    console.error("❌ Error saving preferences:", error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    };
+  }
+}
+
+// Load preferences
+export async function loadDisplayPreferences(): Promise<DisplayPreferences | null> {
+  try {
+    if (!fs.existsSync(PREFS_PATH)) {
+      return null;
+    }
+    
+    const data = fs.readFileSync(PREFS_PATH, "utf8");
+    const prefs = JSON.parse(data);
+    
+    console.log("✅ Display preferences loaded:", prefs);
+    return prefs;
+  } catch (error) {
+    console.error("❌ Error loading preferences:", error);
+    return null;
+  }
+}
+
+// Use saved preferences when creating projection window
+export async function createProjectionWindowWithPreferences() {
+  const savedPrefs = await loadDisplayPreferences();
+  const displays = screen.getAllDisplays();
+  
+  let targetDisplay = screen.getPrimaryDisplay();
+  
+  if (savedPrefs) {
+    // Try to find saved display
+    const preferredDisplay = displays.find(d => d.id === savedPrefs.displayId);
+    if (preferredDisplay) {
+      targetDisplay = preferredDisplay;
+      console.log("✅ Using saved display preference:", targetDisplay.id);
+    } else {
+      console.log("⚠️ Saved display not found, using auto-detection");
+      // Fall back to auto-detection
+      const externalDisplay = displays.find(d => !d.internal);
+      if (externalDisplay) {
+        targetDisplay = externalDisplay;
+      }
+    }
+  } else {
+    // Auto-detect external display
+    const externalDisplay = displays.find(d => !d.internal);
+    if (externalDisplay) {
+      targetDisplay = externalDisplay;
+    }
+  }
+  
+  // Create window on target display
+  // ... (see section 4)
+}
+
+// IPC handlers
+ipcMain.handle("save-display-preferences", async (event, prefs) => {
+  return await saveDisplayPreferences(prefs);
+});
+
+ipcMain.handle("load-display-preferences", async () => {
+  return await loadDisplayPreferences();
+});
+```
+
+================================================================================
+9. COMPLETE CODE EXAMPLES
+================================================================================
+
+## Full Project Structure
+
+```
+my-app/
+├── electron/
+│   ├── main/
+│   │   ├── index.ts              # Main process entry
+│   │   ├── projection.ts         # Projection window management
+│   │   └── display-detection.ts  # Display detection utilities
+│   └── preload/
+│       └── index.ts              # Preload script (API exposure)
+├── src/
+│   ├── main.tsx                  # Main window entry
+│   ├── projection.tsx            # Projection window entry
+│   └── components/
+│       ├── Controller.tsx        # Main window UI
+│       └── ProjectionDisplay.tsx # Projection window UI
+├── package.json
+├── vite.config.ts
+└── tsconfig.json
+```
+
+## Complete Minimal Example
+
+### package.json
+```json
+{
+  "name": "multi-display-app",
+  "version": "1.0.0",
+  "main": "dist-electron/main/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && electron-builder"
+  },
+  "dependencies": {
+    "electron": "^28.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "electron-builder": "^24.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vite-plugin-electron": "^0.15.0"
+  }
+}
+```
+
+### electron/main/index.ts (Minimal)
+```typescript
+import { app, BrowserWindow, screen } from "electron";
+import path from "node:path";
+import { setupProjectionIPC, createProjectionWindow } from "./projection";
+
+let mainWin: BrowserWindow | null = null;
+
+async function createMainWindow() {
+  const displays = screen.getAllDisplays();
+  const internalDisplay = displays.find(d => d.internal) || screen.getPrimaryDisplay();
+  
+  mainWin = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    x: internalDisplay.bounds.x,
+    y: internalDisplay.bounds.y,
+    webPreferences: {
+      preload: path.join(__dirname, "../preload/index.js"),
+      contextIsolation: true,
+    },
+  });
+  
+  await mainWin.loadFile("index.html");
+  
+  // Setup IPC
+  setupProjectionIPC(mainWin);
+}
+
+app.whenReady().then(createMainWindow);
+```
+
+### electron/main/projection.ts (Minimal)
+```typescript
+import { BrowserWindow, screen, ipcMain } from "electron";
+
+let projectionWin: BrowserWindow | null = null;
+
+export function setupProjectionIPC(mainWin: BrowserWindow) {
+  ipcMain.handle("project-song", async (event, data) => {
+    if (!projectionWin) {
+      await createProjectionWindow();
+    }
+    projectionWin?.webContents.send("display-song", data);
+    return { success: true };
+  });
+}
+
+export async function createProjectionWindow() {
+  const displays = screen.getAllDisplays();
+  const external = displays.find(d => !d.internal) || displays[0];
+  
+  projectionWin = new BrowserWindow({
+    x: external.bounds.x,
+    y: external.bounds.y,
+    width: external.bounds.width,
+    height: external.bounds.height,
+    fullscreen: true,
+    frame: false,
+  });
+  
+  await projectionWin.loadFile("projection.html");
+}
+```
+
+================================================================================
+10. TESTING & TROUBLESHOOTING
+================================================================================
+
+## Testing Scenarios
+
+1. **Single Display (Laptop Only)**
+   - Both windows should appear on same display
+   - Main window not fullscreen, projection fullscreen
+
+2. **Dual Display - Extend Mode**
+   - Main window on internal (laptop)
+   - Projection on external (monitor/projector)
+
+3. **Dual Display - Duplicate Mode**
+   - May show both windows on both displays
+   - Consider detecting and warning user
+
+4. **Display 1 Primary**
+   - Works correctly with internal display detection
+
+5. **Display 2 Primary**
+   - Works correctly with internal display detection
+
+6. **Hot-Plug Display**
+   - Connect external display after app starts
+   - Should detect and offer to move projection
+
+7. **Hot-Unplug Display**
+   - Disconnect external display while projecting
+   - Should move projection to remaining display
+
+## Common Issues & Solutions
+
+### Issue: Both windows on same display
+
+**Cause:** Cannot detect external display
+**Solution:** 
+```typescript
+// Add logging to verify detection
+const displays = screen.getAllDisplays();
+console.log("All displays:", displays.map(d => ({
+  id: d.id,
+  internal: d.internal,
+  bounds: d.bounds
+})));
+```
+
+### Issue: Projection window not fullscreen
+
+**Cause:** Incorrect bounds or fullscreen setting
+**Solution:**
+```typescript
+// Ensure fullscreen is set
+projectionWin = new BrowserWindow({
+  fullscreen: true,
+  // Also try:
+  // kiosk: true, // For locked fullscreen
+});
+```
+
+### Issue: Cannot access projection window controls
+
+**Cause:** skipTaskbar: true
+**Solution:**
+```typescript
+// Keep in taskbar for easy access
+projectionWin = new BrowserWindow({
+  skipTaskbar: false,
+});
+```
+
+### Issue: Display positions incorrect on different machines
+
+**Cause:** Hard-coded positions
+**Solution:** Always use display.bounds from screen.getAllDisplays()
+
+### Issue: IPC messages not received
+
+**Cause:** Window not ready or destroyed
+**Solution:**
+```typescript
+// Always check before sending
+if (projectionWin && !projectionWin.isDestroyed()) {
+  projectionWin.webContents.send("message", data);
+}
+
+// Or wait for ready-to-show
+projectionWin.once("ready-to-show", () => {
+  projectionWin.webContents.send("message", data);
+});
+```
+
+## Debug Logging
+
+```typescript
+// Add comprehensive logging
+export function logDisplayInfo() {
+  const displays = screen.getAllDisplays();
+  const primary = screen.getPrimaryDisplay();
+  
+  console.log("=".repeat(60));
+  console.log("DISPLAY INFORMATION");
+  console.log("=".repeat(60));
+  console.log(`Total Displays: ${displays.length}`);
+  console.log(`Primary Display ID: ${primary.id}`);
+  console.log("");
+  
+  displays.forEach((display, index) => {
+    console.log(`Display ${index}:`);
+    console.log(`  ID: ${display.id}`);
+    console.log(`  Internal: ${display.internal}`);
+    console.log(`  Is Primary: ${display.id === primary.id}`);
+    console.log(`  Bounds: x=${display.bounds.x}, y=${display.bounds.y}`);
+    console.log(`  Size: ${display.bounds.width}x${display.bounds.height}`);
+    console.log(`  Scale Factor: ${display.scaleFactor}`);
+    console.log("");
+  });
+  
+  console.log("=".repeat(60));
+}
+
+// Call during initialization
+app.whenReady().then(() => {
+  logDisplayInfo();
+  createMainWindow();
+});
+```
+
+## Performance Optimization
+
+```typescript
+// 1. Disable GPU acceleration for better compatibility
+app.disableHardwareAcceleration();
+
+// 2. Limit frame rate for projection
+projectionWin.webContents.setFrameRate(30);
+
+// 3. Disable animations on projection
+projectionWin.webContents.insertCSS(`
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+`);
+```
+
+================================================================================
+KEY TAKEAWAYS
+================================================================================
+
+1. ✅ **Use display.internal property** - Works regardless of Windows primary
+   display settings
+
+2. ✅ **Always check window.isDestroyed()** before sending IPC messages
+
+3. ✅ **Monitor display changes** with screen events
+
+4. ✅ **Save user preferences** for consistent behavior
+
+5. ✅ **Provide fallback strategies** for display detection
+
+6. ✅ **Use contextBridge** in preload for security
+
+7. ✅ **Test on multiple configurations** - single display, dual display,
+   different primary display settings
+
+8. ✅ **Add comprehensive logging** during development
+
+9. ✅ **Handle window lifecycle events** properly
+
+10. ✅ **Keep projection window in taskbar** for easy access during testing
+
+================================================================================
+This architecture provides a robust, user-friendly multi-display solution that
+works consistently across different hardware configurations without requiring
+users to change Windows display settings.
+================================================================================

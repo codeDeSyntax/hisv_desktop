@@ -61,28 +61,35 @@ const ReceiptStylePanel = ({
 
           {/* Modern Receipt Modal */}
           <motion.div
-            initial={{ opacity: 0, x: 300, scale: 0.95 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 300, scale: 0.95 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className={`fixed left-[40%] top-[25%] transform -translate-x-1/2 -translate-y-1/2 w-80 max-h-[80vh] overflow-y-auto no-scrollbar z-50 rounded-lg shadow-lg border ${
+            initial={{ opacity: 0, y: -20, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.96 }}
+            transition={{ type: "spring", damping: 28, stiffness: 350 }}
+            className={`fixed left-[40%] top-[30%] transform -translate-x-1/2 -translate-y-1/2 w-96 max-h-[75vh] overflow-y-auto no-scrollbar z-50 rounded-2xl shadow-2xl backdrop-blur-xl border ${
               isDarkMode
-                ? "bg-stone-900/95 border border-stone-700/50"
-                : "bg-white/95 border border-stone-200/50"
+                ? "bg-stone-900/95 border-stone-700/70 shadow-stone-950/50"
+                : "bg-white/95 border-stone-200/70 shadow-stone-900/10"
             }`}
             style={{
-              fontFamily: "Garamond, Georgia, serif",
+              fontFamily: "'Inter', 'Segoe UI', sans-serif",
             }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modern Header */}
-            <div className="p-6 pb-4">
+            <div className="p-6 pb-3">
               <div className="flex justify-between items-center">
+                <h3
+                  className={`text-lg font-semibold ${
+                    isDarkMode ? "text-stone-200" : "text-stone-800"
+                  }`}
+                >
+                  Sermon Info
+                </h3>
                 <button
                   onClick={onClose}
-                  className={`p-2 rounded-full transition-all duration-200 ${
+                  className={`p-2 rounded-xl transition-all duration-200 hover:scale-105 ${
                     isDarkMode
-                      ? "text-stone-400 hover:text-stone-200 hover:bg-stone-800"
+                      ? "text-stone-400 hover:text-stone-200 hover:bg-stone-800/50"
                       : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
                   }`}
                 >
@@ -95,75 +102,71 @@ const ReceiptStylePanel = ({
             {sermon && (
               <div className="px-6 pb-6">
                 <div
-                  className={`p-4 rounded-lg 
-                     ${
-                       isDarkMode
-                         ? "bg-gradient-to-r from-amber-900/20 to-stone-800/50 border border-amber-800/30"
-                         : "bg-gradient-to-r from-amber-50 to-stone-50 border border-amber-200/50"
-                     }
-                    `}
+                  className={`p-5 rounded-xl shadow-sm ${
+                    isDarkMode
+                      ? "bg-gradient-to-br from-stone-800/50 to-stone-800/30 border border-stone-700/50"
+                      : "bg-gradient-to-br from-stone-50 to-white border border-stone-200/50"
+                  }`}
                 >
-                  <div className="space-y-3">
-                    <div>
-                      <h4
-                        className={`font-semibold text-sm uppercase tracking-wide ${
-                          isDarkMode ? "text-stone-400" : "text-stone-500"
-                        }`}
-                      >
-                        Sermon Details
-                      </h4>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-start justify-between">
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex flex-col gap-1.5">
                         <span
-                          className={`text-sm font-medium ${
-                            isDarkMode ? "text-stone-300" : "text-stone-600"
+                          className={`text-xs font-medium uppercase tracking-wider ${
+                            isDarkMode ? "text-stone-500" : "text-stone-400"
                           }`}
                         >
                           Title
                         </span>
                         <span
-                          className={`text-sm font-semibold text-right max-w-48 ${
-                            isDarkMode ? "text-stone-100" : "text-stone-800"
+                          className={`text-sm font-semibold leading-snug ${
+                            isDarkMode ? "text-stone-200" : "text-stone-800"
                           }`}
                         >
                           {sermon.title}
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between">
-                        <span
-                          className={`text-sm font-medium ${
-                            isDarkMode ? "text-stone-300" : "text-stone-600"
-                          }`}
-                        >
-                          Location
-                        </span>
-                        <span
-                          className={`text-sm font-semibold ${
-                            isDarkMode ? "text-stone-100" : "text-stone-800"
-                          }`}
-                        >
-                          {sermon.location}
-                        </span>
-                      </div>
+                      <div
+                        className={`h-px ${
+                          isDarkMode ? "bg-stone-700/50" : "bg-stone-200/50"
+                        }`}
+                      />
 
-                      <div className="flex items-center justify-between">
-                        <span
-                          className={`text-sm font-medium ${
-                            isDarkMode ? "text-stone-300" : "text-stone-600"
-                          }`}
-                        >
-                          Year
-                        </span>
-                        <span
-                          className={`text-sm font-semibold ${
-                            isDarkMode ? "text-stone-100" : "text-stone-800"
-                          }`}
-                        >
-                          {sermon.year || "N/A"}
-                        </span>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex flex-col gap-1.5">
+                          <span
+                            className={`text-xs font-medium uppercase tracking-wider ${
+                              isDarkMode ? "text-stone-500" : "text-stone-400"
+                            }`}
+                          >
+                            Location
+                          </span>
+                          <span
+                            className={`text-sm font-semibold ${
+                              isDarkMode ? "text-stone-200" : "text-stone-700"
+                            }`}
+                          >
+                            {sermon.location}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                          <span
+                            className={`text-xs font-medium uppercase tracking-wider ${
+                              isDarkMode ? "text-stone-500" : "text-stone-400"
+                            }`}
+                          >
+                            Year
+                          </span>
+                          <span
+                            className={`text-sm font-semibold ${
+                              isDarkMode ? "text-stone-200" : "text-stone-700"
+                            }`}
+                          >
+                            {sermon.year || "N/A"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>

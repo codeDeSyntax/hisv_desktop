@@ -8,10 +8,10 @@ import {
 
 export const useSermonHighlighting = (
   sermonParagraphs: any[],
-  scrollContainerRef: React.RefObject<HTMLDivElement>
+  scrollContainerRef: React.RefObject<HTMLDivElement>,
 ) => {
   const [selectionRange, setSelectionRange] = useState<SelectionRange | null>(
-    null
+    null,
   );
   const [showColorPalette, setShowColorPalette] = useState(false);
   const [palettePosition, setPalettePosition] = useState<PalettePosition>({
@@ -34,77 +34,78 @@ export const useSermonHighlighting = (
 
   // Handle text selection
   const handleTextSelection = useCallback(() => {
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) {
-      setShowColorPalette(false);
-      return;
-    }
+    // Small delay to ensure selection is complete
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) {
+        setShowColorPalette(false);
+        return;
+      }
 
-    const range = selection.getRangeAt(0);
-    const selectedText = range.toString().trim();
+      const range = selection.getRangeAt(0);
+      const selectedText = range.toString().trim();
 
-    if (selectedText.length === 0) {
-      setShowColorPalette(false);
-      return;
-    }
+      if (selectedText.length === 0) {
+        setShowColorPalette(false);
+        return;
+      }
 
-    // Find the paragraph that contains the selection
-    let paragraphElement: Node | null = range.commonAncestorContainer;
-    while (
-      paragraphElement &&
-      paragraphElement.nodeType !== Node.ELEMENT_NODE
-    ) {
-      paragraphElement = paragraphElement.parentNode;
-    }
+      // Find the paragraph that contains the selection
+      let paragraphElement: Node | null = range.commonAncestorContainer;
 
-    // Cast to HTMLElement and handle null case
-    let htmlElement = paragraphElement as HTMLElement | null;
+      // If it's a text node, get its parent element
+      if (paragraphElement.nodeType === Node.TEXT_NODE) {
+        paragraphElement = paragraphElement.parentElement;
+      }
 
-    // Traverse up to find the paragraph container
-    while (htmlElement && !htmlElement.id?.startsWith("paragraph-")) {
-      htmlElement = htmlElement.parentElement;
-    }
+      // Cast to HTMLElement
+      let htmlElement = paragraphElement as HTMLElement | null;
 
-    if (!htmlElement?.id) {
-      setShowColorPalette(false);
-      return;
-    }
+      // Traverse up to find the paragraph container
+      while (htmlElement && !htmlElement.id?.startsWith("paragraph-")) {
+        htmlElement = htmlElement.parentElement;
+      }
 
-    const paragraphId = parseInt(htmlElement.id.replace("paragraph-", ""));
+      if (!htmlElement?.id) {
+        setShowColorPalette(false);
+        return;
+      }
 
-    // Calculate text offsets within the paragraph
-    const paragraphText =
-      sermonParagraphs.find((p) => p.id === paragraphId)?.content || "";
-    const startOffset = paragraphText.indexOf(selectedText);
-    const endOffset = startOffset + selectedText.length;
+      const paragraphId = parseInt(htmlElement.id.replace("paragraph-", ""));
 
-    if (startOffset === -1) {
-      setShowColorPalette(false);
-      return;
-    }
+      // Calculate text offsets within the paragraph
+      const paragraphText =
+        sermonParagraphs.find((p) => p.id === paragraphId)?.content || "";
+      const startOffset = paragraphText.indexOf(selectedText);
+      const endOffset = startOffset + selectedText.length;
 
-    // Set selection info
-    setSelectionRange({
-      paragraphId,
-      startOffset,
-      endOffset,
-      text: selectedText,
-    });
+      if (startOffset === -1) {
+        setShowColorPalette(false);
+        return;
+      }
 
-    // Position the color palette
-    const rect = range.getBoundingClientRect();
-    const scrollContainer = scrollContainerRef.current;
-    const containerRect = scrollContainer?.getBoundingClientRect() || {
-      left: 0,
-      top: 0,
-    };
+      // Set selection info
+      setSelectionRange({
+        paragraphId,
+        startOffset,
+        endOffset,
+        text: selectedText,
+      });
 
-    setPalettePosition({
-      x: rect.left - containerRect.left + rect.width / 2,
-      y: rect.top - containerRect.top - 60,
-    });
+      // Position the color palette
+      const rect = range.getBoundingClientRect();
 
-    setShowColorPalette(true);
+      // Use viewport coordinates for fixed positioning
+      const paletteY = rect.top - 50; // Position above selection
+      const paletteX = rect.left + rect.width / 2; // Center horizontally on selection
+
+      setPalettePosition({
+        x: paletteX,
+        y: Math.max(paletteY, 60), // Ensure it doesn't go above viewport
+      });
+
+      setShowColorPalette(true);
+    }, 10); // Small delay to ensure selection is stable
   }, [sermonParagraphs, scrollContainerRef]);
 
   // Apply highlight
@@ -121,23 +122,13 @@ export const useSermonHighlighting = (
           updated[paragraphId] = {};
         }
 
-        // Check if this exact highlight already exists with the same color
-        const existingHighlight = updated[paragraphId][highlightKey];
-        if (existingHighlight && existingHighlight.color === color) {
-          // Remove the highlight (toggle off)
-          delete updated[paragraphId][highlightKey];
-          if (Object.keys(updated[paragraphId]).length === 0) {
-            delete updated[paragraphId];
-          }
-        } else {
-          // Add or update the highlight
-          updated[paragraphId][highlightKey] = {
-            startOffset,
-            endOffset,
-            color,
-            text,
-          };
-        }
+        // Always add or update the highlight (no toggle)
+        updated[paragraphId][highlightKey] = {
+          startOffset,
+          endOffset,
+          color,
+          text,
+        };
 
         return updated;
       });
@@ -147,7 +138,24 @@ export const useSermonHighlighting = (
       setShowColorPalette(false);
       setSelectionRange(null);
     },
-    [selectionRange]
+    [selectionRange],
+  );
+
+  // Remove highlight by key
+  const removeHighlight = useCallback(
+    (paragraphId: number, highlightKey: string) => {
+      setHighlights((prev) => {
+        const updated = { ...prev };
+        if (updated[paragraphId]) {
+          delete updated[paragraphId][highlightKey];
+          if (Object.keys(updated[paragraphId]).length === 0) {
+            delete updated[paragraphId];
+          }
+        }
+        return updated;
+      });
+    },
+    [],
   );
 
   return {
@@ -158,6 +166,7 @@ export const useSermonHighlighting = (
     highlightColors,
     handleTextSelection,
     applyHighlight,
+    removeHighlight,
     setHighlights,
   };
 };

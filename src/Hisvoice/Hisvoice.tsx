@@ -1,87 +1,50 @@
-import React, { useState, Suspense, useEffect } from "react";
-import SideNav from "./Sidebar";
+import React, { useState, useEffect } from "react";
 import Home from "./Home";
-// import CustomTitleBar from "./TitleBar";
-import { useContext } from "react";
-import { useSermonContext } from "@/Provider/Vsermons";
-import FontSettingsPage from "./Settings";
-import QuotesManager from "./SavedQoutes";
 import TitleBar from "@/shared/TitleBar";
-import LoadingScreen from "./Loading";
-import SermonLoadSkeleton from "@/components/SermonLoadSkeleton";
-import SermonContentSkeleton from "@/components/SermonContentSkeleton";
-import HomeSideSkeleton from "@/components/HomeSkeleton";
-import CompactSkeleton from "@/components/CompactSkeleton";
-
-// Lazy-loaded components (keeping heavy ones lazy)
-const Gallery = React.lazy(() => import("./Media"));
-const DeveloperPage = React.lazy(() => import("./Developer"));
-
-// Import SermonList directly since it's frequently used
-import SermonList from "./Allsermons";
-import SelectedSermon from "./SelectedSermon";
-import CombinedBookmarksRecents from "./CombinedBookmarksRecents";
+import { useSermonContext } from "@/Provider/Vsermons";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Hisvoice = () => {
-  // const [isCollapsed, setIsCollapsed] = useState(true);
-  const { activeTab, isCollapsed, setIsCollapsed, theme } = useSermonContext();
-  const [background, setBackground] = useState(false);
+  const { theme, isPresentationMode, setIsPresentationMode } =
+    useSermonContext();
 
-  // Apply theme to document
+  // Handle ESC key to exit presentation mode
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isPresentationMode) {
+        setIsPresentationMode(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isPresentationMode, setIsPresentationMode]);
 
   return (
     <div
-      className="h-screen overflow-hidden no-scrollbar bg-white dark:bg-background"
+      className="h-screen w-screen overflow-hidden no-scrollbar bg-white dark:bg-background"
       id="hisvoicediv"
     >
-      <TitleBar />
-      <div className={`h-full `}>
-        <div className="  ">
-          {/* <SideNav isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} /> */}
-
-          {/* Main content */}
-          <div className=" ">
-            {activeTab === "home" ? (
-              <Home />
-            ) : activeTab === "sermons" ? (
-              <SermonList />
-            ) : activeTab === "message" ? (
-              <SelectedSermon
-                background={background}
-                setBackground={setBackground}
-              />
-            ) : activeTab === "settings" ? (
-              <FontSettingsPage />
-            ) : activeTab === "library" ? (
-              <CombinedBookmarksRecents />
-            ) : activeTab === "about" ? (
-              <Suspense
-                fallback={
-                  <div className="p-8">
-                    <CompactSkeleton variant="card" lines={6} />
-                  </div>
-                }
-              >
-                <DeveloperPage />
-              </Suspense>
-            ) : activeTab === "media" ? (
-              <Suspense
-                fallback={
-                  <div className="p-8">
-                    <CompactSkeleton variant="list" lines={4} />
-                  </div>
-                }
-              >
-                <Gallery />
-              </Suspense>
-            ) : activeTab === "quotes" ? (
-              <QuotesManager />
-            ) : (
-              "none"
-            )}
-          </div>
-        </div>
-      </div>
+      <AnimatePresence>
+        {!isPresentationMode && (
+          <motion.div
+            initial={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <TitleBar />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <motion.div
+        className="h-full"
+        animate={{
+          marginTop: isPresentationMode ? 0 : 0,
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
+        <Home />
+      </motion.div>
     </div>
   );
 };

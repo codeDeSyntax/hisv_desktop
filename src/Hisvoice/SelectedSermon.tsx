@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import { Card, Button, theme } from "antd";
-import DownloadSermon from "./PlayDownload";
+import ModernAudioPlayer from "./ModernAudioPlayer";
 import {
   ImageIcon,
   Search,
@@ -27,7 +27,7 @@ import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
 import { Sermon } from "@/types";
 import { useSermonContext } from "@/Provider/Vsermons";
-import TypingVerse from "@/components/TypingText";
+
 import { useTheme } from "@/Provider/Theme";
 import {
   formatSermonIntoParagraphs,
@@ -42,8 +42,6 @@ import {
   ColorPalette,
   ReceiptStylePanel,
   SermonHeader,
-  TextColorSelector,
-  SermonContent,
   useSermonHighlighting,
   useSermonNavigation,
   ChromeStyleSearch,
@@ -71,16 +69,19 @@ const SelectedSermon = ({
     toggleBookmark,
     pendingSearchNav,
     setPendingSearchNav,
+    isPresentationMode,
   } = useSermonContext();
 
   const { isDarkMode } = useTheme();
 
   const [showControlPanel, setShowControlPanel] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState<number>(
-    Number(selectedMessage?.lastRead) || 0
-  );
-  const [sermonTColor, setSermonTColor] = useState("#f8d9c4");
   const [showSaveNotification, setShowSaveNotification] = useState(false);
+  const [searchMatchHighlight, setSearchMatchHighlight] = useState<{
+    paragraphId: number;
+    searchTerm: string;
+  } | null>(null);
+  const [hasRestoredPosition, setHasRestoredPosition] = useState(false);
+  const [canSaveProgress, setCanSaveProgress] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -90,7 +91,7 @@ const SelectedSermon = ({
 
     // Use the same formatting logic as mobile app
     const formattedParagraphs = formatSermonIntoParagraphs(
-      selectedMessage.sermon
+      selectedMessage.sermon,
     );
 
     // Convert to SermonParagraph format for compatibility
@@ -110,6 +111,7 @@ const SelectedSermon = ({
     highlightColors,
     handleTextSelection,
     applyHighlight,
+    removeHighlight,
     setHighlights,
   } = useSermonHighlighting(sermonParagraphs, scrollContainerRef);
 
@@ -165,7 +167,7 @@ const SelectedSermon = ({
 
     try {
       const formattedParagraphs = await formatSermonIntoParagraphsAsync(
-        selectedMessage.sermon
+        selectedMessage.sermon,
       );
 
       return formattedParagraphs.map((content, index) => ({
@@ -181,12 +183,63 @@ const SelectedSermon = ({
           id: index + 1,
           content: content,
           originalIndex: index,
-        })
+        }),
       );
     }
   }, [selectedMessage?.sermon]);
 
-  const highlightEndnotesAndQuotes = (text: string) => {
+  // Function to apply user highlights to text
+  const applyUserHighlights = (text: string, paragraphId: number) => {
+    const paragraphHighlights = highlights[paragraphId];
+    if (!paragraphHighlights || Object.keys(paragraphHighlights).length === 0) {
+      return text;
+    }
+
+    // Sort highlights by start offset to apply them in order
+    const sortedHighlights = Object.values(paragraphHighlights).sort(
+      (a, b) => a.startOffset - b.startOffset,
+    );
+
+    let result: React.ReactNode[] = [];
+    let lastIndex = 0;
+
+    sortedHighlights.forEach((highlight, index) => {
+      // Add text before highlight
+      if (highlight.startOffset > lastIndex) {
+        result.push(
+          <span key={`text-${index}`}>
+            {text.substring(lastIndex, highlight.startOffset)}
+          </span>,
+        );
+      }
+
+      // Add highlighted text
+      result.push(
+        <span
+          key={`highlight-${index}`}
+          style={{
+            backgroundColor: highlight.color,
+            padding: "2px 4px",
+            borderRadius: "3px",
+            transition: "all 0.2s ease",
+          }}
+        >
+          {text.substring(highlight.startOffset, highlight.endOffset)}
+        </span>,
+      );
+
+      lastIndex = highlight.endOffset;
+    });
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      result.push(<span key="text-end">{text.substring(lastIndex)}</span>);
+    }
+
+    return <>{result}</>;
+  };
+
+  const highlightEndnotesAndQuotes = (text: string, paragraphId?: number) => {
     // Enhanced regex to capture quotes from "Endnote" to "William Marrion Branham" (case insensitive)
     const quoteRegex = /Endnote(.*?)William\s+Marrion\s+Branham/gis;
     const simpleEndnoteRegex = /Endnote/gi;
@@ -213,7 +266,7 @@ const SelectedSermon = ({
         processedText.push(
           <span key={`before-${matchIndex}`}>
             {highlightNumbersAndEndnotes(beforeText)}
-          </span>
+          </span>,
         );
       }
 
@@ -255,7 +308,7 @@ const SelectedSermon = ({
           >
             William Marrion Branham
           </span>
-        </span>
+        </span>,
       );
 
       lastIndex = matchEnd;
@@ -267,7 +320,7 @@ const SelectedSermon = ({
       processedText.push(
         <span key="remaining">
           {highlightNumbersAndEndnotes(remainingText)}
-        </span>
+        </span>,
       );
     }
 
@@ -339,37 +392,108 @@ const SelectedSermon = ({
     );
   };
 
-  // Track scroll position for saving progress
+  // Reset restoration flag and clear state when sermon changes
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
+    setHasRestoredPosition(false);
+    setCanSaveProgress(false);
+    // Clear highlights from previous sermon
+    setHighlights({});
+    // Clear search query
+    setSearchQuery("");
+    // Clear search match highlight
+    setSearchMatchHighlight(null);
 
-    const handleScroll = () => {
-      const scrollTop = container.scrollTop;
-      setScrollPosition(scrollTop);
-    };
+    // Save last read sermon to localStorage
+    if (selectedMessage) {
+      localStorage.setItem("lastReadSermon", JSON.stringify(selectedMessage));
 
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, []);
+      // Update recent sermons when a sermon is opened
+      const existingRecent = JSON.parse(
+        localStorage.getItem("recentSermons") || "[]",
+      );
 
-  // Save progress
+      // Remove if already exists
+      const filteredRecent = existingRecent.filter(
+        (item: Sermon) => item.id !== selectedMessage.id,
+      );
+      // Add to front
+      filteredRecent.unshift(selectedMessage);
+
+      // Keep only last 4 sermons
+      const limitedRecent = filteredRecent.slice(0, 4);
+
+      // Save to localStorage
+      localStorage.setItem("recentSermons", JSON.stringify(limitedRecent));
+      setRecentSermons(limitedRecent);
+    }
+  }, [selectedMessage, setHighlights, setSearchQuery, setRecentSermons]);
+
+  // Restore last read paragraph when sermon loads (only once, not for search navigation)
   useEffect(() => {
-    if (!selectedMessage?.id) return;
+    if (!selectedMessage?.id || hasRestoredPosition || pendingSearchNav) return;
 
-    const saveScrollPosition = () => {
+    // Check if this sermon has a saved last read paragraph
+    const recentSermons = JSON.parse(
+      localStorage.getItem("recentSermons") || "[]",
+    );
+    const savedSermon = recentSermons.find(
+      (s: Sermon) => s.id === selectedMessage.id,
+    );
+
+    // Only restore if this sermon exists in recentSermons AND has a valid lastParagraph > 0
+    if (
+      savedSermon?.lastParagraph &&
+      savedSermon.lastParagraph > 0 &&
+      sermonParagraphs.length > 0
+    ) {
+      // Wait for paragraphs to render, then restore position
+      const timer = setTimeout(() => {
+        goToParagraph(savedSermon.lastParagraph);
+        setHasRestoredPosition(true);
+        // Enable saving after restoration plus a 2-second buffer
+        setTimeout(() => setCanSaveProgress(true), 2000);
+      }, 200);
+
+      return () => clearTimeout(timer);
+    } else {
+      // For first-time sermons or those without saved position, just mark as restored
+      // This will start at the beginning (paragraph 1 becomes visible)
+      setHasRestoredPosition(true);
+      // Enable saving after 2-second buffer for new sermons
+      const timer = setTimeout(() => setCanSaveProgress(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    selectedMessage?.id,
+    hasRestoredPosition,
+    pendingSearchNav,
+    sermonParagraphs.length,
+    goToParagraph,
+  ]);
+
+  // Save progress - track last read paragraph
+  useEffect(() => {
+    // Only save if we have a valid paragraph (> 0) and sermon, restoration is complete, and enough time has passed
+    if (
+      !selectedMessage?.id ||
+      currentParagraph === 0 ||
+      !hasRestoredPosition ||
+      !canSaveProgress
+    )
+      return;
+
+    const saveLastParagraph = () => {
       const recentSermons = JSON.parse(
-        localStorage.getItem("recentSermons") || "[]"
+        localStorage.getItem("recentSermons") || "[]",
       );
       const currentSermonIndex = recentSermons.findIndex(
-        (sermon: Sermon) => sermon.id === (selectedMessage.id as any)
+        (sermon: Sermon) => sermon.id === (selectedMessage.id as any),
       );
 
       if (currentSermonIndex !== -1) {
         const updatedSermons = [...recentSermons];
         updatedSermons[currentSermonIndex] = {
           ...selectedMessage,
-          lastRead: scrollPosition,
           lastParagraph: currentParagraph,
         };
         localStorage.setItem("recentSermons", JSON.stringify(updatedSermons));
@@ -377,16 +501,17 @@ const SelectedSermon = ({
       }
     };
 
-    const interval = setInterval(saveScrollPosition, 5000); // Auto-save every 5 seconds
+    const interval = setInterval(saveLastParagraph, 3000); // Auto-save every 3 seconds
     return () => {
       clearInterval(interval);
-      saveScrollPosition(); // Save on unmount
+      saveLastParagraph(); // Save on unmount
     };
-  }, [selectedMessage, scrollPosition, currentParagraph, setRecentSermons]);
+  }, [selectedMessage, currentParagraph, setRecentSermons]);
 
+  // Reset restoration flag when sermon changes
   useEffect(() => {
-    setSermonTColor(isDarkMode ? "#f4d1b9" : "#efcda2");
-  }, [isDarkMode]);
+    setHasRestoredPosition(false);
+  }, [selectedMessage?.id]);
 
   // Handle pending search navigation
   useEffect(() => {
@@ -397,38 +522,104 @@ const SelectedSermon = ({
       // Set the search query for highlighting
       setSearchQuery(pendingSearchNav.searchTerm);
 
-      // Wait for paragraphs to render then navigate
+      // Set search match highlight for visual distinction
+      setSearchMatchHighlight({
+        paragraphId: pendingSearchNav.targetParagraphId,
+        searchTerm: pendingSearchNav.searchTerm,
+      });
+
+      // Wait for paragraphs to render and layout transitions to complete, then navigate
       const timer = setTimeout(() => {
-        jumpToParagraph(pendingSearchNav.targetParagraphId);
+        goToParagraph(pendingSearchNav.targetParagraphId);
         // Clear the pending navigation
         setPendingSearchNav(null);
-      }, 100);
+      }, 500);
 
-      return () => clearTimeout(timer);
+      // Auto-clear the search match highlight after 4 seconds
+      const clearTimer = setTimeout(() => {
+        setSearchMatchHighlight(null);
+      }, 4000);
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(clearTimer);
+      };
     }
   }, [
     pendingSearchNav,
     selectedMessage,
     setPendingSearchNav,
     setSearchQuery,
-    jumpToParagraph,
+    goToParagraph,
+  ]);
+
+  // Re-scroll to current paragraph when presentation mode changes
+  useEffect(() => {
+    if (currentParagraph > 0) {
+      // Wait for layout transition to complete (300ms animation + 200ms buffer)
+      const timer = setTimeout(() => {
+        const container = scrollContainerRef.current;
+        const scrollParent = container?.parentElement;
+
+        if (scrollParent) {
+          // First try to find and scroll to the highlighted search match if it exists
+          if (
+            searchMatchHighlight &&
+            searchMatchHighlight.paragraphId === currentParagraph
+          ) {
+            const paragraph = document.getElementById(
+              `paragraph-${currentParagraph}`,
+            );
+            const highlightSpan = paragraph?.querySelector(".animate-pulse");
+
+            if (highlightSpan) {
+              const containerRect = scrollParent.getBoundingClientRect();
+              const elementRect = highlightSpan.getBoundingClientRect();
+
+              const scrollTop = scrollParent.scrollTop;
+              const elementRelativeTop = elementRect.top - containerRect.top;
+              const centerOffset =
+                (containerRect.height - elementRect.height) / 2;
+              const targetScroll =
+                scrollTop + elementRelativeTop - centerOffset;
+
+              scrollParent.scrollTo({
+                top: targetScroll,
+                behavior: "smooth",
+              });
+              return;
+            }
+          }
+
+          // Fallback to scrolling to the paragraph
+          goToParagraph(currentParagraph);
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [
+    isPresentationMode,
+    currentParagraph,
+    goToParagraph,
+    searchMatchHighlight,
+    scrollContainerRef,
   ]);
 
   const handleManualSave = () => {
     if (!selectedMessage?.id) return;
 
     const recentSermons = JSON.parse(
-      localStorage.getItem("recentSermons") || "[]"
+      localStorage.getItem("recentSermons") || "[]",
     );
     const currentSermonIndex = recentSermons.findIndex(
-      (sermon: Sermon) => sermon.id === (selectedMessage.id as any)
+      (sermon: Sermon) => sermon.id === (selectedMessage.id as any),
     );
 
     if (currentSermonIndex !== -1) {
       const updatedSermons = [...recentSermons];
       updatedSermons[currentSermonIndex] = {
         ...selectedMessage,
-        lastRead: scrollPosition,
         lastParagraph: currentParagraph,
       };
       localStorage.setItem("recentSermons", JSON.stringify(updatedSermons));
@@ -487,40 +678,38 @@ const SelectedSermon = ({
         onNavigatePrevious={goToPreviousSearchResult}
       />
 
-      <div className="bg-center flex flex-col pb-10">
-        <div className="mb-5 h-full">
-          <div
-            className="rounded-lg px-4 h-[100vh] overflow-y-scroll overflow-x-hidden no-scrollbar text-wrap max-w-full"
-            ref={scrollContainerRef}
-            style={{
-              overflowWrap: "break-word",
-              wordBreak: "break-word",
-            }}
-            // style={{
-            //   scrollbarWidth: "thin",
-            //   scrollbarColor: !isDarkMode
-            //     ? "#c0c0c0 #f3f4f6"
-            //     : "#422e22 #202020",
-            // }}
-          >
+      <div className="h-full flex flex-col overflow-hidden">
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
+          <div className="w-full px-2 py-2" ref={scrollContainerRef}>
             {selectedMessage?.type === "text" ? (
-              <div className="mx-auto px-12 max-w-full">
-                {/* Text Color Selector */}
-                <TextColorSelector onColorChange={setSermonTColor} />
-
+              <div
+                key={`sermon-${selectedMessage.id}`}
+                className="w-full"
+                style={{ maxWidth: "100%", overflowWrap: "break-word" }}
+              >
                 {/* Sermon Header */}
                 <SermonHeader title={selectedMessage?.title || ""} />
 
                 {/* Sermon Content with Paragraphs */}
-                <span
-                  className="space-y-3 relative max-w-full"
-                  style={{ overflowX: "hidden" }}
+                <div
+                  className="space-y- mt-3"
+                  style={{
+                    width: "100%",
+                    maxWidth: "100%",
+                    overflow: "hidden",
+                  }}
                 >
                   {sermonParagraphs.map((paragraph) => (
                     <div
                       key={paragraph.id}
                       id={`paragraph-${paragraph.id}`}
-                      className="relative group bg-transparent"
+                      className="relative group"
+                      style={{
+                        width: "100%",
+                        maxWidth: "100%",
+                        overflow: "hidden",
+                      }}
                     >
                       {/* Bookmark Button - Shows on hover */}
                       <button
@@ -532,7 +721,7 @@ const SelectedSermon = ({
                               paragraph.id,
                               paragraph.content,
                               selectedMessage.location,
-                              selectedMessage.year?.toString()
+                              selectedMessage.year?.toString(),
                             );
                           }
                         }}
@@ -540,18 +729,18 @@ const SelectedSermon = ({
                           selectedMessage &&
                           isBookmarked(selectedMessage.id as any, paragraph.id)
                             ? isDarkMode
-                              ? "bg-yellow-600 hover:bg-yellow-500 text-yellow-100"
-                              : "bg-yellow-500 hover:bg-yellow-400 text-white"
+                              ? "bg-stone-700 hover:bg-stone-600 text-stone-200"
+                              : "bg-stone-600 hover:bg-stone-500 text-white"
                             : isDarkMode
-                            ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
-                            : "bg-gray-200 hover:bg-gray-300 text-gray-600"
+                              ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                              : "bg-gray-200 hover:bg-gray-300 text-gray-600"
                         } shadow-lg border-2 ${
                           selectedMessage &&
                           isBookmarked(selectedMessage.id as any, paragraph.id)
-                            ? "border-yellow-400"
+                            ? "border-stone-500 dark:border-stone-600"
                             : isDarkMode
-                            ? "border-gray-600"
-                            : "border-gray-300"
+                              ? "border-gray-600"
+                              : "border-gray-300"
                         }`}
                         title={
                           selectedMessage &&
@@ -563,7 +752,7 @@ const SelectedSermon = ({
                         {selectedMessage &&
                         isBookmarked(
                           selectedMessage.id as any,
-                          paragraph.id
+                          paragraph.id,
                         ) ? (
                           <BookmarkCheck size={14} />
                         ) : (
@@ -572,23 +761,29 @@ const SelectedSermon = ({
                       </button>
 
                       {/* Paragraph Content with inline number */}
-                      <span
-                        className={`leading-relaxed bg-transparent text-stone-600 dark:text-accent text-wrap break-words justify-center text-center py-2 rounded-r-lg transition-all duration-200 max-w-full overflow-hidden ${
+                      <div
+                        className={`leading-relaxed  px-6  rounded-lg transition-all duration-200 ${
                           currentParagraph === paragraph.id
                             ? isDarkMode
-                              ? "bg-primary dark:bg-transparent border-l-4 border-blue-500"
-                              : "bg-blue-50 border-l-4 border-blue-500"
+                              ? "bg-stone-800/50 border-l-4 border-stone-600"
+                              : "bg-stone-100 border-l-4 border-stone-400"
                             : "border-l-4 border-transparent"
                         }`}
                         style={{
                           fontFamily: settings.fontFamily || "Zilla Slab",
                           fontWeight: settings.fontWeight,
-                          fontSize: `${settings.fontSize}px`,
+                          fontSize: isPresentationMode
+                            ? `${settings.fontSize}px`
+                            : "16px",
                           fontStyle: settings.fontStyle,
-                          color: isDarkMode ? sermonTColor : "#000000",
+                          color: isDarkMode ? "#d6d3d1" : "#000000",
                           overflowWrap: "break-word",
                           wordBreak: "break-word",
-                          hyphens: "auto",
+                          whiteSpace: "normal",
+                          width: "100%",
+                          maxWidth: "100%",
+                          overflow: "hidden",
+                          boxSizing: "border-box",
                         }}
                         onMouseUp={handleTextSelection}
                       >
@@ -597,29 +792,175 @@ const SelectedSermon = ({
                           className={`font-archivo font-bold mr-2 ${
                             currentParagraph === paragraph.id
                               ? isDarkMode
-                                ? "text-[#d57a3e]"
-                                : "text-[#4b2a14]"
+                                ? "text-stone-400"
+                                : "text-stone-700"
                               : isDarkMode
-                              ? "text-[#eba373]"
-                              : "text-[#4b2a14]"
+                                ? "text-stone-500"
+                                : "text-stone-600"
                           } transition-colors duration-200`}
                           style={{
-                            fontSize: `${Math.max(
-                              Number(settings.fontSize) * 0.8,
-                              14
-                            )}px`,
+                            fontSize: isPresentationMode
+                              ? `${Math.max(Number(settings.fontSize) * 0.8, 14)}px`
+                              : "14px",
                           }}
                         >
                           {paragraph.id}.
                         </span>
-                        {highlightEndnotesAndQuotes(paragraph.content)}
-                      </span>
+                        {/* Apply user highlights first, then endnotes/quotes */}
+                        <span>
+                          {(() => {
+                            // Helper to apply search match highlight to plain text
+                            const applySearchMatchHighlight = (
+                              text: string,
+                            ) => {
+                              if (
+                                !searchMatchHighlight ||
+                                searchMatchHighlight.paragraphId !==
+                                  paragraph.id
+                              ) {
+                                return highlightEndnotesAndQuotes(
+                                  text,
+                                  paragraph.id,
+                                );
+                              }
+
+                              const searchTerm =
+                                searchMatchHighlight.searchTerm.trim();
+                              const lowerText = text.toLowerCase();
+                              const lowerTerm = searchTerm.toLowerCase();
+                              const matchIndex = lowerText.indexOf(lowerTerm);
+
+                              if (matchIndex === -1) {
+                                return highlightEndnotesAndQuotes(
+                                  text,
+                                  paragraph.id,
+                                );
+                              }
+
+                              // Split text into before, match, and after
+                              const beforeMatch = text.substring(0, matchIndex);
+                              const matchText = text.substring(
+                                matchIndex,
+                                matchIndex + searchTerm.length,
+                              );
+                              const afterMatch = text.substring(
+                                matchIndex + searchTerm.length,
+                              );
+
+                              return (
+                                <>
+                                  {highlightEndnotesAndQuotes(
+                                    beforeMatch,
+                                    paragraph.id,
+                                  )}
+                                  <span
+                                    className="animate-pulse"
+                                    style={{
+                                      backgroundColor: isDarkMode
+                                        ? "rgba(120, 113, 108, 0.5)"
+                                        : "rgba(168, 162, 158, 0.4)",
+                                      padding: "2px 4px",
+                                      borderRadius: "4px",
+                                      fontWeight: "700",
+                                    }}
+                                  >
+                                    {matchText}
+                                  </span>
+                                  {highlightEndnotesAndQuotes(
+                                    afterMatch,
+                                    paragraph.id,
+                                  )}
+                                </>
+                              );
+                            };
+
+                            const paragraphHighlights =
+                              highlights[paragraph.id];
+                            if (
+                              !paragraphHighlights ||
+                              Object.keys(paragraphHighlights).length === 0
+                            ) {
+                              // No user highlights, apply search match if exists
+                              return applySearchMatchHighlight(
+                                paragraph.content,
+                              );
+                            }
+
+                            // If there are highlights, we need to apply them to the content
+                            const sortedHighlights = Object.values(
+                              paragraphHighlights,
+                            ).sort((a, b) => a.startOffset - b.startOffset);
+
+                            let parts: React.ReactNode[] = [];
+                            let lastIndex = 0;
+
+                            sortedHighlights.forEach((highlight, index) => {
+                              // Add text before highlight
+                              if (highlight.startOffset > lastIndex) {
+                                parts.push(
+                                  <span key={`before-${index}`}>
+                                    {highlightEndnotesAndQuotes(
+                                      paragraph.content.substring(
+                                        lastIndex,
+                                        highlight.startOffset,
+                                      ),
+                                      paragraph.id,
+                                    )}
+                                  </span>,
+                                );
+                              }
+
+                              // Add highlighted text
+                              parts.push(
+                                <span
+                                  key={`highlight-${index}`}
+                                  className={`cursor-pointer hover:opacity-80 ${isDarkMode ? "text-stone-900" : ""}`}
+                                  style={{
+                                    backgroundColor: highlight.color,
+                                    padding: "2px 4px",
+                                    borderRadius: "4px",
+                                    transition: "all 0.2s ease",
+                                    boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+                                  }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const highlightKey = `${highlight.startOffset}-${highlight.endOffset}`;
+                                    removeHighlight(paragraph.id, highlightKey);
+                                  }}
+                                  title="Click to remove highlight"
+                                >
+                                  {paragraph.content.substring(
+                                    highlight.startOffset,
+                                    highlight.endOffset,
+                                  )}
+                                </span>,
+                              );
+
+                              lastIndex = highlight.endOffset;
+                            });
+
+                            // Add remaining text
+                            if (lastIndex < paragraph.content.length) {
+                              parts.push(
+                                <span key="after">
+                                  {highlightEndnotesAndQuotes(
+                                    paragraph.content.substring(lastIndex),
+                                    paragraph.id,
+                                  )}
+                                </span>,
+                              );
+                            }
+
+                            return <>{parts}</>;
+                          })()}
+                        </span>
+                      </div>
                     </div>
                   ))}
-                </span>
+                </div>
               </div>
             ) : (
-              <DownloadSermon />
+              <ModernAudioPlayer />
             )}
           </div>
         </div>

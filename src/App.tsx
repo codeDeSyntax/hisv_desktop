@@ -36,7 +36,7 @@ const App = () => {
             setActiveTab("bookmarks");
             showToast("🔖 Bookmarks");
             break;
-          case "h":
+          case "r":
             setActiveTab("recents");
             showToast("🕒 Recent Sermons");
             break;
@@ -57,7 +57,7 @@ const App = () => {
           case "k": // Cmd+K is common for search
             // Focus search if available
             const searchInput = document.querySelector(
-              'input[placeholder*="search" i], input[placeholder*="Search" i]'
+              'input[placeholder*="search" i], input[placeholder*="Search" i]',
             ) as HTMLInputElement;
             if (searchInput) {
               searchInput.focus();

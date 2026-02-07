@@ -8,8 +8,9 @@ import {
   Archive,
   CogIcon,
   LucideHome,
-  Settings,
   Mic,
+  Presentation,
+  PlaySquare,
 } from "lucide-react";
 // import { useBibleContext } from "@/Provider/Bible";
 // import { useEastVoiceContext } from "@/Provider/EastVoice";
@@ -18,10 +19,10 @@ import { ThemeToggle } from "@/shared/ThemeToggler";
 import { useTheme } from "@/Provider/Theme";
 // import { useEvPresentationContext } from "@/Provider/EvPresent";
 import Help from "@/shared/Help";
+import FontPicker from "@/components/FontPicker";
 import { useSermonContext } from "../Provider/Vsermons";
 import { HomeOutlined, HomeTwoTone, ReadFilled } from "@ant-design/icons";
 import { Tooltip } from "antd";
-import DropdownSettings from "@/components/DropdownSettings";
 import { Sermon } from "@/types/index.js";
 
 const TitleBar: React.FC = () => {
@@ -29,6 +30,8 @@ const TitleBar: React.FC = () => {
     handleClose,
     handleMaximize,
     handleMinimize,
+    isPresentationMode,
+    setIsPresentationMode,
     theme,
     activeTab,
     setActiveTab,
@@ -39,8 +42,6 @@ const TitleBar: React.FC = () => {
   } = useSermonContext();
   const { isDarkMode } = useTheme();
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
-  const settingsRef = useRef<HTMLDivElement>(null);
 
   // Sermon tabs state
   const [openTabs, setOpenTabs] = useState<Sermon[]>([]);
@@ -131,26 +132,6 @@ const TitleBar: React.FC = () => {
     }
   }, [bgOpacity, nextBg]);
 
-  // Close settings dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        settingsRef.current &&
-        !settingsRef.current.contains(event.target as Node)
-      ) {
-        setShowSettingsDropdown(false);
-      }
-    };
-
-    if (showSettingsDropdown) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showSettingsDropdown]);
-
   // Load tabs from localStorage on mount
   useEffect(() => {
     const savedTabs = localStorage.getItem("sermonTabs");
@@ -216,7 +197,7 @@ const TitleBar: React.FC = () => {
 
   const closeSermonTab = (
     sermonId: string | number,
-    event: React.MouseEvent
+    event: React.MouseEvent,
   ) => {
     event.stopPropagation();
 
@@ -258,13 +239,13 @@ const TitleBar: React.FC = () => {
   const findSermonById = (sermonId: string | number) => {
     // First check recentSermons
     let foundSermon = recentSermons.find(
-      (s) => s.id.toString() === sermonId.toString()
+      (s) => s.id.toString() === sermonId.toString(),
     );
 
     // If not found in recents, check all sermons (if available in context)
     if (!foundSermon && allSermons) {
       foundSermon = allSermons.find(
-        (s) => s.id.toString() === sermonId.toString()
+        (s) => s.id.toString() === sermonId.toString(),
       );
     }
 
@@ -303,7 +284,7 @@ const TitleBar: React.FC = () => {
   useEffect(() => {
     if (activeTabId && !selectedMessage && openTabs.length > 0) {
       const activeTab = openTabs.find(
-        (tab) => tab.id.toString() === activeTabId
+        (tab) => tab.id.toString() === activeTabId,
       );
       if (activeTab) {
         // Check if we have full sermon data or need to fetch it
@@ -325,62 +306,124 @@ const TitleBar: React.FC = () => {
   };
 
   return (
-    <div
-      className="z-50 w-screen fixed"
-      style={{ WebkitAppRegion: "drag" } as any}
-    >
-      <div
-        className="h-8 flex items-center flex-row-reverse px-4 border-b border-gray-300 dark:border-gray-700 select-none relative"
-        style={{
-          ...(!isDarkMode
-            ? {
-                backgroundImage: !isDarkMode
-                  ? `linear-gradient(to bottom,
-             #ffffff00 0%,
-             rgba(255, 255, 255, 5) 50%),
-             ${selectedBg}`
-                  : undefined,
-                backgroundRepeat: "repeat",
-                backgroundSize: "15px", // Adjust size to control repeat pattern
-              }
-            : {
-                backgroundImage: isDarkMode
-                  ? `linear-gradient(to bottom,
-             rgba(255, 255, 255, 0%) 0%,
-             #1c1917ff 50%),
-             ${selectedBg}`
-                  : undefined,
-                backgroundRepeat: "repeat",
-                backgroundSize: "15px", // Adjust size to control repeat pattern
-              }),
-        }}
-      >
+    <div className="z-50 w-screen " style={{ WebkitAppRegion: "drag" } as any}>
+      <div className="h-[4vh] flex items-center justify-between px-4 border-b border-stone-200 dark:border-stone-700 select-none relative bg-gray-50 dark:bg-stone-950">
+        {/* Left section - Current Sermon Tab + Recent Sermons */}
         <div
-          className=" space-x-2 mr-4 flex items-center justify-center"
+          className="flex items-center gap-1 flex-shrink-0 min-w-0"
           style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
         >
+          {/* Current Sermon Tab - Always shown if a sermon is selected */}
+          {selectedMessage && activeTab === "message" && (
+            <div
+              key={`current-${selectedMessage.id}`}
+              className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-t-lg cursor-default transition-all duration-200 flex-shrink-0 max-w-[160px] min-w-[100px] group h-[85%] bg-white dark:bg-stone-800 border-t-2 border-l border-r border-stone-400 dark:border-stone-500 text-stone-900 dark:text-stone-100 shadow-md"
+              title={selectedMessage.title}
+            >
+              {/* Active indicator dot - pulsing */}
+              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-green-600 dark:bg-green-500 animate-pulse" />
+
+              {/* Sermon title */}
+              <span className="text-[10px] font-semibold truncate flex-1">
+                {selectedMessage.title.length > 20
+                  ? selectedMessage.title.substring(0, 20) + "..."
+                  : selectedMessage.title}
+              </span>
+
+              {/* Audio indicator if available */}
+              {selectedMessage.audioUrl && (
+                <div className="flex-shrink-0">
+                  <Mic className="w-2.5 h-2.5" />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Separator between current and recent */}
+          {selectedMessage &&
+            activeTab === "message" &&
+            recentSermons.length > 0 && (
+              <div className="w-px h-4 bg-stone-300 dark:bg-stone-600 mx-1" />
+            )}
+
+          {/* Recent Sermons Tabs (max 4, excluding current) */}
+          {recentSermons
+            .slice(0, 4)
+            .filter((sermon) => sermon.id !== selectedMessage?.id)
+            .map((sermon, index) => (
+              <div
+                key={sermon.id}
+                onClick={() => {
+                  setSelectedMessage(sermon);
+                  setActiveTab("message");
+                  // Add to open tabs if not already there
+                  const existingTab = openTabs.find((t) => t.id === sermon.id);
+                  if (!existingTab) {
+                    setOpenTabs((prev) => [...prev, sermon]);
+                  }
+                  setActiveTabId(sermon.id.toString());
+                }}
+                className="relative flex items-center gap-1.5 px-2 py-1 rounded-t-lg cursor-pointer transition-all duration-200 flex-shrink-0 max-w-[140px] min-w-[100px] group h-[85%] bg-stone-100 dark:bg-stone-900 hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400"
+                title={sermon.title}
+              >
+                {/* Indicator dot */}
+                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-stone-400 dark:bg-stone-600" />
+
+                {/* Sermon title */}
+                <span className="text-[10px] font-medium truncate flex-1">
+                  {sermon.title.length > 20
+                    ? sermon.title.substring(0, 20) + "..."
+                    : sermon.title}
+                </span>
+
+                {/* Audio indicator if available */}
+                {sermon.audioUrl && (
+                  <div className="flex-shrink-0">
+                    <Mic className="w-2.5 h-2.5" />
+                  </div>
+                )}
+              </div>
+            ))}
+        </div>
+
+        {/* Middle section - App name or active sermon info */}
+        <div className="flex-1 flex items-center justify-center px-4 min-w-0">
+          <div className="text-sm text-center text-gray-900 dark:text-gray-300 font-cooper">
+            Brother Bob
+          </div>
+        </div>
+
+        {/* Right section - Controls */}
+        <div
+          className="space-x-2 flex items-center justify-center flex-shrink-0"
+          style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+        >
+          {/* Font picker */}
+          <FontPicker />
+
+          {/* presentation mode toggle */}
+          <Tooltip
+            title={isPresentationMode ? "Exit Presentation" : "Present Mode"}
+          >
+            <div
+              onClick={() => setIsPresentationMode(!isPresentationMode)}
+              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer hover:bg-gray-50 dark:hover:bg-primary"
+            >
+              <PlaySquare
+                className={`w-4 h-4 transition-colors ${
+                  isPresentationMode
+                    ? "text-stone-600 dark:text-stone-300"
+                    : "text-gray-600 dark:text-accent"
+                } group-hover:text-black dark:group-hover:text-white`}
+              />
+            </div>
+          </Tooltip>
+
           {/* theme toggler */}
           <ThemeToggle />
 
           <Help />
-          <div ref={settingsRef} className="relative">
-            <Tooltip title="Settings">
-              <div
-                onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
-                className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
-              >
-                <Settings className="w-4 h-4 text-gray-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
-              </div>
-            </Tooltip>
 
-            {showSettingsDropdown && (
-              <DropdownSettings
-                isOpen={showSettingsDropdown}
-                onClose={() => setShowSettingsDropdown(false)}
-                position={{ top: 40, right: 40 }}
-              />
-            )}
-          </div>
           {/* Close button */}
 
           <Tooltip title="close">
@@ -411,144 +454,6 @@ const TitleBar: React.FC = () => {
               <Square className="w-4 h-4 text-gray-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
             </div>
           </Tooltip>
-        </div>
-        {/* Middle section - Show tabs when viewing sermons, otherwise show app name */}
-        <div
-          className="flex-1 flex items-center justify-center px-4 min-w-0 h-full"
-          style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-        >
-          {activeTab === "message" && openTabs.length > 0 ? (
-            // Chrome-like tabs with horizontal scrolling
-            <div className="flex-1 max-w-full min-w-0 flex items-center justify-center">
-              <div
-                className="flex items-center gap-1 overflow-x-auto no-scrollbar"
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-              >
-                {openTabs.map((tab, index) => (
-                  <div
-                    key={tab.id}
-                    onClick={() => switchToTab(tab)}
-                    className={`relative flex items-center gap-2 px-3  rounded-lg cursor-pointer transition-all backdrop-blur-sm duration-200 flex-shrink-0 w-[100px] min-w-[120px] group h-6 ${
-                      activeTabId === tab.id.toString()
-                        ? " from-text border-t border-l border-r border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100"
-                        : " hover:bg-stone-200 dark:hover:bg-stone-600 text-stone-600 dark:text-stone-300"
-                    }`}
-                    style={
-                      {
-                        WebkitAppRegion: "no-drag" as any,
-                        clipPath:
-                          activeTabId === tab.id.toString()
-                            ? "polygon(0 100%, 0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%)"
-                            : "polygon(0 100%, 0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px, 100% 100%)",
-                      } as React.CSSProperties
-                    }
-                  >
-                    {/* Audio indicator - absolute positioned */}
-                    {tab.audioUrl && (
-                      <div className="absolute top-1 right-0 transform translate-y-[-2px]">
-                        <div className="w-3 h-3 bg-yellow-700 dark:bg-yellow-700 rounded-full flex items-center justify-center">
-                          <Mic className="w-2 h-2 text-white " />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Tab content */}
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div
-                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                          activeTabId === tab.id.toString()
-                            ? "bg-amber-500 dark:bg-amber-400"
-                            : "bg-stone-400 dark:bg-stone-500"
-                        }`}
-                      />
-                      <span
-                        className="text-xs font-medium truncate"
-                        title={tab.title}
-                      >
-                        {tab.title}
-                      </span>
-                    </div>
-
-                    {/* Close button */}
-                    <span
-                      onClick={(e) => closeSermonTab(tab.id, e)}
-                      className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center transition-colors ${
-                        activeTabId === tab.id.toString()
-                          ? "hover:bg-stone-200 dark:hover:bg-stone-600"
-                          : "hover:bg-stone-300 dark:hover:bg-stone-500"
-                      } opacity-0 group-hover:opacity-100`}
-                    >
-                      <X className="w-3 h-3" />
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            // Default app name
-            <div className="text-sm text-center text-gray-900 dark:text-gray-300 font-cooper">
-              Brother Bob
-            </div>
-          )}
-        </div>
-        <div
-          className="flex items-center justify-center gap-4"
-          style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-        >
-          {/* home */}
-
-          <Tooltip title="Home">
-            <div
-              onClick={() => setActiveTab("home")}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
-            >
-              <img
-                src="./hisv.png"
-                className="w-4 h-4 text-gray-600 dark:text-accent group-hover:text-black dark:group-hover:text-white"
-              />
-            </div>
-          </Tooltip>
-
-          {/* Bookmarks & Recents Combined */}
-
-          <Tooltip title="Library" style={{ fontFamily: "fantasy" }}>
-            <div
-              onClick={() => setActiveTab("library")}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
-            >
-              <Archive className="w-4 h-4 text-gray-600 dark:text-[#a8a29e] group-hover:text-black dark:group-hover:text-white" />
-            </div>
-          </Tooltip>
-          {/* read */}
-
-          <Tooltip title="Sermon">
-            <div
-              onClick={() => setActiveTab("message")}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
-            >
-              <ReadFilled className="w-4 h-4 text-gray-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
-            </div>
-          </Tooltip>
-          {/* sermons */}
-
-          <Tooltip title="sermons">
-            <div
-              onClick={() => setActiveTab("sermons")}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
-            >
-              <LucideLibraryBig className="w-4 h-4 text-gray-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
-            </div>
-          </Tooltip>
-          {/* Home */}
-
-          {/* <Tooltip title="Home">
-            <div
-              onClick={() => setActiveTab("home")}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
-            >
-              <HomeOutlined className="w-4 h-4 text-gray-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
-            </div>
-          </Tooltip> */}
         </div>
       </div>
     </div>

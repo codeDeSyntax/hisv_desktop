@@ -80,23 +80,23 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
       {isVisible && (
         <motion.div
           ref={containerRef}
-          initial={{ opacity: 0, y: -30, scale: 0.95 }}
+          initial={{ opacity: 0, y: -20, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -30, scale: 0.95 }}
+          exit={{ opacity: 0, y: -20, scale: 0.96 }}
           transition={{
-            duration: 0.3,
+            duration: 0.25,
             ease: [0.4, 0, 0.2, 1],
             type: "spring",
-            stiffness: 300,
-            damping: 30,
+            stiffness: 350,
+            damping: 28,
           }}
-          className="fixed top-6 right-6 z-50 border border-stone-200/50 dark:border-amber-900/30 rounded-2xl "
-          style={{ minWidth: "340px" }}
+          className="fixed top-20 right-8 z-50 bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl border border-stone-200 dark:border-stone-700 rounded-2xl shadow-2xl shadow-stone-900/10 dark:shadow-stone-950/50"
+          style={{ minWidth: "380px", maxWidth: "420px" }}
         >
           {/* Main Search Container */}
-          <div className="p-4">
+          <div className="p-2">
             {/* Search Input Section */}
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-2 mb-4">
               <div className="flex-1 relative">
                 <input
                   ref={inputRef}
@@ -106,7 +106,7 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Search in sermon or paragraph number..."
-                  className="w-full px-4 py-3 text-sm border-0 rounded-xl bg-stone-100/20 dark:bg-yellow-900/20  text-stone-800 dark:text-amber-100 placeholder-yellow-900 dark:placeholder-text focus:outline-none focus:ring-2 focus:ring-amber-200 dark:focus:ring-text/20 transition-all duration-200 shadow-inne placeholder:font-zilla font-zilla"
+                  className="w-full px-4 py-3 text-sm border border-stone-200 dark:border-stone-700 rounded-xl bg-stone-50 dark:bg-stone-800/50 text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-600 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md placeholder:font-zilla font-zilla"
                   style={{
                     backdropFilter: "blur(8px)",
                   }}
@@ -114,18 +114,19 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
                 {searchQuery && (
                   <button
                     onClick={handleClear}
-                    className="absolute right-3 cursor-pointer top-1/2 transform -translate-y-1/2 p-1 rounded-lg text-stone-400 hover:text-stone-600 dark:text-amber-400/70 dark:hover:text-amber-300 dark:bg-amber-900 hover:bg-stone-100/50 dark:hover:bg-amber-900/30 transition-all duration-200"
+                    className="absolute bg-stone-200 dark:bg-stone-700 right-12 cursor-pointer top-1/2 transform -translate-y-1/2 p-1.5 rounded-lg text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700/50 transition-all duration-200"
                   >
-                    <X size={16} />
+                    <X size={14} />
                   </button>
                 )}
 
-                <div
+                <button
                   onClick={onClose}
-                  className="absolute left-[100%] top-1/2 transform -translate-y-1/2 p-1 rounded-lg text-white rounded-r-full bg-yellow-900  dark:bg-amber-500 hover:bg-yellow-700 cursor-pointer dark:hover:bg-amber-900/30 transition-all duration-200"
+                  className="absolute right-2 top-1/2 bg-red-800   transform -translate-y-1/2 p-1.5 rounded-lg text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-700/50 cursor-pointer transition-all duration-200"
+                  title="Close (Esc)"
                 >
                   <X size={16} />
-                </div>
+                </button>
               </div>
 
               {/* Close Button */}
@@ -141,21 +142,32 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
             {/* Results and Navigation Section */}
             {searchQuery && (
               <div
-                className="flex items-center justify-between p-3 dark:bg-yellow-900/20  rounded-xl border border-stone-200/30 dark:border-amber-900/20"
+                className="flex items-center justify-between p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50/50 dark:bg-stone-800/30"
                 style={{
                   backdropFilter: "blur(8px)",
                 }}
               >
                 {/* Results Counter */}
-                <div className="text-sm font-medium text-stone-600 dark:text-amber-200/80">
+                <div className="text-sm font-medium text-stone-700 dark:text-stone-300">
                   {searchResultsCount > 0 ? (
-                    <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 bg-amber-500 dark:bg-amber-400 rounded-full animate-pulse"></span>
-                      {currentSearchIndex} of {searchResultsCount} matches
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-stone-600 dark:bg-stone-400 rounded-full animate-pulse shadow-sm"></span>
+                      <span className="font-semibold">
+                        {currentSearchIndex}
+                      </span>
+                      <span className="text-stone-500 dark:text-stone-400">
+                        of
+                      </span>
+                      <span className="font-semibold">
+                        {searchResultsCount}
+                      </span>
+                      <span className="text-stone-500 dark:text-stone-400">
+                        matches
+                      </span>
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-stone-500 dark:text-amber-300/60">
-                      <span className="w-2 h-2 bg-stone-400 dark:bg-amber-600/50 rounded-full"></span>
+                    <span className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
+                      <span className="w-2 h-2 bg-stone-400 dark:bg-stone-600 rounded-full"></span>
                       No results found
                     </span>
                   )}
@@ -163,17 +175,17 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
 
                 {/* Navigation Buttons */}
                 {searchResultsCount > 0 && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <button
                       onClick={onNavigatePrevious}
-                      className="p-2 rounded-lg bg-stone/50 dark:bg-amber-900/40 text-stone-600 dark:text-amber-300 hover:text-stone-800 dark:hover:text-amber-100 hover:bg-white/80 dark:hover:bg-amber-800/60 transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="p-2 rounded-lg bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-600 transition-all duration-200 shadow-sm hover:shadow-md"
                       title="Previous (Shift+Enter)"
                     >
                       <ChevronUp size={16} />
                     </button>
                     <button
                       onClick={onNavigateNext}
-                      className="p-2 rounded-lg bg-stone/50 dark:bg-amber-900/40 text-stone-600 dark:text-amber-300 hover:text-stone-800 dark:hover:text-amber-100 hover:bg-white/80 dark:hover:bg-amber-800/60 transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="p-2 rounded-lg bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-600 transition-all duration-200 shadow-sm hover:shadow-md"
                       title="Next (Enter)"
                     >
                       <ChevronDown size={16} />

@@ -8,7 +8,7 @@
  *   2. git add -A
  *   3. git commit -m "chore: release v<version> — <message>"
  *   4. git tag v<version>
- *   5. git push && git push --tags
+ *   5. git push && git push origin v<version>
  */
 
 import { execSync } from "node:child_process";
@@ -53,6 +53,6 @@ run("git add -A");
 run(`git commit -m "chore: release v${version} — ${message}"`);
 run(`git tag v${version}`);
 run("git push");
-run("git push --tags");
+run(`git push origin v${version}`);
 
 console.log(`\nReleased v${version}. GitHub Actions will build & publish.`);

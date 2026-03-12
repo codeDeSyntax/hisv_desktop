@@ -5,7 +5,7 @@
  *
  * What it does:
  *   1. Bumps version in package.json
- *   2. git add package.json
+ *   2. git add -A
  *   3. git commit -m "chore: release v<version> — <message>"
  *   4. git tag v<version>
  *   5. git push && git push --tags
@@ -49,7 +49,7 @@ console.log(`Bumped version to ${version}`);
 
 const run = (cmd) => execSync(cmd, { stdio: "inherit" });
 
-run("git add package.json");
+run("git add -A");
 run(`git commit -m "chore: release v${version} — ${message}"`);
 run(`git tag v${version}`);
 run("git push");

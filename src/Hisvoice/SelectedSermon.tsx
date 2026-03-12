@@ -297,7 +297,7 @@ const SelectedSermon = ({
           {/* Endnote marker */}
           <span
             className="font-semibold italic"
-            style={{ color: accentColor }}
+            style={{ color: accentColor + "90" }}
             title="William Branham quote marker"
           >
             Endnote
@@ -306,7 +306,7 @@ const SelectedSermon = ({
           <span
             className="italic font-medium"
             style={{
-              color: isDarkMode ? "#a78bfa" : "#7c3aed",
+              color: accentColor + "80",
               marginLeft: "2px",
               marginRight: "2px",
             }}
@@ -317,7 +317,7 @@ const SelectedSermon = ({
           {/* Author name */}
           <span
             className="font-bold"
-            style={{ color: accentColor }}
+            style={{ color: accentColor + "90" }}
             title="Quote author"
           >
             William Marrion Branham
@@ -846,7 +846,7 @@ const SelectedSermon = ({
 
                         {/* Paragraph Content with inline number */}
                         <div
-                          className="leading-relaxed  px-6  rounded-lg transition-all duration-200 border-l-4"
+                          className="leading-normal  px-6  rounded-lg transition-all duration-200 border-l-4"
                           style={{
                             fontFamily: settings.fontFamily || "Zilla Slab",
                             fontWeight: settings.fontWeight,

@@ -56,25 +56,25 @@ let splashWin: BrowserWindow | null = null;
 const preload = path.join(__dirname, "../preload/index.mjs");
 const indexHtml = path.join(RENDERER_DIST, "index.html");
 
-function createSplashWindow() {
-  splashWin = new BrowserWindow({
-    width: 500,
-    height: 360,
-    frame: false,
-    resizable: false,
-    transparent: false,
-    center: true,
-    show: true,
-    skipTaskbar: true,
-    backgroundColor: "#1a1614",
-    icon: path.join(process.env.VITE_PUBLIC!, "hisv.png"),
-    webPreferences: { nodeIntegration: false, contextIsolation: true },
-  });
-  splashWin.loadFile(path.join(process.env.VITE_PUBLIC!, "splash.html"));
-  splashWin.on("closed", () => {
-    splashWin = null;
-  });
-}
+// function createSplashWindow() {
+//   splashWin = new BrowserWindow({
+//     width: 500,
+//     height: 360,
+//     frame: false,
+//     resizable: false,
+//     transparent: false,
+//     center: true,
+//     show: true,
+//     skipTaskbar: true,
+//     backgroundColor: "#1a1614",
+//     icon: path.join(process.env.VITE_PUBLIC!, "hisv.png"),
+//     webPreferences: { nodeIntegration: false, contextIsolation: true },
+//   });
+//   splashWin.loadFile(path.join(process.env.VITE_PUBLIC!, "splash.html"));
+//   splashWin.on("closed", () => {
+//     splashWin = null;
+//   });
+// }
 
 async function createMainWindow() {
   // Prevent creating multiple windows
@@ -86,7 +86,7 @@ async function createMainWindow() {
   mainWin = new BrowserWindow({
     title: "Main window",
     frame: false,
-    show: false,
+    show: true,
     backgroundColor: "#212121",
     minWidth: 1000,
     minHeight: 800,
@@ -108,24 +108,22 @@ async function createMainWindow() {
     mainWin.loadFile(indexHtml);
   }
 
-  // Show main window and close splash when the renderer signals it's ready
-  let mainShown = false;
-  const showMain = () => {
-    if (mainShown) return;
-    mainShown = true;
-    if (splashWin && !splashWin.isDestroyed()) splashWin.close();
-    mainWin!.maximize();
-    mainWin!.show();
-    mainWin!.focus();
-  };
+  // Show main window maximized once DOM is ready
+  mainWin.maximize();
 
-  ipcMain.once("app-ready", showMain);
-
-  // Fallback: once the HTML itself is painted (index.html has an inline loading
-  // screen), swap from splash to main window so the user never sees a blank page.
-  mainWin.webContents.once("dom-ready", () => {
-    showMain();
-  });
+  // ── Splash window logic (commented out — re-enable if needed) ──────────────
+  // let mainShown = false;
+  // const showMain = () => {
+  //   if (mainShown) return;
+  //   mainShown = true;
+  //   if (splashWin && !splashWin.isDestroyed()) splashWin.close();
+  //   mainWin!.maximize();
+  //   mainWin!.show();
+  //   mainWin!.focus();
+  // };
+  // ipcMain.once("app-ready", showMain);
+  // mainWin.webContents.once("dom-ready", () => { showMain(); });
+  // setTimeout(showMain, 2000);
 
   // Handle keyboard shortcuts
   mainWin.webContents.on("before-input-event", (event, input) => {
@@ -306,7 +304,7 @@ async function createMainWindow() {
 
 // App event handlers
 app.whenReady().then(async () => {
-  createSplashWindow();
+  // createSplashWindow();
   await createMainWindow();
   if (mainWin) update(mainWin);
 

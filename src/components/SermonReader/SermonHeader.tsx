@@ -11,10 +11,10 @@ const SermonHeader = ({ title }: SermonHeaderProps) => {
   return (
     <div className="pt-3 text-center text-background">
       <h1
-        className="text-3xl font-bold"
+        className="text-2xl font-bold"
         style={{
           color: isDarkMode ? "#cbcbcb" : "black",
-          fontFamily: "Zilla Slab",
+          // fontFamily: "Zilla Slab",
         }}
       >
         {title}

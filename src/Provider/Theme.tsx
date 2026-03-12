@@ -22,28 +22,24 @@ type ThemeProviderProps = {
 };
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [accentColor, setAccentColorState] = useState<string>("#10a37f");
-
-  useEffect(() => {
-    // Check if user has a preference stored
-    const storedPreference = localStorage.getItem("darkMode");
-    if (storedPreference) {
-      setIsDarkMode(storedPreference === "true");
-    } else {
-      // Check system preference
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)",
-      ).matches;
-      setIsDarkMode(prefersDark);
+  // Read synchronously so the initial render already has the correct theme —
+  // no useEffect needed, which eliminates the flash-of-wrong-theme on load.
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem("darkMode");
+      if (stored !== null) return stored === "true";
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    } catch {
+      return false;
     }
-    // Load accent color
-    const storedAccent = localStorage.getItem("accentColor");
-    if (storedAccent) {
-      setAccentColorState(storedAccent);
-      document.documentElement.style.setProperty("--accent", storedAccent);
+  });
+  const [accentColor, setAccentColorState] = useState<string>(() => {
+    try {
+      return localStorage.getItem("accentColor") ?? "#10a37f";
+    } catch {
+      return "#10a37f";
     }
-  }, []);
+  });
 
   useEffect(() => {
     // Apply dark mode class to document
@@ -58,7 +54,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }, [isDarkMode]);
 
   const toggleDarkMode = () => {
+    // Apply a transitioning class so CSS can animate all color changes smoothly
+    document.documentElement.classList.add("theme-transitioning");
     setIsDarkMode((prev) => !prev);
+    window.setTimeout(() => {
+      document.documentElement.classList.remove("theme-transitioning");
+    }, 300);
   };
 
   const setAccentColor = (color: string) => {

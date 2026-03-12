@@ -396,7 +396,7 @@ const Home = memo(() => {
         <motion.div
           className="relative bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 h-full border border-solid border-stone-300 dark:border-stone-700 overflow-hidden shadow-lg flex items-center justify-center"
           animate={{
-            width: isPresentationMode ? "100%" : "50%",
+            width: isPresentationMode ? "100%" : "70%",
             borderRadius: isPresentationMode ? "0px" : "0px 24px 24px 0px",
           }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -440,68 +440,72 @@ const Home = memo(() => {
                 setBackground={setBackground}
               />
             ) : (
-              <div className="w-full h-full p-8 flex flex-col gap-6 overflow-hidden">
-                {/* Shimmer skeleton for sermon title */}
-                <div className="mt-4">
-                  <div
-                    className={`h-10 rounded-lg mb-3 animate-pulse ${
-                      isDarkMode
-                        ? "bg-gradient-to-r from-stone-700 via-stone-600 to-stone-700"
-                        : "bg-gradient-to-r from-stone-200 via-stone-100 to-stone-200"
-                    }`}
-                    style={{
-                      backgroundSize: "200% 100%",
-                      animation: "shimmer 2s infinite",
-                    }}
-                  />
-                  <div
-                    className={`h-8 w-3/4 rounded-lg animate-pulse ${
-                      isDarkMode
-                        ? "bg-gradient-to-r from-stone-700 via-stone-600 to-stone-700"
-                        : "bg-gradient-to-r from-stone-200 via-stone-100 to-stone-200"
-                    }`}
-                    style={{
-                      backgroundSize: "200% 100%",
-                      animation: "shimmer 2s infinite",
-                    }}
-                  />
-                </div>
+              <div className="bg-white dark:bg-background h-screen relative w-screen">
+                <div className="h-full flex flex-col overflow-hidden">
+                  <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
+                    <div className="w-full px-2 py-2">
+                      <div className="w-full">
+                        {/* Sermon Header Skeleton - matches SermonHeader component */}
+                        <div className="pt-3 text-center mb-3">
+                          <div
+                            className={`h-9 rounded-lg mx-auto animate-pulse ${
+                              isDarkMode
+                                ? "bg-gradient-to-r from-stone-800 via-stone-700 to-stone-800"
+                                : "bg-gradient-to-r from-stone-200 via-stone-100 to-stone-200"
+                            }`}
+                            style={{
+                              backgroundSize: "200% 100%",
+                              animation: "shimmer 2s infinite",
+                              width: "60%",
+                              maxWidth: "500px",
+                            }}
+                          />
+                        </div>
 
-                {/* Shimmer skeleton for sermon paragraphs */}
-                <div className="flex-1 space-y-4">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="space-y-2">
-                      <div
-                        className={`h-4 rounded ${
-                          isDarkMode
-                            ? "bg-gradient-to-r from-stone-700 via-stone-600 to-stone-700"
-                            : "bg-gradient-to-r from-stone-200 via-stone-100 to-stone-200"
-                        }`}
-                        style={{
-                          backgroundSize: "200% 100%",
-                          animation: "shimmer 2s infinite",
-                          animationDelay: `${i * 0.1}s`,
-                          width: `${90 - i * 5}%`,
-                        }}
-                      />
-                      <div
-                        className={`h-4 rounded ${
-                          isDarkMode
-                            ? "bg-gradient-to-r from-stone-700 via-stone-600 to-stone-700"
-                            : "bg-gradient-to-r from-stone-200 via-stone-100 to-stone-200"
-                        }`}
-                        style={{
-                          backgroundSize: "200% 100%",
-                          animation: "shimmer 2s infinite",
-                          animationDelay: `${i * 0.1}s`,
-                        }}
-                      />
+                        {/* Sermon Content Skeleton - matches actual paragraph structure */}
+                        <div className="space-y- mt-3">
+                          <div className="px-6 py-4 space-y-5 animate-pulse">
+                            {Array.from({ length: 14 }).map((_, i) => (
+                              <div key={i} className="flex gap-3">
+                                <div
+                                  className="flex-shrink-0 w-8 h-4 rounded"
+                                  style={{
+                                    backgroundColor: isDarkMode
+                                      ? "rgba(120,113,108,.25)"
+                                      : "rgba(214,211,209,.6)",
+                                  }}
+                                />
+                                <div className="flex-1 space-y-2">
+                                  <div
+                                    className="h-4 rounded"
+                                    style={{
+                                      width: `${70 + (i % 4) * 7}%`,
+                                      backgroundColor: isDarkMode
+                                        ? "rgba(120,113,108,.18)"
+                                        : "rgba(214,211,209,.5)",
+                                    }}
+                                  />
+                                  {i % 3 !== 2 && (
+                                    <div
+                                      className="h-4 rounded"
+                                      style={{
+                                        width: `${45 + (i % 5) * 9}%`,
+                                        backgroundColor: isDarkMode
+                                          ? "rgba(120,113,108,.12)"
+                                          : "rgba(214,211,209,.35)",
+                                      }}
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
 
-                {/* Global shimmer animation */}
-                <style>{`
+                  <style>{`
                   @keyframes shimmer {
                     0% {
                       backgroundPosition: 200% 0;
@@ -511,6 +515,7 @@ const Home = memo(() => {
                     }
                   }
                 `}</style>
+                </div>
               </div>
             )}
           </motion.div>

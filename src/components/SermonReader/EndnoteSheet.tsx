@@ -183,7 +183,7 @@ const ReadMode: React.FC<ReadModeProps> = ({
 
       {/* Scrollable reading body */}
       <div className="flex-1 overflow-y-auto no-scrollbar">
-        <div className="px-5 py-6 max-w-2xl mx-auto space-y-5">
+        <div className="px-5 py-6 max-w-6xl mx-auto space-y-5">
           {sections.map((s) => {
             const isHit = targetParagraphs.has(s.Paragraph);
             return (
@@ -225,7 +225,7 @@ const ReadMode: React.FC<ReadModeProps> = ({
                 </span>
                 <p
                   style={{
-                    fontSize: "17px",
+                    fontSize: "50px",
                     lineHeight: "1.9",
                     color: isDarkMode ? "#e7e5e4" : "#1c1917",
                     fontFamily: "'Zilla Slab', Georgia, serif",

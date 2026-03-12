@@ -11,7 +11,7 @@ interface SermonRowProps {
 const SermonRow = memo(
   ({ sermon, onRowClick, id }: SermonRowProps) => (
     <div
-      className={`flex items-center px-4 py-2 border-solid cursor-pointer group transition-colors duration-100 hover:bg-stone-50 dark:hover:bg-stone-900/60 border-b border-stone-50 dark:border-stone-900/50 ${id % 2 === 0 ? "bg-stone-100 dark:bg-stone-800/50" : "bg-white dark:bg-stone-900"}  `}
+      className={`flex items-center px-4 py-2 border-solid cursor-pointer group transition-colors duration-100 hover:bg-stone-50 dark:hover:bg-stone-900/60 border-b border-stone-50 dark:border-stone-900/40 ${id % 2 === 0 ? "bg-stone-100 dark:bg-stone-800/50" : "bg-white dark:bg-stone-900/40"}  `}
       onClick={() => onRowClick(sermon)}
     >
       {/* Title */}

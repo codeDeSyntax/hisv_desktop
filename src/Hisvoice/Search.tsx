@@ -45,7 +45,7 @@ function RenderSnippet({
           return (
             <span
               key={i}
-              className="px-0.5 rounded font-semibold"
+              className="px-0.5 rounded font-semibold text-[15px]"
               style={{
                 backgroundColor: accentColor + "25",
                 color: accentColor,
@@ -56,7 +56,7 @@ function RenderSnippet({
           );
         }
         return (
-          <span key={i} className="text-stone-600 dark:text-stone-400">
+          <span key={i} className="text-stone-600 dark:text-stone-400 text-[15px]">
             {part}
           </span>
         );
@@ -129,28 +129,38 @@ const Search = () => {
     }
   }, []);
 
-  // Debounced search on input change
+  // Clear results when input is too short, but don't auto-search
   useEffect(() => {
-    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-
     const trimmed = searchInput.trim();
     if (trimmed.length < 2) {
       setFoundMatches([]);
       setIsSearching(false);
-      return;
     }
 
-    setIsSearching(true);
-    searchTimeoutRef.current = setTimeout(() => doSearch(trimmed), 300);
-
-    return () => {
-      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-    };
-  }, [searchInput, doSearch]);
+    // Clear any pending timeouts
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
+    }
+  }, [searchInput]);
 
   const handleSearchInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => setSearchInput(e.target.value),
     [],
+  );
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const trimmed = searchInput.trim();
+        if (trimmed.length >= 2) {
+          if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+          doSearch(trimmed);
+        }
+      }
+    },
+    [searchInput, doSearch],
   );
 
   const handleSearchSubmit = useCallback(
@@ -188,9 +198,10 @@ const Search = () => {
             <div className="flex-1 relative">
               <input
                 type="text"
-                placeholder="Search quotes, phrases, keywordsâ€¦"
+                placeholder="Search quotes, phrases, keywords… (Press Enter to search)"
                 className="w-full pl-4 pr-10 py-2.5 text-[13px] bg-stone-100 dark:bg-stone-900 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 transition-all"
                 onChange={handleSearchInput}
+                onKeyDown={handleKeyDown}
                 value={searchInput}
               />
               {isSearching && (
@@ -214,7 +225,7 @@ const Search = () => {
           </div>
           {searchInput.length > 0 && searchInput.length < 2 && (
             <p className="mt-2 text-[11px] text-stone-400 dark:text-stone-500">
-              Enter at least 2 characters
+              Enter at least 2 characters, then press Enter or click Search
             </p>
           )}
         </form>
@@ -272,7 +283,7 @@ const Search = () => {
                     {shown.map((snippet, idx) => (
                       <div
                         key={idx}
-                        className="py-3 px-4 cursor-pointer hover:bg-white dark:hover:bg-stone-800/40 transition-colors duration-100 border-b border-stone-100 dark:border-stone-800/60 last:border-b-0"
+                        className="py-2 px-4 cursor-pointer hover:bg-white dark:hover:bg-stone-800/40 transition-colors duration-100 border-b border-stone-100 dark:border-stone-800/60 last:border-b-0"
                         onClick={() => handleSermonClick(group)}
                       >
                         <div className="flex items-start gap-3">
@@ -301,7 +312,7 @@ const Search = () => {
                           </div>
 
                           {/* Content column */}
-                          <div className="text-sm leading-relaxed flex-1">
+                          <div className="text-[15px] leading-relaxed flex-1">
                             {idx === 0 && (
                               <div className="mb-1.5">
                                 <span className="font-bold text-stone-900 dark:text-stone-100 text-sm">

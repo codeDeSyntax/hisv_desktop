@@ -152,12 +152,12 @@ const FontPicker: React.FC = () => {
                           ? "hover:bg-stone-800/50 text-stone-300"
                           : "hover:bg-stone-50 text-stone-700"
                     }`}
-                    style={
-                      settings.fontFamily === font
+                    style={{
+                      fontFamily: font,
+                      ...(settings.fontFamily === font
                         ? { backgroundColor: accentColor + "18" }
-                        : undefined
-                    }
-                    style={{ fontFamily: font }}
+                        : {}),
+                    }}
                   >
                     <span className="text-sm">{font}</span>
                     {settings.fontFamily === font && (

@@ -12,6 +12,21 @@
   box-sizing: border-box;
 }
 
+/* Smooth theme transitions — only active during the 300ms toggle window */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition:
+    background-color 0.22s ease,
+    background 0.22s ease,
+    border-color 0.22s ease,
+    color 0.18s ease,
+    fill 0.18s ease,
+    stroke 0.18s ease,
+    box-shadow 0.22s ease !important;
+}
+
 html {
   background: #212121;
 }
@@ -49,9 +64,6 @@ div {
   border-width: 10px;
 }
 
-
-
-
 /* Custom text selection globally - stone-themed instead of default blue */
 ::selection {
   background-color: rgba(168, 162, 158, 0.3); /* stone-400 with transparency */
@@ -73,7 +85,6 @@ div {
   background-color: rgba(120, 113, 108, 0.4);
   color: inherit;
 }
-
 
 button {
   border: none;

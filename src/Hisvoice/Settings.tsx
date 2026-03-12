@@ -127,7 +127,7 @@ const FontSettingsPage = () => {
       )}
 
       {/* â”€â”€ Left nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="w-44 flex-shrink-0 border-r border-stone-100 dark:border-stone-800 py-6 px-3 flex flex-col gap-1">
+      <div className="w-32 flex-shrink-0 border-r border-stone-100 dark:border-stone-800 py-6 px-3 flex flex-col gap-1">
         <p className="text-[10px] font-semibold uppercase tracking-widest text-stone-400 dark:text-stone-500 px-2 mb-2">
           Customize
         </p>
@@ -155,7 +155,7 @@ const FontSettingsPage = () => {
       </div>
 
       {/* â”€â”€ Right content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="flex-1 overflow-y-auto no-scrollbar px-8 py-6">
+      <div className="flex-1 overflow-y-auto no-scrollbar px-5 py-6">
         {/* â”€â”€ READING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         {activeSection === "reading" && (
           <div>
@@ -358,7 +358,7 @@ const FontSettingsPage = () => {
               <p className="text-[11px] font-semibold uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-4">
                 Color palette
               </p>
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid grid-cols-4 gap-2.5">
                 {ACCENT_COLORS.map((c) => {
                   const selected = accentColor === c.value;
                   return (

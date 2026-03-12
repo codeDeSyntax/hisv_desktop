@@ -6,41 +6,39 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const FontPicker: React.FC = () => {
   const { settings, setSettings } = useSermonContext();
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, accentColor } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [fontFamilies, setFontFamilies] = useState<string[]>([]);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Load system fonts
-  useEffect(() => {
-    const loadSystemFonts = async () => {
-      try {
-        if (window.ipcRenderer) {
-          const systemFonts =
-            await window.ipcRenderer.invoke("get-system-fonts");
-          if (systemFonts && systemFonts.length > 0) {
-            setFontFamilies(systemFonts);
-          }
+  // Load system fonts only when the dropdown is first opened
+  const loadSystemFonts = async () => {
+    if (fontsLoaded) return;
+    try {
+      if (window.ipcRenderer) {
+        const systemFonts = await window.ipcRenderer.invoke("get-system-fonts");
+        if (systemFonts && systemFonts.length > 0) {
+          setFontFamilies(systemFonts);
+          setFontsLoaded(true);
         }
-      } catch (error) {
-        console.error("Error loading system fonts:", error);
-        // Fallback fonts
-        setFontFamilies([
-          "Arial",
-          "Calibri",
-          "Cambria",
-          "Courier New",
-          "Georgia",
-          "Segoe UI",
-          "Times New Roman",
-          "Verdana",
-        ]);
       }
-    };
-
-    loadSystemFonts();
-  }, []);
+    } catch (error) {
+      console.error("Error loading system fonts:", error);
+      setFontFamilies([
+        "Arial",
+        "Calibri",
+        "Cambria",
+        "Courier New",
+        "Georgia",
+        "Segoe UI",
+        "Times New Roman",
+        "Verdana",
+      ]);
+      setFontsLoaded(true);
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -86,7 +84,10 @@ const FontPicker: React.FC = () => {
     >
       {/* Trigger Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen(!isOpen);
+          if (!isOpen) loadSystemFonts();
+        }}
         className={`flex items-center gap-1.5 px-3 py-1 rounded transition-colors ${
           isDarkMode
             ? "hover:bg-stone-800 text-stone-300"
@@ -145,17 +146,25 @@ const FontPicker: React.FC = () => {
                     className={`w-full px-4 py-2.5 text-left flex items-center justify-between transition-colors ${
                       settings.fontFamily === font
                         ? isDarkMode
-                          ? "bg-stone-800 text-stone-100"
-                          : "bg-stone-100 text-stone-900"
+                          ? "text-stone-100"
+                          : "text-stone-900"
                         : isDarkMode
                           ? "hover:bg-stone-800/50 text-stone-300"
                           : "hover:bg-stone-50 text-stone-700"
                     }`}
+                    style={
+                      settings.fontFamily === font
+                        ? { backgroundColor: accentColor + "18" }
+                        : undefined
+                    }
                     style={{ fontFamily: font }}
                   >
                     <span className="text-sm">{font}</span>
                     {settings.fontFamily === font && (
-                      <Check className="w-4 h-4 text-stone-600 dark:text-stone-400" />
+                      <Check
+                        className="w-4 h-4"
+                        style={{ color: accentColor }}
+                      />
                     )}
                   </div>
                 ))

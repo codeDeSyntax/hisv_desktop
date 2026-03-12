@@ -152,10 +152,16 @@ const Help: React.FC = () => {
                   className="bg-gray-50 dark:bg-bgray/20 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden transition-all hover:shadow-sm dark:hover:shadow-gray-800/10"
                 >
                   <div className="px-4 py-3 flex items-center gap-3 border-b border-gray-200 dark:border-gray-800">
-                    <div className="p-1.5 rounded-md bg-purple-50 dark:bg-purple-900/50">
+                    <div
+                      className="p-1.5 rounded-md"
+                      style={{
+                        backgroundColor:
+                          "color-mix(in srgb, var(--accent) 12%, transparent)",
+                      }}
+                    >
                       {React.cloneElement(section.icon as React.ReactElement, {
-                        className:
-                          "h-4 w-4 text-purple-500 dark:text-purple-400",
+                        className: "h-4 w-4",
+                        style: { color: "var(--accent)" },
                       })}
                     </div>
                     <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -166,7 +172,10 @@ const Help: React.FC = () => {
                     <ul className="space-y-2.5">
                       {section.items.map((item, itemIndex) => (
                         <li key={itemIndex} className="flex items-start">
-                          <ArrowLeftRight className="h-3.5 w-3.5 text-purple-500 dark:text-purple-400 mt-0.5 mr-2 flex-shrink-0" />
+                          <ArrowLeftRight
+                            className="h-3.5 w-3.5 mt-0.5 mr-2 flex-shrink-0"
+                            style={{ color: "var(--accent)" }}
+                          />
                           <div>
                             <span className="inline-block bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs font-mono text-gray-800 dark:text-gray-200 mr-1.5 mb-1">
                               {item.key}
@@ -186,7 +195,10 @@ const Help: React.FC = () => {
             {/* Quick Access Section */}
             <div className="mt-8 bg-gray-50 dark:bg-bgray/20 rounded-lg border border-gray-200 dark:border-gray-800 p-5">
               <h2 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-                <FolderOpen className="h-4 w-4 text-purple-500" />
+                <FolderOpen
+                  className="h-4 w-4"
+                  style={{ color: "var(--accent)" }}
+                />
                 Quick Access
               </h2>
 
@@ -217,10 +229,16 @@ const Help: React.FC = () => {
                     key={index}
                     className="bg-white dark:bg-ltgray rounded-md border border-gray-200 dark:border-gray-800 p-2.5 flex flex-col items-center text-center hover:shadow-xs dark:hover:shadow-gray-800/10 transition-all cursor-pointer"
                   >
-                    <div className="bg-purple-50 dark:bg-purple-900/30 p-1.5 rounded-md mb-1.5">
+                    <div
+                      className="p-1.5 rounded-md mb-1.5"
+                      style={{
+                        backgroundColor:
+                          "color-mix(in srgb, var(--accent) 12%, transparent)",
+                      }}
+                    >
                       {React.cloneElement(item.icon as React.ReactElement, {
-                        className:
-                          "h-4 w-4 text-purple-500 dark:text-purple-400",
+                        className: "h-4 w-4",
+                        style: { color: "var(--accent)" },
                       })}
                     </div>
                     <span className="text-xs font-medium text-gray-800 dark:text-gray-200">

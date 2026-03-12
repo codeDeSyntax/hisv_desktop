@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>His Voice</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 100vw;
+        height: 100vh;
+        background: #1a1614;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        overflow: hidden;
+        user-select: none;
+        -webkit-app-region: drag;
+      }
+
+      .logo-wrap {
+        position: relative;
+        margin-bottom: 24px;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .logo {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      }
+
+      .glow-ring {
+        position: absolute;
+        inset: -8px;
+        border-radius: 50%;
+        background: conic-gradient(
+          from 0deg,
+          rgba(180, 120, 60, 0),
+          rgba(200, 140, 80, 0.6),
+          rgba(180, 120, 60, 0)
+        );
+        animation: spin 3s linear infinite;
+        z-index: -1;
+      }
+
+      .app-name {
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+
+      .tagline {
+        color: rgba(255, 255, 255, 0.35);
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin-bottom: 44px;
+      }
+
+      .dots {
+        display: flex;
+        gap: 9px;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(200, 140, 80, 0.7);
+        animation: bounce 1.2s ease-in-out infinite;
+      }
+      .dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes bounce {
+        0%,
+        80%,
+        100% {
+          transform: scale(0.7);
+          opacity: 0.4;
+        }
+        40% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .logo-wrap,
+      .app-name,
+      .tagline,
+      .dots {
+        animation-fill-mode: both;
+      }
+      .logo-wrap {
+        animation:
+          float 3s ease-in-out infinite,
+          fadeIn 0.5s ease-out;
+      }
+      .app-name {
+        animation: fadeIn 0.5s ease-out 0.15s both;
+      }
+      .tagline {
+        animation: fadeIn 0.5s ease-out 0.25s both;
+      }
+      .dots {
+        animation: fadeIn 0.5s ease-out 0.35s both;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo-wrap">
+      <div class="glow-ring"></div>
+      <img class="logo" src="./hisv.png" alt="His Voice" />
+    </div>
+    <div class="app-name">His Voice</div>
+    <div class="tagline">Sermon Library</div>
+    <div class="dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </body>
+</html>

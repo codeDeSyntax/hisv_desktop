@@ -6,7 +6,6 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import PropTypes from "prop-types";
 import { Card, Button, theme } from "antd";
 import ModernAudioPlayer from "./ModernAudioPlayer";
 import {
@@ -45,7 +44,9 @@ import {
   useSermonHighlighting,
   useSermonNavigation,
   ChromeStyleSearch,
+  EndnoteSheet,
 } from "@/components/SermonReader";
+import { parseEndnote, type EndnoteData } from "@/utils/endnoteParser";
 
 // Local interface for sermon paragraphs
 interface SermonParagraphData {
@@ -72,10 +73,14 @@ const SelectedSermon = ({
     isPresentationMode,
   } = useSermonContext();
 
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, accentColor } = useTheme();
 
   const [showControlPanel, setShowControlPanel] = useState(false);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
+  const [endnoteSheetData, setEndnoteSheetData] = useState<EndnoteData | null>(
+    null,
+  );
+  const [showEndnoteSheet, setShowEndnoteSheet] = useState(false);
   const [searchMatchHighlight, setSearchMatchHighlight] = useState<{
     paragraphId: number;
     searchTerm: string;
@@ -239,7 +244,11 @@ const SelectedSermon = ({
     return <>{result}</>;
   };
 
-  const highlightEndnotesAndQuotes = (text: string, paragraphId?: number) => {
+  const highlightEndnotesAndQuotes = (
+    text: string,
+    paragraphId?: number,
+    onEndnoteClick?: () => void,
+  ) => {
     // Enhanced regex to capture quotes from "Endnote" to "William Marrion Branham" (case insensitive)
     const quoteRegex = /Endnote(.*?)William\s+Marrion\s+Branham/gis;
     const simpleEndnoteRegex = /Endnote/gi;
@@ -275,13 +284,20 @@ const SelectedSermon = ({
       const quoteContent = match[1]; // Content between "Endnote" and "William Marrion Branham"
 
       processedText.push(
-        <span key={`quote-${matchIndex}`}>
+        <span
+          key={`quote-${matchIndex}`}
+          onClick={onEndnoteClick}
+          className={
+            onEndnoteClick
+              ? "cursor-pointer hover:opacity-75 transition-opacity duration-150"
+              : ""
+          }
+          title={onEndnoteClick ? "Click to view source quote" : undefined}
+        >
           {/* Endnote marker */}
           <span
             className="font-semibold italic"
-            style={{
-              color: isDarkMode ? "#fbbf24" : "#d97706",
-            }}
+            style={{ color: accentColor }}
             title="William Branham quote marker"
           >
             Endnote
@@ -301,9 +317,7 @@ const SelectedSermon = ({
           {/* Author name */}
           <span
             className="font-bold"
-            style={{
-              color: isDarkMode ? "#f59e0b" : "#b45309",
-            }}
+            style={{ color: accentColor }}
             title="Quote author"
           >
             William Marrion Branham
@@ -341,9 +355,7 @@ const SelectedSermon = ({
             {i > 0 && (
               <span
                 className="font-semibold italic"
-                style={{
-                  color: isDarkMode ? "#fbbf24" : "#d97706",
-                }}
+                style={{ color: accentColor }}
                 title="William Branham quote marker"
               >
                 Endnote
@@ -606,6 +618,13 @@ const SelectedSermon = ({
     scrollContainerRef,
   ]);
 
+  const handleEndnoteClick = (paragraphText: string) => {
+    const data = parseEndnote(paragraphText);
+    if (!data) return;
+    setEndnoteSheetData(data);
+    setShowEndnoteSheet(true);
+  };
+
   const handleManualSave = () => {
     if (!selectedMessage?.id) return;
 
@@ -678,6 +697,13 @@ const SelectedSermon = ({
         onNavigatePrevious={goToPreviousSearchResult}
       />
 
+      {/* Endnote Reference Sheet */}
+      <EndnoteSheet
+        endnoteData={endnoteSheetData}
+        isOpen={showEndnoteSheet}
+        onClose={() => setShowEndnoteSheet(false)}
+      />
+
       <div className="h-full flex flex-col overflow-hidden">
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
@@ -700,263 +726,337 @@ const SelectedSermon = ({
                     overflow: "hidden",
                   }}
                 >
-                  {sermonParagraphs.map((paragraph) => (
-                    <div
-                      key={paragraph.id}
-                      id={`paragraph-${paragraph.id}`}
-                      className="relative group"
-                      style={{
-                        width: "100%",
-                        maxWidth: "100%",
-                        overflow: "hidden",
-                      }}
-                    >
-                      {/* Bookmark Button - Shows on hover */}
-                      <button
-                        onClick={() => {
-                          if (selectedMessage) {
-                            toggleBookmark(
-                              selectedMessage.id as any,
-                              selectedMessage.title,
-                              paragraph.id,
-                              paragraph.content,
-                              selectedMessage.location,
-                              selectedMessage.year?.toString(),
-                            );
-                          }
-                        }}
-                        className={`absolute right-0 top-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 z-10 ${
-                          selectedMessage &&
-                          isBookmarked(selectedMessage.id as any, paragraph.id)
-                            ? isDarkMode
-                              ? "bg-stone-700 hover:bg-stone-600 text-stone-200"
-                              : "bg-stone-600 hover:bg-stone-500 text-white"
-                            : isDarkMode
-                              ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
-                              : "bg-gray-200 hover:bg-gray-300 text-gray-600"
-                        } shadow-lg border-2 ${
-                          selectedMessage &&
-                          isBookmarked(selectedMessage.id as any, paragraph.id)
-                            ? "border-stone-500 dark:border-stone-600"
-                            : isDarkMode
-                              ? "border-gray-600"
-                              : "border-gray-300"
-                        }`}
-                        title={
-                          selectedMessage &&
-                          isBookmarked(selectedMessage.id as any, paragraph.id)
-                            ? "Remove bookmark"
-                            : "Add bookmark"
-                        }
-                      >
-                        {selectedMessage &&
-                        isBookmarked(
-                          selectedMessage.id as any,
-                          paragraph.id,
-                        ) ? (
-                          <BookmarkCheck size={14} />
-                        ) : (
-                          <Bookmark size={14} />
-                        )}
-                      </button>
-
-                      {/* Paragraph Content with inline number */}
+                  {sermonParagraphs.length === 0 && !selectedMessage?.sermon ? (
+                    /* Loading skeleton while sermon text is being fetched */
+                    <div className="px-6 py-4 space-y-5 animate-pulse">
+                      {Array.from({ length: 14 }).map((_, i) => (
+                        <div key={i} className="flex gap-3">
+                          <div
+                            className="flex-shrink-0 w-8 h-4 rounded"
+                            style={{
+                              backgroundColor: isDarkMode
+                                ? "rgba(120,113,108,.25)"
+                                : "rgba(214,211,209,.6)",
+                            }}
+                          />
+                          <div className="flex-1 space-y-2">
+                            <div
+                              className="h-4 rounded"
+                              style={{
+                                width: `${70 + Math.random() * 30}%`,
+                                backgroundColor: isDarkMode
+                                  ? "rgba(120,113,108,.18)"
+                                  : "rgba(214,211,209,.5)",
+                              }}
+                            />
+                            {i % 3 !== 2 && (
+                              <div
+                                className="h-4 rounded"
+                                style={{
+                                  width: `${40 + Math.random() * 40}%`,
+                                  backgroundColor: isDarkMode
+                                    ? "rgba(120,113,108,.12)"
+                                    : "rgba(214,211,209,.35)",
+                                }}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    sermonParagraphs.map((paragraph) => (
                       <div
-                        className={`leading-relaxed  px-6  rounded-lg transition-all duration-200 ${
-                          currentParagraph === paragraph.id
-                            ? isDarkMode
-                              ? "bg-stone-800/50 border-l-4 border-stone-600"
-                              : "bg-stone-100 border-l-4 border-stone-400"
-                            : "border-l-4 border-transparent"
-                        }`}
+                        key={paragraph.id}
+                        id={`paragraph-${paragraph.id}`}
+                        className="relative group"
                         style={{
-                          fontFamily: settings.fontFamily || "Zilla Slab",
-                          fontWeight: settings.fontWeight,
-                          fontSize: isPresentationMode
-                            ? `${settings.fontSize}px`
-                            : "16px",
-                          fontStyle: settings.fontStyle,
-                          color: isDarkMode ? "#d6d3d1" : "#000000",
-                          overflowWrap: "break-word",
-                          wordBreak: "break-word",
-                          whiteSpace: "normal",
                           width: "100%",
                           maxWidth: "100%",
                           overflow: "hidden",
-                          boxSizing: "border-box",
                         }}
-                        onMouseUp={handleTextSelection}
                       >
-                        {/* Inline paragraph number */}
-                        <span
-                          className={`font-archivo font-bold mr-2 ${
-                            currentParagraph === paragraph.id
-                              ? isDarkMode
-                                ? "text-stone-400"
-                                : "text-stone-700"
-                              : isDarkMode
-                                ? "text-stone-500"
-                                : "text-stone-600"
-                          } transition-colors duration-200`}
-                          style={{
-                            fontSize: isPresentationMode
-                              ? `${Math.max(Number(settings.fontSize) * 0.8, 14)}px`
-                              : "14px",
-                          }}
-                        >
-                          {paragraph.id}.
-                        </span>
-                        {/* Apply user highlights first, then endnotes/quotes */}
-                        <span>
-                          {(() => {
-                            // Helper to apply search match highlight to plain text
-                            const applySearchMatchHighlight = (
-                              text: string,
-                            ) => {
-                              if (
-                                !searchMatchHighlight ||
-                                searchMatchHighlight.paragraphId !==
-                                  paragraph.id
-                              ) {
-                                return highlightEndnotesAndQuotes(
-                                  text,
-                                  paragraph.id,
-                                );
-                              }
-
-                              const searchTerm =
-                                searchMatchHighlight.searchTerm.trim();
-                              const lowerText = text.toLowerCase();
-                              const lowerTerm = searchTerm.toLowerCase();
-                              const matchIndex = lowerText.indexOf(lowerTerm);
-
-                              if (matchIndex === -1) {
-                                return highlightEndnotesAndQuotes(
-                                  text,
-                                  paragraph.id,
-                                );
-                              }
-
-                              // Split text into before, match, and after
-                              const beforeMatch = text.substring(0, matchIndex);
-                              const matchText = text.substring(
-                                matchIndex,
-                                matchIndex + searchTerm.length,
-                              );
-                              const afterMatch = text.substring(
-                                matchIndex + searchTerm.length,
-                              );
-
-                              return (
-                                <>
-                                  {highlightEndnotesAndQuotes(
-                                    beforeMatch,
-                                    paragraph.id,
-                                  )}
-                                  <span
-                                    className="animate-pulse"
-                                    style={{
-                                      backgroundColor: isDarkMode
-                                        ? "rgba(120, 113, 108, 0.5)"
-                                        : "rgba(168, 162, 158, 0.4)",
-                                      padding: "2px 4px",
-                                      borderRadius: "4px",
-                                      fontWeight: "700",
-                                    }}
-                                  >
-                                    {matchText}
-                                  </span>
-                                  {highlightEndnotesAndQuotes(
-                                    afterMatch,
-                                    paragraph.id,
-                                  )}
-                                </>
-                              );
-                            };
-
-                            const paragraphHighlights =
-                              highlights[paragraph.id];
-                            if (
-                              !paragraphHighlights ||
-                              Object.keys(paragraphHighlights).length === 0
-                            ) {
-                              // No user highlights, apply search match if exists
-                              return applySearchMatchHighlight(
+                        {/* Bookmark Button - Shows on hover */}
+                        <button
+                          onClick={() => {
+                            if (selectedMessage) {
+                              toggleBookmark(
+                                selectedMessage.id as any,
+                                selectedMessage.title,
+                                paragraph.id,
                                 paragraph.content,
+                                selectedMessage.location,
+                                selectedMessage.year?.toString(),
                               );
                             }
+                          }}
+                          className={`absolute right-0 top-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 z-10 ${
+                            selectedMessage &&
+                            isBookmarked(
+                              selectedMessage.id as any,
+                              paragraph.id,
+                            )
+                              ? "text-white"
+                              : isDarkMode
+                                ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                                : "bg-gray-200 hover:bg-gray-300 text-gray-600"
+                          } shadow-lg border-2 ${
+                            selectedMessage &&
+                            isBookmarked(
+                              selectedMessage.id as any,
+                              paragraph.id,
+                            )
+                              ? "border-transparent"
+                              : isDarkMode
+                                ? "border-gray-600"
+                                : "border-gray-300"
+                          }`}
+                          style={
+                            selectedMessage &&
+                            isBookmarked(
+                              selectedMessage.id as any,
+                              paragraph.id,
+                            )
+                              ? {
+                                  backgroundColor: accentColor,
+                                  borderColor: accentColor,
+                                }
+                              : undefined
+                          }
+                          title={
+                            selectedMessage &&
+                            isBookmarked(
+                              selectedMessage.id as any,
+                              paragraph.id,
+                            )
+                              ? "Remove bookmark"
+                              : "Add bookmark"
+                          }
+                        >
+                          {selectedMessage &&
+                          isBookmarked(
+                            selectedMessage.id as any,
+                            paragraph.id,
+                          ) ? (
+                            <BookmarkCheck size={14} />
+                          ) : (
+                            <Bookmark size={14} />
+                          )}
+                        </button>
 
-                            // If there are highlights, we need to apply them to the content
-                            const sortedHighlights = Object.values(
-                              paragraphHighlights,
-                            ).sort((a, b) => a.startOffset - b.startOffset);
+                        {/* Paragraph Content with inline number */}
+                        <div
+                          className="leading-relaxed  px-6  rounded-lg transition-all duration-200 border-l-4"
+                          style={{
+                            fontFamily: settings.fontFamily || "Zilla Slab",
+                            fontWeight: settings.fontWeight,
+                            fontSize: isPresentationMode
+                              ? `${settings.fontSize}px`
+                              : "16px",
+                            fontStyle: settings.fontStyle,
+                            color: isDarkMode ? "#d6d3d1" : "#000000",
+                            overflowWrap: "break-word",
+                            wordBreak: "break-word",
+                            whiteSpace: "normal",
+                            width: "100%",
+                            maxWidth: "100%",
+                            overflow: "hidden",
+                            boxSizing: "border-box",
+                            borderLeftColor:
+                              currentParagraph === paragraph.id
+                                ? accentColor
+                                : "transparent",
+                            backgroundColor:
+                              currentParagraph === paragraph.id
+                                ? accentColor + "15"
+                                : undefined,
+                          }}
+                          onMouseUp={handleTextSelection}
+                        >
+                          {/* Inline paragraph number */}
+                          <span
+                            className="font-archivo font-bold mr-2 transition-colors duration-200"
+                            style={{
+                              fontSize: isPresentationMode
+                                ? `${Math.max(Number(settings.fontSize) * 0.8, 14)}px`
+                                : "14px",
+                              color:
+                                currentParagraph === paragraph.id
+                                  ? accentColor
+                                  : isDarkMode
+                                    ? "#78716c"
+                                    : "#57534e",
+                            }}
+                          >
+                            {paragraph.id}.
+                          </span>
+                          {/* Apply user highlights first, then endnotes/quotes */}
+                          <span>
+                            {(() => {
+                              // Helper to apply search match highlight to plain text
+                              const applySearchMatchHighlight = (
+                                text: string,
+                              ) => {
+                                if (
+                                  !searchMatchHighlight ||
+                                  searchMatchHighlight.paragraphId !==
+                                    paragraph.id
+                                ) {
+                                  return highlightEndnotesAndQuotes(
+                                    text,
+                                    paragraph.id,
+                                    () => handleEndnoteClick(paragraph.content),
+                                  );
+                                }
 
-                            let parts: React.ReactNode[] = [];
-                            let lastIndex = 0;
+                                const searchTerm =
+                                  searchMatchHighlight.searchTerm.trim();
+                                const lowerText = text.toLowerCase();
+                                const lowerTerm = searchTerm.toLowerCase();
+                                const matchIndex = lowerText.indexOf(lowerTerm);
 
-                            sortedHighlights.forEach((highlight, index) => {
-                              // Add text before highlight
-                              if (highlight.startOffset > lastIndex) {
-                                parts.push(
-                                  <span key={`before-${index}`}>
+                                if (matchIndex === -1) {
+                                  return highlightEndnotesAndQuotes(
+                                    text,
+                                    paragraph.id,
+                                    () => handleEndnoteClick(paragraph.content),
+                                  );
+                                }
+
+                                // Split text into before, match, and after
+                                const beforeMatch = text.substring(
+                                  0,
+                                  matchIndex,
+                                );
+                                const matchText = text.substring(
+                                  matchIndex,
+                                  matchIndex + searchTerm.length,
+                                );
+                                const afterMatch = text.substring(
+                                  matchIndex + searchTerm.length,
+                                );
+
+                                return (
+                                  <>
                                     {highlightEndnotesAndQuotes(
-                                      paragraph.content.substring(
-                                        lastIndex,
-                                        highlight.startOffset,
-                                      ),
+                                      beforeMatch,
                                       paragraph.id,
+                                      () =>
+                                        handleEndnoteClick(paragraph.content),
+                                    )}
+                                    <span
+                                      className="animate-pulse"
+                                      style={{
+                                        backgroundColor: accentColor + "35",
+                                        color: accentColor,
+                                        padding: "2px 4px",
+                                        borderRadius: "4px",
+                                        fontWeight: "700",
+                                      }}
+                                    >
+                                      {matchText}
+                                    </span>
+                                    {highlightEndnotesAndQuotes(
+                                      afterMatch,
+                                      paragraph.id,
+                                      () =>
+                                        handleEndnoteClick(paragraph.content),
+                                    )}
+                                  </>
+                                );
+                              };
+
+                              const paragraphHighlights =
+                                highlights[paragraph.id];
+                              if (
+                                !paragraphHighlights ||
+                                Object.keys(paragraphHighlights).length === 0
+                              ) {
+                                // No user highlights, apply search match if exists
+                                return applySearchMatchHighlight(
+                                  paragraph.content,
+                                );
+                              }
+
+                              // If there are highlights, we need to apply them to the content
+                              const sortedHighlights = Object.values(
+                                paragraphHighlights,
+                              ).sort((a, b) => a.startOffset - b.startOffset);
+
+                              let parts: React.ReactNode[] = [];
+                              let lastIndex = 0;
+
+                              sortedHighlights.forEach((highlight, index) => {
+                                // Add text before highlight
+                                if (highlight.startOffset > lastIndex) {
+                                  parts.push(
+                                    <span key={`before-${index}`}>
+                                      {highlightEndnotesAndQuotes(
+                                        paragraph.content.substring(
+                                          lastIndex,
+                                          highlight.startOffset,
+                                        ),
+                                        paragraph.id,
+                                        () =>
+                                          handleEndnoteClick(paragraph.content),
+                                      )}
+                                    </span>,
+                                  );
+                                }
+
+                                // Add highlighted text
+                                parts.push(
+                                  <span
+                                    key={`highlight-${index}`}
+                                    className={`cursor-pointer hover:opacity-80 ${isDarkMode ? "text-stone-900" : ""}`}
+                                    style={{
+                                      backgroundColor: highlight.color,
+                                      padding: "2px 4px",
+                                      borderRadius: "4px",
+                                      transition: "all 0.2s ease",
+                                      boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const highlightKey = `${highlight.startOffset}-${highlight.endOffset}`;
+                                      removeHighlight(
+                                        paragraph.id,
+                                        highlightKey,
+                                      );
+                                    }}
+                                    title="Click to remove highlight"
+                                  >
+                                    {paragraph.content.substring(
+                                      highlight.startOffset,
+                                      highlight.endOffset,
+                                    )}
+                                  </span>,
+                                );
+
+                                lastIndex = highlight.endOffset;
+                              });
+
+                              // Add remaining text
+                              if (lastIndex < paragraph.content.length) {
+                                parts.push(
+                                  <span key="after">
+                                    {highlightEndnotesAndQuotes(
+                                      paragraph.content.substring(lastIndex),
+                                      paragraph.id,
+                                      () =>
+                                        handleEndnoteClick(paragraph.content),
                                     )}
                                   </span>,
                                 );
                               }
 
-                              // Add highlighted text
-                              parts.push(
-                                <span
-                                  key={`highlight-${index}`}
-                                  className={`cursor-pointer hover:opacity-80 ${isDarkMode ? "text-stone-900" : ""}`}
-                                  style={{
-                                    backgroundColor: highlight.color,
-                                    padding: "2px 4px",
-                                    borderRadius: "4px",
-                                    transition: "all 0.2s ease",
-                                    boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
-                                  }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    const highlightKey = `${highlight.startOffset}-${highlight.endOffset}`;
-                                    removeHighlight(paragraph.id, highlightKey);
-                                  }}
-                                  title="Click to remove highlight"
-                                >
-                                  {paragraph.content.substring(
-                                    highlight.startOffset,
-                                    highlight.endOffset,
-                                  )}
-                                </span>,
-                              );
-
-                              lastIndex = highlight.endOffset;
-                            });
-
-                            // Add remaining text
-                            if (lastIndex < paragraph.content.length) {
-                              parts.push(
-                                <span key="after">
-                                  {highlightEndnotesAndQuotes(
-                                    paragraph.content.substring(lastIndex),
-                                    paragraph.id,
-                                  )}
-                                </span>,
-                              );
-                            }
-
-                            return <>{parts}</>;
-                          })()}
-                        </span>
+                              return <>{parts}</>;
+                            })()}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
             ) : (

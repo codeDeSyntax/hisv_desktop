@@ -1,19 +1,12 @@
 import { useContext, useState, useMemo, useCallback, memo } from "react";
 import { Tooltip } from "antd";
 import { CalendarOutlined, EnvironmentOutlined } from "@ant-design/icons";
-import {
-  LetterTextIcon,
-  Mic,
-  Play,
-  FileText,
-  LetterText,
-  BookAudio,
-  Mic2,
-} from "lucide-react";
+import { Mic2, Search as SearchIcon } from "lucide-react";
 import { useSermonContext } from "@/Provider/Vsermons.js";
 import { Sermon } from "@/types/index.js";
 import { useTheme } from "@/Provider/Theme.js";
 import SermonLoadSkeleton from "@/components/SermonLoadSkeleton";
+import SermonRow from "./SermonRow";
 
 const SermonList = memo(() => {
   const {
@@ -31,8 +24,12 @@ const SermonList = memo(() => {
   const { isDarkMode } = useTheme();
 
   const filteredSermons = useMemo(() => {
-    return allSermons.filter((sermon) =>
-      sermon.title.toString().toLowerCase().includes(searchText.toLowerCase()),
+    const q = searchText.trim().toLowerCase();
+    if (!q) return allSermons;
+    return allSermons.filter(
+      (sermon) =>
+        sermon.title.toString().toLowerCase().includes(q) ||
+        (sermon.year ?? "").toString().includes(q),
     );
   }, [allSermons, searchText]);
 
@@ -122,146 +119,73 @@ const SermonList = memo(() => {
   }
 
   return (
-    <div className="h-[90%] w-full bg-white dark:bg-stone-950 flex items-center justify-center pt-2 ">
-      {/* Main Container - Centered with proper gap */}
-      <div className="flex items-center justify-center w-[95%] h-[82vh]  gap-4  pb-2 ">
-        {/* Sermon List (Full Width) */}
-        <div className="w-full h-full flex flex-col relative   rounded-3xl bg-white dark:bg-stone-900/50">
-          {/* Background Image */}
-          {/* <di className="absolute inset-0 rounded-[20px] overflow-hidden">
-            {/* <div
-              className="absolute inset-0  "
-              style={{
-                backgroundImage: `url('./cloud.png')`,
-                backgroundSize: "contain",
-                backgroundPosition: "center",
-              }}
-            /> */}
-
-          <div className="backdrop-blur-md bg-white dark:bg-stone-900/70 p-4 relative z-10 flex flex-col h-full rounded-3xl shadow-lg dark:shadow-stone-950">
-            {/* Fixed Header */}
-            <div className="flex-shrink-0 py- border-b border-stone-200 dark:border-stone-700">
-              {/* Search Input */}
-              <div className="mb-2">
-                <input
-                  placeholder="Search sermons"
-                  onChange={handleSearch}
-                  className="w-[90%] p-3 text-sm bg-stone-50 dark:bg-stone-800 border-solid border-stone-200 dark:border-stone-700 rounded-full focus:outline-none focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-600 text-stone-700 dark:text-stone-200 placeholder-stone-400 dark:placeholder-stone-500"
-                  spellCheck={false}
-                />
-              </div>
-            </div>
-
-            {/* Scrollable Table Container */}
-            <div className="flex-1 overflow-hidden">
-              {loading ? (
-                <div className="text-center py-8">
-                  <span className="text-stone-700 dark:text-gray-300">
-                    Loading sermons...
-                  </span>
-                </div>
-              ) : error ? (
-                <div className="text-center py-8">
-                  <span className="text-red-600 dark:text-red-400">
-                    Error loading sermons
-                  </span>
-                </div>
-              ) : (
-                <div className="h-full flex flex-col font-zilla backdrop-blur-sm rounded-lg border border-stone-200 dark:border-stone-700">
-                  {/* Fixed Table Header */}
-                  <div className="flex-shrink-0">
-                    <table className="w-full">
-                      <thead className="bg-gradient-to-r from-stone-100 to-stone-100 dark:from-stone-800 dark:to-stone-700">
-                        <tr className="border-b border-stone-200 dark:border-stone-600">
-                          <th
-                            className="text-left px-3 py-2.5 cursor-pointer group transition-all duration-200 hover:bg-stone-200 dark:hover:bg-stone-600 text-stone-700 dark:text-stone-300 font-medium text-sm font-zilla select-none"
-                            onClick={() => handleSort("title")}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">
-                                Title
-                              </span>
-                              {sortField === "title" && (
-                                <span className="text-stone-700 dark:text-stone-300 font-bold text-sm">
-                                  {sortOrder === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </div>
-                          </th>
-                          <th
-                            className="text-left px-3 py-2.5 cursor-pointer group transition-all duration-200 hover:bg-stone-200 dark:hover:bg-stone-600 text-stone-700 dark:text-stone-300 font-medium text-sm font-zilla w-20 select-none"
-                            onClick={() => handleSort("year")}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">
-                                Year
-                              </span>
-                              {sortField === "year" && (
-                                <span className="text-stone-700 dark:text-stone-300 font-bold text-sm">
-                                  {sortOrder === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </div>
-                          </th>
-                          <th className="text-center px-3 py-2.5 text-stone-700 dark:text-stone-300 font-medium text-sm font-zilla w-16">
-                            Type
-                          </th>
-                        </tr>
-                      </thead>
-                    </table>
-                  </div>
-
-                  {/* Scrollable Table Body */}
-                  <div className="flex-1 overflow-y-auto no-scrollbar">
-                    <table className="w-full">
-                      <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
-                        {sortedSermons.map((sermon, index) => (
-                          <tr
-                            key={sermon.id}
-                            className="cursor-pointer group transition-all duration-200 hover:bg-gradient-to-r hover:from-stone-100/80 hover:to-stone-50/80 dark:hover:from-stone-800/50 dark:hover:to-stone-700/50 hover:shadow-sm"
-                            onClick={() => handleSermonClick(sermon)}
-                          >
-                            <td className="px-3  text-stone-800 dark:text-stone-200 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors text-sm leading-tight font-zilla border-x-0 border-t-0 border-b border-solid border-stone-100 dark:border-stone-700">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium line-clamp-2 overflow-hidden">
-                                  {sermon.title}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="px-3  text-stone-600 dark:text-stone-400 font-medium text-sm font-zilla w-20">
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-stone-700 dark:text-stone-300 font-thin text-sm">
-                                {sermon.year || "N/A"}
-                              </span>
-                            </td>
-                            <td className="px-3  text-center w-16">
-                              <div className="flex justify-center">
-                                {sermon.type === "mp3" ? (
-                                  <div className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-stone-200 to-stone-300 dark:from-stone-700 dark:to-stone-600 shadow-sm transition-transform group-hover:scale-110">
-                                    <Mic2
-                                      size={10}
-                                      className="text-stone-700 dark:text-stone-200 ml-0.5"
-                                    />
-                                  </div>
-                                ) : (
-                                  <div className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-stone-200 to-stone-300 dark:from-stone-700 dark:to-stone-600 shadow-sm transition-transform group-hover:scale-110">
-                                    <LetterText
-                                      size={10}
-                                      className="text-stone-700 dark:text-stone-200"
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+    <div className="h-full w-full flex flex-col bg-white dark:bg-stone-950">
+      {/* Search header */}
+      <div className="flex-shrink-0 px-4 pt-4 pb-3 border-b border-stone-100 dark:border-stone-800/80">
+        <div className="relative">
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 dark:text-stone-500 pointer-events-none" />
+          <input
+            placeholder="Filter by title or year…"
+            onChange={handleSearch}
+            className="w-full pl-8 pr-4 py-2 text-[13px] bg-stone-100 dark:bg-stone-900 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-stone-300 dark:focus:ring-stone-700 text-stone-800 dark:text-stone-200 placeholder-stone-400 dark:placeholder-stone-500 transition-all"
+            spellCheck={false}
+          />
         </div>
+      </div>
+
+      {/* Column headers */}
+      <div className="flex-shrink-0 flex items-center px-4 py-2 border-b border-stone-100 dark:border-stone-800/60 select-none">
+        <button
+          onClick={() => handleSort("title")}
+          className="flex flex-1 bg-transparent items-center gap-1 text-left text-[10px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-widest hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
+        >
+          Title
+          {sortField === "title" && (
+            <span className="ml-0.5">{sortOrder === "asc" ? "↑" : "↓"}</span>
+          )}
+        </button>
+        <button
+          onClick={() => handleSort("year")}
+          className="w-14 flex items-center gap-1 text-[10px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-widest hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
+        >
+          Year
+          {sortField === "year" && (
+            <span className="ml-0.5">{sortOrder === "asc" ? "↑" : "↓"}</span>
+          )}
+        </button>
+        <div className="w-10 text-center text-[10px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-widest">
+          Type
+        </div>
+      </div>
+
+      {/* Scrollable rows */}
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        {error ? (
+          <div className="flex items-center justify-center h-32">
+            <span className="text-sm text-red-500 dark:text-red-400">
+              Error loading sermons
+            </span>
+          </div>
+        ) : (
+          sortedSermons.map((sermon,id) => (
+            <SermonRow
+
+              key={sermon.id}
+              sermon={sermon}
+              onRowClick={handleSermonClick}
+              id={id}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Footer row count */}
+      <div className="flex-shrink-0 px-4 py-2 border-t border-stone-50 dark:border-stone-900/80">
+        <span className="text-[11px] text-stone-400 dark:text-stone-600">
+          {sortedSermons.length.toLocaleString()} sermon
+          {sortedSermons.length !== 1 ? "s" : ""}
+          {searchText && ` matching "${searchText}"`}
+        </span>
       </div>
     </div>
   );

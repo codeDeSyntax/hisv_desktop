@@ -2,19 +2,30 @@ import {
   createContext,
   useState,
   useEffect,
+  useCallback,
   ReactNode,
   useContext,
   useMemo,
 } from "react";
 import { Sermon } from "@/types/index.js";
 
-// Lazy imports for sermon data - only load when needed
-const loadEarlySermons = () => import("../sermons/1964-1969/firstset.js");
-const loadSecondSet = () => import("../sermons/1970/1970.js");
-const loadThirdSet = () => import("../sermons/1971/1971");
-const loadFourthSet = () => import("../sermons/1972/1972");
-const loadLastSet = () => import("../sermons/1973/1973");
-const loadAudioSermons = () => import("@/sermons/audio.js");
+// ── DB IPC helpers ────────────────────────────────────────────────────────────
+const ipc = window.ipcRenderer;
+
+/** Map a raw DB row (snake_case) to the app's Sermon shape. */
+function rowToSermon(row: Record<string, unknown>): Sermon {
+  return {
+    id: row.id as string,
+    title: row.title as string,
+    year: (row.year as string) ?? undefined,
+    date: (row.date as string) ?? undefined,
+    type: (row.type as string) ?? undefined,
+    location: (row.location as string) ?? undefined,
+    audioUrl: (row.audio_url as string) ?? undefined,
+    downloadLink: (row.download_link as string) ?? undefined,
+    sermon: (row.sermon_text as string) ?? undefined,
+  };
+}
 
 // Define bookmark type
 interface Bookmark {
@@ -43,7 +54,7 @@ interface SearchNavigation {
   searchTerm: string;
 }
 
-// Define the context value type
+// ── context type ──────────────────────────────────────────────────────────────
 interface SermonContextType {
   handleClose: () => void;
   handleMaximize: () => void;
@@ -53,6 +64,9 @@ interface SermonContextType {
   loading: boolean;
   loadingProgress: number;
   loadingMessage: string;
+  /** "checking" | "downloading" | "ready" | "error" */
+  dbStatus: string;
+  downloadProgress: number;
   error: string | null;
   recentSermons: Sermon[];
   setRecentSermons: (sermons: Sermon[]) => void;
@@ -116,9 +130,6 @@ interface SermonProviderProps {
   children: ReactNode;
 }
 
-// Ensure sermon collection is properly typed - will be loaded lazily
-let sermonCollection: Sermon[] = [];
-
 const SermonProvider = ({ children }: SermonProviderProps) => {
   const [selectedMessage, setSelectedMessage] = useState<Sermon | null>(null);
   const [allSermons, setAllSermons] = useState<Sermon[]>([]);
@@ -128,6 +139,8 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [loadingMessage, setLoadingMessage] =
     useState<string>("Starting up...");
+  const [dbStatus, setDbStatus] = useState<string>("checking");
+  const [downloadProgress, setDownloadProgress] = useState<number>(0);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
   const [isPresentationMode, setIsPresentationMode] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -165,67 +178,142 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     localStorage.setItem("prevScreen", activeTab);
   }, [activeTab]);
 
-  // Generate random sermon (text sermons only)
-  const getRandomSermon = (): Sermon | null => {
-    // Filter for text sermons only (exclude audio/video/mp3)
-    const textSermons = sermonCollection.filter(
-      (sermon) => sermon.type === "text",
-    );
-
-    if (textSermons.length > 0) {
-      const randomIndex = Math.floor(Math.random() * textSermons.length);
-      return textSermons[randomIndex];
-    }
-    return null;
-  };
-
-  // Save last read sermon to localStorage
-  const saveLastReadSermon = (sermon: Sermon) => {
-    localStorage.setItem("lastReadSermon", JSON.stringify(sermon));
-  };
-
   // Get last read sermon from localStorage
   const getLastReadSermon = (): Sermon | null => {
     const saved = localStorage.getItem("lastReadSermon");
     return saved ? JSON.parse(saved) : null;
   };
 
-  // Get first recent sermon if available
-  const getFirstRecentSermon = (allLoadedSermons: Sermon[]): Sermon | null => {
-    const recentSermonsJson = localStorage.getItem("recentSermons");
-    if (!recentSermonsJson) return null;
-
+  // Get first sermon from recent history if it exists in the loaded set
+  const getFirstRecentSermon = (loaded: Sermon[]): Sermon | null => {
     try {
-      const recentList = JSON.parse(recentSermonsJson) as Sermon[];
-      if (recentList.length === 0) return null;
-
-      // Verify the first recent sermon exists in the loaded sermons
-      const firstRecent = recentList[0];
-      return allLoadedSermons.find((s) => s.id === firstRecent.id) || null;
+      const json = localStorage.getItem("recentSermons");
+      if (!json) return null;
+      const list = JSON.parse(json) as Sermon[];
+      if (!list.length) return null;
+      return loaded.find((s) => s.id === list[0].id) ?? null;
     } catch {
       return null;
     }
   };
 
-  // Generate three random sermons (text sermons only)
-  const getThreeRandomSermons = (): Sermon[] => {
-    // Filter for text sermons only (exclude audio/video/mp3)
-    const textSermons = sermonCollection.filter(
-      (sermon) => sermon.type === "text",
-    );
-
-    const sermons = new Set<Sermon>();
-    while (sermons.size < 3 && sermons.size < textSermons.length) {
-      const randomIndex = Math.floor(Math.random() * textSermons.length);
-      const sermon = textSermons[randomIndex];
-      if (sermon) {
-        sermons.add(sermon);
-      }
+  // Generate three random text sermons
+  const getThreeRandomSermons = useCallback((): Sermon[] => {
+    const textSermons = allSermons.filter((s) => s.type === "text");
+    const set = new Set<Sermon>();
+    while (set.size < 3 && set.size < textSermons.length) {
+      set.add(textSermons[Math.floor(Math.random() * textSermons.length)]);
     }
-    return Array.from(sermons);
-  };
+    return Array.from(set);
+  }, [allSermons]);
 
-  // Search navigation function
+  // ── Auto-fetch full sermon text when a text sermon without text is selected ──
+  useEffect(() => {
+    if (
+      selectedMessage &&
+      selectedMessage.type === "text" &&
+      !selectedMessage.sermon
+    ) {
+      ipc
+        .invoke("db:get-sermon", selectedMessage.id)
+        .then((row: Record<string, unknown> | null) => {
+          if (row) setSelectedMessage(rowToSermon(row));
+        })
+        .catch(console.error);
+    }
+  }, [selectedMessage?.id, selectedMessage?.type]);
+
+  // ── Listen for download-progress events from the main process ───────────────
+  useEffect(() => {
+    const handler = (_event: unknown, progress: number) => {
+      setDownloadProgress(progress);
+      setLoadingProgress(progress);
+      setLoadingMessage(`Downloading sermon database… ${progress}%`);
+    };
+    ipc.on("db:download-progress", handler);
+    return () => {
+      ipc.off("db:download-progress", handler);
+    };
+  }, []);
+
+  // ── DB-based sermon loading ─────────────────────────────────────────────────
+  useEffect(() => {
+    const init = async () => {
+      try {
+        setLoading(true);
+        setLoadingProgress(0);
+        setLoadingMessage("Checking sermon database\u2026");
+        setDbStatus("checking");
+
+        const status = await ipc.invoke("db:status");
+
+        // ── First launch: DB not present → download from GitHub ─────────────
+        if (!status.exists) {
+          setDbStatus("downloading");
+          setLoadingMessage("Downloading sermon database…");
+          setDownloadProgress(0);
+
+          const result = await ipc.invoke("db:download");
+
+          if (!result.success) {
+            throw new Error(result.error ?? "Download failed");
+          }
+
+          setDownloadProgress(100);
+          setLoadingProgress(100);
+          setLoadingMessage("Download complete!");
+          await new Promise((r) => setTimeout(r, 300));
+        }
+
+        // ── Load metadata (fast: no sermon_text column) ──────────────────────
+        setDbStatus("ready");
+        setLoadingMessage("Loading sermons…");
+        setLoadingProgress(10);
+
+        const rows: Record<string, unknown>[] =
+          await ipc.invoke("db:get-sermons");
+        const loaded: Sermon[] = rows.map(rowToSermon);
+
+        setAllSermons(loaded);
+        setLoadingProgress(80);
+        setLoadingMessage("Almost ready…");
+
+        // ── Pick initial selected sermon ─────────────────────────────────────
+        const textSermons = loaded.filter((s) => s.type === "text");
+
+        if (textSermons.length > 0) {
+          const threeRandom = textSermons
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 3);
+          setRandomSermons(threeRandom);
+
+          let toOpen = getFirstRecentSermon(loaded) ?? getLastReadSermon();
+
+          // Verify persisted last-read still exists in loaded set
+          if (toOpen) {
+            toOpen = loaded.find((s) => s.id === toOpen!.id) ?? null;
+          }
+
+          setSelectedMessage(toOpen ?? threeRandom[0] ?? null);
+        }
+
+        setLoadingProgress(100);
+        setLoading(false);
+        setLoadingMessage("Ready!");
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error("Sermon init error:", msg);
+        setError(`Failed to load sermons: ${msg}`);
+        setDbStatus("error");
+        setLoading(false);
+      }
+    };
+
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Search navigation ──────────────────────────────────────────────────────
   const navigateToSearchResult = (
     sermonId: string | number,
     paragraphId: number,
@@ -241,11 +329,10 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
         searchTerm: searchTerm,
       });
       setActiveTab("message");
-      // Note: Recent sermons are updated in SelectedSermon.tsx when selectedMessage changes
     }
   };
 
-  // Bookmark functions
+  // ── Bookmark functions ─────────────────────────────────────────────────────
   const addBookmark = (
     sermonId: string,
     sermonTitle: string,
@@ -380,179 +467,100 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     }
   }, []);
 
-  // Load sermons progressively for better performance
-  useEffect(() => {
-    const loadSermonsProgressively = async () => {
-      try {
-        setLoading(true);
-        setLoadingProgress(0);
-        setLoadingMessage("Loading audio sermons...");
-
-        // First load lightweight data for quick startup
-        const audioData = await loadAudioSermons();
-        const audioSermons = audioData.default || audioData;
-
-        setLoadingProgress(20);
-        setLoadingMessage("Setting up initial sermons...");
-
-        // Set initial sermons with just audio sermons for quick startup
-        const initialSermons: Sermon[] = [...audioSermons];
-        setAllSermons(initialSermons);
-        sermonCollection = [...initialSermons];
-
-        // Don't set selected message yet - wait for text sermons to load
-        // so we can properly restore from recents/last read
-
-        setLoadingProgress(40);
-        setLoadingMessage("Ready! Loading text sermons in background...");
-        setLoading(false); // App is ready to use with audio sermons
-
-        // Now load text sermons in background chunks
-        const loadTextSermonsInBackground = async () => {
-          try {
-            // Load sermons in order of size (smallest first for faster perception)
-            const sermonLoaders = [
-              {
-                loader: loadEarlySermons,
-                name: "Early Sermons (1964-1969)",
-                weight: 15,
-              },
-              { loader: loadThirdSet, name: "1971 Sermons", weight: 10 },
-              { loader: loadLastSet, name: "1973 Sermons", weight: 15 },
-              { loader: loadFourthSet, name: "1972 Sermons", weight: 15 },
-              { loader: loadSecondSet, name: "1970 Sermons", weight: 25 }, // Largest last
-            ];
-
-            let loadedSermons: Sermon[] = [...initialSermons];
-            let currentProgress = 40;
-            let randomSermonsSet = false; // Track if we've set random sermons yet
-
-            for (const { loader, name, weight } of sermonLoaders) {
-              try {
-                setLoadingMessage(`Loading ${name}...`);
-
-                const data = await loader();
-                const sermons = data.default || data;
-                loadedSermons = [...loadedSermons, ...sermons];
-
-                // Update sermons progressively
-                setAllSermons([...loadedSermons]);
-                sermonCollection = [...loadedSermons];
-
-                // Set random sermons only once when first text sermons are loaded
-                const textSermons = loadedSermons.filter(
-                  (sermon) => sermon.type === "text",
-                );
-
-                if (textSermons.length > 0 && !randomSermonsSet) {
-                  const allRandomSermons = textSermons
-                    .sort(() => 0.5 - Math.random())
-                    .slice(0, 3);
-                  setRandomSermons(allRandomSermons);
-
-                  // Priority 1: Try to load first recent sermon
-                  let sermonToLoad = getFirstRecentSermon(loadedSermons);
-
-                  // Priority 2: Fall back to last read sermon
-                  if (!sermonToLoad) {
-                    sermonToLoad = getLastReadSermon();
-                    // Verify it exists
-                    if (sermonToLoad) {
-                      const foundSermon = loadedSermons.find(
-                        (s) => s.id === sermonToLoad!.id,
-                      );
-                      sermonToLoad = foundSermon || null;
-                    }
-                  }
-
-                  // Priority 3: Use random sermon
-                  if (!sermonToLoad) {
-                    sermonToLoad = allRandomSermons[0];
-                  }
-
-                  setSelectedMessage(sermonToLoad);
-                  randomSermonsSet = true; // Mark as set
-                }
-
-                currentProgress += weight;
-                setLoadingProgress(currentProgress);
-
-                // Small delay to prevent UI blocking
-                await new Promise((resolve) => setTimeout(resolve, 10));
-              } catch (error) {
-                console.warn(`⚠️ Failed to load ${name}:`, error);
-              }
-            }
-
-            setLoadingProgress(100);
-            setLoadingMessage("All sermons loaded successfully!");
-
-            // Clear loading message after a short delay
-            setTimeout(() => {
-              setLoadingMessage("");
-            }, 2000);
-          } catch (error) {
-            console.error("❌ Error loading text sermons:", error);
-          }
-        };
-
-        // Start background loading after a short delay
-        setTimeout(loadTextSermonsInBackground, 100);
-      } catch (err) {
-        console.error("❌ Error loading initial sermons:", err);
-        setError("Failed to load sermons. Please try again later.");
-        setLoading(false);
-      }
-    };
-
-    loadSermonsProgressively();
-  }, []);
-
-  const contextValue: SermonContextType = {
-    handleClose,
-    handleMaximize,
-    handleMinimize,
-    selectedMessage,
-    allSermons,
-    loading,
-    loadingProgress,
-    loadingMessage,
-    error,
-    recentSermons,
-    setRecentSermons,
-    setSelectedMessage,
-    setActiveTab,
-    activeTab,
-    prevScreen,
-    setPrevScreen,
-    randomSermons,
-    setRandomSermons,
-    getThreeRandomSermons,
-    setSearchQuery,
-    searchQuery,
-    settings,
-    setSettings,
-    CB,
-    setCB,
-    isCollapsed,
-    setIsCollapsed,
-    isPresentationMode,
-    setIsPresentationMode,
-    theme,
-    setTheme,
-    // Bookmark functions
-    bookmarks,
-    setBookmarks,
-    addBookmark,
-    removeBookmark,
-    isBookmarked,
-    toggleBookmark,
-    navigateToBookmark,
-    // Search navigation
-    pendingSearchNav,
-    setPendingSearchNav,
-    navigateToSearchResult,
-  };
+  const contextValue: SermonContextType = useMemo(
+    () => ({
+      handleClose,
+      handleMaximize,
+      handleMinimize,
+      selectedMessage,
+      allSermons,
+      loading,
+      loadingProgress,
+      loadingMessage,
+      dbStatus,
+      downloadProgress,
+      error,
+      recentSermons,
+      setRecentSermons,
+      setSelectedMessage,
+      setActiveTab,
+      activeTab,
+      prevScreen,
+      setPrevScreen,
+      randomSermons,
+      setRandomSermons,
+      getThreeRandomSermons,
+      setSearchQuery,
+      searchQuery,
+      settings,
+      setSettings,
+      CB,
+      setCB,
+      isCollapsed,
+      setIsCollapsed,
+      isPresentationMode,
+      setIsPresentationMode,
+      theme,
+      setTheme,
+      // Bookmark functions
+      bookmarks,
+      setBookmarks,
+      addBookmark,
+      removeBookmark,
+      isBookmarked,
+      toggleBookmark,
+      navigateToBookmark,
+      // Search navigation
+      pendingSearchNav,
+      setPendingSearchNav,
+      navigateToSearchResult,
+    }),
+    [
+      handleClose,
+      handleMaximize,
+      handleMinimize,
+      selectedMessage,
+      allSermons,
+      loading,
+      loadingProgress,
+      loadingMessage,
+      dbStatus,
+      downloadProgress,
+      error,
+      recentSermons,
+      setRecentSermons,
+      setSelectedMessage,
+      setActiveTab,
+      activeTab,
+      prevScreen,
+      setPrevScreen,
+      randomSermons,
+      setRandomSermons,
+      getThreeRandomSermons,
+      setSearchQuery,
+      searchQuery,
+      settings,
+      setSettings,
+      CB,
+      setCB,
+      isCollapsed,
+      setIsCollapsed,
+      isPresentationMode,
+      setIsPresentationMode,
+      theme,
+      setTheme,
+      bookmarks,
+      setBookmarks,
+      addBookmark,
+      removeBookmark,
+      isBookmarked,
+      toggleBookmark,
+      navigateToBookmark,
+      pendingSearchNav,
+      setPendingSearchNav,
+      navigateToSearchResult,
+    ],
+  );
 
   // console.log("SermonProvider rendering, context value:", contextValue);
 

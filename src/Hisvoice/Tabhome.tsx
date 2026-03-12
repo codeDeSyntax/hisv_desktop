@@ -32,7 +32,7 @@ const TabHome = () => {
           }
         }
       `}</style>
-      <div className="relative h-screen overflow-y-scroll no-scrollbar">
+      <div className="relative h-full overflow-y-auto no-scrollbar">
         {/* Artistic Background - Morphing Gradient with Concentric Circles */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Simple gradient - dark corner to normal theme */}
@@ -67,10 +67,10 @@ const TabHome = () => {
 
             {/* Multiple concentric circles creating spiral effect */}
             <g>
-              {Array.from({ length: 25 }).map((_, i) => {
-                const radius = 20 + i * 25;
-                const opacity = Math.max(0.02, 0.2 - i * 0.008);
-                const rotation = i * 5; // Rotation for spiral effect
+              {Array.from({ length: 15 }).map((_, i) => {
+                const radius = 20 + i * 40;
+                const opacity = Math.max(0.05, 0.15 - i * 0.008);
+                const rotation = i * 8; // Rotation for spiral effect
                 return (
                   <circle
                     key={i}
@@ -135,7 +135,7 @@ const TabHome = () => {
 
         <button
           onClick={handleOpenSermons}
-          className="fixed bottom-6 right-6 h-16 flex items-center justify-center w-16 bg-primary p-4 rounded-full shadow-2xl text-white hover:bg-primary/90 transition-colors z-50"
+          className="absolute bottom-6 right-6 h-14 flex items-center justify-center w-14 bg-primary p-4 rounded-full shadow-2xl text-white hover:bg-primary/90 transition-colors z-50"
         >
           <img src="./books.svg" alt="Books" className="w-6 h-6" />
         </button>

@@ -19,6 +19,7 @@ import { ThemeToggle } from "@/shared/ThemeToggler";
 import { useTheme } from "@/Provider/Theme";
 // import { useEvPresentationContext } from "@/Provider/EvPresent";
 import Help from "@/shared/Help";
+import UpdateManager from "@/shared/UpdateManager";
 import FontPicker from "@/components/FontPicker";
 import { useSermonContext } from "../Provider/Vsermons";
 import { HomeOutlined, HomeTwoTone, ReadFilled } from "@ant-design/icons";
@@ -40,7 +41,7 @@ const TitleBar: React.FC = () => {
     allSermons,
     setSelectedMessage,
   } = useSermonContext();
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, accentColor } = useTheme();
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
   // Sermon tabs state
@@ -317,7 +318,8 @@ const TitleBar: React.FC = () => {
           {selectedMessage && activeTab === "message" && (
             <div
               key={`current-${selectedMessage.id}`}
-              className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-t-lg cursor-default transition-all duration-200 flex-shrink-0 max-w-[160px] min-w-[100px] group h-[85%] bg-white dark:bg-stone-800 border-t-2 border-l border-r border-stone-400 dark:border-stone-500 text-stone-900 dark:text-stone-100 shadow-md"
+              className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-t-lg cursor-default transition-all duration-200 flex-shrink-0 max-w-[160px] min-w-[100px] group h-[85%] bg-white dark:bg-stone-800 border-t-2 border-l border-r border-l-stone-400 border-r-stone-400 dark:border-l-stone-500 dark:border-r-stone-500 text-stone-900 dark:text-stone-100 shadow-md"
+              style={{ borderTopColor: accentColor }}
               title={selectedMessage.title}
             >
               {/* Active indicator dot - pulsing */}
@@ -423,6 +425,8 @@ const TitleBar: React.FC = () => {
           <ThemeToggle />
 
           <Help />
+
+          <UpdateManager />
 
           {/* Close button */}
 

@@ -1,16 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Bookmark,
-  BookmarkCheck,
-  Trash2,
-  Calendar,
-  MapPin,
-  FileText,
-  ChevronDown,
-  Mic2,
-  LetterText,
-} from "lucide-react";
+import { BookmarkCheck, Trash2, Search } from "lucide-react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { useTheme } from "@/Provider/Theme";
 
@@ -25,17 +15,14 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
   showHeader = true,
   maxHeight = "100%",
 }) => {
-  const { bookmarks, removeBookmark, navigateToBookmark, allSermons } =
-    useSermonContext();
-  const { isDarkMode } = useTheme();
+  const { bookmarks, removeBookmark, navigateToBookmark } = useSermonContext();
+  const { accentColor } = useTheme();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
     null,
   );
 
-  // Filter and sort bookmarks
   const filteredBookmarks = bookmarks
     .filter(
       (bookmark) =>
@@ -48,236 +35,190 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
         (bookmark.location &&
           bookmark.location.toLowerCase().includes(searchQuery.toLowerCase())),
     )
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "newest":
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-        case "oldest":
-          return (
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          );
-        case "title":
-          return a.sermonTitle.localeCompare(b.sermonTitle);
-        case "year":
-          return (b.year || "0").localeCompare(a.year || "0");
-        default:
-          return 0;
-      }
-    });
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
 
-  const handleDeleteBookmark = (bookmarkId: string) => {
+  const handleDelete = (bookmarkId: string) => {
     removeBookmark(bookmarkId);
     setShowDeleteConfirm(null);
   };
 
-  const handleBookmarkClick = (bookmark: any) => {
-    navigateToBookmark(bookmark);
-  };
-
   const formatDate = (dateString: string) => {
+    const diffDays = Math.floor(
+      (Date.now() - new Date(dateString).getTime()) / 86_400_000,
+    );
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
     return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
       month: "short",
       day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+      year: "2-digit",
     });
   };
 
-  const getSermonStats = () => {
-    const uniqueSermons = new Set(bookmarks.map((b) => b.sermonId)).size;
-    const totalBookmarks = bookmarks.length;
-    return { uniqueSermons, totalBookmarks };
-  };
-
-  const stats = getSermonStats();
+  const uniqueSermons = new Set(bookmarks.map((b) => b.sermonId)).size;
 
   return (
-    <div className={`${className} h-full flex flex-col`} style={{ maxHeight }}>
-      {showHeader && (
-        <div className="flex-shrink-0 py-4 border-b border-gray-200 dark:border-gray-700">
-          {/* Stats Section */}
-          <div className="grid grid-cols-2 gap-2 mb-4 text-center text-xs">
-            <div className="p-2 border border-dashed border-stone-200 dark:border-stone-700 rounded">
-              <div className="font-bold text-stone-700 dark:text-stone-300">
-                {stats.totalBookmarks}
-              </div>
-              <div className="text-stone-600 dark:text-stone-400">
-                BOOKMARKS
-              </div>
-            </div>
-            <div className="p-2 border border-dashed border-stone-200 dark:border-stone-700 rounded">
-              <div className="font-bold text-stone-700 dark:text-stone-300">
-                {stats.uniqueSermons}
-              </div>
-              <div className="text-stone-600 dark:text-stone-400">SERMONS</div>
-            </div>
-          </div>
-
-          {/* Search and Sort */}
-          <div className="flex gap-2 mb-4">
-            <input
-              placeholder="Search bookmarks..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 p-2 text-sm bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-full focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-600 text-stone-700 dark:text-stone-100 placeholder-stone-400"
-              spellCheck={false}
-            />
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 text-xs bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded focus:outline-none focus:ring-2 focus:ring-stone-500 text-stone-700 dark:text-stone-100"
-            >
-              <option value="newest">Newest</option>
-              <option value="oldest">Oldest</option>
-              <option value="title">Title</option>
-              <option value="year">Year</option>
-            </select>
-          </div>
+    <div
+      className={`${className} h-full flex flex-col gap-2`}
+      style={{ maxHeight }}
+    >
+      {/* Stats — only when showHeader */}
+      {showHeader && bookmarks.length > 0 && (
+        <div className="flex-shrink-0 flex gap-3 text-xs text-stone-500 dark:text-stone-400">
+          <span>
+            <span className="font-semibold text-stone-700 dark:text-stone-300">
+              {bookmarks.length}
+            </span>{" "}
+            bookmarks
+          </span>
+          <span>
+            <span className="font-semibold text-stone-700 dark:text-stone-300">
+              {uniqueSermons}
+            </span>{" "}
+            sermons
+          </span>
         </div>
       )}
 
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-hidden">
+      {/* Search — always visible */}
+      <div className="flex-shrink-0 relative">
+        <Search
+          size={13}
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"
+        />
+        <input
+          placeholder="Search bookmarks…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-8 pr-3 py-1.5 text-sm border-none bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-full focus:outline-none focus:ring-2 focus:ring-accent text-stone-700 dark:text-stone-100 placeholder-stone-400"
+          spellCheck={false}
+        />
+      </div>
+
+      {/* Card list */}
+      <div className="flex-1 overflow-y-auto no-scrollbar space-y-2 pb-1">
         {filteredBookmarks.length === 0 ? (
-          <div className="text-center py-8">
-            <span className="text-stone-700 dark:text-gray-300">
-              {searchQuery ? "No bookmarks found" : "No bookmarks yet"}
-            </span>
+          <div className="flex flex-col items-center justify-center py-12 gap-1 text-stone-400 dark:text-stone-500">
+            <BookmarkCheck
+              size={32}
+              strokeWidth={1.2}
+              style={{ color: accentColor }}
+            />
+            <p className="text-sm">
+              {searchQuery ? "No matches found" : "No bookmarks yet"}
+            </p>
+            {!searchQuery && (
+              <p className="text-xs text-center max-w-[180px] leading-relaxed">
+                Tap the bookmark icon while reading a sermon to save it here
+              </p>
+            )}
           </div>
         ) : (
-          <div className="h-full flex flex-col font-zilla backdrop-blur-sm rounded-lg border border-stone-200 dark:border-stone-700">
-            {/* Fixed Table Header */}
-            <div className="flex-shrink-0">
-              <table className="w-full">
-                <thead className="bg-gradient-to-r from-stone-100 to-stone-200 dark:from-stone-800 dark:to-stone-700">
-                  <tr className="border-b border-stone-200 dark:border-stone-600">
-                    <th className="text-left px-3 py-2.5 text-stone-700 dark:text-stone-300 font-medium text-sm font-zilla">
-                      <span>Sermon & Content</span>
-                    </th>
-                    <th className="text-left px-3 py-2.5 text-stone-700 dark:text-stone-300 font-medium text-sm font-zilla w-24">
-                      <span>Details</span>
-                    </th>
-                    <th className="text-center px-3 py-2.5 text-stone-700 dark:text-stone-300 font-medium text-sm font-zilla w-16">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-              </table>
-            </div>
+          <AnimatePresence>
+            {filteredBookmarks.map((bookmark, index) => (
+              <motion.div
+                key={bookmark.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -30 }}
+                transition={{
+                  duration: 0.16,
+                  delay: Math.min(index * 0.04, 0.28),
+                }}
+                className="group relative rounded-lg border-solid border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-800/40 px-3 cursor-pointer hover:shadow-sm transition-all duration-150"
+                style={{ "--hover-border": accentColor } as React.CSSProperties}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.borderColor = accentColor + "60")
+                }
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = "")}
+                onClick={() => navigateToBookmark(bookmark)}
+              >
+                {/* Title row */}
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <BookmarkCheck
+                      size={12}
+                      className="flex-shrink-0"
+                      style={{ color: accentColor }}
+                    />
+                    <span className="text-sm font-semibold text-stone-800 dark:text-stone-100 truncate leading-tight">
+                      {bookmark.sermonTitle}
+                    </span>
+                  </div>
 
-            {/* Scrollable Table Body */}
-            <div className="flex-1 overflow-y-auto no-scrollbar">
-              <table className="w-full">
-                <tbody className="divide-y divide-stone-200 dark:divide-stone-700">
-                  <AnimatePresence>
-                    {filteredBookmarks.map((bookmark, index) => (
-                      <motion.tr
-                        key={bookmark.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: -100 }}
-                        transition={{ duration: 0.2, delay: index * 0.05 }}
-                        className="cursor-pointer group transition-all duration-200 hover:bg-gradient-to-r hover:from-stone-100/80 hover:to-stone-50/80 dark:hover:from-stone-800/50 dark:hover:to-stone-700/50 hover:shadow-sm"
-                        onClick={() => handleBookmarkClick(bookmark)}
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    {/* Saved date — lives beside the title, out of the way */}
+                    <span className="text-[10px] text-stone-300 dark:text-stone-600 whitespace-nowrap">
+                      {formatDate(bookmark.createdAt)}
+                    </span>
+
+                    {/* Delete controls */}
+                    {showDeleteConfirm === bookmark.id ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(bookmark.id);
+                          }}
+                          className="w-5 h-5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800/60 flex items-center justify-center text-xs font-bold transition-colors"
+                        >
+                          ✓
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowDeleteConfirm(null);
+                          }}
+                          className="w-5 h-5 rounded-full bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-600 flex items-center justify-center text-xs transition-colors"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowDeleteConfirm(bookmark.id);
+                        }}
+                        className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center justify-center transition-all duration-150"
                       >
-                        <td className="px-3 text-stone-800 dark:text-stone-200 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors text-sm leading-tight font-zilla border-x-0 border-t-0 border-b border-solid border-stone-200 dark:border-stone-700">
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
-                              <BookmarkCheck
-                                size={12}
-                                className="text-stone-600 dark:text-stone-400"
-                              />
-                              <span className="font-medium line-clamp-1 text-stone-800 dark:text-stone-200 overflow-hidden text-sm">
-                                {bookmark.sermonTitle}
-                              </span>
-                            </div>
-                            <span className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2 ml-5">
-                              "{bookmark.paragraphContent}"
-                            </span>
-                            {bookmark.location && (
-                              <div className="flex items-center gap-1 ml-5 text-xs text-stone-500 dark:text-stone-400">
-                                <MapPin size={10} />
-                                <span>{bookmark.location}</span>
-                                {bookmark.paragraphId && (
-                                  <>
-                                    <span className="mx-1">•</span>
-                                    <span className="text-stone-700 dark:text-stone-400 font-bold">
-                                      Para #{bookmark.paragraphId}
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-3 text-stone-600 dark:text-stone-400 font-medium text-xs font-zilla w-24">
-                          <div className="flex flex-col gap-1">
-                            {bookmark.year && (
-                              <div className="flex items-center gap-1">
-                                <Calendar size={10} />
-                                <span>{bookmark.year}</span>
-                              </div>
-                            )}
-                            <span className="text-stone-500 dark:text-stone-400">
-                              {formatDate(bookmark.createdAt)}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-3 text-center w-16">
-                          <div className="flex justify-center">
-                            {showDeleteConfirm === bookmark.id ? (
-                              <div className="flex gap-1">
-                                <motion.button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteBookmark(bookmark.id);
-                                  }}
-                                  className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/60"
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.9 }}
-                                >
-                                  <BookmarkCheck size={8} />
-                                </motion.button>
-                                <motion.button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowDeleteConfirm(null);
-                                  }}
-                                  className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.9 }}
-                                >
-                                  ×
-                                </motion.button>
-                              </div>
-                            ) : (
-                              <motion.button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setShowDeleteConfirm(bookmark.id);
-                                }}
-                                className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-stone-100 to-stone-200 dark:from-[#4a2e19] dark:to-[#4a2e19] shadow-sm transition-transform group-hover:scale-110"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                              >
-                                <Trash2
-                                  size={10}
-                                  className="text-red-600 dark:text-red-400"
-                                />
-                              </motion.button>
-                            )}
-                          </div>
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </AnimatePresence>
-                </tbody>
-              </table>
-            </div>
-          </div>
+                        <Trash2
+                          size={11}
+                          className="text-stone-400 dark:text-stone-500 hover:text-red-500 dark:hover:text-red-400"
+                        />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Paragraph preview — meta prefix inline with the quote */}
+                <span className="text-xs text-stone-500 dark:text-stone-400 line-clamp-2 ml-[18px] leading-relaxed italic">
+                  {(bookmark.year ||
+                    bookmark.paragraphId ||
+                    bookmark.location) && (
+                    <span className="not-italic font-semibold text-stone-400 dark:text-stone-500 mr-1">
+                      {[
+                        bookmark.year,
+                        bookmark.paragraphId
+                          ? `¶${bookmark.paragraphId}`
+                          : null,
+                        bookmark.location,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}{" "}
+                      —{" "}
+                    </span>
+                  )}
+                  &ldquo;{bookmark.paragraphContent}&rdquo;
+                </span>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         )}
       </div>
     </div>

@@ -1,7 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
-import { execSync } from "child_process";
+import { exec } from "child_process";
+import { promisify } from "node:util";
+
+const execAsync = promisify(exec);
 
 /**
  * Fallback: Get fonts from files when registry approach fails
@@ -62,11 +65,11 @@ export async function getSystemFonts(): Promise<string[]> {
     let fonts: string[] = [];
 
     if (process.platform === "win32") {
-      // Windows: Read font names from registry
+      // Windows: Read font names from registry (async — must not block IPC event loop)
       try {
-        const output = execSync(
+        const { stdout: output } = await execAsync(
           'reg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts" /s',
-          { encoding: "utf-8" },
+          { encoding: "utf-8", maxBuffer: 8 * 1024 * 1024 },
         );
 
         const fontFamilies = new Set<string>();
@@ -103,9 +106,12 @@ export async function getSystemFonts(): Promise<string[]> {
     } else if (process.platform === "darwin") {
       // macOS: Use system_profiler
       try {
-        const output = execSync("system_profiler SPFontsDataType", {
-          encoding: "utf-8",
-        });
+        const { stdout: output } = await execAsync(
+          "system_profiler SPFontsDataType",
+          {
+            encoding: "utf-8",
+          },
+        );
         const matches = output.match(/(?:^|\n)\s+([^:\n]+):/gm);
         if (matches) {
           fonts = matches

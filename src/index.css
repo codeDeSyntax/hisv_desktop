@@ -2,18 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --accent: #10a37f;
+}
+
 *,
 ::before,
 ::after {
   box-sizing: border-box;
 }
 
+html {
+  background: #212121;
+}
+
 body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
+  background: #212121;
+  color: #000;
+}
+
+div,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+span {
+  font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
+}
+
+div {
+  padding: 0;
+  margin: 0;
 }
 
 .wqoute {
@@ -23,31 +49,8 @@ body {
   border-width: 10px;
 }
 
-.dottedb {
-  background: radial-gradient(circle, #29282820 1px, white 0); /* Dots */
-  background-size: 20px 20px; /* Adjust the size of the background pattern */
-}
-.dottedb1 {
-  background: radial-gradient(circle, #2c2b2b20 1px, #000000 0); /* Dots */
-  background-size: 20px 20px; /* Adjust the size of the background pattern */
-}
-.gridb {
-  background:
-    linear-gradient(to right, white 1px, white 1px),
-    linear-gradient(to bottom, white 1px, #fafafa 1px);
-  background-size: 20px 20px; /* Adjust the size of the grid */
-}
-.gridb1 {
-  background:
-    linear-gradient(to right, #fffdd5 1px, transparent 1px),
-    linear-gradient(to bottom, #fffdd5 1px, #faeed1 1px);
-  background-size: 20px 20px; /* Adjust the size of the grid */
-}
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
+
 
 /* Custom text selection globally - stone-themed instead of default blue */
 ::selection {
@@ -71,23 +74,11 @@ h1 {
   color: inherit;
 }
 
-/* button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-} */
-/* button:hover {
-  border-color: #646cff;
-} */
+
 button {
   border: none;
   border-radius: 10px;
+  background-color: transparent;
 }
 button:hover {
   cursor: pointer;
@@ -103,6 +94,35 @@ button:hover {
   text-decoration: underline;
 
   /* text-combine-upright: initial; */
+}
+
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/Outfit-300.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/Outfit-400.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/Outfit-600.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/Outfit-700.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {

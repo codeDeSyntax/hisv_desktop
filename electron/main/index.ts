@@ -4,6 +4,17 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import os from "node:os";
 import { getSystemFonts } from "./fonts.js";
+import { update } from "./update.js";
+import {
+  dbExists,
+  getDbPath,
+  getSermonsMeta,
+  getSermonById,
+  searchSermons,
+  downloadDb,
+  closeDb,
+  GITHUB_DB_URL,
+} from "./db.js";
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -41,8 +52,29 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 let mainWin: BrowserWindow | null = null;
+let splashWin: BrowserWindow | null = null;
 const preload = path.join(__dirname, "../preload/index.mjs");
 const indexHtml = path.join(RENDERER_DIST, "index.html");
+
+function createSplashWindow() {
+  splashWin = new BrowserWindow({
+    width: 500,
+    height: 360,
+    frame: false,
+    resizable: false,
+    transparent: false,
+    center: true,
+    show: true,
+    skipTaskbar: true,
+    backgroundColor: "#1a1614",
+    icon: path.join(process.env.VITE_PUBLIC!, "hisv.png"),
+    webPreferences: { nodeIntegration: false, contextIsolation: true },
+  });
+  splashWin.loadFile(path.join(process.env.VITE_PUBLIC!, "splash.html"));
+  splashWin.on("closed", () => {
+    splashWin = null;
+  });
+}
 
 async function createMainWindow() {
   // Prevent creating multiple windows
@@ -54,6 +86,8 @@ async function createMainWindow() {
   mainWin = new BrowserWindow({
     title: "Main window",
     frame: false,
+    show: false,
+    backgroundColor: "#212121",
     minWidth: 1000,
     minHeight: 800,
     icon: path.join(process.env.VITE_PUBLIC, "hisv.png"),
@@ -67,14 +101,31 @@ async function createMainWindow() {
 
   if (VITE_DEV_SERVER_URL) {
     mainWin.loadURL(VITE_DEV_SERVER_URL);
-    mainWin.maximize();
     mainWin.setMenuBarVisibility(false);
     mainWin.webContents.openDevTools();
   } else {
-    mainWin.maximize();
     mainWin.setMenuBarVisibility(false);
     mainWin.loadFile(indexHtml);
   }
+
+  // Show main window and close splash when the renderer signals it's ready
+  let mainShown = false;
+  const showMain = () => {
+    if (mainShown) return;
+    mainShown = true;
+    if (splashWin && !splashWin.isDestroyed()) splashWin.close();
+    mainWin!.maximize();
+    mainWin!.show();
+    mainWin!.focus();
+  };
+
+  ipcMain.once("app-ready", showMain);
+
+  // Fallback: once the HTML itself is painted (index.html has an inline loading
+  // screen), swap from splash to main window so the user never sees a blank page.
+  mainWin.webContents.once("dom-ready", () => {
+    showMain();
+  });
 
   // Handle keyboard shortcuts
   mainWin.webContents.on("before-input-event", (event, input) => {
@@ -168,6 +219,82 @@ async function createMainWindow() {
     }
   });
 
+  // ── Branham API proxy (avoids renderer CORS) ───────────────────────────────
+  ipcMain.handle(
+    "branham:fetch",
+    async (
+      _event,
+      endpoint: string,
+      body: Record<string, unknown>,
+    ): Promise<{
+      ok: boolean;
+      status: number;
+      data?: unknown;
+      error?: string;
+    }> => {
+      try {
+        const res = await fetch(`https://table.branham.org/rest${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json().catch(() => null);
+        return { ok: res.ok, status: res.status, data };
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { ok: false, status: 0, error: msg };
+      }
+    },
+  );
+
+  // ── DB IPC handlers ────────────────────────────────────────────────────────
+
+  ipcMain.handle("db:status", () => ({
+    exists: dbExists(),
+    path: getDbPath(),
+    downloadUrl: GITHUB_DB_URL,
+  }));
+
+  ipcMain.handle("db:get-sermons", () => {
+    try {
+      return getSermonsMeta();
+    } catch (err) {
+      console.error("db:get-sermons error:", err);
+      return [];
+    }
+  });
+
+  ipcMain.handle("db:get-sermon", (_event, id: string | number) => {
+    try {
+      return getSermonById(id) ?? null;
+    } catch (err) {
+      console.error("db:get-sermon error:", err);
+      return null;
+    }
+  });
+
+  ipcMain.handle("db:search", (_event, query: string) => {
+    try {
+      return searchSermons(query);
+    } catch (err) {
+      console.error("db:search error:", err);
+      return [];
+    }
+  });
+
+  ipcMain.handle("db:download", async (event) => {
+    try {
+      await downloadDb(GITHUB_DB_URL, (progress) => {
+        event.sender.send("db:download-progress", progress);
+      });
+      // Re-open DB after download
+      return { success: true };
+    } catch (err: any) {
+      console.error("db:download error:", err);
+      return { success: false, error: err?.message ?? String(err) };
+    }
+  });
+
   // Handle external links
   mainWin.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
@@ -178,8 +305,10 @@ async function createMainWindow() {
 }
 
 // App event handlers
-app.whenReady().then(() => {
-  createMainWindow();
+app.whenReady().then(async () => {
+  createSplashWindow();
+  await createMainWindow();
+  if (mainWin) update(mainWin);
 
   // Handle app activation (macOS specific)
   app.on("activate", () => {
@@ -217,6 +346,7 @@ app.on("window-all-closed", () => {
 
 // Handle app before quit
 app.on("before-quit", () => {
+  closeDb();
   // Clean up any resources before quitting
   if (mainWin && !mainWin.isDestroyed()) {
     mainWin.removeAllListeners();

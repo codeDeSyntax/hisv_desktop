@@ -3,16 +3,14 @@
  */
 {
   appId: "com.bmusic.myapp",
+  productName: "his-voice",
   asar: true,
   directories: {
     output: "release/${version}",
   },
   files: ["dist-electron", "dist"],
-  mac: {
-    artifactName: "${productName}_${version}.${ext}",
-    target: ["dmg", "zip"],
-  },
   win: {
+    icon: "public/hisv.png",
     target: [
       {
         target: "nsis",
@@ -25,11 +23,15 @@
     oneClick: false,
     perMachine: false,
     allowToChangeInstallationDirectory: true,
+    allowElevation: true,
     deleteAppDataOnUninstall: false,
+    // Kill running process so app.asar isn’t locked during update install
+    include: "build/installer.nsh",
   },
   publish: {
-    provider: "generic",
-    channel: "latest",
-    url: "https://github.com/codeDeSyntax/BlessedMusic/releases/releases/download/v1.0.0",
+    provider: "github",
+    owner: "codeDeSyntax",
+    repo: "hisv_desktop",
+    releaseType: "release",
   },
 }

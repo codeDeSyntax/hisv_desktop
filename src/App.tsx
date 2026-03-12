@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, ArrowLeftCircle } from "lucide-react";
 import Hisvoice from "./Hisvoice/Hisvoice";
 import FloatingButton from "./components/ButtonFloat";
 import { ArrowLeftOutlined } from "@ant-design/icons";
@@ -7,8 +6,19 @@ import { useTheme } from "./Provider/Theme";
 import { useSermonContext } from "./Provider/Vsermons";
 
 const App = () => {
-  const { activeTab, setActiveTab, prevScreen } = useSermonContext();
+  const { activeTab, setActiveTab, prevScreen, loading } = useSermonContext();
   const [showShortcutsToast, setShowShortcutsToast] = useState(false);
+
+  // Signal main process when data is ready — closes splash and shows main window
+  useEffect(() => {
+    if (!loading) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.ipcRenderer.send("app-ready");
+        });
+      });
+    }
+  }, [loading]);
 
   // Keyboard shortcuts for navigation
   useEffect(() => {

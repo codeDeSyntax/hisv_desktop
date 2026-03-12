@@ -1,12 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-  useCallback,
-  memo,
-  Suspense,
-  lazy,
-} from "react";
+import { useEffect, useMemo, useState, useCallback, memo, useRef } from "react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/Provider/Theme";
@@ -15,7 +7,6 @@ import {
   BookOpen,
   Settings,
   Bookmark,
-  Quote,
   ChevronRight,
   Home as HomeIcon,
   Search as SearchIcon,
@@ -37,6 +28,7 @@ const Home = memo(() => {
   const [leftPanelView, setLeftPanelView] = useState<
     "sermons" | "search" | "bookmarks" | "recents" | "settings" | "home"
   >("sermons");
+  const [slideDirection, setSlideDirection] = useState(1);
   const [background, setBackground] = useState(false);
   const [showPresentationHint, setShowPresentationHint] = useState(false);
   const {
@@ -47,7 +39,7 @@ const Home = memo(() => {
     loading,
     isPresentationMode,
   } = useSermonContext();
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, accentColor } = useTheme();
 
   // Listen for navigation events from TabHome
   useEffect(() => {
@@ -137,9 +129,27 @@ const Home = memo(() => {
     icon: any;
   }>;
 
+  const switchView = useCallback(
+    (
+      id: "sermons" | "search" | "bookmarks" | "recents" | "settings" | "home",
+    ) => {
+      const currentIndex = navItems.findIndex((n) => n.id === leftPanelView);
+      const nextIndex = navItems.findIndex((n) => n.id === id);
+      setSlideDirection(nextIndex >= currentIndex ? 1 : -1);
+      setLeftPanelView(id);
+    },
+    [leftPanelView, navItems],
+  );
+
+  const slideVariants = {
+    enter: (dir: number) => ({ x: dir * 60, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({ x: dir * -60, opacity: 0 }),
+  };
+
   return (
     <div
-      className={`${isPresentationMode ? "h-screen" : "h-[96vh]"} w-screen flex overflow-hidden bg-gray-50 dark:bg-stone-950 transition-all duration-300`}
+      className={`${isPresentationMode ? "h-screen" : "h-[96vh]"} w-screen flex overflow-hidden bg-gray-50 dark:bg-surface transition-all duration-300`}
     >
       {/* Presentation Mode Indicator */}
       <AnimatePresence>
@@ -203,122 +213,142 @@ const Home = memo(() => {
           {/* Page curl shadow */}
           <div className="absolute left-4 top-8 bottom-8 w-4 bg-gradient-to-r from-stone-400/20 to-transparent dark:from-stone-500/15 dark:to-transparent rounded-l-full"></div>
 
-          <motion.div
-            key={leftPanelView}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-            className="relative w-full bg-gradient-to-r from-stone-50 via-white to-white h-full dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 rounded-l-2xl overflow-hidden flex flex-col border border-r-0 border-stone-300 dark:border-stone-700 p-3 shadow-[inset_-8px_0_12px_-8px_rgba(0,0,0,0.08),_-4px_0_8px_-2px_rgba(0,0,0,0.05)] dark:shadow-[inset_-8px_0_12px_-8px_rgba(0,0,0,0.3),_-4px_0_8px_-2px_rgba(0,0,0,0.2)]"
-          >
-            {/* Modern Pill Tab Navigation - Top of Left Panel */}
-            <div className="flex-shrink-0 px-6 pb-3  py-3border-solid border-x-0 border-t-0 border-b border-gray-200 dark:border-gray-700 flex justify-center">
-              <div className="inline-flex items-center gap-1 p-1 bg-stone-100 dark:bg-stone-800 rounded-full shadow-inner">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = leftPanelView === item.id;
-                  // Show text for main tabs: sermons, search, bookmarks
-                  const showText = ["sermons", "search", "bookmarks"].includes(
-                    item.id,
-                  );
+          <div className="relative w-full bg-gradient-to-r from-stone-50 via-white to-white h-full dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 rounded-l-2xl overflow-hidden flex flex-row border border-r-0 border-stone-300 dark:border-stone-700 shadow-[inset_-8px_0_12px_-8px_rgba(0,0,0,0.08),_-4px_0_8px_-2px_rgba(0,0,0,0.05)] dark:shadow-[inset_-8px_0_12px_-8px_rgba(0,0,0,0.3),_-4px_0_8px_-2px_rgba(0,0,0,0.2)]">
+            {/* Vertical Icon Sidebar Nav — never re-mounts, stays frozen */}
+            <div className="relative z-10 flex-shrink-0 w-14 h-full flex flex-col items-center py-3 gap-1 border-r border-stone-200 dark:border-stone-700/60 bg-stone-50/80 dark:bg-stone-950/60 backdrop-blur-sm">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = leftPanelView === item.id;
+                return (
+                  <Tooltip key={item.id} title={item.label} placement="right">
+                    <motion.button
+                      onClick={() => switchView(item.id as any)}
+                      whileTap={{ scale: 0.92 }}
+                      className={`relative w-9 h-9 flex flex-col items-center justify-center rounded-xl transition-all duration-200 cursor-pointer border-0 outline-none group ${
+                        isActive
+                          ? "shadow-md"
+                          : "text-stone-400 dark:text-stone-500 hover:bg-stone-200/70 dark:hover:bg-stone-700/50 hover:text-stone-700 dark:hover:text-stone-200 bg-transparent"
+                      }`}
+                      style={
+                        isActive
+                          ? {
+                              backgroundColor: accentColor + "20",
+                              color: accentColor,
+                            }
+                          : undefined
+                      }
+                    >
+                      {/* Active left-edge indicator */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="sidebarIndicator"
+                          className="absolute -left-[1px] top-2 bottom-2 w-[3px] rounded-r-full"
+                          style={{ backgroundColor: accentColor }}
+                          transition={{
+                            type: "spring",
+                            bounce: 0.3,
+                            duration: 0.5,
+                          }}
+                        />
+                      )}
+                      <Icon
+                        className="w-[16px] h-[16px]"
+                        strokeWidth={isActive ? 2.2 : 1.8}
+                      />
+                    </motion.button>
+                  </Tooltip>
+                );
+              })}
+            </div>
 
-                  return (
-                    <Tooltip key={item.id} title={item.label}>
-                      <motion.div
-                        onClick={() => setLeftPanelView(item.id as any)}
-                        className={`relative ${showText ? "px-4 py-2" : "p-2.5"} transition-all duration-300 flex items-center gap-2 cursor-pointer ${
-                          isActive
-                            ? "text-white"
-                            : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
-                        }`}
-                      >
-                        {isActive && (
-                          <motion.div
-                            layoutId="activeTab"
-                            className="absolute inset-0 bg-stone-700 dark:bg-stone-600 rounded-full shadow-lg"
-                            transition={{
-                              type: "spring",
-                              bounce: 0.2,
-                              duration: 0.6,
-                            }}
-                          />
-                        )}
-                        <Icon className="w-4 h-4 relative z-10" />
-                        {showText && (
-                          <span className="text-xs font-medium relative z-10">
-                            {item.label}
+            {/* Sliding content area — sidebar above stays frozen */}
+            <div className="relative flex-1 h-full overflow-hidden bg-white dark:bg-stone-950">
+              <AnimatePresence mode="popLayout" custom={slideDirection}>
+                <motion.div
+                  key={leftPanelView}
+                  custom={slideDirection}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    x: {
+                      type: "spring",
+                      stiffness: 380,
+                      damping: 34,
+                      mass: 0.7,
+                    },
+                    opacity: { duration: 0.18 },
+                  }}
+                  className="absolute inset-0 overflow-auto no-scrollbar"
+                >
+                  {leftPanelView === "sermons" && (
+                    <div className="h-full">
+                      <SermonList />
+                    </div>
+                  )}
+
+                  {leftPanelView === "search" && (
+                    <div className="h-full overflow-auto no-scrollbar">
+                      <Search />
+                    </div>
+                  )}
+
+                  {leftPanelView === "bookmarks" && (
+                    <div className="h-full flex flex-col overflow-hidden">
+                      <div className="flex-shrink-0 px-4 py-3 border-b border-stone-100 dark:border-stone-800">
+                        <div className="flex items-center gap-2">
+                          <Bookmark className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+                          <span className="text-sm font-semibold text-stone-700 dark:text-stone-200 tracking-wide">
+                            Bookmarks
                           </span>
-                        )}
-                      </motion.div>
-                    </Tooltip>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Content Area */}
-            <div className="flex-1 h-full overflow-auto bg-white dark:bg-stone-950 rounded-3xl no-scrollbar">
-              {leftPanelView === "sermons" && (
-                <div className="">
-                  <SermonList />
-                </div>
-              )}
-
-              {leftPanelView === "search" && (
-                <div className="h-full overflow-auto no-scrollbar">
-                  <Search />
-                </div>
-              )}
-
-              {leftPanelView === "bookmarks" && (
-                <div className="h-full bg-white dark:bg-stone-900 rounded-[20px] overflow-y-auto no-scrollbar">
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Bookmark className="w-5 h-5 text-stone-600 dark:text-stone-400" />
-                      <h2 className="text-lg font-semibold text-stone-800 dark:text-stone-200 font-zilla">
-                        Bookmarks
-                      </h2>
+                        </div>
+                      </div>
+                      <div className="flex-1 overflow-y-auto no-scrollbar p-3">
+                        <ModularBookmarks
+                          className="h-full"
+                          showHeader={false}
+                          maxHeight="100%"
+                        />
+                      </div>
                     </div>
-                    <ModularBookmarks
-                      className="h-full"
-                      showHeader={false}
-                      maxHeight="100%"
-                    />
-                  </div>
-                </div>
-              )}
+                  )}
 
-              {leftPanelView === "recents" && (
-                <div className="h-full bg-white dark:bg-stone-900 rounded-[20px] overflow-y-auto no-scrollbar">
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Clock className="w-5 h-5 text-stone-600 dark:text-stone-400" />
-                      <h2 className="text-lg font-semibold text-stone-800 dark:text-stone-200 font-zilla">
-                        Recent Activity
-                      </h2>
+                  {leftPanelView === "recents" && (
+                    <div className="h-full flex flex-col overflow-hidden">
+                      <div className="flex-shrink-0 px-4 py-3 border-b border-stone-100 dark:border-stone-800">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+                          <span className="text-sm font-semibold text-stone-700 dark:text-stone-200 tracking-wide">
+                            Recent Activity
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex-1 overflow-y-auto no-scrollbar p-3">
+                        <ModularRecents
+                          className="h-full"
+                          showHeader={false}
+                          maxHeight="100%"
+                        />
+                      </div>
                     </div>
-                    <ModularRecents
-                      className="h-full"
-                      showHeader={false}
-                      maxHeight="100%"
-                    />
-                  </div>
-                </div>
-              )}
+                  )}
 
-              {leftPanelView === "settings" && (
-                <div className="h-full">
-                  <FontSettingsPage />
-                </div>
-              )}
+                  {leftPanelView === "settings" && (
+                    <div className="h-full">
+                      <FontSettingsPage />
+                    </div>
+                  )}
 
-              {leftPanelView === "home" && (
-                <div className="h-full">
-                  <TabHome />
-                </div>
-              )}
+                  {leftPanelView === "home" && (
+                    <div className="h-full">
+                      <TabHome />
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </div>
-          </motion.div>
+          </div>
         </motion.div>
 
         {/* Book Spine / Hinge - Center Binding */}

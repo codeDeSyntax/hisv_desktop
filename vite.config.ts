@@ -7,7 +7,6 @@ import pkg from "./package.json";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
-  
   rmSync("dist-electron", { recursive: true, force: true });
 
   const isServe = command === "serve";
@@ -15,9 +14,30 @@ export default defineConfig(({ command }) => {
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
 
   return {
+    define: {
+      __APP_VERSION__: JSON.stringify(pkg.version),
+    },
     resolve: {
       alias: {
         "@": path.join(__dirname, "src"),
+      },
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ["react", "react-dom"],
+            antd: ["antd"],
+          },
+        },
+      },
+      chunkSizeWarningLimit: 600,
+      minify: "terser",
+      terserOptions: {
+        compress: {
+          drop_console: isBuild,
+          drop_debugger: isBuild,
+        },
       },
     },
     plugins: [
@@ -29,7 +49,7 @@ export default defineConfig(({ command }) => {
           onstart(args) {
             if (process.env.VSCODE_DEBUG) {
               console.log(
-                /* For `.vscode/.debug.script.mjs` */ "[startup] Electron App"
+                /* For `.vscode/.debug.script.mjs` */ "[startup] Electron App",
               );
             } else {
               args.startup();
@@ -42,7 +62,7 @@ export default defineConfig(({ command }) => {
               outDir: "dist-electron/main",
               rollupOptions: {
                 external: Object.keys(
-                  "dependencies" in pkg ? pkg.dependencies : {}
+                  "dependencies" in pkg ? pkg.dependencies : {},
                 ),
               },
             },
@@ -59,7 +79,7 @@ export default defineConfig(({ command }) => {
               outDir: "dist-electron/preload",
               rollupOptions: {
                 external: Object.keys(
-                  "dependencies" in pkg ? pkg.dependencies : {}
+                  "dependencies" in pkg ? pkg.dependencies : {},
                 ),
               },
             },
@@ -81,5 +101,16 @@ export default defineConfig(({ command }) => {
         };
       })(),
     clearScreen: false,
+    // Pre-bundle heavy deps so Vite doesn't compile hundreds of ESM files on cold start
+    optimizeDeps: {
+      include: [
+        "react",
+        "react-dom",
+        "antd",
+        "@ant-design/icons",
+        "framer-motion",
+        "lucide-react",
+      ],
+    },
   };
 });

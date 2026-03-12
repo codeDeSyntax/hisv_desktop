@@ -20,7 +20,7 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
   const { recentSermons, setSelectedMessage, setActiveTab, setRecentSermons } =
     useSermonContext();
 
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, accentColor } = useTheme();
 
   const displayedSermons = limit
     ? recentSermons.slice(0, limit)
@@ -74,7 +74,7 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
           <div className="mb-4">
             <input
               placeholder="Search recent sermons..."
-              className="w-[90%] p-3 text-sm bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-full focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-600 text-stone-700 dark:text-stone-100 placeholder-stone-400"
+              className="w-[90%] p-3 text-sm bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-full focus:outline-none focus:ring-2 focus:ring-accent text-stone-700 dark:text-stone-100 placeholder-stone-400"
               spellCheck={false}
             />
           </div>
@@ -94,12 +94,12 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
             {/* Fixed Table Header */}
             <div className="flex-shrink-0">
               <table className="w-full">
-                <thead className="bg-gradient-to-r from-stone-50 to-stone-100 dark:from-amber-950/50 dark:to-stone-900/80">
-                  <tr className="border-b border-stone-200 dark:border-amber-900/40">
-                    <th className="text-left px-3 py-2.5 text-stone-700 dark:text-orange-200 font-medium text-sm font-zilla">
+                <thead className="bg-gradient-to-r from-stone-50 to-stone-100 dark:from-stone-900 dark:to-stone-900">
+                  <tr className="border-b border-stone-200 dark:border-stone-800">
+                    <th className="text-left px-3 py-2.5 text-stone-700 dark:text-accent font-medium text-sm font-zilla">
                       <span>Title</span>
                     </th>
-                    <th className="text-center px-3 py-2.5 text-stone-700 dark:text-orange-200 font-medium text-sm font-zilla w-16">
+                    <th className="text-center px-3 py-2.5 text-stone-700 dark:text-accent font-medium text-sm font-zilla w-16">
                       Type
                     </th>
                   </tr>
@@ -135,10 +135,16 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
                         <td className="px-3 text-center w-16">
                           <div className="flex justify-center items-center gap-1">
                             {sermon.type === "mp3" ? (
-                              <div className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-stone-100 to-stone-200 dark:from-amber-900/40 dark:to-yellow-800/40 shadow-sm transition-transform group-hover:scale-110">
+                              <div
+                                className="inline-flex items-center justify-center w-7 h-7 rounded-full shadow-sm transition-transform group-hover:scale-110"
+                                style={{
+                                  background: `linear-gradient(135deg, ${accentColor}20, ${accentColor}40)`,
+                                }}
+                              >
                                 <Mic2
                                   size={10}
-                                  className="text-amber-600 dark:text-text ml-0.5"
+                                  className="ml-0.5"
+                                  style={{ color: accentColor }}
                                 />
                               </div>
                             ) : (

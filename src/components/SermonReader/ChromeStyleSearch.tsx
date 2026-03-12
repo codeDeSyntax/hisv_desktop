@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, ChevronUp, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "@/Provider/Theme";
 
 interface ChromeStyleSearchProps {
   isVisible: boolean;
@@ -22,6 +23,8 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
   onNavigatePrevious,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
+  const { accentColor } = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -31,10 +34,6 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
       inputRef.current.select();
     }
   }, [isVisible]);
-
-  useEffect(() => {
-    onSearch(searchQuery);
-  }, [searchQuery, onSearch]);
 
   // Handle outside click to close search
   useEffect(() => {
@@ -60,7 +59,11 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
     if (e.key === "Escape") {
       onClose();
     } else if (e.key === "Enter") {
-      if (e.shiftKey) {
+      if (!hasSearched) {
+        // First Enter: run the search
+        onSearch(searchQuery);
+        setHasSearched(true);
+      } else if (e.shiftKey) {
         onNavigatePrevious();
       } else {
         onNavigateNext();
@@ -70,6 +73,8 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
 
   const handleClear = () => {
     setSearchQuery("");
+    setHasSearched(false);
+    onSearch("");
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -103,10 +108,13 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
                   type="text"
                   value={searchQuery}
                   spellCheck={false}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setHasSearched(false);
+                  }}
                   onKeyDown={handleKeyDown}
                   placeholder="Search in sermon or paragraph number..."
-                  className="w-full px-4 py-3 text-sm border border-stone-200 dark:border-stone-700 rounded-xl bg-stone-50 dark:bg-stone-800/50 text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-600 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md placeholder:font-zilla font-zilla"
+                  className="w-full px-4 py-3 text-sm border border-stone-200 dark:border-stone-700 rounded-xl bg-stone-50 dark:bg-stone-800/50 text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md placeholder:font-zilla font-zilla"
                   style={{
                     backdropFilter: "blur(8px)",
                   }}
@@ -122,7 +130,7 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
 
                 <button
                   onClick={onClose}
-                  className="absolute right-2 top-1/2 bg-red-800   transform -translate-y-1/2 p-1.5 rounded-lg text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-700/50 cursor-pointer transition-all duration-200"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 rounded-lg text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-700/50 cursor-pointer transition-all duration-200"
                   title="Close (Esc)"
                 >
                   <X size={16} />
@@ -151,7 +159,10 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
                 <div className="text-sm font-medium text-stone-700 dark:text-stone-300">
                   {searchResultsCount > 0 ? (
                     <span className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-stone-600 dark:bg-stone-400 rounded-full animate-pulse shadow-sm"></span>
+                      <span
+                        className="w-2 h-2 rounded-full animate-pulse shadow-sm"
+                        style={{ backgroundColor: accentColor }}
+                      ></span>
                       <span className="font-semibold">
                         {currentSearchIndex}
                       </span>
@@ -178,17 +189,17 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={onNavigatePrevious}
-                      className="p-2 rounded-lg bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="p-2 rounded-lg bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 transition-all duration-200 shadow-sm hover:shadow-md"
                       title="Previous (Shift+Enter)"
                     >
-                      <ChevronUp size={16} />
+                      <ChevronUp size={16} style={{ color: accentColor }} />
                     </button>
                     <button
                       onClick={onNavigateNext}
-                      className="p-2 rounded-lg bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="p-2 rounded-lg bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 transition-all duration-200 shadow-sm hover:shadow-md"
                       title="Next (Enter)"
                     >
-                      <ChevronDown size={16} />
+                      <ChevronDown size={16} style={{ color: accentColor }} />
                     </button>
                   </div>
                 )}

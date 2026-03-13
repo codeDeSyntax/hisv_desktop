@@ -21,13 +21,12 @@ const DB_FILENAME = "sermons.db";
 
 /**
  * URL to the pre-built database hosted on GitHub Releases.
- * Replace <OWNER> and <REPO> with your actual GitHub repository details,
- * then tag a release and attach `sermons.db` as a release asset.
  *
- * Example:  https://github.com/myorg/hisvoice/releases/latest/download/sermons.db
+ * You can override this with HISVOICE_DB_URL for custom mirrors/CDN.
  */
 export const GITHUB_DB_URL =
-  "https://github.com/<OWNER>/<REPO>/releases/latest/download/sermons.db";
+  process.env.HISVOICE_DB_URL ??
+  "https://github.com/codeDeSyntax/hisv_desktop/releases/latest/download/sermons.db";
 
 // ── path helpers ─────────────────────────────────────────────────────────────
 export function getDbPath(): string {

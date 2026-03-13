@@ -6,6 +6,7 @@ import {
   ReactNode,
   useContext,
   useMemo,
+  useRef,
 } from "react";
 import { Sermon } from "@/types/index.js";
 
@@ -132,6 +133,7 @@ interface SermonProviderProps {
 }
 
 const SermonProvider = ({ children }: SermonProviderProps) => {
+  const initRanRef = useRef(false);
   const [selectedMessage, setSelectedMessage] = useState<Sermon | null>(null);
   const [allSermons, setAllSermons] = useState<Sermon[]>([]);
   const [recentSermons, setRecentSermons] = useState<Sermon[]>([]);
@@ -302,6 +304,9 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   }, [loadSermonsFromDb]);
 
   useEffect(() => {
+    if (initRanRef.current) return;
+    initRanRef.current = true;
+
     const init = async () => {
       try {
         setLoading(true);

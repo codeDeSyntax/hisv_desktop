@@ -23,6 +23,8 @@ interface GroupedSermonMatch {
   totalMatches: number;
 }
 
+type SearchMode = "all" | "exact";
+
 // â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /**
  * Parse a FTS5 snippet that contains <mark>â€¦</mark> tags and render it as
@@ -56,7 +58,10 @@ function RenderSnippet({
           );
         }
         return (
-          <span key={i} className="text-stone-600 dark:text-stone-400 text-[15px]">
+          <span
+            key={i}
+            className="text-stone-600 dark:text-stone-400 text-[15px]"
+          >
             {part}
           </span>
         );
@@ -93,6 +98,7 @@ const Search = () => {
   const [searchInput, setSearchInput] = useState("");
   const [foundMatches, setFoundMatches] = useState<GroupedSermonMatch[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchMode, setSearchMode] = useState<SearchMode>("all");
   const [expandedSermons, setExpandedSermons] = useState<
     Record<string, boolean>
   >({});
@@ -101,8 +107,8 @@ const Search = () => {
   const cacheRef = useRef<Map<string, GroupedSermonMatch[]>>(new Map());
 
   // â”€â”€ search via FTS5 IPC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const doSearch = useCallback(async (term: string) => {
-    const key = term.toLowerCase();
+  const doSearch = useCallback(async (term: string, mode: SearchMode) => {
+    const key = `${mode}:${term.toLowerCase()}`;
     const cached = cacheRef.current.get(key);
     if (cached) {
       setFoundMatches(cached);
@@ -111,7 +117,10 @@ const Search = () => {
 
     setIsSearching(true);
     try {
-      const rows: FTSRow[] = await window.ipcRenderer.invoke("db:search", term);
+      const rows: FTSRow[] = await window.ipcRenderer.invoke("db:search", {
+        query: term,
+        mode,
+      });
       const grouped = groupFTSResults(rows);
 
       // cap cache at 50 entries
@@ -156,11 +165,11 @@ const Search = () => {
         const trimmed = searchInput.trim();
         if (trimmed.length >= 2) {
           if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-          doSearch(trimmed);
+          doSearch(trimmed, searchMode);
         }
       }
     },
-    [searchInput, doSearch],
+    [searchInput, doSearch, searchMode],
   );
 
   const handleSearchSubmit = useCallback(
@@ -169,10 +178,10 @@ const Search = () => {
       const trimmed = searchInput.trim();
       if (trimmed.length >= 2) {
         if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-        doSearch(trimmed);
+        doSearch(trimmed, searchMode);
       }
     },
-    [searchInput, doSearch],
+    [searchInput, doSearch, searchMode],
   );
 
   const handleSermonClick = useCallback(
@@ -223,6 +232,42 @@ const Search = () => {
               )}
             </button>
           </div>
+
+          <div className="mt-2 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSearchMode("all")}
+              className={`px-2.5 py-1 text-[11px] rounded-full border transition-colors ${
+                searchMode === "all"
+                  ? "text-white border-transparent"
+                  : "text-stone-600 dark:text-stone-300 border-stone-300 dark:border-stone-700"
+              }`}
+              style={
+                searchMode === "all"
+                  ? { backgroundColor: accentColor }
+                  : undefined
+              }
+            >
+              All
+            </button>
+            <button
+              type="button"
+              onClick={() => setSearchMode("exact")}
+              className={`px-2.5 py-1 text-[11px] rounded-full border transition-colors ${
+                searchMode === "exact"
+                  ? "text-white border-transparent"
+                  : "text-stone-600 dark:text-stone-300 border-stone-300 dark:border-stone-700"
+              }`}
+              style={
+                searchMode === "exact"
+                  ? { backgroundColor: accentColor }
+                  : undefined
+              }
+            >
+              Exact match
+            </button>
+          </div>
+
           {searchInput.length > 0 && searchInput.length < 2 && (
             <p className="mt-2 text-[11px] text-stone-400 dark:text-stone-500">
               Enter at least 2 characters, then press Enter or click Search
@@ -264,7 +309,8 @@ const Search = () => {
                   {foundMatches.length}
                 </span>{" "}
                 sermon{foundMatches.length !== 1 ? "s" : ""} for "
-                {searchInput.trim()}"
+                {searchInput.trim()}" (
+                {searchMode === "exact" ? "Exact" : "All"})
               </p>
             </div>
 

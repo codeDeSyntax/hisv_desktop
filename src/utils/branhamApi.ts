@@ -22,6 +22,8 @@ export interface EndnoteSearchResult {
   searchType: "ExactPhrase" | "AllWords" | "ParagraphReference";
 }
 
+export type EndnoteSearchMode = "Auto" | "ExactPhrase" | "AllWords";
+
 // ── IPC bridge — all network calls go through the main process to avoid CORS ──
 async function ipcPost(
   endpoint: string,
@@ -122,7 +124,42 @@ function toMatch(
 // ── Main: 3-step fallback search ──
 export async function fetchEndnoteResults(
   endnoteData: EndnoteData,
+  mode: EndnoteSearchMode = "Auto",
 ): Promise<EndnoteSearchResult> {
+  if (mode === "ExactPhrase") {
+    if (!endnoteData.longQuote) {
+      throw new Error("No quote text available for Exact Phrase search.");
+    }
+
+    const raw = await searchText(endnoteData.longQuote, "ExactPhrase");
+    if (raw.length === 0) {
+      throw new Error("No results found with Exact Phrase. Try All Words.");
+    }
+
+    return {
+      matches: raw.map((r) => toMatch(r, endnoteData.datecode)),
+      searchedText: endnoteData.longQuote,
+      searchType: "ExactPhrase",
+    };
+  }
+
+  if (mode === "AllWords") {
+    if (!endnoteData.keywords) {
+      throw new Error("No keywords available for All Words search.");
+    }
+
+    const raw = await searchText(endnoteData.keywords, "AllWords");
+    if (raw.length === 0) {
+      throw new Error("No results found with All Words. Try Exact Phrase.");
+    }
+
+    return {
+      matches: raw.map((r) => toMatch(r, endnoteData.datecode)),
+      searchedText: endnoteData.keywords,
+      searchType: "AllWords",
+    };
+  }
+
   // Step 1 — ExactPhrase (first 8 words of quote text)
   if (endnoteData.longQuote) {
     try {

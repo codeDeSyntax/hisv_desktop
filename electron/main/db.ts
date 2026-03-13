@@ -92,6 +92,8 @@ export interface FTSResult {
   rowid: number;
 }
 
+export type SearchMode = "all" | "exact";
+
 /** Returns all sermons without the heavy sermon_text column (for fast startup). */
 export function getSermonsMeta(): SermonMeta[] {
   const db = openDb();
@@ -117,13 +119,27 @@ export function getSermonById(id: string | number): SermonFull | undefined {
  * Full-text search via FTS5.
  * Returns up to 100 matches with highlighted snippets.
  */
-export function searchSermons(query: string): FTSResult[] {
+export function searchSermons(
+  query: string,
+  mode: SearchMode = "all",
+): FTSResult[] {
   if (!query || query.trim().length < 2) return [];
   const db = openDb();
 
-  // Sanitize query: escape special FTS5 characters
-  const safe = query.replace(/["*^]/g, " ").trim();
-  if (!safe) return [];
+  const normalized = query.trim().replace(/\s+/g, " ");
+  if (!normalized) return [];
+
+  const ftsQuery =
+    mode === "exact"
+      ? `"${normalized.replace(/"/g, '""')}"`
+      : normalized
+          .split(/\s+/)
+          .map((term) => term.replace(/["*^]/g, "").trim())
+          .filter(Boolean)
+          .map((term) => `${term}*`)
+          .join(" AND ");
+
+  if (!ftsQuery) return [];
 
   try {
     return db
@@ -137,7 +153,7 @@ export function searchSermons(query: string): FTSResult[] {
          ORDER BY sermons_fts.rank
          LIMIT 100`,
       )
-      .all(safe + "*") as FTSResult[];
+      .all(ftsQuery) as FTSResult[];
   } catch {
     // Fallback: LIKE search if FTS5 query syntax is invalid
     return db
@@ -149,7 +165,7 @@ export function searchSermons(query: string): FTSResult[] {
          WHERE sermon_text LIKE ?
          LIMIT 100`,
       )
-      .all(`%${safe}%`) as FTSResult[];
+      .all(`%${normalized}%`) as FTSResult[];
   }
 }
 

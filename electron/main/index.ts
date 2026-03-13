@@ -102,7 +102,9 @@ async function createMainWindow() {
   if (VITE_DEV_SERVER_URL) {
     mainWin.loadURL(VITE_DEV_SERVER_URL);
     mainWin.setMenuBarVisibility(false);
-    mainWin.webContents.openDevTools();
+    if (process.env.OPEN_DEVTOOLS === "true") {
+      mainWin.webContents.openDevTools();
+    }
   } else {
     mainWin.setMenuBarVisibility(false);
     mainWin.loadFile(indexHtml);
@@ -271,14 +273,20 @@ async function createMainWindow() {
     }
   });
 
-  ipcMain.handle("db:search", (_event, query: string) => {
-    try {
-      return searchSermons(query);
-    } catch (err) {
-      console.error("db:search error:", err);
-      return [];
-    }
-  });
+  ipcMain.handle(
+    "db:search",
+    (_event, payload: string | { query: string; mode?: "all" | "exact" }) => {
+      const query = typeof payload === "string" ? payload : payload?.query;
+      const mode = typeof payload === "string" ? "all" : payload?.mode;
+
+      try {
+        return searchSermons(query, mode === "exact" ? "exact" : "all");
+      } catch (err) {
+        console.error("db:search error:", err);
+        return [];
+      }
+    },
+  );
 
   ipcMain.handle("db:download", async (event) => {
     try {

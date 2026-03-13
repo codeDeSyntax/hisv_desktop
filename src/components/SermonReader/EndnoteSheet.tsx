@@ -17,6 +17,7 @@ import {
   fetchEndnoteResults,
   getSermonIndex,
   getSermonContent,
+  type EndnoteSearchMode,
   type EndnoteSearchMatch,
   type EndnoteSearchResult,
   type SermonSection,
@@ -183,7 +184,7 @@ const ReadMode: React.FC<ReadModeProps> = ({
       </div>
 
       {/* Scrollable reading body */}
-      <div className="flex-1 overflow-y-auto no-scrollbar">
+      <div className="flex-1 overflow-y-auto no-scrollbar pb-20">
         <div className="px-5 py-6 max-w-6xl mx-auto space-y-5">
           {sections.map((s) => {
             const isHit = targetParagraphs.has(s.Paragraph);
@@ -389,7 +390,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
       }`}
     >
       {/* ── Compact single-row header ── */}
-      <div className="flex items-center gap-2 px-3 ">
+      <div className="flex items-center gap-2 px-3 py-2 ">
         <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
           <span
             className="font-archivo text-[11px] font-bold shrink-0"
@@ -539,6 +540,8 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
     Map<string, SermonSection[]>
   >(new Map());
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [searchMode, setSearchMode] =
+    useState<EndnoteSearchMode>("ExactPhrase");
   const [readMode, setReadMode] = useState<{
     group: SermonGroup;
     sections: SermonSection[];
@@ -559,7 +562,7 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
     setGroupSections(new Map());
     setReadMode(null);
 
-    fetchEndnoteResults(endnoteData)
+    fetchEndnoteResults(endnoteData, searchMode)
       .then((result) => {
         if (token !== requestTokenRef.current) return;
         setSearchResult(result);
@@ -576,7 +579,7 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
         if (token !== requestTokenRef.current) return;
         setLoading(false);
       });
-  }, [isOpen, endnoteData]);
+  }, [isOpen, endnoteData, searchMode]);
 
   const loadContext = useCallback(async (group: SermonGroup) => {
     setLoadingId(group.documentRecordId);
@@ -651,7 +654,7 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 32, stiffness: 320 }}
-              className={`fixed bottom-0 left-0 right-0 z-50 flex px-10 flex-col rounded-t-2xl overflow-hidden ${
+              className={`fixed bottom-0 left-0 right-0 z-50 flex px-10 pb-10 flex-col rounded-t-2xl overflow-hidden min-h-[40vh] ${
                 isDarkMode
                   ? "bg-[#1c1c1e] border-t border-stone-700"
                   : "bg-white border-t border-stone-200"
@@ -686,6 +689,43 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                       {endnoteData.title ? ` — ${endnoteData.title}` : ""}
                     </p>
                   )}
+
+                  <div className="mt-2 inline-flex rounded-lg border border-stone-200 dark:border-stone-700 overflow-hidden">
+                    <button
+                      onClick={() => setSearchMode("ExactPhrase")}
+                      className={`px-3 py-1 text-[11px] font-medium transition-colors ${
+                        searchMode === "ExactPhrase"
+                          ? "text-white"
+                          : isDarkMode
+                            ? "bg-stone-800 text-stone-300 hover:bg-stone-700"
+                            : "bg-stone-50 text-stone-600 hover:bg-stone-100"
+                      }`}
+                      style={
+                        searchMode === "ExactPhrase"
+                          ? { backgroundColor: accentColor }
+                          : undefined
+                      }
+                    >
+                      Exact Phrase
+                    </button>
+                    <button
+                      onClick={() => setSearchMode("AllWords")}
+                      className={`px-3 py-1 text-[11px] font-medium transition-colors ${
+                        searchMode === "AllWords"
+                          ? "text-white"
+                          : isDarkMode
+                            ? "bg-stone-800 text-stone-300 hover:bg-stone-700"
+                            : "bg-stone-50 text-stone-600 hover:bg-stone-100"
+                      }`}
+                      style={
+                        searchMode === "AllWords"
+                          ? { backgroundColor: accentColor }
+                          : undefined
+                      }
+                    >
+                      All Words
+                    </button>
+                  </div>
                 </div>
                 <button
                   onClick={onClose}
@@ -763,6 +803,15 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                             ? searchResult.searchedText.slice(0, 45) + "…"
                             : searchResult.searchedText}
                           &rdquo;
+                        </span>
+                        <span className="ml-1 font-medium">
+                          (
+                          {searchResult.searchType === "AllWords"
+                            ? "All Words"
+                            : searchResult.searchType === "ExactPhrase"
+                              ? "Exact Phrase"
+                              : "Paragraph Reference"}
+                          )
                         </span>
                       </span>
                     </div>

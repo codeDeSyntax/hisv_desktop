@@ -1,27 +1,26 @@
-import { useEffect, useMemo, useState, useCallback, memo, useRef } from "react";
+import { useEffect, useMemo, useState, useCallback, memo, useRef, lazy, Suspense } from "react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/Provider/Theme";
 import { Tooltip } from "antd";
 import {
-  BookOpen,
-  Settings,
-  Bookmark,
+  LibraryBig,
+  SlidersHorizontal,
+  BookMarked,
   ChevronRight,
-  Home as HomeIcon,
-  Search as SearchIcon,
-  Clock,
+  PanelsTopLeft,
+  ScanSearch,
+  History,
 } from "lucide-react";
 
-// Lazy load heavy components for better initial performance
-
-import SermonList from "./Allsermons";
-import SelectedSermon from "./SelectedSermon";
-import ModularBookmarks from "@/components/ModularBookmarks";
-import ModularRecents from "@/components/ModularRecents";
-import FontSettingsPage from "./Settings";
-import TabHome from "./Tabhome";
-import Search from "./Search";
+// Lazy load heavy components — only compiled by Vite when the tab is first opened
+const SermonList = lazy(() => import("./Allsermons"));
+const SelectedSermon = lazy(() => import("./SelectedSermon"));
+const ModularBookmarks = lazy(() => import("@/components/ModularBookmarks"));
+const ModularRecents = lazy(() => import("@/components/ModularRecents"));
+const FontSettingsPage = lazy(() => import("./Settings"));
+const TabHome = lazy(() => import("./Tabhome"));
+const Search = lazy(() => import("./Search"));
 
 const Home = memo(() => {
   const [currentScriptureIndex, setCurrentScriptureIndex] = useState(0);
@@ -115,12 +114,12 @@ const Home = memo(() => {
   // Navigation items for left sidebar
   const navItems = useMemo(
     () => [
-      { id: "home", label: "Home", icon: HomeIcon },
-      { id: "sermons", label: "Sermons", icon: BookOpen },
-      { id: "search", label: "Search", icon: SearchIcon },
-      { id: "bookmarks", label: "Bookmarks", icon: Bookmark },
-      { id: "recents", label: "Recents", icon: Clock },
-      { id: "settings", label: "Settings", icon: Settings },
+      { id: "home", label: "Home", icon: PanelsTopLeft },
+      { id: "sermons", label: "Sermons", icon: LibraryBig },
+      { id: "search", label: "Search", icon: ScanSearch },
+      { id: "bookmarks", label: "Bookmarks", icon: BookMarked },
+      { id: "recents", label: "Recents", icon: History },
+      { id: "settings", label: "Settings", icon: SlidersHorizontal },
     ],
     [],
   ) as Array<{
@@ -169,26 +168,16 @@ const Home = memo(() => {
       </AnimatePresence>
 
       {/* Main Content Area - Book Layout */}
-      <motion.div
-        className="flex-1 h-full flex px-3 py-3 overflow-hidden"
-        animate={{
-          paddingLeft: isPresentationMode ? "0px" : "12px",
-          paddingRight: isPresentationMode ? "0px" : "12px",
-          paddingTop: isPresentationMode ? "0px" : "12px",
-          paddingBottom: isPresentationMode ? "0px" : "12px",
-        }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+      <div
+        className={`flex-1 h-full flex overflow-hidden transition-[padding] duration-150 ${isPresentationMode ? "px-0 py-0" : "px-3 py-3"}`}
       >
         {/* Left Panel - Left Page of Book */}
-        <motion.div
-          className="relative w-[50%] h-full border border-solid border-stone-300 dark:border-stone-700 rounded-l-3xl rounded-r-md overflow-hidden shadow-lg"
-          animate={{
-            width: isPresentationMode ? "0%" : "50%",
-            opacity: isPresentationMode ? 0 : 1,
-            marginRight: isPresentationMode ? "0px" : "0px",
-          }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          style={{ display: isPresentationMode ? "none" : "block" }}
+        <div
+          className={`relative h-full border border-solid border-stone-300 dark:border-stone-700 rounded-l-3xl rounded-r-md overflow-hidden shadow-lg transition-all duration-180 ease-out ${
+            isPresentationMode
+              ? "w-0 opacity-0 -translate-x-6 pointer-events-none border-transparent shadow-none"
+              : "w-[35%] opacity-100 translate-x-0"
+          }`}
         >
           {/* Curved page stack effect on left edge - SVG for natural look */}
           <svg
@@ -224,20 +213,38 @@ const Home = memo(() => {
                     <motion.button
                       onClick={() => switchView(item.id as any)}
                       whileTap={{ scale: 0.92 }}
-                      className={`relative w-9 h-9 flex flex-col items-center justify-center rounded-xl transition-all duration-200 cursor-pointer border-0 outline-none group ${
+                      className={`relative w-10 h-10 flex flex-col items-center justify-center rounded-2xl transition-all duration-200 cursor-pointer border-0 outline-none group overflow-hidden ${
                         isActive
-                          ? "shadow-md"
-                          : "text-stone-400 dark:text-stone-500 hover:bg-stone-200/70 dark:hover:bg-stone-700/50 hover:text-stone-700 dark:hover:text-stone-200 bg-transparent"
+                          ? "shadow-[0_10px_20px_-12px_rgba(0,0,0,0.45)]"
+                          : "text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-200"
                       }`}
                       style={
                         isActive
                           ? {
-                              backgroundColor: accentColor + "20",
                               color: accentColor,
+                              boxShadow: `0 10px 20px -14px ${accentColor}90`,
                             }
                           : undefined
                       }
                     >
+                      <span
+                        className={`absolute inset-0 rounded-2xl transition-all duration-200 ${
+                          isActive
+                            ? "border"
+                            : "bg-gradient-to-br from-stone-100 via-stone-50 to-stone-200/90 dark:from-stone-800 dark:via-stone-900 dark:to-stone-800 border border-stone-200/80 dark:border-stone-700/80 group-hover:from-stone-200 group-hover:via-stone-100 group-hover:to-stone-200 dark:group-hover:from-stone-700 dark:group-hover:via-stone-800 dark:group-hover:to-stone-700"
+                        }`}
+                        style={
+                          isActive
+                            ? {
+                                background: `linear-gradient(145deg, ${accentColor}30, ${accentColor}12)`,
+                                borderColor: `${accentColor}45`,
+                              }
+                            : undefined
+                        }
+                      />
+                      <span className="absolute left-1.5 right-1.5 top-1 h-2.5 rounded-full bg-white/70 dark:bg-white/10 blur-[1px] opacity-90" />
+                      <span className="absolute inset-[1px] rounded-[15px] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),inset_0_-1px_0_rgba(0,0,0,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.32)]" />
+
                       {/* Active left-edge indicator */}
                       {isActive && (
                         <motion.div
@@ -252,7 +259,7 @@ const Home = memo(() => {
                         />
                       )}
                       <Icon
-                        className="w-[16px] h-[16px]"
+                        className="relative z-10 w-[17px] h-[17px] drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)] dark:drop-shadow-[0_1px_1px_rgba(0,0,0,0.45)]"
                         strokeWidth={isActive ? 2.2 : 1.8}
                       />
                     </motion.button>
@@ -263,7 +270,8 @@ const Home = memo(() => {
 
             {/* Sliding content area — sidebar above stays frozen */}
             <div className="relative flex-1 h-full overflow-hidden bg-white dark:bg-stone-950">
-              <AnimatePresence mode="popLayout" custom={slideDirection}>
+              <Suspense fallback={null}>
+              <AnimatePresence mode="wait" custom={slideDirection}>
                 <motion.div
                   key={leftPanelView}
                   custom={slideDirection}
@@ -274,11 +282,11 @@ const Home = memo(() => {
                   transition={{
                     x: {
                       type: "spring",
-                      stiffness: 380,
-                      damping: 34,
-                      mass: 0.7,
+                      stiffness: 500,
+                      damping: 38,
+                      mass: 0.5,
                     },
-                    opacity: { duration: 0.18 },
+                    opacity: { duration: 0.12 },
                   }}
                   className="absolute inset-0 overflow-auto no-scrollbar"
                 >
@@ -298,7 +306,7 @@ const Home = memo(() => {
                     <div className="h-full flex flex-col overflow-hidden">
                       <div className="flex-shrink-0 px-4 py-3 border-b border-stone-100 dark:border-stone-800">
                         <div className="flex items-center gap-2">
-                          <Bookmark className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+                          <BookMarked className="w-4 h-4 text-stone-500 dark:text-stone-400" />
                           <span className="text-sm font-semibold text-stone-700 dark:text-stone-200 tracking-wide">
                             Bookmarks
                           </span>
@@ -318,7 +326,7 @@ const Home = memo(() => {
                     <div className="h-full flex flex-col overflow-hidden">
                       <div className="flex-shrink-0 px-4 py-3 border-b border-stone-100 dark:border-stone-800">
                         <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+                          <History className="w-4 h-4 text-stone-500 dark:text-stone-400" />
                           <span className="text-sm font-semibold text-stone-700 dark:text-stone-200 tracking-wide">
                             Recent Activity
                           </span>
@@ -347,19 +355,18 @@ const Home = memo(() => {
                   )}
                 </motion.div>
               </AnimatePresence>
+              </Suspense>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Book Spine / Hinge - Center Binding */}
-        <motion.div
-          className="relative flex-shrink-0 w-5 h-full flex flex-col items-center py-8"
-          animate={{
-            width: isPresentationMode ? "0px" : "20px",
-            opacity: isPresentationMode ? 0 : 1,
-          }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          style={{ display: isPresentationMode ? "none" : "flex" }}
+        <div
+          className={`relative h-full flex flex-col items-center py-8 transition-all duration-180 ease-out overflow-hidden ${
+            isPresentationMode
+              ? "w-0 opacity-0 pointer-events-none"
+              : "w-5 opacity-100 flex-shrink-0"
+          }`}
         >
           {/* Spine background - not full height */}
           <div className="relative flex-1 w-full roun overflow-hidden">
@@ -390,16 +397,13 @@ const Home = memo(() => {
           <div className="absolute bottom-12 w-4 h-6 bg-gradient-to-b from-stone-400 to-stone-500 dark:from-stone-700 dark:to-stone-800 rounded-full shadow-md border border-stone-500/50 dark:border-stone-600/60">
             <div className="absolute inset-1 bg-gradient-to-b from-stone-300 to-stone-400 dark:from-stone-600 dark:to-stone-700 rounded-full"></div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Right Panel - Right Page of Book */}
-        <motion.div
-          className="relative bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 h-full border border-solid border-stone-300 dark:border-stone-700 overflow-hidden shadow-lg flex items-center justify-center"
-          animate={{
-            width: isPresentationMode ? "100%" : "70%",
-            borderRadius: isPresentationMode ? "0px" : "0px 24px 24px 0px",
-          }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+        <div
+          className={`relative bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 h-full border border-solid border-stone-300 dark:border-stone-700 overflow-hidden shadow-lg flex items-center justify-center transition-[border-radius] duration-150 ease-out ${
+            isPresentationMode ? "w-full rounded-none" : "w-[65%] rounded-r-3xl"
+          }`}
         >
           {/* Curved page stack effect on right edge - SVG for natural look */}
           {!isPresentationMode && (
@@ -428,17 +432,16 @@ const Home = memo(() => {
             </>
           )}
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
+          <div
             className={`relative w-full ${isPresentationMode ? "h-full" : "h-[95%]"} bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 ${isPresentationMode ? "rounded-none" : "rounded-r-2xl"} overflow-hidden flex flex-col ${isPresentationMode ? "border-0" : "border border-l-0 border-stone-300 dark:border-stone-700"}`}
           >
             {selectedMessage ? (
-              <SelectedSermon
-                background={background}
-                setBackground={setBackground}
-              />
+              <Suspense fallback={null}>
+                <SelectedSermon
+                  background={background}
+                  setBackground={setBackground}
+                />
+              </Suspense>
             ) : (
               <div className="bg-white dark:bg-background h-screen relative w-screen">
                 <div className="h-full flex flex-col overflow-hidden">
@@ -518,9 +521,9 @@ const Home = memo(() => {
                 </div>
               </div>
             )}
-          </motion.div>
-        </motion.div>
-      </motion.div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 });

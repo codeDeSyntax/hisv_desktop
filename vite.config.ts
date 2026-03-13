@@ -12,6 +12,15 @@ export default defineConfig(({ command }) => {
   const isServe = command === "serve";
   const isBuild = command === "build";
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
+  const server = process.env.VSCODE_DEBUG
+    ? (() => {
+        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
+        return {
+          host: url.hostname,
+          port: +url.port,
+        };
+      })()
+    : undefined;
 
   return {
     define: {
@@ -91,15 +100,7 @@ export default defineConfig(({ command }) => {
         renderer: {},
       }),
     ],
-    server:
-      process.env.VSCODE_DEBUG &&
-      (() => {
-        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
-        return {
-          host: url.hostname,
-          port: +url.port,
-        };
-      })(),
+    server,
     clearScreen: false,
     // Pre-bundle heavy deps so Vite doesn't compile hundreds of ESM files on cold start
     optimizeDeps: {

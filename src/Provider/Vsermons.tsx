@@ -64,10 +64,11 @@ interface SermonContextType {
   loading: boolean;
   loadingProgress: number;
   loadingMessage: string;
-  /** "checking" | "downloading" | "ready" | "error" */
+  /** "checking" | "missing" | "downloading" | "ready" | "error" */
   dbStatus: string;
   downloadProgress: number;
   error: string | null;
+  startDbDownload: () => Promise<void>;
   recentSermons: Sermon[];
   setRecentSermons: (sermons: Sermon[]) => void;
   setSelectedMessage: (sermon: Sermon | null) => void;
@@ -237,6 +238,69 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   }, []);
 
   // ── DB-based sermon loading ─────────────────────────────────────────────────
+  const loadSermonsFromDb = useCallback(async () => {
+    setDbStatus("ready");
+    setLoadingMessage("Loading sermons…");
+    setLoadingProgress(10);
+
+    const rows: Record<string, unknown>[] = await ipc.invoke("db:get-sermons");
+    const loaded: Sermon[] = rows.map(rowToSermon);
+
+    setAllSermons(loaded);
+    setLoadingProgress(80);
+    setLoadingMessage("Almost ready…");
+
+    const textSermons = loaded.filter((s) => s.type === "text");
+
+    if (textSermons.length > 0) {
+      const threeRandom = textSermons
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3);
+      setRandomSermons(threeRandom);
+
+      let toOpen = getFirstRecentSermon(loaded) ?? getLastReadSermon();
+
+      if (toOpen) {
+        toOpen = loaded.find((s) => s.id === toOpen!.id) ?? null;
+      }
+
+      setSelectedMessage(toOpen ?? threeRandom[0] ?? null);
+    }
+
+    setLoadingProgress(100);
+    setLoading(false);
+    setLoadingMessage("Ready!");
+  }, [setSelectedMessage]);
+
+  const startDbDownload = useCallback(async () => {
+    try {
+      setError(null);
+      setDbStatus("downloading");
+      setLoadingMessage("Getting your sermon library ready…");
+      setDownloadProgress(0);
+
+      const result = await ipc.invoke("db:download");
+
+      if (!result.success) {
+        throw new Error(result.error ?? "Download failed");
+      }
+
+      setDownloadProgress(100);
+      setLoadingProgress(100);
+      setLoadingMessage("Library downloaded. Finalizing…");
+      await new Promise((r) => setTimeout(r, 250));
+
+      setLoading(true);
+      await loadSermonsFromDb();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("db:download flow error:", msg);
+      setError("We couldn't download the sermon library. Please try again.");
+      setDbStatus("missing");
+      setLoading(false);
+    }
+  }, [loadSermonsFromDb]);
+
   useEffect(() => {
     const init = async () => {
       try {
@@ -244,74 +308,33 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
         setLoadingProgress(0);
         setLoadingMessage("Checking sermon database\u2026");
         setDbStatus("checking");
+        setError(null);
 
         const status = await ipc.invoke("db:status");
 
-        // ── First launch: DB not present → download from GitHub ─────────────
+        // ── First launch or missing DB: show blocking overlay and let user trigger download ──
         if (!status.exists) {
-          setDbStatus("downloading");
-          setLoadingMessage("Downloading sermon database…");
+          setDbStatus("missing");
+          setLoadingMessage("Sermon library required");
           setDownloadProgress(0);
-
-          const result = await ipc.invoke("db:download");
-
-          if (!result.success) {
-            throw new Error(result.error ?? "Download failed");
-          }
-
-          setDownloadProgress(100);
-          setLoadingProgress(100);
-          setLoadingMessage("Download complete!");
-          await new Promise((r) => setTimeout(r, 300));
+          setLoading(false);
+          return;
         }
 
-        // ── Load metadata (fast: no sermon_text column) ──────────────────────
-        setDbStatus("ready");
-        setLoadingMessage("Loading sermons…");
-        setLoadingProgress(10);
-
-        const rows: Record<string, unknown>[] =
-          await ipc.invoke("db:get-sermons");
-        const loaded: Sermon[] = rows.map(rowToSermon);
-
-        setAllSermons(loaded);
-        setLoadingProgress(80);
-        setLoadingMessage("Almost ready…");
-
-        // ── Pick initial selected sermon ─────────────────────────────────────
-        const textSermons = loaded.filter((s) => s.type === "text");
-
-        if (textSermons.length > 0) {
-          const threeRandom = textSermons
-            .sort(() => 0.5 - Math.random())
-            .slice(0, 3);
-          setRandomSermons(threeRandom);
-
-          let toOpen = getFirstRecentSermon(loaded) ?? getLastReadSermon();
-
-          // Verify persisted last-read still exists in loaded set
-          if (toOpen) {
-            toOpen = loaded.find((s) => s.id === toOpen!.id) ?? null;
-          }
-
-          setSelectedMessage(toOpen ?? threeRandom[0] ?? null);
-        }
-
-        setLoadingProgress(100);
-        setLoading(false);
-        setLoadingMessage("Ready!");
+        await loadSermonsFromDb();
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         console.error("Sermon init error:", msg);
-        setError(`Failed to load sermons: ${msg}`);
+        setError(
+          "We couldn't prepare your sermon library. Please restart and try again.",
+        );
         setDbStatus("error");
         setLoading(false);
       }
     };
 
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadSermonsFromDb]);
 
   // ── Search navigation ──────────────────────────────────────────────────────
   const navigateToSearchResult = (
@@ -480,6 +503,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       dbStatus,
       downloadProgress,
       error,
+      startDbDownload,
       recentSermons,
       setRecentSermons,
       setSelectedMessage,
@@ -527,6 +551,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       dbStatus,
       downloadProgress,
       error,
+      startDbDownload,
       recentSermons,
       setRecentSermons,
       setSelectedMessage,

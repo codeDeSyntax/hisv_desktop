@@ -1,6 +1,9 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.tsc.autoDetect": "off",
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore",
   "json.schemas": [
     {
       "fileMatch": ["/*electron-builder.json5", "/*electron-builder.json"],

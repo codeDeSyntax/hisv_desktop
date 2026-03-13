@@ -100,7 +100,7 @@ const Help: React.FC = () => {
       {/* Minimal Help Button */}
       <div
         onClick={toggleHelp}
-        className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer pointer-events-none cursor-not-allowed  hover:bg-gray-50 dark:hover:bg-bgray"
+        className="w-6 h-6 rounded-full flex items-center justify-center group pointer-events-none cursor-not-allowed hover:bg-gray-50 dark:hover:bg-bgray"
         aria-label="Help"
       >
         <HelpCircle className="h-5 w-5 text-gray-600 dark:text-gray-300" />

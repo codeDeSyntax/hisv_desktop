@@ -6,8 +6,21 @@ import { useTheme } from "./Provider/Theme";
 import { useSermonContext } from "./Provider/Vsermons";
 
 const App = () => {
-  const { activeTab, setActiveTab, prevScreen, loading } = useSermonContext();
+  const {
+    activeTab,
+    setActiveTab,
+    prevScreen,
+    loading,
+    dbStatus,
+    loadingMessage,
+    downloadProgress,
+    error,
+    startDbDownload,
+    handleClose,
+  } = useSermonContext();
   const [showShortcutsToast, setShowShortcutsToast] = useState(false);
+
+  const showDbOverlay = dbStatus === "missing" || dbStatus === "downloading";
 
   // Signal main process when data is ready — closes splash and shows main window
   useEffect(() => {
@@ -211,6 +224,64 @@ const App = () => {
           onClick={() => setActiveTab(prevScreen)}
         />
       )} */}
+
+      {showDbOverlay && (
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
+          <div className="w-full max-w-lg rounded-2xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shadow-2xl p-6 sm:p-7">
+            <div className="text-center mb-6">
+              <h2 className="text-xl sm:text-2xl font-semibold text-stone-900 dark:text-stone-100 mb-2">
+                {dbStatus === "downloading"
+                  ? "Preparing your sermon library"
+                  : "Sermon Library Needed"}
+              </h2>
+              <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                {dbStatus === "downloading"
+                  ? "Please keep this window open while we download your sermon library."
+                  : "To start reading and searching sermons, download the library once. It will be saved on this device for future use."}
+              </p>
+            </div>
+
+            {dbStatus === "downloading" && (
+              <div className="mb-5">
+                <div className="h-2.5 w-full bg-stone-200 dark:bg-stone-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: `${Math.max(2, Math.min(100, downloadProgress))}%`,
+                      backgroundColor: "var(--accent)",
+                    }}
+                  />
+                </div>
+                <p className="mt-2 text-xs text-stone-500 dark:text-stone-400 text-center">
+                  {loadingMessage || `Downloading… ${downloadProgress}%`}
+                </p>
+              </div>
+            )}
+
+            {error && dbStatus !== "downloading" && (
+              <p className="mb-4 text-sm text-rose-500 text-center">{error}</p>
+            )}
+
+            {dbStatus !== "downloading" && (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => void startDbDownload()}
+                  className="flex-1 py-2.5 px-4 rounded-xl text-white font-medium transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: "var(--accent)" }}
+                >
+                  Download Sermon Library
+                </button>
+                <button
+                  onClick={handleClose}
+                  className="flex-1 py-2.5 px-4 rounded-xl font-medium bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 hover:bg-stone-300 dark:hover:bg-stone-600 transition-colors"
+                >
+                  Close App
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

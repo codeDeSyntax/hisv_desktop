@@ -1,4 +1,5 @@
-﻿import React, { useState, useEffect } from "react";
+﻿import * as React from "react";
+import { useState, useEffect } from "react";
 import { Type, Eye, Palette, Check, Monitor, Sun, Moon } from "lucide-react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { useTheme } from "@/Provider/Theme";

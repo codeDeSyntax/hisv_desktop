@@ -1,4 +1,5 @@
-import React, { memo } from "react";
+import * as React from "react";
+import { memo } from "react";
 import { Mic2, FileText } from "lucide-react";
 import { Sermon } from "@/types/index";
 

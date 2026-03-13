@@ -1,6 +1,6 @@
 {
   "name": "his-voice",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "dist-electron/main/index.js",
   "description": "Electron Vite React boilerplate.",
   "author": "dlcentimemessage>",
@@ -56,6 +56,9 @@
     "vite-plugin-electron-renderer": "^0.14.5"
   },
   "pnpm": {
+    "overrides": {
+      "builder-util-runtime": "9.5.1"
+    },
     "onlyBuiltDependencies": [
       "better-sqlite3",
       "electron",

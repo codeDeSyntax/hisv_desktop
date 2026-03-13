@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 /**
- * Usage: node scripts/release.mjs [patch|minor|major] "commit message"
+ * Usage:
+ *   node scripts/release.mjs "commit message"
+ *   node scripts/release.mjs [patch|minor|major] "commit message"
  * Defaults: patch bump, message = "release"
  *
  * What it does:
@@ -19,10 +21,16 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkgPath = resolve(__dirname, "../package.json");
 
-const bump = process.argv[2] ?? "patch";
-const message = process.argv[3] ?? "release";
+const BUMPS = ["patch", "minor", "major"];
+const arg1 = process.argv[2];
+const arg2 = process.argv[3];
 
-if (!["patch", "minor", "major"].includes(bump)) {
+const bump = BUMPS.includes(arg1 ?? "") ? arg1 : "patch";
+const message = BUMPS.includes(arg1 ?? "")
+  ? (arg2 ?? "release")
+  : (arg1 ?? "release");
+
+if (!BUMPS.includes(bump)) {
   console.error(`Unknown bump type "${bump}". Use patch, minor, or major.`);
   process.exit(1);
 }

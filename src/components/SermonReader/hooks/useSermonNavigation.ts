@@ -152,8 +152,12 @@ export const useSermonNavigation = (
                 parts.forEach((part, index) => {
                   if (searchRegex.test(part)) {
                     const highlight = document.createElement("span");
-                    highlight.className =
-                      "search-highlight bg-yellow-300 dark:bg-yellow-600 rounded px-1 font-medium";
+                    const isDark = document.documentElement.classList.contains("dark");
+                    highlight.className = "search-highlight";
+                    highlight.style.borderRadius = "8px";
+                    highlight.style.padding = "0 2px";
+                    highlight.style.fontWeight = "600";
+                    highlight.style.border = `1px solid ${isDark ? "#ffffff" : "#000000"}`;
                     highlight.textContent = part;
                     fragment.appendChild(highlight);
                   } else if (part) {

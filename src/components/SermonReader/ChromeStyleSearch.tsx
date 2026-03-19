@@ -12,6 +12,7 @@ interface ChromeStyleSearchProps {
   currentSearchIndex: number;
   onNavigateNext: () => void;
   onNavigatePrevious: () => void;
+  externalQuery?: string;
 }
 
 export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
@@ -22,12 +23,21 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
   currentSearchIndex,
   onNavigateNext,
   onNavigatePrevious,
+  externalQuery,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
   const { accentColor } = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Sync from external query (e.g. when navigating from the search tab)
+  useEffect(() => {
+    if (externalQuery && externalQuery !== searchQuery) {
+      setSearchQuery(externalQuery);
+      setHasSearched(true);
+    }
+  }, [externalQuery]);
 
   useEffect(() => {
     if (isVisible && inputRef.current) {

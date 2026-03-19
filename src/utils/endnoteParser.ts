@@ -2,6 +2,7 @@ export interface EndnoteData {
   datecode: string | null;
   title: string | null;
   paragraph: string | null;
+  quoteText: string | null;
   longQuote: string | null;
   keywords: string | null;
   fullEndnote: string;
@@ -111,8 +112,8 @@ const STOP_WORDS = new Set([
 export function parseEndnote(paragraphText: string): EndnoteData | null {
   if (!/endnote/i.test(paragraphText)) return null;
 
-  // Match from "Endnote" (optionally followed by colon/space) through "William Marrion Branham"
-  const endnoteRegex = /Endnote[:\s]*([\s\S]*?)William\s+Marrion\s+Branham/i;
+  // Match from "Endnote" (optionally followed by colon/space) through "William [Marrion] Branham"
+  const endnoteRegex = /Endnote[:\s]*([\s\S]*?)William\s+(?:Marrion\s+)?Branham/i;
   const match = endnoteRegex.exec(paragraphText);
 
   if (!match) return null;
@@ -174,5 +175,5 @@ export function parseEndnote(paragraphText: string): EndnoteData | null {
       .slice(0, 3)
       .join(" ") || null;
 
-  return { datecode, title, paragraph, longQuote, keywords, fullEndnote };
+  return { datecode, title, paragraph, quoteText: quoteText || null, longQuote, keywords, fullEndnote };
 }

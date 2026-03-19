@@ -1,7 +1,7 @@
 import type { EndnoteData } from "./endnoteParser";
 
 export interface SermonSection {
-  Paragraph: number;
+  Paragraph: number | string;
   Content: string;
   IsHit: boolean;
 }
@@ -81,6 +81,16 @@ export async function getSermonContent(
   return (data as any)?.Result?.Sections ?? [];
 }
 
+// ── Normalize text for API search: replace curly quotes, em-dashes, etc. ──
+function normalizeSearchText(text: string): string {
+  return text
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")   // curly single quotes → straight
+    .replace(/[\u201C\u201D\u201E\u201F]/g, '"')   // curly double quotes → straight
+    .replace(/[\u2013\u2014]/g, "-")                 // en/em dashes → hyphen
+    .replace(/\u2026/g, "...")                        // ellipsis → dots
+    .replace(/\u00A0/g, " ");                         // non-breaking space → space
+}
+
 // ── Internal: raw search against /userQuery ──
 interface RawResult {
   RecordId: string;
@@ -100,7 +110,7 @@ async function searchText(
   const data = await ipcPost("/userQuery", {
     Language: "en",
     SearchType: searchType,
-    Text: text,
+    Text: normalizeSearchText(text),
     PageSize: 50,
   });
   return (data as any)?.Result?.Results ?? [];

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback, memo, useRef, lazy, Suspense } from "react";
+import { useEffect, useMemo, useState, useCallback, memo, lazy, Suspense } from "react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/Provider/Theme";
@@ -7,7 +7,6 @@ import {
   LibraryBig,
   SlidersHorizontal,
   BookMarked,
-  ChevronRight,
   PanelsTopLeft,
   ScanSearch,
   History,
@@ -29,14 +28,12 @@ const Home = memo(() => {
   >("sermons");
   const [slideDirection, setSlideDirection] = useState(1);
   const [background, setBackground] = useState(false);
-  const [showPresentationHint, setShowPresentationHint] = useState(false);
   const {
     randomSermons,
     setSelectedMessage,
     setCB,
     selectedMessage,
     loading,
-    isPresentationMode,
   } = useSermonContext();
   const { isDarkMode, accentColor } = useTheme();
 
@@ -56,17 +53,6 @@ const Home = memo(() => {
   const [hoveredSermon, setHoveredSermon] = useState<string | number | null>(
     null,
   );
-
-  // Auto-hide presentation hint after 3 seconds
-  useEffect(() => {
-    if (isPresentationMode) {
-      setShowPresentationHint(true);
-      const timer = setTimeout(() => {
-        setShowPresentationHint(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isPresentationMode]);
 
   // Memoize scriptures to prevent recreation on every render
   const scriptures = useMemo(
@@ -148,36 +134,15 @@ const Home = memo(() => {
 
   return (
     <div
-      className={`${isPresentationMode ? "h-screen" : "h-[96vh]"} w-screen flex overflow-hidden bg-gray-50 dark:bg-surface transition-all duration-300`}
+      className="h-[96vh] w-screen flex overflow-hidden bg-gray-50 dark:bg-surface transition-all duration-300"
     >
-      {/* Presentation Mode Indicator */}
-      <AnimatePresence>
-        {isPresentationMode && showPresentationHint && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-stone-800/90 dark:bg-stone-900/90 backdrop-blur-sm text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2"
-          >
-            <span className="text-sm font-medium">Presentation Mode</span>
-            <span className="text-xs opacity-75">•</span>
-            <span className="text-xs opacity-75">Press ESC to exit</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Main Content Area - Book Layout */}
       <div
-        className={`flex-1 h-full flex overflow-hidden transition-[padding] duration-150 ${isPresentationMode ? "px-0 py-0" : "px-3 py-3"}`}
+        className="flex-1 h-full flex overflow-hidden px-3 py-3"
       >
         {/* Left Panel - Left Page of Book */}
         <div
-          className={`relative h-full border border-solid border-stone-300 dark:border-stone-700 rounded-l-3xl rounded-r-md overflow-hidden shadow-lg transition-all duration-180 ease-out ${
-            isPresentationMode
-              ? "w-0 opacity-0 -translate-x-6 pointer-events-none border-transparent shadow-none"
-              : "w-[35%] opacity-100 translate-x-0"
-          }`}
+          className="relative h-full border border-solid border-stone-300 dark:border-stone-700 rounded-l-3xl rounded-r-md overflow-hidden shadow-lg w-[35%]"
         >
           {/* Curved page stack effect on left edge - SVG for natural look */}
           <svg
@@ -362,11 +327,7 @@ const Home = memo(() => {
 
         {/* Book Spine / Hinge - Center Binding */}
         <div
-          className={`relative h-full flex flex-col items-center py-8 transition-all duration-180 ease-out overflow-hidden ${
-            isPresentationMode
-              ? "w-0 opacity-0 pointer-events-none"
-              : "w-5 opacity-100 flex-shrink-0"
-          }`}
+          className="relative h-full flex flex-col items-center py-8 w-5 flex-shrink-0 overflow-hidden"
         >
           {/* Spine background - not full height */}
           <div className="relative flex-1 w-full roun overflow-hidden">
@@ -401,13 +362,9 @@ const Home = memo(() => {
 
         {/* Right Panel - Right Page of Book */}
         <div
-          className={`relative bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 h-full border border-solid border-stone-300 dark:border-stone-700 overflow-hidden shadow-lg flex items-center justify-center transition-[border-radius] duration-150 ease-out ${
-            isPresentationMode ? "w-full rounded-none" : "w-[65%] rounded-r-3xl"
-          }`}
+          className="relative bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 h-full border border-solid border-stone-300 dark:border-stone-700 overflow-hidden shadow-lg flex items-center justify-center w-[65%] rounded-r-3xl"
         >
           {/* Curved page stack effect on right edge - SVG for natural look */}
-          {!isPresentationMode && (
-            <>
               <svg
                 className="absolute right-0 top-0 h-full w-6 overflow-visible"
                 viewBox="0 0 24 100"
@@ -429,11 +386,9 @@ const Home = memo(() => {
               </svg>
               {/* Page curl shadow */}
               <div className="absolute right-4 top-8 bottom-8 w-4 bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900  rounded-r-full"></div>
-            </>
-          )}
 
           <div
-            className={`relative w-full ${isPresentationMode ? "h-full" : "h-[95%]"} bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 ${isPresentationMode ? "rounded-none" : "rounded-r-2xl"} overflow-hidden flex flex-col ${isPresentationMode ? "border-0" : "border border-l-0 border-stone-300 dark:border-stone-700"}`}
+            className="relative w-full h-[95%] bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 rounded-r-2xl overflow-hidden flex flex-col border border-l-0 border-stone-300 dark:border-stone-700"
           >
             {selectedMessage ? (
               <Suspense fallback={null}>

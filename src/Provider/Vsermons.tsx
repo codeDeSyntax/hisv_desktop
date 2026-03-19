@@ -224,7 +224,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
         })
         .catch(console.error);
     }
-  }, [selectedMessage?.id, selectedMessage?.type]);
+  }, [selectedMessage?.id, selectedMessage?.type, !selectedMessage?.sermon]);
 
   // ── Listen for download-progress events from the main process ───────────────
   useEffect(() => {
@@ -349,7 +349,15 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   ) => {
     const targetSermon = allSermons.find((s) => s.id === sermonId);
     if (targetSermon) {
-      setSelectedMessage(targetSermon);
+      // If this sermon is already selected and has text loaded, keep the text
+      // instead of overwriting with the metadata-only version from allSermons.
+      const alreadyLoaded =
+        selectedMessage?.id === sermonId && selectedMessage?.sermon;
+
+      if (!alreadyLoaded) {
+        setSelectedMessage(targetSermon);
+      }
+
       setSearchQuery(searchTerm);
       setPendingSearchNav({
         targetSermonId: sermonId,

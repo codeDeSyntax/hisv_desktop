@@ -47,38 +47,45 @@ const App = () => {
       if (isInputFocused) return;
 
       if (event.ctrlKey || event.metaKey) {
-        // Support both Ctrl (Windows/Linux) and Cmd (Mac)
-        event.preventDefault();
+        // Only preventDefault for keys this handler actually handles.
+        // Let browser defaults (Ctrl+C, Ctrl+V, Ctrl+A, etc.) pass through.
+        const key = event.key.toLowerCase();
 
-        switch (event.key.toLowerCase()) {
+        switch (key) {
           case "h":
+            event.preventDefault();
             setActiveTab("home");
             showToast("🏠 Home");
             break;
           case "b":
+            event.preventDefault();
             setActiveTab("bookmarks");
             showToast("🔖 Bookmarks");
             break;
           case "r":
+            event.preventDefault();
             setActiveTab("recents");
             showToast("🕒 Recent Sermons");
             break;
           case "m":
+            event.preventDefault();
             setActiveTab("message");
             showToast("📖 Reading Mode");
             break;
           case "s":
+            event.preventDefault();
             setActiveTab("sermons");
             showToast("📚 All Sermons");
             break;
           case "p":
-          case ",": // Cmd+, is common for preferences/settings
+          case ",":
+            event.preventDefault();
             setActiveTab("settings");
             showToast("⚙️ Settings");
             break;
           case "/":
-          case "k": // Cmd+K is common for search
-            // Focus search if available
+          case "k":
+            event.preventDefault();
             const searchInput = document.querySelector(
               'input[placeholder*="search" i], input[placeholder*="Search" i]',
             ) as HTMLInputElement;
@@ -89,11 +96,12 @@ const App = () => {
             }
             break;
           case "?":
-            // Show keyboard shortcuts help
+            event.preventDefault();
             setShowShortcutsToast(true);
             setTimeout(() => setShowShortcutsToast(false), 5000);
             break;
           default:
+            // Don't preventDefault — let Ctrl+C, Ctrl+V, Ctrl+A, etc. work normally
             break;
         }
       }

@@ -66,6 +66,7 @@ const SelectedSermon = ({
   const {
     selectedMessage,
     settings,
+    setSettings,
     setRecentSermons,
     isBookmarked,
     toggleBookmark,
@@ -82,10 +83,6 @@ const SelectedSermon = ({
     null,
   );
   const [showEndnoteSheet, setShowEndnoteSheet] = useState(false);
-  const [searchMatchHighlight, setSearchMatchHighlight] = useState<{
-    paragraphId: number;
-    searchTerm: string;
-  } | null>(null);
   const [hasRestoredPosition, setHasRestoredPosition] = useState(false);
   const [canSaveProgress, setCanSaveProgress] = useState(false);
 
@@ -251,8 +248,8 @@ const SelectedSermon = ({
     onEndnoteClick?: () => void,
   ) => {
     // Enhanced regex to capture quotes from "Endnote" to "William Marrion Branham" (case insensitive)
-    const quoteRegex = /Endnote(.*?)William\s+Marrion\s+Branham/gis;
-    const simpleEndnoteRegex = /Endnote/gi;
+    // Handles: Endnote, Endnote:, Endnote :, Endnote #1, etc.
+    const quoteRegex = /Endnote\s*:?(.*?)William\s+(?:Marrion\s+)?Branham/gis;
 
     // Find all quote matches first
     const quoteMatches = Array.from(text.matchAll(quoteRegex));
@@ -281,8 +278,11 @@ const SelectedSermon = ({
       }
 
       // Add the quote with special highlighting
-      const fullQuote = match[0];
-      const quoteContent = match[1]; // Content between "Endnote" and "William Marrion Branham"
+      const fullMatch = match[0];
+      const quoteContent = match[1]; // Content between "Endnote[:]" and "William [Marrion] Branham"
+      // Extract the "Endnote" prefix (with optional colon) and author name from the actual text
+      const endnotePrefix = fullMatch.match(/^Endnote\s*:?/i)?.[0] || "Endnote";
+      const authorName = fullMatch.match(/William\s+(?:Marrion\s+)?Branham/i)?.[0] || "William Branham";
 
       processedText.push(
         <span
@@ -301,7 +301,7 @@ const SelectedSermon = ({
             style={{ color: accentColor + "90" }}
             title="William Branham quote marker"
           >
-            Endnote
+            {endnotePrefix}
           </span>
           {/* Quote content */}
           <span
@@ -321,7 +321,7 @@ const SelectedSermon = ({
             style={{ color: accentColor + "90" }}
             title="Quote author"
           >
-            William Marrion Branham
+            {authorName}
           </span>
         </span>,
       );
@@ -343,23 +343,25 @@ const SelectedSermon = ({
   };
 
   // Helper function to highlight numbers and standalone endnotes
+  // Matches: Endnote, Endnote:, Endnote :, endnote:  (case insensitive, optional space+colon)
   const highlightNumbersAndEndnotes = (text: string) => {
-    const simpleEndnoteRegex = /Endnote/gi;
+    const simpleEndnoteRegex = /Endnote\s*:?/gi;
 
-    // First handle endnotes
-    const endnoteParts = text.split(simpleEndnoteRegex);
+    // Split while keeping the matched delimiters
+    const parts = text.split(simpleEndnoteRegex);
+    const matches = Array.from(text.matchAll(simpleEndnoteRegex));
 
     return (
       <span>
-        {endnoteParts.map((part, i, arr) => (
+        {parts.map((part, i) => (
           <React.Fragment key={i}>
-            {i > 0 && (
+            {i > 0 && matches[i - 1] && (
               <span
                 className="font-semibold italic"
                 style={{ color: accentColor }}
                 title="William Branham quote marker"
               >
-                Endnote
+                {matches[i - 1][0]}
               </span>
             )}
             {highlightNumbers(part)}
@@ -413,8 +415,6 @@ const SelectedSermon = ({
     setHighlights({});
     // Clear search query
     setSearchQuery("");
-    // Clear search match highlight
-    setSearchMatchHighlight(null);
 
     // Save last read sermon to localStorage
     if (selectedMessage) {
@@ -530,40 +530,29 @@ const SelectedSermon = ({
   useEffect(() => {
     if (
       pendingSearchNav &&
-      selectedMessage?.id === pendingSearchNav.targetSermonId
+      selectedMessage?.id === pendingSearchNav.targetSermonId &&
+      sermonParagraphs.length > 0
     ) {
-      // Set the search query for highlighting
-      setSearchQuery(pendingSearchNav.searchTerm);
-
-      // Set search match highlight for visual distinction
-      setSearchMatchHighlight({
-        paragraphId: pendingSearchNav.targetParagraphId,
-        searchTerm: pendingSearchNav.searchTerm,
-      });
-
-      // Wait for paragraphs to render and layout transitions to complete, then navigate
+      // Use the DOM-based handleSearch to highlight ALL occurrences,
+      // then show the search bar so the user can navigate between matches.
       const timer = setTimeout(() => {
-        goToParagraph(pendingSearchNav.targetParagraphId);
+        handleSearch(pendingSearchNav.searchTerm);
+        setIsSearchVisible(true);
         // Clear the pending navigation
         setPendingSearchNav(null);
-      }, 500);
-
-      // Auto-clear the search match highlight after 4 seconds
-      const clearTimer = setTimeout(() => {
-        setSearchMatchHighlight(null);
-      }, 4000);
+      }, 600);
 
       return () => {
         clearTimeout(timer);
-        clearTimeout(clearTimer);
       };
     }
   }, [
     pendingSearchNav,
     selectedMessage,
+    sermonParagraphs.length,
     setPendingSearchNav,
-    setSearchQuery,
-    goToParagraph,
+    handleSearch,
+    setIsSearchVisible,
   ]);
 
   // Re-scroll to current paragraph when presentation mode changes
@@ -571,53 +560,47 @@ const SelectedSermon = ({
     if (currentParagraph > 0) {
       // Wait for layout transition to complete (300ms animation + 200ms buffer)
       const timer = setTimeout(() => {
-        const container = scrollContainerRef.current;
-        const scrollParent = container?.parentElement;
-
-        if (scrollParent) {
-          // First try to find and scroll to the highlighted search match if it exists
-          if (
-            searchMatchHighlight &&
-            searchMatchHighlight.paragraphId === currentParagraph
-          ) {
-            const paragraph = document.getElementById(
-              `paragraph-${currentParagraph}`,
-            );
-            const highlightSpan = paragraph?.querySelector(".animate-pulse");
-
-            if (highlightSpan) {
-              const containerRect = scrollParent.getBoundingClientRect();
-              const elementRect = highlightSpan.getBoundingClientRect();
-
-              const scrollTop = scrollParent.scrollTop;
-              const elementRelativeTop = elementRect.top - containerRect.top;
-              const centerOffset =
-                (containerRect.height - elementRect.height) / 2;
-              const targetScroll =
-                scrollTop + elementRelativeTop - centerOffset;
-
-              scrollParent.scrollTo({
-                top: targetScroll,
-                behavior: "smooth",
-              });
-              return;
-            }
-          }
-
-          // Fallback to scrolling to the paragraph
-          goToParagraph(currentParagraph);
-        }
+        goToParagraph(currentParagraph);
       }, 500);
 
       return () => clearTimeout(timer);
     }
-  }, [
-    isPresentationMode,
-    currentParagraph,
-    goToParagraph,
-    searchMatchHighlight,
-    scrollContainerRef,
-  ]);
+  }, [isPresentationMode, currentParagraph, goToParagraph]);
+
+  // Ctrl +/- to adjust font size in presentation mode
+  useEffect(() => {
+    if (!isPresentationMode) return;
+
+    const handleFontKey = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+
+      const isPlus = e.key === "+" || e.key === "=";
+      const isMinus = e.key === "-" || e.key === "_";
+      const isZero = e.key === "0";
+
+      if (!isPlus && !isMinus && !isZero) return;
+
+      e.preventDefault();
+
+      const current = Number(settings.fontSize) || 16;
+      let next: number;
+
+      if (isZero) {
+        next = 16; // reset to default
+      } else if (isPlus) {
+        next = Math.min(current + 2, 120);
+      } else {
+        next = Math.max(current - 2, 12);
+      }
+
+      const updated = { ...settings, fontSize: next.toString() };
+      setSettings(updated);
+      localStorage.setItem("sermonSettings", JSON.stringify(updated));
+    };
+
+    document.addEventListener("keydown", handleFontKey);
+    return () => document.removeEventListener("keydown", handleFontKey);
+  }, [isPresentationMode, settings, setSettings]);
 
   const handleEndnoteClick = (paragraphText: string) => {
     const data = parseEndnote(paragraphText);
@@ -696,6 +679,7 @@ const SelectedSermon = ({
         currentSearchIndex={currentSearchIndex}
         onNavigateNext={goToNextSearchResult}
         onNavigatePrevious={goToPreviousSearchResult}
+        externalQuery={searchQuery}
       />
 
       {/* Endnote Reference Sheet */}
@@ -894,88 +878,17 @@ const SelectedSermon = ({
                           {/* Apply user highlights first, then endnotes/quotes */}
                           <span>
                             {(() => {
-                              // Helper to apply search match highlight to plain text
-                              const applySearchMatchHighlight = (
-                                text: string,
-                              ) => {
-                                if (
-                                  !searchMatchHighlight ||
-                                  searchMatchHighlight.paragraphId !==
-                                    paragraph.id
-                                ) {
-                                  return highlightEndnotesAndQuotes(
-                                    text,
-                                    paragraph.id,
-                                    () => handleEndnoteClick(paragraph.content),
-                                  );
-                                }
-
-                                const searchTerm =
-                                  searchMatchHighlight.searchTerm.trim();
-                                const lowerText = text.toLowerCase();
-                                const lowerTerm = searchTerm.toLowerCase();
-                                const matchIndex = lowerText.indexOf(lowerTerm);
-
-                                if (matchIndex === -1) {
-                                  return highlightEndnotesAndQuotes(
-                                    text,
-                                    paragraph.id,
-                                    () => handleEndnoteClick(paragraph.content),
-                                  );
-                                }
-
-                                // Split text into before, match, and after
-                                const beforeMatch = text.substring(
-                                  0,
-                                  matchIndex,
-                                );
-                                const matchText = text.substring(
-                                  matchIndex,
-                                  matchIndex + searchTerm.length,
-                                );
-                                const afterMatch = text.substring(
-                                  matchIndex + searchTerm.length,
-                                );
-
-                                return (
-                                  <>
-                                    {highlightEndnotesAndQuotes(
-                                      beforeMatch,
-                                      paragraph.id,
-                                      () =>
-                                        handleEndnoteClick(paragraph.content),
-                                    )}
-                                    <span
-                                      className="animate-pulse"
-                                      style={{
-                                        backgroundColor: accentColor + "35",
-                                        color: accentColor,
-                                        padding: "2px 4px",
-                                        borderRadius: "4px",
-                                        fontWeight: "700",
-                                      }}
-                                    >
-                                      {matchText}
-                                    </span>
-                                    {highlightEndnotesAndQuotes(
-                                      afterMatch,
-                                      paragraph.id,
-                                      () =>
-                                        handleEndnoteClick(paragraph.content),
-                                    )}
-                                  </>
-                                );
-                              };
-
                               const paragraphHighlights =
                                 highlights[paragraph.id];
                               if (
                                 !paragraphHighlights ||
                                 Object.keys(paragraphHighlights).length === 0
                               ) {
-                                // No user highlights, apply search match if exists
-                                return applySearchMatchHighlight(
+                                // No user highlights, render with endnote/quote highlighting
+                                return highlightEndnotesAndQuotes(
                                   paragraph.content,
+                                  paragraph.id,
+                                  () => handleEndnoteClick(paragraph.content),
                                 );
                               }
 

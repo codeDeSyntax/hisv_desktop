@@ -47,7 +47,7 @@ function RenderSnippet({
           return (
             <span
               key={i}
-              className="px-0.5 rounded font-semibold text-[15px]"
+              className="px-0.5 rounded font-semibold text-[12px]"
               style={{
                 backgroundColor: accentColor + "25",
                 color: accentColor,
@@ -60,7 +60,7 @@ function RenderSnippet({
         return (
           <span
             key={i}
-            className="text-stone-600 dark:text-stone-400 text-[15px]"
+            className="text-stone-600 dark:text-stone-400 text-[12px]"
           >
             {part}
           </span>
@@ -314,7 +314,7 @@ const Search = () => {
               </p>
             </div>
 
-            <div className="px-2 py-2 space-y-2">
+            <div className="px-2 py-1 space-y-1">
               {foundMatches.map((group) => {
                 const isExpanded = expandedSermons[group.sermonId];
                 const shown = isExpanded
@@ -324,19 +324,19 @@ const Search = () => {
                 return (
                   <div
                     key={group.sermonId}
-                    className="bg-stone-50 dark:bg-stone-900/60 rounded-xl border border-stone-100 dark:border-stone-800/60 overflow-hidden"
+                    className="rounded-lg border-x-0 border-t-0 border border-solid border-stone-100 dark:border-stone-800/60 overflow-hidden"
                   >
                     {shown.map((snippet, idx) => (
                       <div
                         key={idx}
-                        className="py-2 px-4 cursor-pointer hover:bg-white dark:hover:bg-stone-800/40 transition-colors duration-100 border-b border-stone-100 dark:border-stone-800/60 last:border-b-0"
+                        className="py-1.5 px-3 cursor-pointer  transition-colors duration-100 border-b border-stone-100 dark:border-stone-800/60 last:border-b-0"
                         onClick={() => handleSermonClick(group)}
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-2">
                           {/* Badge column */}
-                          <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+                          <div className="flex flex-col items-center gap-1 flex-shrink-0 pt-0.5">
                             <span
-                              className="text-white px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                              className="text-white px-1 py-px rounded text-[9px] font-semibold leading-tight"
                               style={{ backgroundColor: accentColor }}
                             >
                               {group.totalMatches}
@@ -350,7 +350,7 @@ const Search = () => {
                                 className="p-0.5 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors"
                               >
                                 <ChevronDown
-                                  size={12}
+                                  size={10}
                                   className={`transition-transform text-stone-600 dark:text-stone-400 ${isExpanded ? "rotate-180" : ""}`}
                                 />
                               </button>
@@ -358,19 +358,18 @@ const Search = () => {
                           </div>
 
                           {/* Content column */}
-                          <div className="text-[15px] leading-relaxed flex-1">
+                          <div className="text-[12px] leading-normal flex-1 min-w-0">
                             {idx === 0 && (
-                              <div className="mb-1.5">
-                                <span className="font-bold text-stone-900 dark:text-stone-100 text-sm">
+                              <div className="mb-0.5">
+                                <span className="font-bold text-stone-900 dark:text-stone-100 text-[11.5px] line-clamp-1">
                                   {group.sermonTitle}
                                 </span>
                                 {(group.sermonYear || group.sermonLocation) && (
-                                  <span className="font-semibold text-stone-700 dark:text-stone-300 text-xs ml-2">
-                                    [{group.sermonLocation}
+                                  <span className="font-medium text-stone-500 dark:text-stone-400 text-[10px] ml-1.5">
+                                    {group.sermonLocation}
                                     {group.sermonYear
-                                      ? `, ${group.sermonYear}`
+                                      ? ` ${group.sermonYear}`
                                       : ""}
-                                    ]
                                   </span>
                                 )}
                               </div>

@@ -41,6 +41,27 @@ interface EndnoteSheetProps {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/**
+ * Parse a paragraph field from the API which can be "header", "326", or a range like "325-328".
+ * Returns [start, end] as numbers, or null for non-numeric values like "header".
+ */
+function parseParagraphRange(p: string | number): [number, number] | null {
+  const s = String(p);
+  if (s === "header" || !s) return null;
+  const parts = s.split("-");
+  const start = parseInt(parts[0], 10);
+  const end = parts[1] ? parseInt(parts[1], 10) : start;
+  if (isNaN(start)) return null;
+  return [start, isNaN(end) ? start : end];
+}
+
+/** Check if a target paragraph number falls within a section's paragraph range. */
+function sectionContainsParagraph(sectionPara: string | number, target: number): boolean {
+  const range = parseParagraphRange(sectionPara);
+  if (!range) return false;
+  return target >= range[0] && target <= range[1];
+}
+
 function escapeRegex(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -65,11 +86,21 @@ function highlightTerms(
   text: string,
   terms: string,
   accentColor: string,
+  searchType?: "ExactPhrase" | "AllWords" | "ParagraphReference",
 ): React.ReactNode {
-  const words = terms.trim().split(/\s+/).filter(Boolean);
-  if (!words.length) return text;
+  const trimmed = terms.trim();
+  if (!trimmed) return text;
 
-  const pattern = new RegExp(`(${words.map(escapeRegex).join("|")})`, "gi");
+  // ExactPhrase: highlight the full phrase as one match
+  // AllWords/other: highlight individual words
+  let pattern: RegExp;
+  if (searchType === "ExactPhrase") {
+    pattern = new RegExp(`(${escapeRegex(trimmed)})`, "gi");
+  } else {
+    const words = trimmed.split(/\s+/).filter(Boolean);
+    if (!words.length) return text;
+    pattern = new RegExp(`(${words.map(escapeRegex).join("|")})`, "gi");
+  }
   const parts = text.split(pattern);
 
   return (
@@ -120,6 +151,7 @@ interface ReadModeProps {
   sections: SermonSection[];
   group: SermonGroup;
   searchedText: string;
+  searchType?: "ExactPhrase" | "AllWords" | "ParagraphReference";
   isDarkMode: boolean;
   accentColor: string;
   onClose: () => void;
@@ -133,7 +165,7 @@ const ReadMode: React.FC<ReadModeProps> = ({
   accentColor,
   onClose,
 }) => {
-  const targetParagraphs = new Set(group.matches.map((m) => m.paragraph));
+  const targetParaNums = group.matches.map((m) => Number(m.paragraph));
 
   return (
     <motion.div
@@ -185,9 +217,9 @@ const ReadMode: React.FC<ReadModeProps> = ({
 
       {/* Scrollable reading body */}
       <div className="flex-1 overflow-y-auto no-scrollbar pb-20">
-        <div className="px-5 py-6 max-w-6xl mx-auto space-y-5">
+        <div className="px- py-6 max-w-6xl mx-auto space-y-5">
           {sections.map((s) => {
-            const isHit = targetParagraphs.has(s.Paragraph);
+            const isHit = targetParaNums.some((t) => sectionContainsParagraph(s.Paragraph, t));
             return (
               <div
                 key={s.Paragraph}
@@ -211,7 +243,7 @@ const ReadMode: React.FC<ReadModeProps> = ({
                 }
               >
                 <span
-                  className="font-archivo font-bold shrink-0 select-none"
+                  className="font- font-bold shrink-0 select-none"
                   style={{
                     fontSize: "12px",
                     marginTop: "4px",
@@ -230,7 +262,7 @@ const ReadMode: React.FC<ReadModeProps> = ({
                     fontSize: "50px",
                     lineHeight: "1.9",
                     color: isDarkMode ? "#e7e5e4" : "#1c1917",
-                    fontFamily: "'Zilla Slab', Georgia, serif",
+                    
                   }}
                 >
                   {isHit
@@ -269,7 +301,7 @@ const ContextViewer: React.FC<ContextViewerProps> = ({
   accentColor,
   onReadMode,
 }) => {
-  const targetParagraphs = new Set(group.matches.map((m) => m.paragraph));
+  const targetParaNums = group.matches.map((m) => Number(m.paragraph));
 
   if (!sections.length) {
     return (
@@ -300,7 +332,7 @@ const ContextViewer: React.FC<ContextViewerProps> = ({
 
       <div className="space-y-1">
         {sections.map((s) => {
-          const isHit = targetParagraphs.has(s.Paragraph);
+          const isHit = targetParaNums.some((t) => sectionContainsParagraph(s.Paragraph, t));
           return (
             <div
               key={s.Paragraph}
@@ -351,6 +383,8 @@ const ContextViewer: React.FC<ContextViewerProps> = ({
 interface GroupCardProps {
   group: SermonGroup;
   searchResult: EndnoteSearchResult;
+  endnoteTargetParagraph: number;
+  endnoteQuoteText: string | null;
   isDarkMode: boolean;
   accentColor: string;
   expandedId: string | null;
@@ -364,6 +398,8 @@ interface GroupCardProps {
 const GroupCard: React.FC<GroupCardProps> = ({
   group,
   searchResult,
+  endnoteTargetParagraph,
+  endnoteQuoteText,
   isDarkMode,
   accentColor,
   expandedId,
@@ -460,36 +496,93 @@ const GroupCard: React.FC<GroupCardProps> = ({
         </button>
       </div>
 
-      {/* ── Fragment rows — two lines per paragraph ── */}
+      {/* ── Fragment rows ── */}
       {group.matches.length > 0 && (
         <div className="px-3 pb-3">
-          {group.matches.map((m) => (
-            <div
-              key={m.recordId}
-              className="flex items-start gap-2 min-w-0 py-0.5"
-            >
-              <span
-                className="font-archivo font-bold shrink-0 text-[11px] select-none mt-0.5"
-                style={{
-                  color: isDarkMode ? "#78716c" : "#a8a29e",
-                  minWidth: "28px",
-                }}
-              >
-                ¶{m.paragraph}
-              </span>
-              <span
-                className={`text-[14px] leading-snug line-clamp-2 ${
-                  isDarkMode ? "text-stone-400" : "text-stone-500"
-                }`}
-              >
-                {highlightTerms(
-                  stripHtml(m.fragment),
-                  searchResult.searchedText,
-                  accentColor,
+          {(() => {
+            // For primary groups, show the endnote's own target paragraph + quote
+            // directly from the parsed data — don't rely on search result fragments
+            if (group.isPrimary && endnoteTargetParagraph > 0) {
+              const totalMatches = group.matches.length;
+              // Use the endnote's own quote text directly
+              const displayText = endnoteQuoteText || searchResult.searchedText;
+
+              return (
+                <>
+                  <div className="flex items-start gap-2 min-w-0 py-0.5">
+                    <span
+                      className="font-archivo font-bold shrink-0 text-[11px] select-none mt-0.5"
+                      style={{ color: accentColor, minWidth: "28px" }}
+                    >
+                      ¶{endnoteTargetParagraph}
+                    </span>
+                    <span
+                      className={`text-[14px] leading-snug line-clamp-2 ${
+                        isDarkMode ? "text-stone-400" : "text-stone-500"
+                      }`}
+                    >
+                      {highlightTerms(
+                        displayText,
+                        searchResult.searchedText,
+                        accentColor,
+                      )}
+                    </span>
+                  </div>
+                  {totalMatches > 1 && (
+                    <p
+                      className={`text-[11px] mt-1 ${isDarkMode ? "text-stone-500" : "text-stone-400"}`}
+                    >
+                      +{totalMatches - 1} more match{totalMatches - 1 !== 1 ? "es" : ""} in this sermon
+                    </p>
+                  )}
+                </>
+              );
+            }
+
+            // Non-primary groups: show first few fragments
+            const MAX_FRAGMENTS = 3;
+            const visible = group.matches.slice(0, MAX_FRAGMENTS);
+            const remaining = group.matches.length - visible.length;
+
+            return (
+              <>
+                {visible.map((m) => (
+                  <div
+                    key={m.recordId}
+                    className="flex items-start gap-2 min-w-0 py-0.5"
+                  >
+                    <span
+                      className="font-archivo font-bold shrink-0 text-[11px] select-none mt-0.5"
+                      style={{
+                        color: isDarkMode ? "#78716c" : "#a8a29e",
+                        minWidth: "28px",
+                      }}
+                    >
+                      ¶{m.paragraph}
+                    </span>
+                    <span
+                      className={`text-[14px] leading-snug line-clamp-2 ${
+                        isDarkMode ? "text-stone-400" : "text-stone-500"
+                      }`}
+                    >
+                      {highlightTerms(
+                        stripHtml(m.fragment),
+                        searchResult.searchedText,
+                        accentColor,
+                      )}
+                    </span>
+                  </div>
+                ))}
+                {remaining > 0 && (
+                  <p
+                    className={`text-[11px] mt-1 ${isDarkMode ? "text-stone-500" : "text-stone-400"}`}
+                  >
+                    +{remaining} more match{remaining !== 1 ? "es" : ""} in this sermon
+                  </p>
                 )}
-              </span>
-            </div>
-          ))}
+              </>
+            );
+          })()}
         </div>
       )}
 
@@ -541,7 +634,7 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
   >(new Map());
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [searchMode, setSearchMode] =
-    useState<EndnoteSearchMode>("ExactPhrase");
+    useState<EndnoteSearchMode>("Auto");
   const [readMode, setReadMode] = useState<{
     group: SermonGroup;
     sections: SermonSection[];
@@ -592,15 +685,41 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
         sermonId === undefined ? group.documentRecordId : undefined,
       );
 
-      const targetPara = group.matches[0]?.paragraph ?? 0;
-      const before = 3;
-      const after = 10;
+      // For primary matches, prefer the endnote's parsed paragraph number (the actual reference)
+      // over the search result's paragraph (which may be a different occurrence of the quote)
+      const endnotePara = endnoteData?.paragraph ? parseInt(endnoteData.paragraph, 10) : 0;
+      const searchPara = group.matches[0]?.paragraph ?? 0;
+      const targetPara = (group.isPrimary && endnotePara > 0) ? endnotePara : searchPara;
 
-      const context = sections.filter(
-        (s) =>
-          s.Paragraph >= targetPara - before &&
-          s.Paragraph <= targetPara + after,
-      );
+      // Find the section containing the target paragraph.
+      // API returns paragraph ranges like "325-328", so we must check if targetPara falls within each range.
+      let targetIndex = sections.findIndex((s) => sectionContainsParagraph(s.Paragraph, targetPara));
+
+      // If not found in any range, find the closest section by range start
+      if (targetIndex === -1) {
+        let minDist = Infinity;
+        sections.forEach((s, i) => {
+          const range = parseParagraphRange(s.Paragraph);
+          if (!range) return;
+          // Distance from target to the nearest edge of the range
+          const dist = targetPara < range[0]
+            ? range[0] - targetPara
+            : targetPara > range[1]
+              ? targetPara - range[1]
+              : 0;
+          if (dist < minDist) {
+            minDist = dist;
+            targetIndex = i;
+          }
+        });
+      }
+
+      // Slice by array index: 3 before, 50 after the target
+      const before = 3;
+      const after = 50;
+      const startIdx = Math.max(0, targetIndex - before);
+      const endIdx = Math.min(sections.length, targetIndex + after + 1);
+      const context = sections.slice(startIdx, endIdx);
 
       setGroupSections((prev) => {
         const next = new Map(prev);
@@ -619,7 +738,7 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
     } finally {
       setLoadingId(null);
     }
-  }, []);
+  }, [endnoteData]);
 
   const toggleExpand = useCallback((docId: string) => {
     setExpandedId((prev) => (prev === docId ? null : docId));
@@ -691,40 +810,26 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                   )}
 
                   <div className="mt-2 inline-flex rounded-lg border border-stone-200 dark:border-stone-700 overflow-hidden">
-                    <button
-                      onClick={() => setSearchMode("ExactPhrase")}
-                      className={`px-3 py-1 text-[11px] font-medium transition-colors ${
-                        searchMode === "ExactPhrase"
-                          ? "text-white"
-                          : isDarkMode
-                            ? "bg-stone-800 text-stone-300 hover:bg-stone-700"
-                            : "bg-stone-50 text-stone-600 hover:bg-stone-100"
-                      }`}
-                      style={
-                        searchMode === "ExactPhrase"
-                          ? { backgroundColor: accentColor }
-                          : undefined
-                      }
-                    >
-                      Exact Phrase
-                    </button>
-                    <button
-                      onClick={() => setSearchMode("AllWords")}
-                      className={`px-3 py-1 text-[11px] font-medium transition-colors ${
-                        searchMode === "AllWords"
-                          ? "text-white"
-                          : isDarkMode
-                            ? "bg-stone-800 text-stone-300 hover:bg-stone-700"
-                            : "bg-stone-50 text-stone-600 hover:bg-stone-100"
-                      }`}
-                      style={
-                        searchMode === "AllWords"
-                          ? { backgroundColor: accentColor }
-                          : undefined
-                      }
-                    >
-                      All Words
-                    </button>
+                    {(["Auto", "ExactPhrase", "AllWords"] as EndnoteSearchMode[]).map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => setSearchMode(mode)}
+                        className={`px-3 py-1 text-[11px] font-medium transition-colors ${
+                          searchMode === mode
+                            ? "text-white"
+                            : isDarkMode
+                              ? "bg-stone-800 text-stone-300 hover:bg-stone-700"
+                              : "bg-stone-50 text-stone-600 hover:bg-stone-100"
+                        }`}
+                        style={
+                          searchMode === mode
+                            ? { backgroundColor: accentColor }
+                            : undefined
+                        }
+                      >
+                        {mode === "ExactPhrase" ? "Exact Phrase" : mode === "AllWords" ? "All Words" : "Auto"}
+                      </button>
+                    ))}
                   </div>
                 </div>
                 <button
@@ -822,6 +927,8 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                         key={group.documentRecordId}
                         group={group}
                         searchResult={searchResult}
+                        endnoteTargetParagraph={endnoteData?.paragraph ? parseInt(endnoteData.paragraph, 10) : 0}
+                        endnoteQuoteText={endnoteData?.quoteText ?? null}
                         isDarkMode={isDarkMode}
                         accentColor={accentColor}
                         expandedId={expandedId}

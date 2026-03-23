@@ -15,21 +15,47 @@ const { autoUpdater } = createRequire(import.meta.url)("electron-updater");
 function prefsPath() {
   return path.join(app.getPath("userData"), "update-prefs.json");
 }
-function readPrefs(): { autoUpdate: boolean } {
+
+type UpdatePrefs = {
+  autoCheck: boolean;
+  autoDownload: boolean;
+};
+
+function readPrefs(): UpdatePrefs {
   try {
-    return JSON.parse(fs.readFileSync(prefsPath(), "utf8"));
+    const raw = JSON.parse(fs.readFileSync(prefsPath(), "utf8"));
+
+    if (
+      typeof raw?.autoCheck === "boolean" &&
+      typeof raw?.autoDownload === "boolean"
+    ) {
+      return {
+        autoCheck: raw.autoCheck,
+        autoDownload: raw.autoDownload,
+      };
+    }
+
+    if (typeof raw?.autoUpdate === "boolean") {
+      return {
+        autoCheck: true,
+        autoDownload: raw.autoUpdate,
+      };
+    }
   } catch {
-    return { autoUpdate: false };
+    // Defaults: always check on startup, don't auto-download
   }
+
+  return { autoCheck: true, autoDownload: false };
 }
-function writePrefs(prefs: { autoUpdate: boolean }) {
+
+function writePrefs(prefs: UpdatePrefs) {
   fs.writeFileSync(prefsPath(), JSON.stringify(prefs, null, 2), "utf8");
 }
 
 // ── Main export ───────────────────────────────────────────────────────────────
 export function update(win: Electron.BrowserWindow) {
   const prefs = readPrefs();
-  autoUpdater.autoDownload = prefs.autoUpdate;
+  autoUpdater.autoDownload = prefs.autoDownload;
   autoUpdater.disableWebInstaller = false;
   autoUpdater.allowDowngrade = false;
 
@@ -66,7 +92,7 @@ export function update(win: Electron.BrowserWindow) {
   ipcMain.handle("check-update", async () => {
     try {
       send("checking");
-      return await autoUpdater.checkForUpdatesAndNotify();
+      return await autoUpdater.checkForUpdates();
     } catch (err: any) {
       send("error", { message: err.message });
     }
@@ -83,11 +109,24 @@ export function update(win: Electron.BrowserWindow) {
 
   ipcMain.handle("get-update-preference", () => readPrefs());
 
-  ipcMain.handle("set-update-preference", (_e, p: { autoUpdate: boolean }) => {
-    writePrefs(p);
-    autoUpdater.autoDownload = p.autoUpdate;
-    return p;
-  });
+  ipcMain.handle(
+    "set-update-preference",
+    (_e, p: Partial<UpdatePrefs> | undefined) => {
+      const current = readPrefs();
+      const next: UpdatePrefs = {
+        autoCheck:
+          typeof p?.autoCheck === "boolean" ? p.autoCheck : current.autoCheck,
+        autoDownload:
+          typeof p?.autoDownload === "boolean"
+            ? p.autoDownload
+            : current.autoDownload,
+      };
+
+      writePrefs(next);
+      autoUpdater.autoDownload = next.autoDownload;
+      return next;
+    },
+  );
 
   ipcMain.handle("quit-and-install", () =>
     autoUpdater.quitAndInstall(false, true),
@@ -95,9 +134,9 @@ export function update(win: Electron.BrowserWindow) {
 
   // Auto-check 3 seconds after renderer loads (gives React time to mount)
   win.webContents.once("did-finish-load", () => {
-    setTimeout(
-      () => autoUpdater.checkForUpdatesAndNotify().catch(() => {}),
-      3000,
-    );
+    const startupPrefs = readPrefs();
+    if (startupPrefs.autoCheck) {
+      setTimeout(() => autoUpdater.checkForUpdates().catch(() => {}), 3000);
+    }
   });
 }

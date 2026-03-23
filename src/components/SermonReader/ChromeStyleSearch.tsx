@@ -33,10 +33,9 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
 
   // Sync from external query (e.g. when navigating from the search tab)
   useEffect(() => {
-    if (externalQuery && externalQuery !== searchQuery) {
-      setSearchQuery(externalQuery);
-      setHasSearched(true);
-    }
+    const nextQuery = externalQuery ?? "";
+    setSearchQuery(nextQuery);
+    setHasSearched(nextQuery.trim().length > 0);
   }, [externalQuery]);
 
   useEffect(() => {

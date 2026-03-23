@@ -87,6 +87,11 @@ const SelectedSermon = ({
   const [canSaveProgress, setCanSaveProgress] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const previousSermonIdRef = useRef<string | number | undefined>(
+    selectedMessage?.id,
+  );
+  const currentParagraphRef = useRef(0);
+  const searchQueryRef = useRef("");
 
   // Function to split sermon into paragraphs using mobile app's logic
   const sermonParagraphs = useMemo((): SermonParagraphData[] => {
@@ -111,6 +116,7 @@ const SelectedSermon = ({
     showColorPalette,
     palettePosition,
     highlights,
+    selectionOverlayRects,
     highlightColors,
     handleTextSelection,
     applyHighlight,
@@ -134,7 +140,11 @@ const SelectedSermon = ({
     setIsSearchVisible,
     showSearch,
     hideSearch,
-  } = useSermonNavigation(sermonParagraphs, scrollContainerRef);
+  } = useSermonNavigation(
+    sermonParagraphs,
+    scrollContainerRef,
+    selectedMessage?.id,
+  );
 
   // Legacy search results format for compatibility
   const searchResults = useMemo(() => {
@@ -280,9 +290,12 @@ const SelectedSermon = ({
       // Add the quote with special highlighting
       const fullMatch = match[0];
       const quoteContent = match[1]; // Content between "Endnote[:]" and "William [Marrion] Branham"
+      const normalizedQuoteContent = quoteContent.replace(/\s+/g, " ").trim();
       // Extract the "Endnote" prefix (with optional colon) and author name from the actual text
       const endnotePrefix = fullMatch.match(/^Endnote\s*:?/i)?.[0] || "Endnote";
-      const authorName = fullMatch.match(/William\s+(?:Marrion\s+)?Branham/i)?.[0] || "William Branham";
+      const authorName =
+        fullMatch.match(/William\s+(?:Marrion\s+)?Branham/i)?.[0] ||
+        "William Branham";
 
       processedText.push(
         <span
@@ -290,11 +303,34 @@ const SelectedSermon = ({
           onClick={onEndnoteClick}
           className={
             onEndnoteClick
-              ? "cursor-pointer hover:opacity-75 transition-opacity duration-150"
-              : ""
+              ? "inline  leading-snug cursor-pointer  hover:opacity-75 transition-opacity duration-150"
+              : "inline  leading-snug"
           }
           title={onEndnoteClick ? "Click to view source quote" : undefined}
         >
+          {onEndnoteClick && (
+            <span
+              className="inline-flex items-center mr-1 align-middle"
+              style={{ color: accentColor + "95" }}
+              title="Tap to open source quote"
+              aria-hidden="true"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill={isDarkMode ? "#ac7850" : "#6a4626"}
+                className="rotate-90"
+              >
+                <path
+                  d="M17.493,9.082L11,8V3c0-1.104-0.896-2-2-2S7,1.896,7,3v10.064l-0.186-0.186c-1.172-1.172-3.071-1.172-4.243,0 l-0.279,0.279c-0.391,0.391-0.391,1.024,0,1.414l5.641,5.641l0.141-0.141C8.682,20.643,9.494,21,10.395,21h7.335 c1.254,0,2.27-1.016,2.27-2.27v-6.689C20,10.574,18.94,9.323,17.493,9.082z"
+                  opacity=".35"
+                />
+                <path d="M19.5,19c-0.386,0-11.614,0-12,0C6.672,19,6,19.672,6,20.5S6.672,22,7.5,22c0.386,0,11.614,0,12,0 c0.828,0,1.5-0.672,1.5-1.5S20.328,19,19.5,19z" />
+              </svg>
+            </span>
+          )}
           {/* Endnote marker */}
           <span
             className="font-semibold italic"
@@ -313,7 +349,7 @@ const SelectedSermon = ({
             }}
             title="William Branham quote"
           >
-            {quoteContent}
+            {normalizedQuoteContent}
           </span>
           {/* Author name */}
           <span
@@ -407,14 +443,31 @@ const SelectedSermon = ({
     );
   };
 
-  // Reset restoration flag and clear state when sermon changes
+  // Reset restoration/search state only when sermon ID actually changes.
+  // This avoids clearing Chrome-search query when the same sermon remounts
+  // during layout/view mode switches (e.g. normal -> presentation).
   useEffect(() => {
+    const currentSermonId = selectedMessage?.id;
+    const didSermonChange = previousSermonIdRef.current !== currentSermonId;
+    previousSermonIdRef.current = currentSermonId;
+
+    if (!didSermonChange) {
+      return;
+    }
+
     setHasRestoredPosition(false);
     setCanSaveProgress(false);
     // Clear highlights from previous sermon
     setHighlights({});
-    // Clear search query
-    setSearchQuery("");
+    // Handle search query: preserve it if navigating via search, clear otherwise
+    if (pendingSearchNav?.searchTerm) {
+      // Pre-populate with the search term to avoid the input appearing blank
+      setSearchQuery(pendingSearchNav.searchTerm);
+    } else if (!pendingSearchNav && !isSearchVisible) {
+      // Only clear search if not navigating to search AND search bar is not visible
+      // This prevents clearing the search after pendingSearchNav becomes null
+      setSearchQuery("");
+    }
 
     // Save last read sermon to localStorage
     if (selectedMessage) {
@@ -439,7 +492,15 @@ const SelectedSermon = ({
       localStorage.setItem("recentSermons", JSON.stringify(limitedRecent));
       setRecentSermons(limitedRecent);
     }
-  }, [selectedMessage, setHighlights, setSearchQuery, setRecentSermons]);
+  }, [
+    selectedMessage?.id,
+    selectedMessage,
+    setHighlights,
+    setSearchQuery,
+    setRecentSermons,
+    pendingSearchNav,
+    isSearchVisible,
+  ]);
 
   // Restore last read paragraph when sermon loads (only once, not for search navigation)
   useEffect(() => {
@@ -526,6 +587,14 @@ const SelectedSermon = ({
     setHasRestoredPosition(false);
   }, [selectedMessage?.id]);
 
+  useEffect(() => {
+    currentParagraphRef.current = currentParagraph;
+  }, [currentParagraph]);
+
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
+  }, [searchQuery]);
+
   // Handle pending search navigation
   useEffect(() => {
     if (
@@ -555,17 +624,25 @@ const SelectedSermon = ({
     setIsSearchVisible,
   ]);
 
-  // Re-scroll to current paragraph when presentation mode changes
+  // Re-scroll only when view mode toggles.
+  // Avoid forced scrolling while user is manually navigating/scrolling.
   useEffect(() => {
-    if (currentParagraph > 0) {
-      // Wait for layout transition to complete (300ms animation + 200ms buffer)
-      const timer = setTimeout(() => {
-        goToParagraph(currentParagraph);
-      }, 500);
+    const timer = setTimeout(() => {
+      const hasActiveSearch = searchQueryRef.current.trim().length > 0;
+      if (hasActiveSearch) {
+        // Keep user-controlled position during active search; restoration is
+        // already handled in useSermonNavigation on remount.
+        return;
+      }
 
-      return () => clearTimeout(timer);
-    }
-  }, [isPresentationMode, currentParagraph, goToParagraph]);
+      const paragraphAtModeSwitch = currentParagraphRef.current;
+      if (paragraphAtModeSwitch > 0) {
+        goToParagraph(paragraphAtModeSwitch);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [isPresentationMode, goToParagraph]);
 
   // Ctrl +/- to adjust font size in presentation mode
   useEffect(() => {
@@ -637,6 +714,28 @@ const SelectedSermon = ({
         show={showSaveNotification}
         onClose={() => setShowSaveNotification(false)}
       />
+
+      {selectionOverlayRects.length > 0 && (
+        <div className="pointer-events-none fixed inset-0 z-[55]">
+          {selectionOverlayRects.map((rect) => (
+            <div
+              key={rect.id}
+              className="absolute rounded-[3px]"
+              style={{
+                left: `${rect.x - 1}px`,
+                top: `${rect.y - 1}px`,
+                width: `${rect.width + 2}px`,
+                height: `${rect.height + 2}px`,
+                border: `2px solid ${accentColor}cc`,
+                backgroundColor: "transparent",
+                boxShadow: isDarkMode
+                  ? `0 0 0 1px ${accentColor}55`
+                  : `0 0 0 1px ${accentColor}44`,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Floating Control Button */}
       {selectedMessage?.type === "text" && (
@@ -831,7 +930,7 @@ const SelectedSermon = ({
 
                         {/* Paragraph Content with inline number */}
                         <div
-                          className="leading-normal  px-6  rounded-lg transition-all duration-200 border-l-4"
+                          className="sermon-selection-scope leading-normal  px-6  rounded-lg transition-all duration-200 border-l-4"
                           style={{
                             fontFamily: settings.fontFamily || "Zilla Slab",
                             fontWeight: settings.fontWeight,
@@ -876,7 +975,7 @@ const SelectedSermon = ({
                             {paragraph.id}.
                           </span>
                           {/* Apply user highlights first, then endnotes/quotes */}
-                          <span>
+                          <span data-paragraph-content="true">
                             {(() => {
                               const paragraphHighlights =
                                 highlights[paragraph.id];
@@ -925,8 +1024,9 @@ const SelectedSermon = ({
                                     className={`cursor-pointer hover:opacity-80 ${isDarkMode ? "text-stone-900" : ""}`}
                                     style={{
                                       backgroundColor: highlight.color,
-                                      padding: "2px 4px",
-                                      borderRadius: "4px",
+                                      // padding: "2px 4px",
+                                      // borderRadius: "4px",
+                                      marginRight: "2px",
                                       transition: "all 0.2s ease",
                                       boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
                                     }}
@@ -943,7 +1043,7 @@ const SelectedSermon = ({
                                     {paragraph.content.substring(
                                       highlight.startOffset,
                                       highlight.endOffset,
-                                    )}
+                                    )}{" "}
                                   </span>,
                                 );
 

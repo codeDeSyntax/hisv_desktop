@@ -94,6 +94,47 @@ export interface FTSResult {
 
 export type SearchMode = "all" | "exact";
 
+function normalizeSearchInput(query: string): string {
+  return query.trim().replace(/\s+/g, " ");
+}
+
+function buildFtsQuery(
+  normalizedQuery: string,
+  mode: SearchMode,
+): string | null {
+  if (!normalizedQuery) return null;
+
+  if (mode === "exact") {
+    return `"${normalizedQuery.replace(/"/g, '""')}"`;
+  }
+
+  const terms = normalizedQuery
+    .split(/\s+/)
+    .map((term) =>
+      term.replace(/["*^:(){}\[\]~!@#$%&=+,./\\<>?|`';-]/g, "").trim(),
+    )
+    .filter(Boolean);
+
+  if (terms.length === 0) return null;
+
+  return terms.map((term) => `${term}*`).join(" AND ");
+}
+
+function runLikeFallback(db: DBInstance, normalizedQuery: string): FTSResult[] {
+  if (!normalizedQuery) return [];
+
+  return db
+    .prepare(
+      `SELECT id, title, year, location, type,
+              substr(sermon_text, 1, 200) AS snippet,
+              rowid
+       FROM sermons
+       WHERE sermon_text LIKE ?
+       LIMIT 100`,
+    )
+    .all(`%${normalizedQuery}%`) as FTSResult[];
+}
+
 /** Returns all sermons without the heavy sermon_text column (for fast startup). */
 export function getSermonsMeta(): SermonMeta[] {
   const db = openDb();
@@ -126,23 +167,18 @@ export function searchSermons(
   if (!query || query.trim().length < 2) return [];
   const db = openDb();
 
-  const normalized = query.trim().replace(/\s+/g, " ");
+  const normalized = normalizeSearchInput(query);
   if (!normalized) return [];
 
-  const ftsQuery =
-    mode === "exact"
-      ? `"${normalized.replace(/"/g, '""')}"`
-      : normalized
-          .split(/\s+/)
-          .map((term) => term.replace(/["*^]/g, "").trim())
-          .filter(Boolean)
-          .map((term) => `${term}*`)
-          .join(" AND ");
+  const ftsQuery = buildFtsQuery(normalized, mode);
 
-  if (!ftsQuery) return [];
+  // Symbol-heavy inputs can collapse to empty FTS terms; use LIKE fallback.
+  if (!ftsQuery) {
+    return runLikeFallback(db, normalized);
+  }
 
   try {
-    return db
+    const ftsRows = db
       .prepare(
         `SELECT s.id, s.title, s.year, s.location, s.type,
                 snippet(sermons_fts, 1, '<mark>', '</mark>', '...', 32) AS snippet,
@@ -154,18 +190,16 @@ export function searchSermons(
          LIMIT 100`,
       )
       .all(ftsQuery) as FTSResult[];
+
+    if (ftsRows.length > 0) {
+      return ftsRows;
+    }
+
+    // Fallback for valid but non-matching FTS syntax (e.g. heavy punctuation).
+    return runLikeFallback(db, normalized);
   } catch {
     // Fallback: LIKE search if FTS5 query syntax is invalid
-    return db
-      .prepare(
-        `SELECT id, title, year, location, type,
-                substr(sermon_text, 1, 200) AS snippet,
-                rowid
-         FROM sermons
-         WHERE sermon_text LIKE ?
-         LIMIT 100`,
-      )
-      .all(`%${normalized}%`) as FTSResult[];
+    return runLikeFallback(db, normalized);
   }
 }
 

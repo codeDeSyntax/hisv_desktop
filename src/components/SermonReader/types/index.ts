@@ -46,3 +46,12 @@ export interface PalettePosition {
   x: number;
   y: number;
 }
+
+// Selection overlay rectangle for JS-driven bordered selection preview
+export interface SelectionOverlayRect {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain } from "electron";
+import { app, BrowserWindow, shell, ipcMain, screen, Display } from "electron";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -53,8 +53,29 @@ if (!app.requestSingleInstanceLock()) {
 
 let mainWin: BrowserWindow | null = null;
 let splashWin: BrowserWindow | null = null;
+let projectionWin: BrowserWindow | null = null;
 const preload = path.join(__dirname, "../preload/index.mjs");
 const indexHtml = path.join(RENDERER_DIST, "index.html");
+
+function getControlDisplay(): Display {
+  const displays = screen.getAllDisplays();
+  const internalDisplay = displays.find((display) => display.internal);
+  return internalDisplay ?? screen.getPrimaryDisplay();
+}
+
+function placeWindowOnDisplay(
+  win: BrowserWindow,
+  targetDisplay: Display,
+): void {
+  const area = targetDisplay.workArea;
+  win.setBounds({
+    x: area.x,
+    y: area.y,
+    width: area.width,
+    height: area.height,
+  });
+  win.maximize();
+}
 
 // function createSplashWindow() {
 //   splashWin = new BrowserWindow({
@@ -110,8 +131,8 @@ async function createMainWindow() {
     mainWin.loadFile(indexHtml);
   }
 
-  // Show main window maximized once DOM is ready
-  mainWin.maximize();
+  // Always place the control window on the internal display when available
+  placeWindowOnDisplay(mainWin, getControlDisplay());
 
   // ── Splash window logic (commented out — re-enable if needed) ──────────────
   // let mainShown = false;
@@ -175,6 +196,7 @@ async function createMainWindow() {
   ipcMain.removeAllListeners("minimizeApp");
   ipcMain.removeAllListeners("maximizeApp");
   ipcMain.removeAllListeners("closeApp");
+  ipcMain.removeAllListeners("minimizeProjection");
 
   ipcMain.on("minimizeApp", () => {
     if (mainWin && !mainWin.isDestroyed()) {
@@ -198,6 +220,12 @@ async function createMainWindow() {
     }
   });
 
+  ipcMain.on("minimizeProjection", () => {
+    if (projectionWin && !projectionWin.isDestroyed()) {
+      projectionWin.minimize();
+    }
+  });
+
   // Clean up when window is closed
   mainWin.on("closed", () => {
     mainWin = null;
@@ -205,6 +233,7 @@ async function createMainWindow() {
     ipcMain.removeAllListeners("minimizeApp");
     ipcMain.removeAllListeners("maximizeApp");
     ipcMain.removeAllListeners("closeApp");
+    ipcMain.removeAllListeners("minimizeProjection");
     ipcMain.removeAllListeners("get-system-fonts");
   });
 
@@ -316,6 +345,16 @@ app.whenReady().then(async () => {
   await createMainWindow();
   if (mainWin) update(mainWin);
 
+  const ensureControlWindowPlacement = () => {
+    if (mainWin && !mainWin.isDestroyed()) {
+      placeWindowOnDisplay(mainWin, getControlDisplay());
+    }
+  };
+
+  screen.on("display-added", ensureControlWindowPlacement);
+  screen.on("display-removed", ensureControlWindowPlacement);
+  screen.on("display-metrics-changed", ensureControlWindowPlacement);
+
   // Handle app activation (macOS specific)
   app.on("activate", () => {
     // On macOS, re-create window when dock icon is clicked
@@ -353,6 +392,9 @@ app.on("window-all-closed", () => {
 // Handle app before quit
 app.on("before-quit", () => {
   closeDb();
+  screen.removeAllListeners("display-added");
+  screen.removeAllListeners("display-removed");
+  screen.removeAllListeners("display-metrics-changed");
   // Clean up any resources before quitting
   if (mainWin && !mainWin.isDestroyed()) {
     mainWin.removeAllListeners();

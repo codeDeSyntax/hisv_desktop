@@ -10,6 +10,7 @@ interface Window {
 interface Window {
   api: {
     minimizeApp: () => void;
+    minimizeProjection: () => void;
     maximizeApp: () => void;
     closeApp: () => void;
     selectDirectory: () => void;

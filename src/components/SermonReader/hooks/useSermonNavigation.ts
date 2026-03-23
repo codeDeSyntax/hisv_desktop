@@ -1,20 +1,90 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
+interface PersistedNavigationState {
+  sermonKey: string;
+  searchQuery: string;
+  currentSearchIndex: number;
+  isSearchVisible: boolean;
+  currentParagraph: number;
+}
+
+let persistedNavigationState: PersistedNavigationState | null = null;
+
 export const useSermonNavigation = (
   sermonParagraphs: any[],
   scrollContainerRef: React.RefObject<HTMLDivElement>,
+  sermonId?: string | number,
 ) => {
-  const [currentParagraph, setCurrentParagraph] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
+  const sermonKey = sermonId == null ? null : String(sermonId);
+
+  const [currentParagraph, setCurrentParagraph] = useState(() => {
+    if (!sermonKey) return 0;
+    if (persistedNavigationState?.sermonKey !== sermonKey) return 0;
+    return persistedNavigationState.currentParagraph || 0;
+  });
+  const [searchQuery, setSearchQuery] = useState(() => {
+    if (!sermonKey) return "";
+    if (persistedNavigationState?.sermonKey !== sermonKey) return "";
+    return persistedNavigationState.searchQuery || "";
+  });
   const [searchResultsCount, setSearchResultsCount] = useState(0);
-  const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
+  const [currentSearchIndex, setCurrentSearchIndex] = useState(() => {
+    if (!sermonKey) return 0;
+    if (persistedNavigationState?.sermonKey !== sermonKey) return 0;
+    return persistedNavigationState.currentSearchIndex || 0;
+  });
   const [searchResultElements, setSearchResultElements] =
     useState<NodeListOf<Element> | null>(null);
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [isSearchVisible, setIsSearchVisible] = useState(() => {
+    if (!sermonKey) return false;
+    if (persistedNavigationState?.sermonKey !== sermonKey) return false;
+    return persistedNavigationState.isSearchVisible || false;
+  });
+  const hasRestoredSearchRef = useRef(false);
+  const isHydratingRef = useRef(true);
 
   // Track sermon identity to detect changes
   const lastSermonLengthRef = useRef(sermonParagraphs.length);
   const lastFirstParagraphRef = useRef(sermonParagraphs[0]?.content || "");
+
+  const scrollSearchElementToCenter = useCallback(
+    (targetElement: HTMLElement) => {
+      const scrollContainer = targetElement.closest(
+        ".overflow-y-auto",
+      ) as HTMLElement | null;
+      if (!scrollContainer) return;
+
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const elementRect = targetElement.getBoundingClientRect();
+
+      const scrollTop = scrollContainer.scrollTop;
+      const elementRelativeTop = elementRect.top - containerRect.top;
+      const centerOffset = (containerRect.height - elementRect.height) / 2;
+      const targetScroll = scrollTop + elementRelativeTop - centerOffset;
+
+      scrollContainer.scrollTo({
+        top: targetScroll,
+        behavior: "smooth",
+      });
+    },
+    [],
+  );
+
+  const scrollToSearchIndex = useCallback(
+    (index: number, elementsArg?: NodeListOf<Element> | null) => {
+      const elements = elementsArg ?? searchResultElements;
+      if (!elements || elements.length === 0) return;
+
+      const clampedIndex = Math.min(Math.max(index, 1), elements.length);
+      setCurrentSearchIndex(clampedIndex);
+
+      const targetElement = elements[clampedIndex - 1] as HTMLElement;
+      if (targetElement) {
+        scrollSearchElementToCenter(targetElement);
+      }
+    },
+    [searchResultElements, scrollSearchElementToCenter],
+  );
 
   // Reset currentParagraph when sermon changes
   useEffect(() => {
@@ -152,7 +222,8 @@ export const useSermonNavigation = (
                 parts.forEach((part, index) => {
                   if (searchRegex.test(part)) {
                     const highlight = document.createElement("span");
-                    const isDark = document.documentElement.classList.contains("dark");
+                    const isDark =
+                      document.documentElement.classList.contains("dark");
                     highlight.className = "search-highlight";
                     highlight.style.borderRadius = "8px";
                     highlight.style.padding = "0 2px";
@@ -181,26 +252,10 @@ export const useSermonNavigation = (
 
       // Navigate to first result if any
       if (results.length > 0) {
-        const element = results[0] as HTMLElement;
-        const scrollContainer = element.closest(".overflow-y-auto");
-
-        if (scrollContainer && element) {
-          const containerRect = scrollContainer.getBoundingClientRect();
-          const elementRect = element.getBoundingClientRect();
-
-          const scrollTop = scrollContainer.scrollTop;
-          const elementRelativeTop = elementRect.top - containerRect.top;
-          const centerOffset = (containerRect.height - elementRect.height) / 2;
-          const targetScroll = scrollTop + elementRelativeTop - centerOffset;
-
-          scrollContainer.scrollTo({
-            top: targetScroll,
-            behavior: "smooth",
-          });
-        }
+        scrollToSearchIndex(1, results);
       }
     },
-    [sermonParagraphs],
+    [sermonParagraphs, scrollToSearchIndex],
   );
 
   // Navigate to next search result
@@ -214,26 +269,8 @@ export const useSermonNavigation = (
         : currentSearchIndex + 1;
     setCurrentSearchIndex(nextIndex);
 
-    const targetElement = searchResultElements[nextIndex - 1] as HTMLElement;
-    if (targetElement) {
-      const scrollContainer = targetElement.closest(".overflow-y-auto");
-
-      if (scrollContainer) {
-        const containerRect = scrollContainer.getBoundingClientRect();
-        const elementRect = targetElement.getBoundingClientRect();
-
-        const scrollTop = scrollContainer.scrollTop;
-        const elementRelativeTop = elementRect.top - containerRect.top;
-        const centerOffset = (containerRect.height - elementRect.height) / 2;
-        const targetScroll = scrollTop + elementRelativeTop - centerOffset;
-
-        scrollContainer.scrollTo({
-          top: targetScroll,
-          behavior: "smooth",
-        });
-      }
-    }
-  }, [searchResultElements, currentSearchIndex]);
+    scrollToSearchIndex(nextIndex);
+  }, [searchResultElements, currentSearchIndex, scrollToSearchIndex]);
 
   // Navigate to previous search result
   const goToPreviousSearchResult = useCallback(() => {
@@ -246,26 +283,8 @@ export const useSermonNavigation = (
         : currentSearchIndex - 1;
     setCurrentSearchIndex(prevIndex);
 
-    const targetElement = searchResultElements[prevIndex - 1] as HTMLElement;
-    if (targetElement) {
-      const scrollContainer = targetElement.closest(".overflow-y-auto");
-
-      if (scrollContainer) {
-        const containerRect = scrollContainer.getBoundingClientRect();
-        const elementRect = targetElement.getBoundingClientRect();
-
-        const scrollTop = scrollContainer.scrollTop;
-        const elementRelativeTop = elementRect.top - containerRect.top;
-        const centerOffset = (containerRect.height - elementRect.height) / 2;
-        const targetScroll = scrollTop + elementRelativeTop - centerOffset;
-
-        scrollContainer.scrollTo({
-          top: targetScroll,
-          behavior: "smooth",
-        });
-      }
-    }
-  }, [searchResultElements, currentSearchIndex]);
+    scrollToSearchIndex(prevIndex);
+  }, [searchResultElements, currentSearchIndex, scrollToSearchIndex]);
 
   // Navigate to specific paragraph
   const goToParagraph = useCallback(
@@ -330,10 +349,71 @@ export const useSermonNavigation = (
 
   const hideSearch = useCallback(() => {
     setIsSearchVisible(false);
-    setSearchQuery("");
   }, []);
 
   // Handle scroll tracking for current paragraph
+  useEffect(() => {
+    hasRestoredSearchRef.current = false;
+    isHydratingRef.current = true;
+  }, [sermonKey]);
+
+  useEffect(() => {
+    if (!sermonKey || sermonParagraphs.length === 0) return;
+    if (hasRestoredSearchRef.current) return;
+    if (!persistedNavigationState) {
+      isHydratingRef.current = false;
+      return;
+    }
+    if (persistedNavigationState.sermonKey !== sermonKey) {
+      isHydratingRef.current = false;
+      return;
+    }
+
+    const persistedQuery = persistedNavigationState.searchQuery?.trim();
+    if (!persistedQuery) {
+      isHydratingRef.current = false;
+      return;
+    }
+
+    hasRestoredSearchRef.current = true;
+    setIsSearchVisible(persistedNavigationState.isSearchVisible);
+
+    handleSearch(persistedQuery);
+
+    const targetIndex = Math.max(
+      1,
+      persistedNavigationState.currentSearchIndex || 1,
+    );
+
+    setTimeout(() => {
+      const results = document.querySelectorAll(".search-highlight");
+      setSearchResultElements(results);
+      if (results.length > 0) {
+        scrollToSearchIndex(targetIndex, results);
+      }
+      isHydratingRef.current = false;
+    }, 120);
+  }, [sermonKey, sermonParagraphs.length, handleSearch, scrollToSearchIndex]);
+
+  useEffect(() => {
+    if (!sermonKey) return;
+    if (isHydratingRef.current) return;
+
+    persistedNavigationState = {
+      sermonKey,
+      searchQuery,
+      currentSearchIndex,
+      isSearchVisible,
+      currentParagraph,
+    };
+  }, [
+    sermonKey,
+    searchQuery,
+    currentSearchIndex,
+    isSearchVisible,
+    currentParagraph,
+  ]);
+
   useEffect(() => {
     const handleScroll = () => {
       if (!scrollContainerRef.current) return;

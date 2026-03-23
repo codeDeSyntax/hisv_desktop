@@ -18,18 +18,10 @@ export default function UpdateManager() {
   const panelRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(false);
   const [update, setUpdate] = useState<UpdatePayload>({ status: "idle" });
-  const [autoUpdate, setAutoUpdate] = useState(false);
   const { accentColor } = useTheme();
 
-  // Load preference & subscribe to update events on mount
+  // Subscribe to update events on mount
   useEffect(() => {
-    window.ipcRenderer
-      .invoke("get-update-preference")
-      .then((prefs: { autoUpdate: boolean }) =>
-        setAutoUpdate(prefs?.autoUpdate ?? false),
-      )
-      .catch(() => {});
-
     const handler = (_e: unknown, payload: UpdatePayload) => setUpdate(payload);
 
     window.ipcRenderer.on("update-status", handler);
@@ -55,13 +47,11 @@ export default function UpdateManager() {
     return () => document.removeEventListener("mousedown", onDoc);
   }, [show]);
 
-  const toggleAutoUpdate = useCallback(async () => {
-    const next = !autoUpdate;
-    setAutoUpdate(next);
-    await window.ipcRenderer
-      .invoke("set-update-preference", { autoUpdate: next })
-      .catch(() => {});
-  }, [autoUpdate]);
+  useEffect(() => {
+    if (update.status === "available") {
+      setShow(true);
+    }
+  }, [update.status]);
 
   const checkUpdate = useCallback(() => {
     window.ipcRenderer.invoke("check-update").catch(() => {});
@@ -215,28 +205,6 @@ export default function UpdateManager() {
                 Install &amp; Restart
               </button>
             )}
-
-            {/* Auto-update toggle */}
-            <div className="flex items-center justify-between pt-1 border-t border-zinc-100 dark:border-zinc-700">
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                Auto-download updates
-              </span>
-              <button
-                onClick={toggleAutoUpdate}
-                className={`relative w-9 h-5 rounded-full transition-colors ${
-                  autoUpdate
-                    ? "bg-zinc-300 dark:bg-zinc-600"
-                    : "bg-zinc-300 dark:bg-zinc-600"
-                }
-                style={{ backgroundColor: autoUpdate ? accentColor : undefined }}`}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
-                    autoUpdate ? "translate-x-4" : "translate-x-0"
-                  }`}
-                />
-              </button>
-            </div>
           </div>
         </div>,
         document.body,

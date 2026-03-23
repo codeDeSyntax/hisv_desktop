@@ -86,6 +86,33 @@ div {
   color: inherit;
 }
 
+/* Sermon text specific selection (keeps global selection rules elsewhere) */
+.sermon-selection-scope {
+  --sermon-selection-border: rgba(87, 83, 78, 0.7);
+  --sermon-selection-border-width: 2px;
+}
+
+.dark .sermon-selection-scope {
+  --sermon-selection-border: rgba(214, 211, 209, 0.75);
+  --sermon-selection-border-width: 2px;
+}
+
+[data-paragraph-content="true"]::selection,
+[data-paragraph-content="true"] ::selection,
+.sermon-selection-scope::selection,
+.sermon-selection-scope *::selection {
+  background-color: transparent !important;
+  color: inherit;
+}
+
+[data-paragraph-content="true"]::-moz-selection,
+[data-paragraph-content="true"] ::-moz-selection,
+.sermon-selection-scope::-moz-selection,
+.sermon-selection-scope *::-moz-selection {
+  background-color: transparent !important;
+  color: inherit;
+}
+
 button {
   border: none;
   border-radius: 10px;
@@ -320,7 +347,6 @@ button:hover {
   white-space: normal !important;
   max-width: 100% !important;
   display: inline !important;
-  
 }
 
 /* Force all inline text elements to wrap properly */

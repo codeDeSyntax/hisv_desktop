@@ -25,12 +25,31 @@ interface GroupedSermonMatch {
 
 type SearchMode = "all" | "exact";
 
+interface PersistedSearchViewState {
+  searchInput: string;
+  executedSearchTerm: string;
+  foundMatches: GroupedSermonMatch[];
+  searchMode: SearchMode;
+  expandedSermons: Record<string, boolean>;
+}
+
+let persistedSearchViewState: PersistedSearchViewState | null = null;
+
 // â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /**
  * Parse a FTS5 snippet that contains <mark>â€¦</mark> tags and render it as
  * React elements. No dangerouslySetInnerHTML required â€” the content is data
  * from our own controlled database.
  */
+function normalizeSnippetMarkup(rawSnippet: string): string {
+  return rawSnippet
+    .replace(/&lt;\s*mark\s*\/?\s*&gt;/gi, "")
+    .replace(/&lt;\s*\/\s*mark\s*&gt;/gi, "")
+    .replace(/<\s*mark\s*\/\s*>/gi, "")
+    .replace(/<\s*mark\b[^>]*>/gi, "<mark>")
+    .replace(/<\s*\/\s*mark\s*>/gi, "</mark>");
+}
+
 function RenderSnippet({
   snippet,
   accentColor,
@@ -38,12 +57,13 @@ function RenderSnippet({
   snippet: string;
   accentColor: string;
 }) {
-  const parts = snippet.split(/(<mark>.*?<\/mark>)/g);
+  const normalizedSnippet = normalizeSnippetMarkup(snippet);
+  const parts = normalizedSnippet.split(/(<mark>.*?<\/mark>)/gi);
   return (
     <>
       {parts.map((part, i) => {
-        if (part.startsWith("<mark>") && part.endsWith("</mark>")) {
-          const inner = part.slice(6, -7);
+        if (/^<mark>.*<\/mark>$/i.test(part)) {
+          const inner = part.replace(/^<mark>/i, "").replace(/<\/mark>$/i, "");
           return (
             <span
               key={i}
@@ -57,12 +77,13 @@ function RenderSnippet({
             </span>
           );
         }
+        const plainPart = part.replace(/<\/?\s*mark\b[^>]*>/gi, "");
         return (
           <span
             key={i}
             className="text-stone-600 dark:text-stone-400 text-[12px]"
           >
-            {part}
+            {plainPart}
           </span>
         );
       })}
@@ -75,7 +96,9 @@ function groupFTSResults(rows: FTSRow[]): GroupedSermonMatch[] {
   for (const row of rows) {
     const existing = map.get(row.id);
     if (existing) {
-      existing.snippets.push(row.snippet);
+      if (!existing.snippets.includes(row.snippet)) {
+        existing.snippets.push(row.snippet);
+      }
       existing.totalMatches++;
     } else {
       map.set(row.id, {
@@ -95,20 +118,46 @@ function groupFTSResults(rows: FTSRow[]): GroupedSermonMatch[] {
 const Search = () => {
   const { navigateToSearchResult } = useSermonContext();
   const { isDarkMode, accentColor } = useTheme();
-  const [searchInput, setSearchInput] = useState("");
-  const [foundMatches, setFoundMatches] = useState<GroupedSermonMatch[]>([]);
+  const [searchInput, setSearchInput] = useState(
+    () => persistedSearchViewState?.searchInput ?? "",
+  );
+  const [executedSearchTerm, setExecutedSearchTerm] = useState(
+    () => persistedSearchViewState?.executedSearchTerm ?? "",
+  );
+  const [foundMatches, setFoundMatches] = useState<GroupedSermonMatch[]>(
+    () => persistedSearchViewState?.foundMatches ?? [],
+  );
   const [isSearching, setIsSearching] = useState(false);
-  const [searchMode, setSearchMode] = useState<SearchMode>("all");
+  const [searchMode, setSearchMode] = useState<SearchMode>(
+    () => persistedSearchViewState?.searchMode ?? "all",
+  );
   const [expandedSermons, setExpandedSermons] = useState<
     Record<string, boolean>
-  >({});
+  >(() => persistedSearchViewState?.expandedSermons ?? {});
 
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const cacheRef = useRef<Map<string, GroupedSermonMatch[]>>(new Map());
 
+  useEffect(() => {
+    persistedSearchViewState = {
+      searchInput,
+      executedSearchTerm,
+      foundMatches,
+      searchMode,
+      expandedSermons,
+    };
+  }, [
+    searchInput,
+    executedSearchTerm,
+    foundMatches,
+    searchMode,
+    expandedSermons,
+  ]);
+
   // â”€â”€ search via FTS5 IPC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const doSearch = useCallback(async (term: string, mode: SearchMode) => {
-    const key = `${mode}:${term.toLowerCase()}`;
+    const normalizedTerm = term.trim().replace(/\s+/g, " ");
+    const key = `${mode}:${normalizedTerm.toLowerCase()}`;
     const cached = cacheRef.current.get(key);
     if (cached) {
       setFoundMatches(cached);
@@ -118,7 +167,7 @@ const Search = () => {
     setIsSearching(true);
     try {
       const rows: FTSRow[] = await window.ipcRenderer.invoke("db:search", {
-        query: term,
+        query: normalizedTerm,
         mode,
       });
       const grouped = groupFTSResults(rows);
@@ -165,6 +214,7 @@ const Search = () => {
         const trimmed = searchInput.trim();
         if (trimmed.length >= 2) {
           if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+          setExecutedSearchTerm(trimmed);
           doSearch(trimmed, searchMode);
         }
       }
@@ -178,6 +228,7 @@ const Search = () => {
       const trimmed = searchInput.trim();
       if (trimmed.length >= 2) {
         if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        setExecutedSearchTerm(trimmed);
         doSearch(trimmed, searchMode);
       }
     },
@@ -187,9 +238,11 @@ const Search = () => {
   const handleSermonClick = useCallback(
     (group: GroupedSermonMatch) => {
       // Open the sermon; in-sermon search will highlight the term
-      navigateToSearchResult(group.sermonId, 1, searchInput.trim());
+      const termForNavigation = executedSearchTerm || searchInput.trim();
+      if (!termForNavigation) return;
+      navigateToSearchResult(group.sermonId, 1, termForNavigation);
     },
-    [navigateToSearchResult, searchInput],
+    [navigateToSearchResult, executedSearchTerm, searchInput],
   );
 
   const toggleExpand = useCallback((sermonId: string) => {

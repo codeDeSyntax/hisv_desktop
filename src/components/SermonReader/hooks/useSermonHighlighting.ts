@@ -1,9 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   SelectionRange,
   HighlightsState,
   PalettePosition,
   ColorOption,
+  SelectionOverlayRect,
 } from "../types";
 
 export const useSermonHighlighting = (
@@ -19,6 +20,99 @@ export const useSermonHighlighting = (
     y: 0,
   });
   const [highlights, setHighlights] = useState<HighlightsState>({});
+  const [selectionOverlayRects, setSelectionOverlayRects] = useState<
+    SelectionOverlayRect[]
+  >([]);
+
+  const getTextOffsetInContainer = useCallback(
+    (container: Node, targetNode: Node, nodeOffset: number) => {
+      let totalOffset = 0;
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+
+      let currentNode = walker.nextNode();
+      while (currentNode) {
+        const textNode = currentNode as Text;
+        const textLength = textNode.textContent?.length || 0;
+
+        if (textNode === targetNode) {
+          return totalOffset + Math.min(nodeOffset, textLength);
+        }
+
+        totalOffset += textLength;
+        currentNode = walker.nextNode();
+      }
+
+      return -1;
+    },
+    [],
+  );
+
+  const getSelectionRects = useCallback((): SelectionOverlayRect[] => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+      return [];
+    }
+
+    const rects: SelectionOverlayRect[] = [];
+
+    for (let rangeIndex = 0; rangeIndex < selection.rangeCount; rangeIndex++) {
+      const range = selection.getRangeAt(rangeIndex);
+      if (range.collapsed) continue;
+
+      let paragraphElement: Node | null = range.commonAncestorContainer;
+      if (paragraphElement.nodeType === Node.TEXT_NODE) {
+        paragraphElement = paragraphElement.parentElement;
+      }
+
+      let htmlElement = paragraphElement as HTMLElement | null;
+      while (htmlElement && !htmlElement.id?.startsWith("paragraph-")) {
+        htmlElement = htmlElement.parentElement;
+      }
+
+      const paragraphContentElement = htmlElement?.querySelector(
+        '[data-paragraph-content="true"]',
+      );
+
+      if (!paragraphContentElement) continue;
+
+      if (
+        !paragraphContentElement.contains(range.startContainer) ||
+        !paragraphContentElement.contains(range.endContainer)
+      ) {
+        continue;
+      }
+
+      const clientRects = Array.from(range.getClientRects());
+      clientRects.forEach((rect, rectIndex) => {
+        if (rect.width < 2 || rect.height < 2) return;
+        rects.push({
+          id: `${rangeIndex}-${rectIndex}-${Math.round(rect.left)}-${Math.round(rect.top)}`,
+          x: rect.left,
+          y: rect.top,
+          width: rect.width,
+          height: rect.height,
+        });
+      });
+    }
+
+    return rects;
+  }, []);
+
+  useEffect(() => {
+    const updateSelectionPreview = () => {
+      setSelectionOverlayRects(getSelectionRects());
+    };
+
+    document.addEventListener("selectionchange", updateSelectionPreview);
+    window.addEventListener("resize", updateSelectionPreview);
+    window.addEventListener("scroll", updateSelectionPreview, true);
+
+    return () => {
+      document.removeEventListener("selectionchange", updateSelectionPreview);
+      window.removeEventListener("resize", updateSelectionPreview);
+      window.removeEventListener("scroll", updateSelectionPreview, true);
+    };
+  }, [getSelectionRects]);
 
   // Color palette for highlighting
   const highlightColors: ColorOption[] = [
@@ -38,14 +132,16 @@ export const useSermonHighlighting = (
     setTimeout(() => {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0) {
+        setSelectionOverlayRects([]);
         setShowColorPalette(false);
         return;
       }
 
       const range = selection.getRangeAt(0);
-      const selectedText = range.toString().trim();
+      const selectedText = range.toString();
 
-      if (selectedText.length === 0) {
+      if (selectedText.trim().length === 0) {
+        setSelectionOverlayRects([]);
         setShowColorPalette(false);
         return;
       }
@@ -67,19 +163,54 @@ export const useSermonHighlighting = (
       }
 
       if (!htmlElement?.id) {
+        setSelectionOverlayRects([]);
         setShowColorPalette(false);
         return;
       }
 
       const paragraphId = parseInt(htmlElement.id.replace("paragraph-", ""));
 
+      const paragraphContentElement = htmlElement.querySelector(
+        '[data-paragraph-content="true"]',
+      );
+
+      if (!paragraphContentElement) {
+        setSelectionOverlayRects([]);
+        setShowColorPalette(false);
+        return;
+      }
+
+      if (
+        !paragraphContentElement.contains(range.startContainer) ||
+        !paragraphContentElement.contains(range.endContainer)
+      ) {
+        setSelectionOverlayRects([]);
+        setShowColorPalette(false);
+        return;
+      }
+
       // Calculate text offsets within the paragraph
       const paragraphText =
         sermonParagraphs.find((p) => p.id === paragraphId)?.content || "";
-      const startOffset = paragraphText.indexOf(selectedText);
-      const endOffset = startOffset + selectedText.length;
 
-      if (startOffset === -1) {
+      const startOffset = getTextOffsetInContainer(
+        paragraphContentElement,
+        range.startContainer,
+        range.startOffset,
+      );
+      const endOffset = getTextOffsetInContainer(
+        paragraphContentElement,
+        range.endContainer,
+        range.endOffset,
+      );
+
+      if (
+        startOffset === -1 ||
+        endOffset === -1 ||
+        endOffset <= startOffset ||
+        endOffset > paragraphText.length
+      ) {
+        setSelectionOverlayRects([]);
         setShowColorPalette(false);
         return;
       }
@@ -89,7 +220,7 @@ export const useSermonHighlighting = (
         paragraphId,
         startOffset,
         endOffset,
-        text: selectedText,
+        text: paragraphText.substring(startOffset, endOffset),
       });
 
       // Position the color palette
@@ -104,9 +235,15 @@ export const useSermonHighlighting = (
         y: Math.max(paletteY, 60), // Ensure it doesn't go above viewport
       });
 
+      setSelectionOverlayRects(getSelectionRects());
       setShowColorPalette(true);
     }, 10); // Small delay to ensure selection is stable
-  }, [sermonParagraphs, scrollContainerRef]);
+  }, [
+    sermonParagraphs,
+    scrollContainerRef,
+    getTextOffsetInContainer,
+    getSelectionRects,
+  ]);
 
   // Apply highlight
   const applyHighlight = useCallback(
@@ -122,6 +259,19 @@ export const useSermonHighlighting = (
           updated[paragraphId] = {};
         }
 
+        const existingHighlights = updated[paragraphId];
+
+        Object.keys(existingHighlights).forEach((key) => {
+          const existing = existingHighlights[key];
+          const isOverlapping =
+            startOffset < existing.endOffset &&
+            endOffset > existing.startOffset;
+
+          if (isOverlapping) {
+            delete existingHighlights[key];
+          }
+        });
+
         // Always add or update the highlight (no toggle)
         updated[paragraphId][highlightKey] = {
           startOffset,
@@ -135,6 +285,7 @@ export const useSermonHighlighting = (
 
       // Clear selection and hide palette
       window.getSelection()?.removeAllRanges();
+      setSelectionOverlayRects([]);
       setShowColorPalette(false);
       setSelectionRange(null);
     },
@@ -163,6 +314,7 @@ export const useSermonHighlighting = (
     showColorPalette,
     palettePosition,
     highlights,
+    selectionOverlayRects,
     highlightColors,
     handleTextSelection,
     applyHighlight,

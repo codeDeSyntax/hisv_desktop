@@ -7,15 +7,23 @@ import ReadingSection from "./ReadingSection";
 import AppearanceSection from "./AppearanceSection";
 import AccentColorSection from "./AccentColorSection";
 
+type UpdatePrefs = {
+  autoCheck: boolean;
+  autoDownload: boolean;
+};
+
 const FontSettingsPage = () => {
   const { settings, setSettings } = useSermonContext();
-  const { isDarkMode, toggleDarkMode, accentColor, setAccentColor } = useTheme();
+  const { isDarkMode, toggleDarkMode, accentColor, setAccentColor } =
+    useTheme();
 
   const [fontSize, setFontSize] = useState<number>(Number(settings.fontSize));
   const [fontWeight, setFontWeight] = useState(settings.fontWeight);
   const [fontStyle, setFontStyle] = useState(settings.fontStyle);
   const [showSaveNotification, setShowSaveNotification] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>("reading");
+  const [autoCheckUpdates, setAutoCheckUpdates] = useState(true);
+  const [autoDownloadUpdates, setAutoDownloadUpdates] = useState(false);
 
   useEffect(() => {
     const next = {
@@ -30,6 +38,34 @@ const FontSettingsPage = () => {
     const t = setTimeout(() => setShowSaveNotification(false), 1800);
     return () => clearTimeout(t);
   }, [fontSize, fontWeight, fontStyle]);
+
+  useEffect(() => {
+    window.ipcRenderer
+      .invoke("get-update-preference")
+      .then((prefs: Partial<UpdatePrefs>) => {
+        setAutoCheckUpdates(prefs?.autoCheck ?? true);
+        setAutoDownloadUpdates(prefs?.autoDownload ?? false);
+      })
+      .catch(() => {});
+  }, []);
+
+  const saveUpdatePrefs = async (next: Partial<UpdatePrefs>) => {
+    await window.ipcRenderer
+      .invoke("set-update-preference", next)
+      .catch(() => {});
+  };
+
+  const toggleAutoCheckUpdates = async () => {
+    const next = !autoCheckUpdates;
+    setAutoCheckUpdates(next);
+    await saveUpdatePrefs({ autoCheck: next });
+  };
+
+  const toggleAutoDownloadUpdates = async () => {
+    const next = !autoDownloadUpdates;
+    setAutoDownloadUpdates(next);
+    await saveUpdatePrefs({ autoDownload: next });
+  };
 
   return (
     <div className="h-full w-full flex flex-col bg-white dark:bg-stone-950 overflow-hidden font-outfit">
@@ -91,6 +127,10 @@ const FontSettingsPage = () => {
             isDarkMode={isDarkMode}
             toggleDarkMode={toggleDarkMode}
             accentColor={accentColor}
+            autoCheckUpdates={autoCheckUpdates}
+            autoDownloadUpdates={autoDownloadUpdates}
+            toggleAutoCheckUpdates={toggleAutoCheckUpdates}
+            toggleAutoDownloadUpdates={toggleAutoDownloadUpdates}
           />
         )}
         {activeSection === "accent" && (

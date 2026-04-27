@@ -90,7 +90,7 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
             </span>
           </div>
         ) : (
-          <div className="h-full flex flex-col font-zilla backdrop-blur-sm rounded-lg border border-stone-200 dark:border-stone-700">
+          <div className="h-full flex flex-col font-zilla rounded-lg border border-stone-200 dark:border-stone-700">
             {/* Fixed Table Header */}
             <div className="flex-shrink-0">
               <table className="w-full">
@@ -119,7 +119,7 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -100 }}
                         transition={{ duration: 0.2, delay: index * 0.05 }}
-                        className="cursor-pointer group transition-all duration-200 hover:bg-gradient-to-r hover:from-stone-100/80 hover:to-stone-50/80 dark:hover:from-stone-800/50 dark:hover:to-stone-700/50 hover:shadow-sm"
+                        className="cursor-pointer group transition-colors duration-150 hover:bg-gradient-to-r hover:from-stone-100/80 hover:to-stone-50/80 dark:hover:from-stone-800/50 dark:hover:to-stone-700/50 hover:shadow-sm"
                         onClick={() => handleSermonClick(sermon)}
                       >
                         <td className="px-3 text-stone-800 dark:text-stone-200 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors text-sm leading-tight font-zilla border-x-0 border-t-0 border-b border-solid border-stone-200 dark:border-stone-700">
@@ -160,7 +160,7 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
                                 e.stopPropagation();
                                 handleDelete(sermon.title);
                               }}
-                              className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-600 transition-all duration-200 ml-1"
+                              className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-600 transition-opacity duration-150 ml-1"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                             >

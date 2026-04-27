@@ -127,7 +127,7 @@ const SermonList = memo(() => {
           <input
             placeholder="Filter by title or year…"
             onChange={handleSearch}
-            className="w-full pl-8 pr-4 py-2 text-[13px] bg-stone-100 dark:bg-stone-900 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-stone-300 dark:focus:ring-stone-700 text-stone-800 dark:text-stone-200 placeholder-stone-400 dark:placeholder-stone-500 transition-all"
+            className="w-full pl-8 pr-4 py-2 text-[13px] bg-stone-100 dark:bg-stone-900 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-stone-300 dark:focus:ring-stone-700 text-stone-800 dark:text-stone-200 placeholder-stone-400 dark:placeholder-stone-500"
             spellCheck={false}
           />
         </div>
@@ -137,7 +137,7 @@ const SermonList = memo(() => {
       <div className="flex-shrink-0 flex items-center px-4 py-2 border-b border-stone-100 dark:border-stone-800/60 select-none">
         <button
           onClick={() => handleSort("title")}
-          className="flex flex-1 bg-transparent items-center gap-1 text-left text-[10px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-widest hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
+          className="flex flex-1 bg-transparent items-center gap-1 text-left text-[10px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-widest hover:text-stone-600 dark:hover:text-stone-300"
         >
           Title
           {sortField === "title" && (
@@ -146,7 +146,7 @@ const SermonList = memo(() => {
         </button>
         <button
           onClick={() => handleSort("year")}
-          className="w-14 flex items-center gap-1 text-[10px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-widest hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
+          className="w-14 flex items-center gap-1 text-[10px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-widest hover:text-stone-600 dark:hover:text-stone-300"
         >
           Year
           {sortField === "year" && (
@@ -167,9 +167,8 @@ const SermonList = memo(() => {
             </span>
           </div>
         ) : (
-          sortedSermons.map((sermon,id) => (
+          sortedSermons.map((sermon, id) => (
             <SermonRow
-
               key={sermon.id}
               sermon={sermon}
               onRowClick={handleSermonClick}

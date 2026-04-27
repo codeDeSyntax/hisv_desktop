@@ -131,7 +131,7 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
                   duration: 0.16,
                   delay: Math.min(index * 0.04, 0.28),
                 }}
-                className="group relative rounded-lg border-solid border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-800/40 px-3 cursor-pointer hover:shadow-sm transition-all duration-150"
+                className="group relative rounded-lg border-solid border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-800/40 px-3 cursor-pointer hover:shadow-sm transition-colors duration-150"
                 style={{ "--hover-border": accentColor } as React.CSSProperties}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.borderColor = accentColor + "60")
@@ -186,7 +186,7 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
                           e.stopPropagation();
                           setShowDeleteConfirm(bookmark.id);
                         }}
-                        className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center justify-center transition-all duration-150"
+                        className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center justify-center transition-opacity duration-150"
                       >
                         <Trash2
                           size={11}

@@ -1,4 +1,12 @@
-import { useEffect, useMemo, useState, useCallback, memo, lazy, Suspense } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  memo,
+  lazy,
+  Suspense,
+} from "react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/Provider/Theme";
@@ -28,13 +36,8 @@ const Home = memo(() => {
   >("sermons");
   const [slideDirection, setSlideDirection] = useState(1);
   const [background, setBackground] = useState(false);
-  const {
-    randomSermons,
-    setSelectedMessage,
-    setCB,
-    selectedMessage,
-    loading,
-  } = useSermonContext();
+  const { randomSermons, setSelectedMessage, setCB, selectedMessage, loading } =
+    useSermonContext();
   const { isDarkMode, accentColor } = useTheme();
 
   // Listen for navigation events from TabHome
@@ -133,17 +136,11 @@ const Home = memo(() => {
   };
 
   return (
-    <div
-      className="h-[96vh] w-screen flex overflow-hidden bg-gray-50 dark:bg-surface transition-all duration-300"
-    >
+    <div className="h-[96vh] w-screen flex overflow-hidden bg-gray-50 dark:bg-surface">
       {/* Main Content Area - Book Layout */}
-      <div
-        className="flex-1 h-full flex overflow-hidden px-3 py-3"
-      >
+      <div className="flex-1 h-full flex overflow-hidden px-3 py-3">
         {/* Left Panel - Left Page of Book */}
-        <div
-          className="relative h-full border border-solid border-stone-300 dark:border-stone-700 rounded-l-3xl rounded-r-md overflow-hidden shadow-lg w-[35%]"
-        >
+        <div className="relative h-full border border-solid border-stone-300 dark:border-stone-700 rounded-l-3xl rounded-r-md overflow-hidden shadow-lg w-[35%]">
           {/* Curved page stack effect on left edge - SVG for natural look */}
           <svg
             className="absolute left-0 top-0 h-full w-6 overflow-visible"
@@ -169,7 +166,7 @@ const Home = memo(() => {
 
           <div className="relative w-full bg-gradient-to-r from-stone-50 via-white to-white h-full dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 rounded-l-2xl overflow-hidden flex flex-row border border-r-0 border-stone-300 dark:border-stone-700 shadow-[inset_-8px_0_12px_-8px_rgba(0,0,0,0.08),_-4px_0_8px_-2px_rgba(0,0,0,0.05)] dark:shadow-[inset_-8px_0_12px_-8px_rgba(0,0,0,0.3),_-4px_0_8px_-2px_rgba(0,0,0,0.2)]">
             {/* Vertical Icon Sidebar Nav — never re-mounts, stays frozen */}
-            <div className="relative z-10 flex-shrink-0 w-14 h-full flex flex-col items-center py-3 gap-1 border-r border-stone-200 dark:border-stone-700/60 bg-stone-50/80 dark:bg-stone-950/60 backdrop-blur-sm">
+            <div className="relative z-10 flex-shrink-0 w-14 h-full flex flex-col items-center py-3 gap-1 border-r border-stone-200 dark:border-stone-700/60 bg-stone-50/80 dark:bg-stone-950/60">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = leftPanelView === item.id;
@@ -178,7 +175,7 @@ const Home = memo(() => {
                     <motion.button
                       onClick={() => switchView(item.id as any)}
                       whileTap={{ scale: 0.92 }}
-                      className={`relative w-10 h-10 flex flex-col items-center justify-center rounded-2xl transition-all duration-200 cursor-pointer border-0 outline-none group overflow-hidden ${
+                      className={`relative w-10 h-10 flex flex-col items-center justify-center rounded-2xl transition-colors duration-150 cursor-pointer border-0 outline-none group overflow-hidden ${
                         isActive
                           ? "shadow-[0_10px_20px_-12px_rgba(0,0,0,0.45)]"
                           : "text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-200"
@@ -193,7 +190,7 @@ const Home = memo(() => {
                       }
                     >
                       <span
-                        className={`absolute inset-0 rounded-2xl transition-all duration-200 ${
+                        className={`absolute inset-0 rounded-2xl transition-colors duration-150 ${
                           isActive
                             ? "border"
                             : "bg-gradient-to-br from-stone-100 via-stone-50 to-stone-200/90 dark:from-stone-800 dark:via-stone-900 dark:to-stone-800 border border-stone-200/80 dark:border-stone-700/80 group-hover:from-stone-200 group-hover:via-stone-100 group-hover:to-stone-200 dark:group-hover:from-stone-700 dark:group-hover:via-stone-800 dark:group-hover:to-stone-700"
@@ -207,7 +204,7 @@ const Home = memo(() => {
                             : undefined
                         }
                       />
-                      <span className="absolute left-1.5 right-1.5 top-1 h-2.5 rounded-full bg-white/70 dark:bg-white/10 blur-[1px] opacity-90" />
+                      <span className="absolute left-1.5 right-1.5 top-1 h-2.5 rounded-full bg-white/70 dark:bg-white/10 opacity-90" />
                       <span className="absolute inset-[1px] rounded-[15px] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),inset_0_-1px_0_rgba(0,0,0,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.32)]" />
 
                       {/* Active left-edge indicator */}
@@ -236,99 +233,97 @@ const Home = memo(() => {
             {/* Sliding content area — sidebar above stays frozen */}
             <div className="relative flex-1 h-full overflow-hidden bg-white dark:bg-stone-950">
               <Suspense fallback={null}>
-              <AnimatePresence mode="wait" custom={slideDirection}>
-                <motion.div
-                  key={leftPanelView}
-                  custom={slideDirection}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{
-                    x: {
-                      type: "spring",
-                      stiffness: 500,
-                      damping: 38,
-                      mass: 0.5,
-                    },
-                    opacity: { duration: 0.12 },
-                  }}
-                  className="absolute inset-0 overflow-auto no-scrollbar"
-                >
-                  {leftPanelView === "sermons" && (
-                    <div className="h-full">
-                      <SermonList />
-                    </div>
-                  )}
+                <AnimatePresence mode="wait" custom={slideDirection}>
+                  <motion.div
+                    key={leftPanelView}
+                    custom={slideDirection}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{
+                      x: {
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 38,
+                        mass: 0.5,
+                      },
+                      opacity: { duration: 0.12 },
+                    }}
+                    className="absolute inset-0 overflow-auto no-scrollbar"
+                  >
+                    {leftPanelView === "sermons" && (
+                      <div className="h-full">
+                        <SermonList />
+                      </div>
+                    )}
 
-                  {leftPanelView === "search" && (
-                    <div className="h-full overflow-auto no-scrollbar">
-                      <Search />
-                    </div>
-                  )}
+                    {leftPanelView === "search" && (
+                      <div className="h-full overflow-auto no-scrollbar">
+                        <Search />
+                      </div>
+                    )}
 
-                  {leftPanelView === "bookmarks" && (
-                    <div className="h-full flex flex-col overflow-hidden">
-                      <div className="flex-shrink-0 px-4 py-3 border-b border-stone-100 dark:border-stone-800">
-                        <div className="flex items-center gap-2">
-                          <BookMarked className="w-4 h-4 text-stone-500 dark:text-stone-400" />
-                          <span className="text-sm font-semibold text-stone-700 dark:text-stone-200 tracking-wide">
-                            Bookmarks
-                          </span>
+                    {leftPanelView === "bookmarks" && (
+                      <div className="h-full flex flex-col overflow-hidden">
+                        <div className="flex-shrink-0 px-4 py-3 border-b border-stone-100 dark:border-stone-800">
+                          <div className="flex items-center gap-2">
+                            <BookMarked className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+                            <span className="text-sm font-semibold text-stone-700 dark:text-stone-200 tracking-wide">
+                              Bookmarks
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex-1 overflow-y-auto no-scrollbar p-3">
+                          <ModularBookmarks
+                            className="h-full"
+                            showHeader={false}
+                            maxHeight="100%"
+                          />
                         </div>
                       </div>
-                      <div className="flex-1 overflow-y-auto no-scrollbar p-3">
-                        <ModularBookmarks
-                          className="h-full"
-                          showHeader={false}
-                          maxHeight="100%"
-                        />
-                      </div>
-                    </div>
-                  )}
+                    )}
 
-                  {leftPanelView === "recents" && (
-                    <div className="h-full flex flex-col overflow-hidden">
-                      <div className="flex-shrink-0 px-4 py-3 border-b border-stone-100 dark:border-stone-800">
-                        <div className="flex items-center gap-2">
-                          <History className="w-4 h-4 text-stone-500 dark:text-stone-400" />
-                          <span className="text-sm font-semibold text-stone-700 dark:text-stone-200 tracking-wide">
-                            Recent Activity
-                          </span>
+                    {leftPanelView === "recents" && (
+                      <div className="h-full flex flex-col overflow-hidden">
+                        <div className="flex-shrink-0 px-4 py-3 border-b border-stone-100 dark:border-stone-800">
+                          <div className="flex items-center gap-2">
+                            <History className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+                            <span className="text-sm font-semibold text-stone-700 dark:text-stone-200 tracking-wide">
+                              Recent Activity
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex-1 overflow-y-auto no-scrollbar p-3">
+                          <ModularRecents
+                            className="h-full"
+                            showHeader={false}
+                            maxHeight="100%"
+                          />
                         </div>
                       </div>
-                      <div className="flex-1 overflow-y-auto no-scrollbar p-3">
-                        <ModularRecents
-                          className="h-full"
-                          showHeader={false}
-                          maxHeight="100%"
-                        />
+                    )}
+
+                    {leftPanelView === "settings" && (
+                      <div className="h-full">
+                        <FontSettingsPage />
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {leftPanelView === "settings" && (
-                    <div className="h-full">
-                      <FontSettingsPage />
-                    </div>
-                  )}
-
-                  {leftPanelView === "home" && (
-                    <div className="h-full">
-                      <TabHome />
-                    </div>
-                  )}
-                </motion.div>
-              </AnimatePresence>
+                    {leftPanelView === "home" && (
+                      <div className="h-full">
+                        <TabHome />
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </Suspense>
             </div>
           </div>
         </div>
 
         {/* Book Spine / Hinge - Center Binding */}
-        <div
-          className="relative h-full flex flex-col items-center py-8 w-5 flex-shrink-0 overflow-hidden"
-        >
+        <div className="relative h-full flex flex-col items-center py-8 w-5 flex-shrink-0 overflow-hidden">
           {/* Spine background - not full height */}
           <div className="relative flex-1 w-full roun overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-stone-100 via-stone-200 to-stone-100 dark:from-stone-800 dark:via-stone-700 dark:to-stone-800 shadow-inner"></div>
@@ -361,35 +356,31 @@ const Home = memo(() => {
         </div>
 
         {/* Right Panel - Right Page of Book */}
-        <div
-          className="relative bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 h-full border border-solid border-stone-300 dark:border-stone-700 overflow-hidden shadow-lg flex items-center justify-center w-[65%] rounded-r-3xl"
-        >
+        <div className="relative bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 h-full border border-solid border-stone-300 dark:border-stone-700 overflow-hidden shadow-lg flex items-center justify-center w-[65%] rounded-r-3xl">
           {/* Curved page stack effect on right edge - SVG for natural look */}
-              <svg
-                className="absolute right-0 top-0 h-full w-6 overflow-visible"
-                viewBox="0 0 24 100"
-                preserveAspectRatio="none"
-              >
-                {/* Back pages - stacked effect */}
-                <path
-                  d="M0,2 Q16,2 18,10 Q22,25 22,50 Q22,75 18,90 Q16,98 0,98"
-                  className="fill-stone-300 dark:fill-stone-600"
-                />
-                <path
-                  d="M0,3 Q14,3 16,12 Q20,27 20,50 Q20,73 16,88 Q14,97 0,97"
-                  className="fill-stone-200 dark:fill-stone-700"
-                />
-                <path
-                  d="M0,4 Q12,4 14,14 Q18,29 18,50 Q18,71 14,86 Q12,96 0,96"
-                  className="fill-stone-100 dark:fill-stone-800"
-                />
-              </svg>
-              {/* Page curl shadow */}
-              <div className="absolute right-4 top-8 bottom-8 w-4 bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900  rounded-r-full"></div>
-
-          <div
-            className="relative w-full h-[95%] bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 rounded-r-2xl overflow-hidden flex flex-col border border-l-0 border-stone-300 dark:border-stone-700"
+          <svg
+            className="absolute right-0 top-0 h-full w-6 overflow-visible"
+            viewBox="0 0 24 100"
+            preserveAspectRatio="none"
           >
+            {/* Back pages - stacked effect */}
+            <path
+              d="M0,2 Q16,2 18,10 Q22,25 22,50 Q22,75 18,90 Q16,98 0,98"
+              className="fill-stone-300 dark:fill-stone-600"
+            />
+            <path
+              d="M0,3 Q14,3 16,12 Q20,27 20,50 Q20,73 16,88 Q14,97 0,97"
+              className="fill-stone-200 dark:fill-stone-700"
+            />
+            <path
+              d="M0,4 Q12,4 14,14 Q18,29 18,50 Q18,71 14,86 Q12,96 0,96"
+              className="fill-stone-100 dark:fill-stone-800"
+            />
+          </svg>
+          {/* Page curl shadow */}
+          <div className="absolute right-4 top-8 bottom-8 w-4 bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900  rounded-r-full"></div>
+
+          <div className="relative w-full h-[95%] bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 rounded-r-2xl overflow-hidden flex flex-col border border-l-0 border-stone-300 dark:border-stone-700">
             {selectedMessage ? (
               <Suspense fallback={null}>
                 <SelectedSermon

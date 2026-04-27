@@ -31,6 +31,8 @@ interface PersistedSearchViewState {
   foundMatches: GroupedSermonMatch[];
   searchMode: SearchMode;
   expandedSermons: Record<string, boolean>;
+  selectedSermonFilter: string | null;
+  showSermonDropdown: boolean;
 }
 
 let persistedSearchViewState: PersistedSearchViewState | null = null;
@@ -134,9 +136,16 @@ const Search = () => {
   const [expandedSermons, setExpandedSermons] = useState<
     Record<string, boolean>
   >(() => persistedSearchViewState?.expandedSermons ?? {});
+  const [selectedSermonFilter, setSelectedSermonFilter] = useState<
+    string | null
+  >(() => persistedSearchViewState?.selectedSermonFilter ?? null);
+  const [showSermonDropdown, setShowSermonDropdown] = useState<boolean>(
+    () => persistedSearchViewState?.showSermonDropdown ?? false,
+  );
 
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const cacheRef = useRef<Map<string, GroupedSermonMatch[]>>(new Map());
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     persistedSearchViewState = {
@@ -145,6 +154,8 @@ const Search = () => {
       foundMatches,
       searchMode,
       expandedSermons,
+      selectedSermonFilter,
+      showSermonDropdown,
     };
   }, [
     searchInput,
@@ -152,7 +163,28 @@ const Search = () => {
     foundMatches,
     searchMode,
     expandedSermons,
+    selectedSermonFilter,
+    showSermonDropdown,
   ]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowSermonDropdown(false);
+      }
+    };
+
+    if (showSermonDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [showSermonDropdown]);
 
   // â”€â”€ search via FTS5 IPC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const doSearch = useCallback(async (term: string, mode: SearchMode) => {
@@ -249,19 +281,28 @@ const Search = () => {
     setExpandedSermons((prev) => ({ ...prev, [sermonId]: !prev[sermonId] }));
   }, []);
 
+  // Filter matches based on selected sermon
+  const displayedMatches = selectedSermonFilter
+    ? foundMatches.filter((m) => m.sermonId === selectedSermonFilter)
+    : foundMatches;
+
   const totalMatches = foundMatches.reduce((t, g) => t + g.totalMatches, 0);
+  const displayedTotalMatches = displayedMatches.reduce(
+    (t, g) => t + g.totalMatches,
+    0,
+  );
 
   return (
     <div className="h-full flex flex-col bg-white dark:bg-stone-950 font-zilla">
       {/* Search header */}
-      <div className="flex-shrink-0 px-4 pt-4 pb-3 border-b border-stone-100 dark:border-stone-800/80">
-        <form onSubmit={handleSearchSubmit}>
+      <div className="flex-shrink-0 px-4 pt-4 pb-3 border-b border-stone-100 dark:border-stone-800/80 overflow-visible">
+        <form onSubmit={handleSearchSubmit} className="overflow-visible">
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <input
                 type="text"
                 placeholder="Search quotes, phrases, keywords… (Press Enter to search)"
-                className="w-full pl-4 pr-10 py-2.5 text-[13px] bg-stone-100 dark:bg-stone-900 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 transition-all"
+                className="w-full pl-4 pr-10 py-2.5 text-[13px] bg-stone-100 dark:bg-stone-900 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 transition-colors duration-150"
                 onChange={handleSearchInput}
                 onKeyDown={handleKeyDown}
                 value={searchInput}
@@ -286,7 +327,7 @@ const Search = () => {
             </button>
           </div>
 
-          <div className="mt-2 flex items-center gap-2">
+          <div className="mt-2 flex items-center gap-2 relative">
             <button
               type="button"
               onClick={() => setSearchMode("all")}
@@ -320,7 +361,83 @@ const Search = () => {
               Exact match
             </button>
           </div>
+          {/* Sermon filter dropdown */}
+          {foundMatches.length > 0 && (
+            <div
+              className="relative ml-auto w-full bg-stone-100 dark:bg-stone-900 rounded-full"
+              ref={dropdownRef}
+            >
+              <button
+                type="button"
+                onClick={() => setShowSermonDropdown(!showSermonDropdown)}
+                className="flex items-center gap-1 px-2.5 mt-2 p-2  text-[11px] rounded-full border text-stone-600 dark:text-stone-300 border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors w-full"
+              >
+                <span className="text-[10px]">
+                  {selectedSermonFilter
+                    ? "Filter: " +
+                      foundMatches
+                        .find((m) => m.sermonId === selectedSermonFilter)
+                        ?.sermonTitle.split(" ")[0] +
+                      "..."
+                    : "Filter sermons"}
+                </span>
+                <ChevronDown
+                  size={12}
+                  className={`transition-transform ${
+                    showSermonDropdown ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
 
+              {/* Dropdown menu */}
+              {showSermonDropdown && (
+                <div className="absolute left-0 h-[33rem]  mt-1 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-lg shadow-lg z-50 py-2 overflow-y-auto no-scrollbar w-full ">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSermonFilter(null);
+                      setShowSermonDropdown(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 text-[12px] transition-colors ${
+                      selectedSermonFilter === null
+                        ? "bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-semibold"
+                        : "text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
+                    }`}
+                  >
+                    All sermons ({foundMatches.length})
+                  </button>
+
+                  <div className="border-t border-stone-200 dark:border-stone-700  ">
+                    {foundMatches.map((sermon) => (
+                      <button
+                        key={sermon.sermonId}
+                        type="button"
+                        onClick={() => {
+                          setSelectedSermonFilter(sermon.sermonId);
+                          setShowSermonDropdown(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 text-[12px] transition-colors border-b border-stone-100 dark:border-stone-800 last:border-b-0 ${
+                          selectedSermonFilter === sermon.sermonId
+                            ? "bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-semibold"
+                            : "text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="flex-1">{sermon.sermonTitle}</span>
+                          <span
+                            className="text-white px-1.5 py-0.5 rounded text-[10px] font-semibold flex-shrink-0 ml-2"
+                            style={{ backgroundColor: accentColor }}
+                          >
+                            {sermon.totalMatches}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           {searchInput.length > 0 && searchInput.length < 2 && (
             <p className="mt-2 text-[11px] text-stone-400 dark:text-stone-500">
               Enter at least 2 characters, then press Enter or click Search
@@ -355,20 +472,20 @@ const Search = () => {
             <div className="px-4 pt-3 pb-1">
               <p className="text-[11px] text-stone-500 dark:text-stone-400">
                 <span className="font-semibold text-stone-700 dark:text-stone-200">
-                  {totalMatches}
+                  {displayedTotalMatches}
                 </span>{" "}
-                match{totalMatches !== 1 ? "es" : ""} in{" "}
+                match{displayedTotalMatches !== 1 ? "es" : ""} in{" "}
                 <span className="font-semibold text-stone-700 dark:text-stone-200">
-                  {foundMatches.length}
+                  {displayedMatches.length}
                 </span>{" "}
-                sermon{foundMatches.length !== 1 ? "s" : ""} for "
+                sermon{displayedMatches.length !== 1 ? "s" : ""} for "
                 {searchInput.trim()}" (
                 {searchMode === "exact" ? "Exact" : "All"})
               </p>
             </div>
 
             <div className="px-2 py-1 space-y-1">
-              {foundMatches.map((group) => {
+              {displayedMatches.map((group) => {
                 const isExpanded = expandedSermons[group.sermonId];
                 const shown = isExpanded
                   ? group.snippets

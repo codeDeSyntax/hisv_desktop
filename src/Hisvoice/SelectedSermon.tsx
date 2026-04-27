@@ -320,7 +320,7 @@ const SelectedSermon = ({
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
-                fill={isDarkMode ? "#ac7850" : "#6a4626"}
+                fill={isDarkMode ? "white" : "#2D2D2D"}
                 className="rotate-90"
               >
                 <path
@@ -333,28 +333,29 @@ const SelectedSermon = ({
           )}
           {/* Endnote marker */}
           <span
-            className="font-semibold italic"
-            style={{ color: accentColor + "90" }}
+            className="font-semibold italic text-black underline dark:text-white"
+            // style={{ color: accentColor + "90" }}
             title="William Branham quote marker"
           >
             {endnotePrefix}
           </span>
           {/* Quote content */}
           <span
-            className="italic font-medium"
+            className=" font-thin italic text-black underline dark:text-white"
             style={{
-              color: accentColor + "80",
+              // color: accentColor + "80",
               marginLeft: "2px",
               marginRight: "2px",
             }}
             title="William Branham quote"
           >
             {normalizedQuoteContent}
+            {"  "}
           </span>
           {/* Author name */}
           <span
-            className="font-bold"
-            style={{ color: accentColor + "90" }}
+            className="font-bold text-black underline dark:text-white"
+            // style={{ color: accentColor + "90" }}
             title="Quote author"
           >
             {authorName}
@@ -427,14 +428,14 @@ const SelectedSermon = ({
             {part}
             {i < numbers.length && (
               <span
-                className="font-medium"
+                className="font-medium italic "
                 style={{
-                  color: isDarkMode ? "#ac7850" : "#6a4626",
+                  color: isDarkMode ? "white" : "black",
                   fontWeight: "600",
                 }}
                 title="Number"
               >
-                {numbers[i]}
+                {numbers[i]}{" "}
               </span>
             )}
           </React.Fragment>

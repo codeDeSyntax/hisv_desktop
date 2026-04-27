@@ -1,6 +1,6 @@
 {
   "name": "his-voice",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "main": "dist-electron/main/index.js",
   "description": "Electron Vite React boilerplate.",
   "author": "dlcentimemessage>",

@@ -158,7 +158,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     localStorage.getItem("vsermontheme") || "light",
   );
   const [settings, setSettings] = useState<SermonSettings>({
-    fontFamily: "Zilla Slab",
+    fontFamily: "Inter",
     fontStyle: "normal",
     fontSize: "20",
     fontWeight: "normal",

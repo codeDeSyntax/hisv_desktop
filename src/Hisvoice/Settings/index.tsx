@@ -137,6 +137,7 @@ const FontSettingsPage = () => {
           <AccentColorSection
             accentColor={accentColor}
             setAccentColor={setAccentColor}
+            isDarkMode={isDarkMode}
           />
         )}
       </div>

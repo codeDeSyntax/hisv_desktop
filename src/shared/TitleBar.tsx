@@ -318,12 +318,12 @@ const TitleBar: React.FC = () => {
           {selectedMessage && activeTab === "message" && (
             <div
               key={`current-${selectedMessage.id}`}
-              className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-t-lg cursor-default transition-all duration-200 flex-shrink-0 max-w-[160px] min-w-[100px] group h-[85%] bg-white dark:bg-stone-800 border-t-2 border-l border-r border-l-stone-400 border-r-stone-400 dark:border-l-stone-500 dark:border-r-stone-500 text-stone-900 dark:text-stone-100 shadow-md"
+              className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-t-lg cursor-default flex-shrink-0 max-w-[160px] min-w-[100px] group h-[85%] bg-white dark:bg-stone-800 border-t-2 border-l border-r border-l-stone-400 border-r-stone-400 dark:border-l-stone-500 dark:border-r-stone-500 text-stone-900 dark:text-stone-100 shadow-md"
               style={{ borderTopColor: accentColor }}
               title={selectedMessage.title}
             >
               {/* Active indicator dot - pulsing */}
-              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-green-600 dark:bg-green-500 animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-green-600 dark:bg-green-500" />
 
               {/* Sermon title */}
               <span className="text-[10px] font-semibold truncate flex-1">
@@ -365,7 +365,7 @@ const TitleBar: React.FC = () => {
                   }
                   setActiveTabId(sermon.id.toString());
                 }}
-                className="relative flex items-center gap-1.5 px-2 py-1 rounded-t-lg cursor-pointer transition-all duration-200 flex-shrink-0 max-w-[140px] min-w-[100px] group h-[85%] bg-stone-100 dark:bg-stone-900 hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400"
+                className="relative flex items-center gap-1.5 px-2 py-1 rounded-t-lg cursor-pointer flex-shrink-0 max-w-[140px] min-w-[100px] group h-[85%] bg-stone-100 dark:bg-stone-900 hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400"
                 title={sermon.title}
               >
                 {/* Indicator dot */}

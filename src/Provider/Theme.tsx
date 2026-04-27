@@ -3,14 +3,16 @@
 import React, {
   createContext,
   useContext,
-  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useCallback,
   useState,
   ReactNode,
 } from "react";
 
 type ThemeContextType = {
   isDarkMode: boolean;
-  toggleDarkMode: () => void;
+  toggleDarkMode: (origin?: { x: number; y: number }) => void;
   accentColor: string;
   setAccentColor: (color: string) => void;
 };
@@ -35,43 +37,93 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   });
   const [accentColor, setAccentColorState] = useState<string>(() => {
     try {
-      return localStorage.getItem("accentColor") ?? "#10a37f";
+      const isDark = localStorage.getItem("darkMode") === "true" ||
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+      if (isDark) {
+        return localStorage.getItem("accentColorDark") ?? "#E8C968";
+      } else {
+        return localStorage.getItem("accentColorLight") ?? "#A68B4C";
+      }
     } catch {
-      return "#10a37f";
+      return "#A68B4C";
     }
   });
 
-  useEffect(() => {
-    // Apply dark mode class to document
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+
+    // Keep theme switching cheap and deterministic.
     if (isDarkMode) {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
     }
+
+    // Align native form controls/scrollbars with the active theme.
+    root.style.colorScheme = isDarkMode ? "dark" : "light";
+
+    // Switch accent color based on mode
+    const accentColorForMode = isDarkMode
+      ? localStorage.getItem("accentColorDark") ?? "#E8C968"
+      : localStorage.getItem("accentColorLight") ?? "#A68B4C";
+    setAccentColorState(accentColorForMode);
+    root.style.setProperty("--accent", accentColorForMode);
 
     // Store user preference
     localStorage.setItem("darkMode", String(isDarkMode));
   }, [isDarkMode]);
 
-  const toggleDarkMode = () => {
-    // Apply a transitioning class so CSS can animate all color changes smoothly
-    document.documentElement.classList.add("theme-transitioning");
-    setIsDarkMode((prev) => !prev);
-    window.setTimeout(() => {
-      document.documentElement.classList.remove("theme-transitioning");
-    }, 300);
-  };
+  const toggleDarkMode = useCallback((origin?: { x: number; y: number }) => {
+    const root = document.documentElement;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => { finished: Promise<void> };
+    };
 
-  const setAccentColor = (color: string) => {
+    if (typeof doc.startViewTransition !== "function" || prefersReducedMotion) {
+      setIsDarkMode((prev) => !prev);
+      return;
+    }
+
+    const x = origin?.x ?? window.innerWidth / 2;
+    const y = origin?.y ?? window.innerHeight / 2;
+
+    root.style.setProperty("--theme-sweep-x", `${x}px`);
+    root.style.setProperty("--theme-sweep-y", `${y}px`);
+    root.classList.add("theme-sweep");
+
+    try {
+      const transition = doc.startViewTransition(() => {
+        setIsDarkMode((prev) => !prev);
+      });
+
+      transition.finished.finally(() => {
+        root.classList.remove("theme-sweep");
+      });
+    } catch {
+      root.classList.remove("theme-sweep");
+      setIsDarkMode((prev) => !prev);
+    }
+  }, []);
+
+  const setAccentColor = useCallback((color: string) => {
     setAccentColorState(color);
     document.documentElement.style.setProperty("--accent", color);
-    localStorage.setItem("accentColor", color);
-  };
+    // Save to the appropriate mode-specific key
+    const key = isDarkMode ? "accentColorDark" : "accentColorLight";
+    localStorage.setItem(key, color);
+  }, [isDarkMode]);
+
+  const contextValue = useMemo(
+    () => ({ isDarkMode, toggleDarkMode, accentColor, setAccentColor }),
+    [isDarkMode, toggleDarkMode, accentColor, setAccentColor],
+  );
 
   return (
-    <ThemeContext.Provider
-      value={{ isDarkMode, toggleDarkMode, accentColor, setAccentColor }}
-    >
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

@@ -1,7 +1,6 @@
 // components/ThemeToggle.tsx
 
 import React from "react";
-import { motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
 import { useTheme } from "@/Provider/Theme";
 import { Tooltip } from "antd";
@@ -21,7 +20,7 @@ export const ThemeToggle: React.FC = () => {
     // </motion.button>
     <Tooltip title="Toggle theme">
       <div
-        onClick={toggleDarkMode}
+        onClick={(e) => toggleDarkMode({ x: e.clientX, y: e.clientY })}
         className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
       >
         {isDarkMode ? (

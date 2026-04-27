@@ -12,12 +12,12 @@ interface SermonRowProps {
 const SermonRow = memo(
   ({ sermon, onRowClick, id }: SermonRowProps) => (
     <div
-      className={`flex items-center px-4 py-2 border-solid cursor-pointer group transition-colors duration-100 hover:bg-stone-50 dark:hover:bg-stone-900/60 border-b border-stone-50 dark:border-stone-900/40 ${id % 2 === 0 ? "bg-stone-100 dark:bg-stone-800/50" : "bg-white dark:bg-stone-900/40"}  `}
+      className={`flex items-center px-4 py-2 border-solid cursor-pointer group hover:bg-stone-50 dark:hover:bg-stone-900 border-b border-stone-50 dark:border-stone-900 ${id % 2 === 0 ? "bg-stone-100 dark:bg-stone-800" : "bg-white dark:bg-stone-900"}  `}
       onClick={() => onRowClick(sermon)}
     >
       {/* Title */}
       <div className="flex-1 min-w-0 pr-3">
-        <span className="text-[13px] font-medium text-stone-700 dark:text-stone-300 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors line-clamp-1 ">
+        <span className="text-[13px] font-medium text-stone-700 dark:text-stone-300 group-hover:text-stone-900 dark:group-hover:text-stone-100 line-clamp-1 ">
           {sermon.title}
         </span>
       </div>
@@ -29,7 +29,7 @@ const SermonRow = memo(
       </div>
       {/* Type */}
       <div className="w-10 flex-shrink-0 flex justify-center">
-        <div className="w-5 h-5 rounded-full bg-stone-100 dark:bg-stone-800/80 flex items-center justify-center group-hover:bg-stone-200 dark:group-hover:bg-stone-700/60 transition-colors">
+        <div className="w-5 h-5 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center group-hover:bg-stone-200 dark:group-hover:bg-stone-700">
           {sermon.type === "mp3" ? (
             <Mic2 size={9} className="text-stone-500 dark:text-stone-400" />
           ) : (

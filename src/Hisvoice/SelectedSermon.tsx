@@ -7,24 +7,10 @@ import {
   useCallback,
   useMemo,
 } from "react";
-import { Card, Button, theme } from "antd";
+
 import ModernAudioPlayer from "./ModernAudioPlayer";
-import {
-  ImageIcon,
-  Search,
-  X,
-  Info,
-  Menu,
-  ChevronUp,
-  ChevronDown,
-  BookOpen,
-  BookmarkCheck,
-  Bookmark,
-  TextIcon,
-  TextSelectIcon,
-} from "lucide-react";
-import { motion } from "framer-motion";
-import { AnimatePresence } from "framer-motion";
+import { BookmarkCheck, Bookmark } from "lucide-react";
+
 import { Sermon } from "@/types";
 import { useSermonContext } from "@/Provider/Vsermons";
 
@@ -32,7 +18,6 @@ import { useTheme } from "@/Provider/Theme";
 import {
   formatSermonIntoParagraphs,
   formatSermonIntoParagraphsAsync,
-  searchSermon,
 } from "@/utils/sermonUtils";
 
 // Import modular components
@@ -146,32 +131,15 @@ const SelectedSermon = ({
     selectedMessage?.id,
   );
 
-  // Legacy search results format for compatibility
-  const searchResults = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-
-    const paragraphTexts = sermonParagraphs.map((p) => p.content);
-    const resultIndices = searchSermon(paragraphTexts, searchQuery);
-
-    return resultIndices.map((index) => ({
-      paragraphId: index + 1,
-      matches: 1,
-    }));
-  }, [sermonParagraphs, searchQuery]);
-
-  // Handle search navigation for legacy compatibility
-  const handleNavigateSearch = (direction: "next" | "prev") => {
-    if (direction === "next") {
-      goToNextSearchResult();
-    } else {
-      goToPreviousSearchResult();
-    }
-  };
-
-  // Jump to specific paragraph (legacy compatibility)
-  const jumpToParagraph = (paragraphId: number) => {
-    goToParagraph(paragraphId);
-  };
+  const skeletonBaseColor = isDarkMode
+    ? "rgba(120,113,108,.22)"
+    : "rgba(214,211,209,.62)";
+  const skeletonSoftColor = isDarkMode
+    ? "rgba(120,113,108,.16)"
+    : "rgba(214,211,209,.44)";
+  const skeletonFaintColor = isDarkMode
+    ? "rgba(120,113,108,.11)"
+    : "rgba(214,211,209,.3)";
 
   // For very large sermons, we could use the async version
   // This is kept for future optimization if needed
@@ -233,6 +201,7 @@ const SelectedSermon = ({
           style={{
             backgroundColor: highlight.color,
             padding: "2px 4px",
+
             borderRadius: "3px",
             transition: "all 0.2s ease",
           }}
@@ -333,17 +302,17 @@ const SelectedSermon = ({
           )}
           {/* Endnote marker */}
           <span
-            className="font-semibold italic text-black underline dark:text-white"
-            // style={{ color: accentColor + "90" }}
+            className="font-thin font-dscript italic text-black  dark:text-white dark:opacity-75"
+            style={{ color: accentColor }}
             title="William Branham quote marker"
           >
             {endnotePrefix}
           </span>
           {/* Quote content */}
           <span
-            className=" font-thin italic text-black underline dark:text-white"
+            className=" font-thin font-serif  italic text-black  dark:text-white dark:opacity-75"
             style={{
-              // color: accentColor + "80",
+              backgroundColor: accentColor + "40",
               marginLeft: "2px",
               marginRight: "2px",
             }}
@@ -354,8 +323,8 @@ const SelectedSermon = ({
           </span>
           {/* Author name */}
           <span
-            className="font-bold text-black underline dark:text-white"
-            // style={{ color: accentColor + "90" }}
+            className="font-bol font-dscript text-black   dark:text-white "
+            style={{ color: accentColor }}
             title="Quote author"
           >
             {authorName}
@@ -710,7 +679,7 @@ const SelectedSermon = ({
   };
 
   return (
-    <div className="bg-white dark:bg-background h-screen   relative  w-screen">
+    <div className="bg-white dark:bg-background h-screen   relative  w-screen flex items-center justify-center">
       <SaveNotification
         show={showSaveNotification}
         onClose={() => setShowSaveNotification(false)}
@@ -747,19 +716,6 @@ const SelectedSermon = ({
         />
       )}
 
-      {/* Receipt Style Control Panel */}
-      <ReceiptStylePanel
-        show={showControlPanel}
-        onClose={() => setShowControlPanel(false)}
-        sermon={selectedMessage}
-        onSearch={handleSearch}
-        searchResults={searchResults}
-        currentMatch={currentSearchIndex}
-        onNavigateSearch={handleNavigateSearch}
-        currentParagraph={currentParagraph}
-        onJumpToParagraph={jumpToParagraph}
-      />
-
       {/* Color Palette for Text Highlighting */}
       <ColorPalette
         showColorPalette={showColorPalette}
@@ -789,14 +745,42 @@ const SelectedSermon = ({
         onClose={() => setShowEndnoteSheet(false)}
       />
 
-      <div className="h-full flex flex-col overflow-hidden">
+      <div className="relative h-full flex flex-col justify-start items-stretch overflow-hidden px-0 sm:px-1">
+        {/* Receipt Style Control Panel */}
+        <ReceiptStylePanel
+          show={showControlPanel}
+          onClose={() => setShowControlPanel(false)}
+          sermon={selectedMessage}
+        />
+
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar">
-          <div className="w-full px-2 py-2" ref={scrollContainerRef}>
+        <div
+          className={`flex- w-full min-w-0   ${isPresentationMode ? "h-[95%]" : "h-[98%]"} overflow-y-auto overflow-x-hidden ${!isPresentationMode && "no-scrollbar"}`}
+          style={{
+            scrollBehavior: "smooth",
+            scrollbarColor: isDarkMode
+              ? `${accentColor}80 transparent`
+              : `${accentColor}80 transparent`,
+            scrollbarWidth: isPresentationMode ? "thin" : "none",
+          }}
+        >
+          <div
+            className="w-full min-w-0 px-0 sm:px-2"
+            ref={scrollContainerRef}
+            style={
+              !isPresentationMode
+                ? {
+                    maxWidth: `${Number(settings.readingWidth) || 100}%`,
+                    margin: "0 auto",
+                    width: "100%",
+                  }
+                : undefined
+            }
+          >
             {selectedMessage?.type === "text" ? (
               <div
                 key={`sermon-${selectedMessage.id}`}
-                className="w-full"
+                className="w-full min-w-0"
                 style={{ maxWidth: "100%", overflowWrap: "break-word" }}
               >
                 {/* Sermon Header */}
@@ -804,50 +788,93 @@ const SelectedSermon = ({
 
                 {/* Sermon Content with Paragraphs */}
                 <div
-                  className="space-y- mt-3"
+                  className="space-y-4 mt-3 b no-scrollbar "
                   style={{
-                    width: "100%",
-                    maxWidth: "100%",
+                    // width: "100%",
+                    // maxWidth: "100%",
                     overflow: "hidden",
                   }}
                 >
                   {sermonParagraphs.length === 0 && !selectedMessage?.sermon ? (
                     /* Loading skeleton while sermon text is being fetched */
-                    <div className="px-6 py-4 space-y-5 animate-pulse">
-                      {Array.from({ length: 14 }).map((_, i) => (
-                        <div key={i} className="flex gap-3">
+                    <div className="w-full  px-3  py-5 sm:py-6 space-y-6 animate-pulse">
+                      <div className="w-full  space-y-4 pb-5 border-b border-zinc-100/80 dark:border-zinc-800/70">
+                        <div
+                          className="h-6 w-full rounded-full"
+                          style={{ backgroundColor: skeletonBaseColor }}
+                        />
+                        <div className="grid gap-2">
                           <div
-                            className="flex-shrink-0 w-8 h-4 rounded"
-                            style={{
-                              backgroundColor: isDarkMode
-                                ? "rgba(120,113,108,.25)"
-                                : "rgba(214,211,209,.6)",
-                            }}
+                            className="h-4 w-[94%] rounded-full"
+                            style={{ backgroundColor: skeletonSoftColor }}
                           />
-                          <div className="flex-1 space-y-2">
+                          <div
+                            className="h-4 w-[82%] rounded-full"
+                            style={{ backgroundColor: skeletonFaintColor }}
+                          />
+                        </div>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          <div
+                            className="h-8 w-24 rounded-full"
+                            style={{ backgroundColor: skeletonFaintColor }}
+                          />
+                          <div
+                            className="h-8 w-28 rounded-full"
+                            style={{ backgroundColor: skeletonFaintColor }}
+                          />
+                          <div
+                            className="h-8 w-32 rounded-full"
+                            style={{ backgroundColor: skeletonFaintColor }}
+                          />
+                          <div
+                            className="h-8 w-20 rounded-full"
+                            style={{ backgroundColor: skeletonFaintColor }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="w-full space-y-4">
+                        {Array.from({ length: 12 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className="w-full space-y-3 rounded-3xl border border-zinc-100/70 dark:border-zinc-800/50 bg-zinc-50/70 dark:bg-zinc-900/30 px-4 py-4 sm:px-5"
+                          >
+                            <div className="flex items-center justify-between gap-4">
+                              <div
+                                className="h-3 w-full rounded-full"
+                                style={{ backgroundColor: skeletonFaintColor }}
+                              />
+                              <div
+                                className="h-3 w-[80%] rounded-full"
+                                style={{ backgroundColor: skeletonFaintColor }}
+                              />
+                            </div>
                             <div
-                              className="h-4 rounded"
+                              className="h-4 rounded-full"
                               style={{
-                                width: `${70 + Math.random() * 30}%`,
-                                backgroundColor: isDarkMode
-                                  ? "rgba(120,113,108,.18)"
-                                  : "rgba(214,211,209,.5)",
+                                width: `${96 - (i % 5) * 4}%`,
+                                backgroundColor: skeletonBaseColor,
                               }}
                             />
-                            {i % 3 !== 2 && (
+                            <div
+                              className="h-4 rounded-full"
+                              style={{
+                                width: `${84 - (i % 4) * 5}%`,
+                                backgroundColor: skeletonSoftColor,
+                              }}
+                            />
+                            {i % 3 !== 1 && (
                               <div
-                                className="h-4 rounded"
+                                className="h-4 rounded-full"
                                 style={{
-                                  width: `${40 + Math.random() * 40}%`,
-                                  backgroundColor: isDarkMode
-                                    ? "rgba(120,113,108,.12)"
-                                    : "rgba(214,211,209,.35)",
+                                  width: `${58 + (i % 3) * 10}%`,
+                                  backgroundColor: skeletonFaintColor,
                                 }}
                               />
                             )}
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   ) : (
                     sermonParagraphs.map((paragraph) => (
@@ -861,7 +888,7 @@ const SelectedSermon = ({
                           overflow: "hidden",
                         }}
                       >
-                        {/* Bookmark Button - Shows on hover */}
+                        {/* Bookmark badge */}
                         <button
                           onClick={() => {
                             if (selectedMessage) {
@@ -875,26 +902,26 @@ const SelectedSermon = ({
                               );
                             }
                           }}
-                          className={`absolute right-0 top-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 z-10 ${
+                          className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-stone-300 dark:bg-stone-700 border px-3 py-1.5 text-[11px] font-semibold shadow-sm backdrop-blur-md transition-all duration-200 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 hover:-translate-y-0.5 hover:scale-[1.02] ${
                             selectedMessage &&
                             isBookmarked(
                               selectedMessage.id as any,
                               paragraph.id,
                             )
-                              ? "text-white"
+                              ? "text-white dark:text-black"
                               : isDarkMode
-                                ? "bg-gray-700 hover:bg-gray-600 text-gray-300"
-                                : "bg-gray-200 hover:bg-gray-300 text-gray-600"
-                          } shadow-lg border-2 ${
+                                ? "bg-zinc-800/90 hover:bg-zinc-700/95 text-zinc-200 border-zinc-700/80"
+                                : "bg-white/90 hover:bg-white text-zinc-700 border-zinc-200/80"
+                          } ${
                             selectedMessage &&
                             isBookmarked(
                               selectedMessage.id as any,
                               paragraph.id,
                             )
-                              ? "border-transparent"
+                              ? "border-transparent shadow-lg"
                               : isDarkMode
-                                ? "border-gray-600"
-                                : "border-gray-300"
+                                ? "border-zinc-700/80"
+                                : "border-zinc-200/80"
                           }`}
                           style={
                             selectedMessage &&
@@ -907,6 +934,15 @@ const SelectedSermon = ({
                                   borderColor: accentColor,
                                 }
                               : undefined
+                          }
+                          aria-pressed={
+                            !!(
+                              selectedMessage &&
+                              isBookmarked(
+                                selectedMessage.id as any,
+                                paragraph.id,
+                              )
+                            )
                           }
                           title={
                             selectedMessage &&
@@ -923,9 +959,15 @@ const SelectedSermon = ({
                             selectedMessage.id as any,
                             paragraph.id,
                           ) ? (
-                            <BookmarkCheck size={14} />
+                            <>
+                              <BookmarkCheck size={13} />
+                              <span>BKD</span>
+                            </>
                           ) : (
-                            <Bookmark size={14} />
+                            <>
+                              <Bookmark size={13} />
+                              <span>BK</span>
+                            </>
                           )}
                         </button>
 
@@ -942,6 +984,7 @@ const SelectedSermon = ({
                             color: isDarkMode ? "#d6d3d1" : "#000000",
                             overflowWrap: "break-word",
                             wordBreak: "break-word",
+                            lineHeight: 1.3,
                             whiteSpace: "normal",
                             width: "100%",
                             maxWidth: "100%",
@@ -1022,7 +1065,7 @@ const SelectedSermon = ({
                                 parts.push(
                                   <span
                                     key={`highlight-${index}`}
-                                    className={`cursor-pointer hover:opacity-80 ${isDarkMode ? "text-stone-900" : ""}`}
+                                    className={`cursor-pointer hover:opacity-80 ${isDarkMode ? "text-zinc-900" : ""}`}
                                     style={{
                                       backgroundColor: highlight.color,
                                       // padding: "2px 4px",

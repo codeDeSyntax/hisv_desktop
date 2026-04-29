@@ -35,7 +35,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
 }) => {
   const [isPressed, setIsPressed] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const {prevScreen,setActiveTab} = useSermonContext()
+  const { prevScreen, setActiveTab } = useSermonContext();
   // Position classes
   const positionClasses = {
     "bottom-right": "bottom-6 right-6",
@@ -56,7 +56,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
     primary:
       "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-blue-500/25",
     secondary:
-      "bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 shadow-gray-500/25",
+      "bg-gradient-to-r from-zinc-500 to-zinc-600 hover:from-zinc-600 hover:to-zinc-700 shadow-zinc-500/25",
     success:
       "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-green-500/25",
     warning:
@@ -66,7 +66,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
   };
 
   const handleClick = () => {
-   setActiveTab(localStorage.getItem("prevScreen") || "home")
+    setActiveTab(localStorage.getItem("prevScreen") || "home");
   };
 
   return (
@@ -90,7 +90,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
           ${className}
         `}
         style={{
-          filter: disabled ? "grayscale(100%)" : "none",
+          filter: disabled ? "zincscale(100%)" : "none",
         }}
       >
         <div
@@ -113,7 +113,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
         <div
           className={`
           fixed z-40 px-3 py-2 text-sm font-medium text-white
-          bg-gray-900/90 backdrop-blur-sm rounded-lg shadow-lg
+          bg-zinc-900/90 backdrop-blur-sm rounded-lg shadow-lg
           pointer-events-none transition-all duration-200
           ${position.includes("right") ? "right-20" : "left-20"}
           ${position.includes("bottom") ? "bottom-8" : "top-8"}
@@ -122,7 +122,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
           {tooltip}
           <div
             className={`
-            absolute w-2 h-2 bg-gray-900/90 rotate-45
+            absolute w-2 h-2 bg-zinc-900/90 rotate-45
             ${position.includes("right") ? "-right-1" : "-left-1"}
             ${position.includes("bottom") ? "bottom-3" : "top-3"}
           `}

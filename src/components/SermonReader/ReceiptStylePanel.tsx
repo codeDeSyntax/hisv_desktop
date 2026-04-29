@@ -1,183 +1,125 @@
-import React, { useState } from "react";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useTheme } from "@/Provider/Theme";
 import { Sermon } from "@/types";
-import { SearchResult } from "./types";
 
 interface ReceiptStylePanelProps {
   show: boolean;
   onClose: () => void;
   sermon: Sermon | null;
-  onSearch: (query: string) => void;
-  searchResults: SearchResult[];
-  currentMatch: number;
-  onNavigateSearch: (direction: "next" | "prev") => void;
-  currentParagraph: number;
-  onJumpToParagraph: (paragraphId: number) => void;
 }
 
 const ReceiptStylePanel = ({
   show,
   onClose,
   sermon,
-  onSearch,
-  searchResults,
-  currentMatch,
-  onNavigateSearch,
-  currentParagraph,
-  onJumpToParagraph,
 }: ReceiptStylePanelProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [jumpToParagraph, setJumpToParagraph] = useState("");
   const { isDarkMode } = useTheme();
-
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      onSearch(searchQuery);
-    }
-  };
-
-  const handleJump = () => {
-    const paragraphNum = parseInt(jumpToParagraph);
-    if (paragraphNum && paragraphNum > 0) {
-      onJumpToParagraph(paragraphNum);
-      setJumpToParagraph("");
-    }
-  };
 
   return (
     <AnimatePresence>
       {show && (
         <>
-          {/* Simple backdrop overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40  "
+            className={`absolute inset-0 z-[60] backdrop-blur-[18px] backdrop-saturate-[1.2] ${
+              isDarkMode ? "bg-zinc-950/18" : "bg-white/8"
+            }`}
             onClick={onClose}
           />
 
-          {/* Modern Receipt Modal */}
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.96 }}
-            transition={{ type: "spring", damping: 28, stiffness: 350 }}
-            className={`fixed left-[40%] top-[30%] transform -translate-x-1/2 -translate-y-1/2 w-96 max-h-[75vh] overflow-y-auto no-scrollbar z-50 rounded-2xl shadow-2xl backdrop-blur-xl border ${
-              isDarkMode
-                ? "bg-stone-900/95 border-stone-700/70 shadow-stone-950/50"
-                : "bg-white/95 border-stone-200/70 shadow-stone-900/10"
-            }`}
-            style={{
-              fontFamily: "'Inter', 'Segoe UI', sans-serif",
-            }}
-            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="pointer-events-none absolute inset-0 z-[61] h-full w-full font-sans"
           >
-            {/* Modern Header */}
-            <div className="p-6 pb-3">
-              <div className="flex justify-between items-center">
-                <h3
-                  className={`text-lg font-semibold ${
-                    isDarkMode ? "text-stone-200" : "text-stone-800"
-                  }`}
-                >
-                  Sermon Info
-                </h3>
+            <div className="pointer-events-auto flex h-full w-full items-center justify-center px-3 py-4 sm:px-6 sm:py-6">
+              <div className="relative w-full max-w-3xl bg-white py-3 max-h-[84%] overflow-y-auto no-scrollbar rounded-2xl">
                 <button
                   onClick={onClose}
-                  className={`p-2 rounded-xl transition-all duration-200 hover:scale-105 ${
+                  className={`absolute right-2 top-2 z-10 rounded-lg p-1.5 transition-all duration-200 hover:scale-105 sm:right-3 sm:top-3 ${
                     isDarkMode
-                      ? "text-stone-400 hover:text-stone-200 hover:bg-stone-800/50"
-                      : "text-stone-500 hover:text-stone-700 hover:bg-stone-100"
+                      ? "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+                      : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700"
                   }`}
                 >
-                  <X size={20} />
+                  <X size={18} />
                 </button>
-              </div>
-            </div>
 
-            {/* Sermon Information Card */}
-            {sermon && (
-              <div className="px-6 pb-6">
-                <div
-                  className={`p-5 rounded-xl shadow-sm ${
-                    isDarkMode
-                      ? "bg-gradient-to-br from-stone-800/50 to-stone-800/30 border border-stone-700/50"
-                      : "bg-gradient-to-br from-stone-50 to-white border border-stone-200/50"
-                  }`}
-                >
-                  <div className="space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex flex-col gap-1.5">
-                        <span
-                          className={`text-xs font-medium uppercase tracking-wider ${
-                            isDarkMode ? "text-stone-500" : "text-stone-400"
-                          }`}
-                        >
-                          Title
-                        </span>
-                        <span
-                          className={`text-sm font-semibold leading-snug ${
-                            isDarkMode ? "text-stone-200" : "text-stone-800"
+                <div className="mb-4 text-center">
+                  <h3
+                    className={`text-sm font-semibold uppercase tracking-[0.18em] ${
+                      isDarkMode ? "text-zinc-300" : "text-zinc-700"
+                    }`}
+                  >
+                    Sermon Info
+                  </h3>
+                </div>
+
+                {sermon && (
+                  <div className="px-1 sm:px-2">
+                    <div className="space-y-4">
+                      <div className="space-y-1 text-center">
+                        <h1
+                          className={`mx-auto w-full break-words text-center text-[clamp(1rem,1vw,1.2rem)] font-bold leading-snug tracking-wide scale-x-[1.1] origin-center ${
+                            isDarkMode ? "text-zinc-100" : "text-zinc-900"
                           }`}
                         >
                           {sermon.title}
-                        </span>
+                        </h1>
                       </div>
 
                       <div
                         className={`h-px ${
-                          isDarkMode ? "bg-stone-700/50" : "bg-stone-200/50"
+                          isDarkMode ? "bg-zinc-700/50" : "bg-zinc-200/70"
                         }`}
                       />
 
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="flex flex-col gap-1.5">
-                          <span
-                            className={`text-xs font-medium uppercase tracking-wider ${
-                              isDarkMode ? "text-stone-500" : "text-stone-400"
+                      <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-center">
+                        <div>
+                          <div
+                            className={`block origin-center scale-x-[1.1] text-[9px] font-semibold uppercase tracking-widest ${
+                              isDarkMode ? "text-zinc-500" : "text-zinc-400"
                             }`}
                           >
                             Location
-                          </span>
-                          <span
-                            className={`text-sm font-semibold ${
-                              isDarkMode ? "text-stone-200" : "text-stone-700"
+                          </div>
+                          <div
+                            className={`mt-0.5 origin-center scale-x-[1.08] break-words text-xs font-medium tracking-wide ${
+                              isDarkMode ? "text-zinc-100" : "text-zinc-800"
                             }`}
                           >
-                            {sermon.location}
-                          </span>
+                            {sermon.location || "N/A"}
+                          </div>
                         </div>
 
-                        <div className="flex flex-col gap-1.5">
-                          <span
-                            className={`text-xs font-medium uppercase tracking-wider ${
-                              isDarkMode ? "text-stone-500" : "text-stone-400"
+                        <div>
+                          <div
+                            className={`block origin-center scale-x-[1.1] text-[9px] font-semibold uppercase tracking-widest ${
+                              isDarkMode ? "text-zinc-500" : "text-zinc-400"
                             }`}
                           >
                             Year
-                          </span>
-                          <span
-                            className={`text-sm font-semibold ${
-                              isDarkMode ? "text-stone-200" : "text-stone-700"
+                          </div>
+                          <div
+                            className={`mt-0.5 origin-center scale-x-[1.08] break-words text-xs font-medium tracking-wide ${
+                              isDarkMode ? "text-zinc-100" : "text-zinc-800"
                             }`}
                           >
                             {sermon.year || "N/A"}
-                          </span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
-            )}
-
-            {/* Current Position Card */}
-            {/*  */}
-
-            {/* Footer */}
+            </div>
           </motion.div>
         </>
       )}

@@ -13,7 +13,7 @@ export const ThemeToggle: React.FC = () => {
     //   whileHover={{ scale: 1.05 }}
     //   whileTap={{ scale: 0.95 }}
     //   onClick={toggleDarkMode}
-    //   className=" rounded-full bg-gray-200 dark:bg-gray-80 h-5 w-5 flex items-center justify-center shadow-md hover:shadow-lg transition duration-200 ease-in-out"
+    //   className=" rounded-full bg-zinc-200 dark:bg-zinc-80 h-5 w-5 flex items-center justify-center shadow-md hover:shadow-lg transition duration-200 ease-in-out"
     //   aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
     // >
     //   {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
@@ -21,17 +21,17 @@ export const ThemeToggle: React.FC = () => {
     <Tooltip title="Toggle theme">
       <div
         onClick={(e) => toggleDarkMode({ x: e.clientX, y: e.clientY })}
-        className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
+        className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-zinc-50 dark:hover:bg-primary"
       >
         {isDarkMode ? (
           <Sun
             size={20}
-            className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white"
+            className="w-4 h-4 text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white"
           />
         ) : (
           <Moon
             size={20}
-            className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white"
+            className="w-4 h-4 text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white"
           />
         )}
       </div>

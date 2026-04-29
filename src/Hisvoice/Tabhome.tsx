@@ -39,8 +39,8 @@ const TabHome = () => {
           <div
             className={`absolute inset-0 ${
               isDarkMode
-                ? "bg-gradient-to-br from-stone-950 to-stone-900"
-                : "bg-gradient-to-br from-stone-200 to-stone-50"
+                ? "bg-gradient-to-br from-zinc-950 to-zinc-900"
+                : "bg-gradient-to-br from-zinc-50 to-zinc-50"
             }`}
           />
 
@@ -110,7 +110,7 @@ const TabHome = () => {
               className="w-36 h-36 mb-2 opacity-70 mx-auto"
             />
             <h2
-              className="text-lg md:text-xl font-serif font-normal text-stone-700 dark:text-stone-200 mb-4 leading-relaxed max-w-2xl "
+              className="text-lg md:text-xl font-serif font-normal text-zinc-700 dark:text-zinc-200 mb-4 leading-relaxed max-w-2xl "
               style={{ fontFamily: "COPPERPLATE GOTHIC" }}
             >
               And I saw another mighty angel come down from heaven, clothed with
@@ -118,7 +118,7 @@ const TabHome = () => {
               were the sun, and his feet as pillars of fire
             </h2>
             <p
-              className="text-sm text-stone-600 dark:text-stone-300 mb-8 font-serif"
+              className="text-sm text-zinc-600 dark:text-zinc-300 mb-8 font-serif"
               style={{ fontFamily: "COPPERPLATE GOTHIC" }}
             >
               Revelation 10:1

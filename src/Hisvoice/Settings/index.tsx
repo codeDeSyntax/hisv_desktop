@@ -20,6 +20,9 @@ const FontSettingsPage = () => {
   const [fontSize, setFontSize] = useState<number>(Number(settings.fontSize));
   const [fontWeight, setFontWeight] = useState(settings.fontWeight);
   const [fontStyle, setFontStyle] = useState(settings.fontStyle);
+  const [readingWidth, setReadingWidth] = useState<number>(
+    Number(settings.readingWidth ?? 100),
+  );
   const [showSaveNotification, setShowSaveNotification] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>("reading");
   const [autoCheckUpdates, setAutoCheckUpdates] = useState(true);
@@ -31,13 +34,14 @@ const FontSettingsPage = () => {
       fontSize: fontSize.toString(),
       fontWeight,
       fontStyle,
+      readingWidth: readingWidth.toString(),
     };
     setSettings(next);
     localStorage.setItem("sermonSettings", JSON.stringify(next));
     setShowSaveNotification(true);
     const t = setTimeout(() => setShowSaveNotification(false), 1800);
     return () => clearTimeout(t);
-  }, [fontSize, fontWeight, fontStyle]);
+  }, [fontSize, fontWeight, fontStyle, readingWidth]);
 
   useEffect(() => {
     window.ipcRenderer
@@ -68,19 +72,19 @@ const FontSettingsPage = () => {
   };
 
   return (
-    <div className="h-full w-full flex flex-col bg-white dark:bg-stone-950 overflow-hidden font-outfit">
+    <div className="h-full max-w-2xl m-auto flex flex-col bg-white dark:bg-zinc-950 overflow-hidden font-outfit">
       {/* Save toast */}
       {showSaveNotification && (
-        <div className="fixed top-16 right-6 z-50 bg-white dark:bg-stone-800 rounded-xl px-3.5 py-2 flex items-center gap-2 shadow-lg border border-stone-100 dark:border-stone-700">
+        <div className="fixed top-16 right-6 z-50 bg-white dark:bg-zinc-800 rounded-xl px-3.5 py-2 flex items-center gap-2 shadow-lg border border-zinc-100 dark:border-zinc-700">
           <Check className="w-3.5 h-3.5" style={{ color: accentColor }} />
-          <span className="text-xs font-medium text-stone-800 dark:text-stone-200">
+          <span className="text-xs font-medium text-zinc-800 dark:text-zinc-200">
             Saved
           </span>
         </div>
       )}
 
       {/* Tab nav */}
-      <div className="flex-shrink-0 border-b border-stone-100 dark:border-stone-800 px-3 pt-4 pb-0 overflow-x-auto no-scrollbar">
+      <div className="flex-shrink-0 border-b border-zinc-100 dark:border-zinc-800 px-3 pt-4 pb-0 overflow-x-auto no-scrollbar">
         <div className="flex gap-1">
           {NAV_SECTIONS.map((s) => {
             const active = activeSection === s.id;
@@ -90,8 +94,8 @@ const FontSettingsPage = () => {
                 onClick={() => setActiveSection(s.id)}
                 className={`relative whitespace-nowrap px-3 py-2 text-[13px] rounded-t-lg transition-colors font-medium ${
                   active
-                    ? "text-stone-900 dark:text-white"
-                    : "text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-900"
+                    ? "text-zinc-900 dark:text-white"
+                    : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
                 }`}
                 style={active ? { color: accentColor } : undefined}
               >
@@ -118,6 +122,8 @@ const FontSettingsPage = () => {
             setFontWeight={setFontWeight}
             fontStyle={fontStyle}
             setFontStyle={setFontStyle}
+            readingWidth={readingWidth}
+            setReadingWidth={setReadingWidth}
             fontFamily={settings.fontFamily}
             accentColor={accentColor}
           />

@@ -9,12 +9,14 @@ interface ModularBookmarksProps {
   className?: string;
   showHeader?: boolean;
   maxHeight?: string;
+  onSelect?: () => void;
 }
 
 const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
   className = "",
   showHeader = true,
   maxHeight = "100%",
+  onSelect,
 }) => {
   const { bookmarks, removeBookmark, navigateToBookmark } = useSermonContext();
   const { accentColor } = useTheme();
@@ -65,20 +67,20 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
 
   return (
     <div
-      className={`${className} h-full flex flex-col gap-2`}
+      className={`${className} h-full flex flex-col gap-2 w-full max-w-2xl m-auto`}
       style={{ maxHeight }}
     >
       {/* Stats — only when showHeader */}
       {showHeader && bookmarks.length > 0 && (
-        <div className="flex-shrink-0 flex gap-3 text-xs text-stone-500 dark:text-stone-400">
+        <div className="flex-shrink-0 flex gap-3 text-xs text-zinc-500 dark:text-zinc-400">
           <span>
-            <span className="font-semibold text-stone-700 dark:text-stone-300">
+            <span className="font-semibold text-zinc-700 dark:text-zinc-300">
               {bookmarks.length}
             </span>{" "}
             bookmarks
           </span>
           <span>
-            <span className="font-semibold text-stone-700 dark:text-stone-300">
+            <span className="font-semibold text-zinc-700 dark:text-zinc-300">
               {uniqueSermons}
             </span>{" "}
             sermons
@@ -90,13 +92,13 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
       <div className="flex-shrink-0 relative">
         <Search
           size={13}
-          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"
         />
         <input
           placeholder="Search bookmarks…"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-8 pr-3 py-1.5 text-sm border-none bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-full focus:outline-none focus:ring-2 focus:ring-accent text-stone-700 dark:text-stone-100 placeholder-stone-400"
+          className="w-full pl-8 pr-3 py-1.5 text-sm border-none bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full focus:outline-none focus:ring-2 focus:ring-accent text-zinc-700 dark:text-zinc-100 placeholder-zinc-400"
           spellCheck={false}
         />
       </div>
@@ -104,7 +106,7 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
       {/* Card list */}
       <div className="flex-1 overflow-y-auto no-scrollbar space-y-2 pb-1">
         {filteredBookmarks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 gap-1 text-stone-400 dark:text-stone-500">
+          <div className="flex flex-col items-center justify-center py-12 gap-1 text-zinc-400 dark:text-zinc-500">
             <BookmarkCheck
               size={32}
               strokeWidth={1.2}
@@ -131,13 +133,16 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
                   duration: 0.16,
                   delay: Math.min(index * 0.04, 0.28),
                 }}
-                className="group relative rounded-lg border-solid border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-800/40 px-3 cursor-pointer hover:shadow-sm transition-colors duration-150"
+                className="group relative rounded-lg border-solid border border-zinc-200 dark:border-zinc-700/60 bg-white dark:bg-zinc-800/40 px-3 cursor-pointer hover:shadow-sm transition-colors duration-150"
                 style={{ "--hover-border": accentColor } as React.CSSProperties}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.borderColor = accentColor + "60")
                 }
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = "")}
-                onClick={() => navigateToBookmark(bookmark)}
+                onClick={() => {
+                  navigateToBookmark(bookmark);
+                  onSelect?.();
+                }}
               >
                 {/* Title row */}
                 <div className="flex items-center justify-between gap-2 mb-1">
@@ -147,14 +152,14 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
                       className="flex-shrink-0"
                       style={{ color: accentColor }}
                     />
-                    <span className="text-sm font-semibold text-stone-800 dark:text-stone-100 truncate leading-tight">
+                    <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate leading-tight">
                       {bookmark.sermonTitle}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     {/* Saved date — lives beside the title, out of the way */}
-                    <span className="text-[10px] text-stone-300 dark:text-stone-600 whitespace-nowrap">
+                    <span className="text-[10px] text-zinc-300 dark:text-zinc-600 whitespace-nowrap">
                       {formatDate(bookmark.createdAt)}
                     </span>
 
@@ -175,7 +180,7 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
                             e.stopPropagation();
                             setShowDeleteConfirm(null);
                           }}
-                          className="w-5 h-5 rounded-full bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-600 flex items-center justify-center text-xs transition-colors"
+                          className="w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-600 flex items-center justify-center text-xs transition-colors"
                         >
                           ×
                         </button>
@@ -190,7 +195,7 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
                       >
                         <Trash2
                           size={11}
-                          className="text-stone-400 dark:text-stone-500 hover:text-red-500 dark:hover:text-red-400"
+                          className="text-zinc-400 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400"
                         />
                       </button>
                     )}
@@ -198,11 +203,11 @@ const ModularBookmarks: React.FC<ModularBookmarksProps> = ({
                 </div>
 
                 {/* Paragraph preview — meta prefix inline with the quote */}
-                <span className="text-xs text-stone-500 dark:text-stone-400 line-clamp-2 ml-[18px] leading-relaxed italic">
+                <span className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 ml-[18px] leading-relaxed italic">
                   {(bookmark.year ||
                     bookmark.paragraphId ||
                     bookmark.location) && (
-                    <span className="not-italic font-semibold text-stone-400 dark:text-stone-500 mr-1">
+                    <span className="not-italic font-semibold text-zinc-400 dark:text-zinc-500 mr-1">
                       {[
                         bookmark.year,
                         bookmark.paragraphId

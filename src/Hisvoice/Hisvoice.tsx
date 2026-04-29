@@ -34,7 +34,7 @@ const Hisvoice = () => {
 
   return (
     <div
-      className="h-screen w-screen overflow-hidden no-scrollbar bg-white dark:bg-background"
+      className="h-screen w-screen overflow-hidden no-scrollbar "
       id="hisvoicediv"
     >
       <TitleBar />

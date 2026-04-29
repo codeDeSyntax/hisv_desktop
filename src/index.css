@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --accent: #E8C968;
+  --accent: #e8c968;
   --theme-sweep-x: 50vw;
   --theme-sweep-y: 50vh;
   --theme-sweep-duration: 460ms;
@@ -95,9 +95,9 @@ div {
   border-width: 10px;
 }
 
-/* Custom text selection globally - stone-themed instead of default blue */
+/* Custom text selection globally - zinc-themed instead of default blue */
 ::selection {
-  background-color: rgba(168, 162, 158, 0.3); /* stone-400 with transparency */
+  background-color: rgba(168, 162, 158, 0.3); /* zinc-400 with transparency */
   color: inherit;
 }
 
@@ -108,7 +108,7 @@ div {
 
 /* Dark mode custom selection */
 .dark ::selection {
-  background-color: rgba(120, 113, 108, 0.4); /* stone-600 with transparency */
+  background-color: rgba(120, 113, 108, 0.4); /* zinc-600 with transparency */
   color: inherit;
 }
 
@@ -166,133 +166,11 @@ button:hover {
 }
 
 @font-face {
-  font-family: "Outfit";
-  src: url("/fonts/Outfit-300.ttf") format("truetype");
+  font-family: "Dancing Script";
+  src: url("/fonts/DancingScript-VariableFont_wght.ttf") format("truetype");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
-}
-@font-face {
-  font-family: "Outfit";
-  src: url("/fonts/Outfit-400.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Outfit";
-  src: url("/fonts/Outfit-600.ttf") format("truetype");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Outfit";
-  src: url("/fonts/Outfit-700.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter-SemiBold.ttf") format("truetype");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Anton SC";
-  src: url("/fonts/antonsc.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Big Shoulders Thin";
-  src: url("/fonts/bigshouldsvw.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Bitter Thin";
-  src: url("/fonts/bittervw.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Zilla Slab";
-  src: url("/fonts/ZillaSlab-Regular.ttf") format("truetype");
-  /* font-weight: normal;
-  font-style: normal; */
-}
-
-@font-face {
-  font-family: "Oswald ExtraLight";
-  src: url("/fonts/oswaldv.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Archivo Black";
-  src: url("/fonts/archivoblack.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Roboto Thin";
-  src: url("/fonts/robotovw.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Cooper Black";
-  src: url("/fonts/COOPBL.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Haettenschweiler";
-  src: url("/fonts/HATTEN.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Impact";
-  src: url("/fonts/impact.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Teko Light";
-  src: url("/fonts/teko.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Alumini Sans Black";
-  src: url("/fonts/aluminisans.ttf") format("truetype");
-  font-weight: bold;
-  font-style: normal;
 }
 
 .custom-table {

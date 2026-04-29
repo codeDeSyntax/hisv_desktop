@@ -110,7 +110,7 @@ const App = () => {
     const showToast = (message: string) => {
       // Create temporary toast notification
       const toast = document.createElement("div");
-      toast.className = `fixed top-4 right-4 bg-stone-800 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform transition-all duration-300`;
+      toast.className = `fixed top-4 right-4 bg-zinc-800 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform transition-all duration-300`;
       toast.style.transform = "translateX(100%)";
       toast.innerHTML = message;
       document.body.appendChild(toast);
@@ -137,7 +137,7 @@ const App = () => {
 
   return (
     <div
-      className={`flex flex-col h-screen w-screen thin-scrollbar no-scrollbar bg-white dark:bg-ltgray overflow-hidden`}
+      className={`flex flex-col h-screen w-screen thin-scrollbar no-scrollbar bg-white dark:bg-ltzinc overflow-hidden`}
       style={{ fontFamily: "Palatino" }}
     >
       <Hisvoice />
@@ -145,14 +145,14 @@ const App = () => {
       {/* Keyboard Shortcuts Help Toast */}
       {showShortcutsToast && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-stone-800 rounded-2xl p-6 m-4 max-w-md shadow-2xl">
-            <h3 className="text-lg font-bold mb-4 text-stone-800 dark:text-stone-200">
+          <div className="bg-white dark:bg-zinc-800 rounded-2xl p-6 m-4 max-w-md shadow-2xl">
+            <h3 className="text-lg font-bold mb-4 text-zinc-800 dark:text-zinc-200">
               ⌨️ Keyboard Shortcuts
             </h3>
-            <div className="space-y-2 text-sm text-stone-600 dark:text-stone-400">
+            <div className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
               <div className="flex justify-between">
                 <span>
-                  <kbd className="bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded text-xs">
+                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-2 py-1 rounded text-xs">
                     Ctrl/Cmd + H
                   </kbd>
                 </span>
@@ -160,7 +160,7 @@ const App = () => {
               </div>
               <div className="flex justify-between">
                 <span>
-                  <kbd className="bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded text-xs">
+                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-2 py-1 rounded text-xs">
                     Ctrl/Cmd + B
                   </kbd>
                 </span>
@@ -168,7 +168,7 @@ const App = () => {
               </div>
               <div className="flex justify-between">
                 <span>
-                  <kbd className="bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded text-xs">
+                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-2 py-1 rounded text-xs">
                     Ctrl/Cmd + R
                   </kbd>
                 </span>
@@ -176,7 +176,7 @@ const App = () => {
               </div>
               <div className="flex justify-between">
                 <span>
-                  <kbd className="bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded text-xs">
+                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-2 py-1 rounded text-xs">
                     Ctrl/Cmd + M
                   </kbd>
                 </span>
@@ -184,7 +184,7 @@ const App = () => {
               </div>
               <div className="flex justify-between">
                 <span>
-                  <kbd className="bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded text-xs">
+                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-2 py-1 rounded text-xs">
                     Ctrl/Cmd + S
                   </kbd>
                 </span>
@@ -192,7 +192,7 @@ const App = () => {
               </div>
               <div className="flex justify-between">
                 <span>
-                  <kbd className="bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded text-xs">
+                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-2 py-1 rounded text-xs">
                     Ctrl/Cmd + ,
                   </kbd>
                 </span>
@@ -200,7 +200,7 @@ const App = () => {
               </div>
               <div className="flex justify-between">
                 <span>
-                  <kbd className="bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded text-xs">
+                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-2 py-1 rounded text-xs">
                     Ctrl/Cmd + K
                   </kbd>
                 </span>
@@ -208,7 +208,7 @@ const App = () => {
               </div>
               <div className="flex justify-between">
                 <span>
-                  <kbd className="bg-stone-200 dark:bg-stone-700 px-2 py-1 rounded text-xs">
+                  <kbd className="bg-zinc-200 dark:bg-zinc-700 px-2 py-1 rounded text-xs">
                     Ctrl/Cmd + ?
                   </kbd>
                 </span>
@@ -235,14 +235,14 @@ const App = () => {
 
       {showDbOverlay && (
         <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
-          <div className="w-full max-w-lg rounded-2xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shadow-2xl p-6 sm:p-7">
+          <div className="w-full max-w-lg rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-2xl p-6 sm:p-7">
             <div className="text-center mb-6">
-              <h2 className="text-xl sm:text-2xl font-semibold text-stone-900 dark:text-stone-100 mb-2">
+              <h2 className="text-xl sm:text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
                 {dbStatus === "downloading"
                   ? "Preparing your sermon library"
                   : "Sermon Library Needed"}
               </h2>
-              <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 {dbStatus === "downloading"
                   ? "Please keep this window open while we download your sermon library."
                   : "To start reading and searching sermons, download the library once. It will be saved on this device for future use."}
@@ -251,7 +251,7 @@ const App = () => {
 
             {dbStatus === "downloading" && (
               <div className="mb-5">
-                <div className="h-2.5 w-full bg-stone-200 dark:bg-stone-700 rounded-full overflow-hidden">
+                <div className="h-2.5 w-full bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-300"
                     style={{
@@ -260,7 +260,7 @@ const App = () => {
                     }}
                   />
                 </div>
-                <p className="mt-2 text-xs text-stone-500 dark:text-stone-400 text-center">
+                <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400 text-center">
                   {loadingMessage || `Downloading… ${downloadProgress}%`}
                 </p>
               </div>
@@ -281,7 +281,7 @@ const App = () => {
                 </button>
                 <button
                   onClick={handleClose}
-                  className="flex-1 py-2.5 px-4 rounded-xl font-medium bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 hover:bg-stone-300 dark:hover:bg-stone-600 transition-colors"
+                  className="flex-1 py-2.5 px-4 rounded-xl font-medium bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors"
                 >
                   Close App
                 </button>

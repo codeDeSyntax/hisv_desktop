@@ -20,7 +20,7 @@ const PresentationView = () => {
   }, []);
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden bg-gray-50 dark:bg-surface">
+    <div className="h-screen w-screen flex overflow-hidden bg-zinc-50 dark:bg-background">
       {/* Presentation Mode Hint */}
       <AnimatePresence>
         {showHint && (
@@ -29,7 +29,7 @@ const PresentationView = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-stone-800/90 dark:bg-stone-900/90 backdrop-blur-sm text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2"
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 b backdrop-blur-sm text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2"
           >
             <span className="text-sm font-medium">Presentation Mode</span>
             <span className="text-xs opacity-75">•</span>
@@ -40,7 +40,7 @@ const PresentationView = () => {
 
       {/* Full-width sermon panel */}
       <div className="flex-1 h-full flex overflow-hidden">
-        <div className="relative w-full h-full bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 overflow-hidden flex flex-col">
+        <div className="relative w-full h-full overflow-hidden flex flex-col">
           {selectedMessage ? (
             <Suspense fallback={null}>
               <SelectedSermon
@@ -49,7 +49,7 @@ const PresentationView = () => {
               />
             </Suspense>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-stone-400 dark:text-stone-600">
+            <div className="flex-1 flex items-center justify-center text-zinc-400 dark:text-zinc-600">
               <span className="text-lg">No sermon selected</span>
             </div>
           )}

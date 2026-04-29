@@ -11,16 +11,16 @@ const AccentColorSection: React.FC<{
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold text-stone-900 dark:text-white mb-1">
+      <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white mb-1">
         Accent color
       </h2>
-      <p className="text-sm text-stone-500 dark:text-stone-400 mb-6">
+      <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
         Personalise the interface. The chosen color is applied to active
         buttons, search highlights, window controls, and more.
       </p>
 
-      <div className="rounded-xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900/40 p-5">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-4">
+      <div className="rounded-xl border border-zinc-200 dark:border-zinc-700/60 bg-white dark:bg-zinc-900/40 p-5">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4">
           Color palette
         </p>
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5">
@@ -36,7 +36,7 @@ const AccentColorSection: React.FC<{
                 <span
                   className={`w-10 h-10 rounded-xl transition-all flex items-center justify-center shadow-sm ${
                     selected
-                      ? "ring-2 ring-offset-2 ring-offset-white dark:ring-offset-stone-900 scale-110"
+                      ? "ring-2 ring-offset-2 ring-offset-white dark:ring-offset-zinc-900 scale-110"
                       : "hover:scale-105"
                   }`}
                   style={
@@ -50,7 +50,7 @@ const AccentColorSection: React.FC<{
                     <Check className="w-4 h-4 text-white drop-shadow" />
                   )}
                 </span>
-                <span className="text-[10px] text-stone-500 dark:text-stone-400 group-hover:text-stone-700 dark:group-hover:text-stone-300 transition-colors">
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
                   {c.name}
                 </span>
               </button>
@@ -59,8 +59,8 @@ const AccentColorSection: React.FC<{
         </div>
 
         {/* Live preview */}
-        <div className="mt-5 pt-4 border-t border-stone-100 dark:border-stone-800">
-          <p className="text-[11px] text-stone-400 dark:text-stone-500 mb-3">
+        <div className="mt-5 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+          <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mb-3">
             Preview
           </p>
           <div className="flex flex-wrap items-center gap-3">

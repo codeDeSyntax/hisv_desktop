@@ -216,9 +216,9 @@ export default function UpdateManager() {
       <div
         ref={btnRef}
         onClick={() => setShow((s) => !s)}
-        className="relative w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer hover:bg-gray-50 dark:hover:bg-primary"
+        className="relative w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer hover:bg-zinc-50 dark:hover:bg-primary"
       >
-        <RefreshCw className="w-4 h-4 text-gray-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
+        <RefreshCw className="w-4 h-4 text-zinc-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
         {hasDot && (
           <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-amber-400" />
         )}

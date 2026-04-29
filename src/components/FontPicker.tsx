@@ -90,8 +90,8 @@ const FontPicker: React.FC = () => {
         }}
         className={`flex items-center gap-1.5 px-3 py-1 rounded transition-colors ${
           isDarkMode
-            ? "hover:bg-stone-800 text-stone-300"
-            : "hover:bg-stone-100 text-stone-700"
+            ? "hover:bg-zinc-800 text-zinc-300"
+            : "hover:bg-zinc-100 text-zinc-700"
         }`}
         title="Select Font Family"
       >
@@ -114,13 +114,13 @@ const FontPicker: React.FC = () => {
             transition={{ duration: 0.15 }}
             className={`absolute top-full right-0 mt-2 w-[420px] min-w-[200px] rounded-lg shadow-2xl border z-50 ${
               isDarkMode
-                ? "bg-stone-900 border-stone-700"
-                : "bg-white border-stone-200"
+                ? "bg-zinc-900 border-zinc-700"
+                : "bg-white border-zinc-200"
             }`}
           >
             {/* Search Box */}
             <div
-              className={`p-2 border-b ${isDarkMode ? "border-stone-700" : "border-stone-200"}`}
+              className={`p-2 border-b ${isDarkMode ? "border-zinc-700" : "border-zinc-200"}`}
             >
               <input
                 type="text"
@@ -129,8 +129,8 @@ const FontPicker: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={`w-full px-3 py-1.5 text-sm rounded border outline-none ${
                   isDarkMode
-                    ? "bg-stone-800 border-stone-700 text-stone-200 placeholder-stone-500"
-                    : "bg-white border-stone-300 text-stone-900 placeholder-stone-400"
+                    ? "bg-zinc-800 border-zinc-700 text-zinc-200 placeholder-zinc-500"
+                    : "bg-white border-zinc-300 text-zinc-900 placeholder-zinc-400"
                 }`}
                 autoFocus
               />
@@ -146,11 +146,11 @@ const FontPicker: React.FC = () => {
                     className={`w-full px-4 py-2.5 text-left flex items-center justify-between transition-colors ${
                       settings.fontFamily === font
                         ? isDarkMode
-                          ? "text-stone-100"
-                          : "text-stone-900"
+                          ? "text-zinc-100"
+                          : "text-zinc-900"
                         : isDarkMode
-                          ? "hover:bg-stone-800/50 text-stone-300"
-                          : "hover:bg-stone-50 text-stone-700"
+                          ? "hover:bg-zinc-800/50 text-zinc-300"
+                          : "hover:bg-zinc-50 text-zinc-700"
                     }`}
                     style={{
                       fontFamily: font,
@@ -169,7 +169,7 @@ const FontPicker: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <div className="px-4 py-8 text-center text-sm text-stone-500">
+                <div className="px-4 py-8 text-center text-sm text-zinc-500">
                   No fonts found
                 </div>
               )}

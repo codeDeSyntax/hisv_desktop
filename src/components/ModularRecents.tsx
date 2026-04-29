@@ -9,6 +9,7 @@ interface ModularRecentsProps {
   showHeader?: boolean;
   maxHeight?: string;
   limit?: number;
+  onSelect?: () => void;
 }
 
 const ModularRecents: React.FC<ModularRecentsProps> = ({
@@ -16,6 +17,7 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
   showHeader = true,
   maxHeight = "100%",
   limit,
+  onSelect,
 }) => {
   const { recentSermons, setSelectedMessage, setActiveTab, setRecentSermons } =
     useSermonContext();
@@ -61,20 +63,23 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
     const limitedRecentSermons = updatedRecentSermons.slice(0, 15);
     localStorage.setItem("recentSermons", JSON.stringify(limitedRecentSermons));
     setRecentSermons(limitedRecentSermons);
+
+    // Close sidebar after selection
+    onSelect?.();
   };
 
   return (
     <div
-      className={`${className} h-full flex flex-col bg-transparent `}
+      className={`${className} h-full flex flex-col bg-transparent w-full max-w-2xl m-auto `}
       style={{ maxHeight }}
     >
       {showHeader && (
-        <div className="flex-shrink-0 py-4 border-b border-gray-200 dark:border-gray-700 ">
+        <div className="flex-shrink-0 py-4 border-b border-zinc-200 dark:border-zinc-700 ">
           {/* Search Input */}
           <div className="mb-4">
             <input
               placeholder="Search recent sermons..."
-              className="w-[90%] p-3 text-sm bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-full focus:outline-none focus:ring-2 focus:ring-accent text-stone-700 dark:text-stone-100 placeholder-stone-400"
+              className="w-[90%] p-3 text-sm bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full focus:outline-none focus:ring-2 focus:ring-accent text-zinc-700 dark:text-zinc-100 placeholder-zinc-400"
               spellCheck={false}
             />
           </div>
@@ -85,21 +90,21 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
       <div className="flex-1 overflow-hidden">
         {displayedSermons.length === 0 ? (
           <div className="text-center py-8">
-            <span className="text-stone-700 dark:text-gray-300">
+            <span className="text-zinc-700 dark:text-zinc-300">
               No recent sermons
             </span>
           </div>
         ) : (
-          <div className="h-full flex flex-col font-zilla rounded-lg border border-stone-200 dark:border-stone-700">
+          <div className="h-full flex flex-col font-zilla rounded-lg border border-zinc-200 dark:border-zinc-700">
             {/* Fixed Table Header */}
             <div className="flex-shrink-0">
               <table className="w-full">
-                <thead className="bg-gradient-to-r from-stone-50 to-stone-100 dark:from-stone-900 dark:to-stone-900">
-                  <tr className="border-b border-stone-200 dark:border-stone-800">
-                    <th className="text-left px-3 py-2.5 text-stone-700 dark:text-accent font-medium text-sm font-zilla">
+                <thead className="bg-gradient-to-r from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-900">
+                  <tr className="border-b border-zinc-200 dark:border-zinc-800">
+                    <th className="text-left px-3 py-2.5 text-zinc-700 dark:text-accent font-medium text-sm font-zilla">
                       <span>Title</span>
                     </th>
-                    <th className="text-center px-3 py-2.5 text-stone-700 dark:text-accent font-medium text-sm font-zilla w-16">
+                    <th className="text-center px-3 py-2.5 text-zinc-700 dark:text-accent font-medium text-sm font-zilla w-16">
                       Type
                     </th>
                   </tr>
@@ -110,7 +115,7 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
             {/* Scrollable Table Body */}
             <div className="flex-1 overflow-y-auto no-scrollbar">
               <table className="w-full">
-                <tbody className="divide-y divide-stone-200 dark:divide-stone-700">
+                <tbody className="divide-y divide-zinc-200 dark:divide-zinc-700">
                   <AnimatePresence>
                     {displayedSermons.map((sermon, index) => (
                       <motion.tr
@@ -119,20 +124,20 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -100 }}
                         transition={{ duration: 0.2, delay: index * 0.05 }}
-                        className="cursor-pointer group transition-colors duration-150 hover:bg-gradient-to-r hover:from-stone-100/80 hover:to-stone-50/80 dark:hover:from-stone-800/50 dark:hover:to-stone-700/50 hover:shadow-sm"
+                        className="group relative py-2 rounded-lg border-solid border border-zinc-200 dark:border-zinc-700/60 bg-white dark:bg-zinc-800/40 px-3 cursor-pointer hover:shadow-sm transition-colors duration-150"
                         onClick={() => handleSermonClick(sermon)}
                       >
-                        <td className="px-3 text-stone-800 dark:text-stone-200 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors text-sm leading-tight font-zilla border-x-0 border-t-0 border-b border-solid border-stone-200 dark:border-stone-700">
+                        <td className="px-3 rounded-xl py-2 text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors text-sm leading-tight font-zilla border-x-0 border-t-0 border-b border-solid border-zinc-200 dark:border-zinc-700">
                           <span className="font-medium line-clamp-2 overflow-hidden">
                             {sermon.title}
                             {sermon.lastParagraph && (
-                              <span className="ml-2 text-stone-600 dark:text-stone-400 font-bold">
+                              <span className="ml-2 text-zinc-600 dark:text-zinc-400 font-bold">
                                 #{sermon.lastParagraph}
                               </span>
                             )}
                           </span>
                         </td>
-                        <td className="px-3 text-center w-16">
+                        <td className="px-3 text-center w-16 bg-transparent">
                           <div className="flex justify-center items-center gap-1">
                             {sermon.type === "mp3" ? (
                               <div
@@ -151,7 +156,7 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
                               <div className="inline-flex items-center justify-center w-7 h-7 rounded-full shadow-sm transition-transform group-hover:scale-110">
                                 <LetterText
                                   size={10}
-                                  className="text-stone-700 dark:text-stone-200"
+                                  className="text-zinc-700 dark:text-zinc-200"
                                 />
                               </div>
                             )}

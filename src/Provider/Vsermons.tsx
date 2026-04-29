@@ -46,6 +46,7 @@ interface SermonSettings {
   fontStyle: string;
   fontSize: string;
   fontWeight: string;
+  readingWidth: string;
 }
 
 // Define search navigation type
@@ -162,6 +163,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     fontStyle: "normal",
     fontSize: "20",
     fontWeight: "normal",
+    readingWidth: "100",
   });
 
   const handleMinimize = () => {
@@ -486,6 +488,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
         fontStyle: parsedSettings.fontStyle,
         fontSize: parsedSettings.fontSize,
         fontWeight: parsedSettings.fontWeight,
+        readingWidth: parsedSettings.readingWidth ?? "100",
       });
     }
 

@@ -5,7 +5,10 @@ const OptionButtons: React.FC<{
   value: string;
   onChange: (v: string) => void;
   accentColor: string;
-  styleOverride?: (opt: string, active: boolean) => React.CSSProperties | undefined;
+  styleOverride?: (
+    opt: string,
+    active: boolean,
+  ) => React.CSSProperties | undefined;
 }> = ({ options, value, onChange, accentColor, styleOverride }) => (
   <div className="flex gap-1">
     {options.map((opt) => {
@@ -17,7 +20,7 @@ const OptionButtons: React.FC<{
           className={`px-3 py-1.5 text-xs rounded-lg capitalize transition-colors ${
             active
               ? "text-white shadow-sm"
-              : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
+              : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
           }`}
           style={
             styleOverride

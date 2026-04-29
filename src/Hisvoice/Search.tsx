@@ -83,7 +83,7 @@ function RenderSnippet({
         return (
           <span
             key={i}
-            className="text-stone-600 dark:text-stone-400 text-[12px]"
+            className="text-zinc-600 dark:text-zinc-400 text-[12px]"
           >
             {plainPart}
           </span>
@@ -117,7 +117,7 @@ function groupFTSResults(rows: FTSRow[]): GroupedSermonMatch[] {
 }
 
 // â”€â”€ component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const Search = () => {
+const Search = ({ onSelect }: { onSelect?: () => void }) => {
   const { navigateToSearchResult } = useSermonContext();
   const { isDarkMode, accentColor } = useTheme();
   const [searchInput, setSearchInput] = useState(
@@ -273,8 +273,11 @@ const Search = () => {
       const termForNavigation = executedSearchTerm || searchInput.trim();
       if (!termForNavigation) return;
       navigateToSearchResult(group.sermonId, 1, termForNavigation);
+
+      // Close sidebar after selection
+      onSelect?.();
     },
-    [navigateToSearchResult, executedSearchTerm, searchInput],
+    [navigateToSearchResult, executedSearchTerm, searchInput, onSelect],
   );
 
   const toggleExpand = useCallback((sermonId: string) => {
@@ -293,23 +296,23 @@ const Search = () => {
   );
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-stone-950 font-zilla">
+    <div className="h-full w-full max-w-2xl m-auto flex flex-col bg-white dark:bg-zinc-950 font-zilla">
       {/* Search header */}
-      <div className="flex-shrink-0 px-4 pt-4 pb-3 border-b border-stone-100 dark:border-stone-800/80 overflow-visible">
+      <div className="flex-shrink-0 px-4 pt-4 pb-3 border-b border-zinc-100 dark:border-zinc-800/80 overflow-visible">
         <form onSubmit={handleSearchSubmit} className="overflow-visible">
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <input
                 type="text"
                 placeholder="Search quotes, phrases, keywords… (Press Enter to search)"
-                className="w-full pl-4 pr-10 py-2.5 text-[13px] bg-stone-100 dark:bg-stone-900 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 transition-colors duration-150"
+                className="w-full pl-4 pr-10 py-2.5 text-[13px] bg-zinc-100 dark:bg-zinc-900 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition-colors duration-150"
                 onChange={handleSearchInput}
                 onKeyDown={handleKeyDown}
                 value={searchInput}
               />
               {isSearching && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <div className="animate-spin rounded-full h-3.5 w-3.5 border-[1.5px] border-stone-400 border-t-transparent" />
+                  <div className="animate-spin rounded-full h-3.5 w-3.5 border-[1.5px] border-zinc-400 border-t-transparent" />
                 </div>
               )}
             </div>
@@ -334,7 +337,7 @@ const Search = () => {
               className={`px-2.5 py-1 text-[11px] rounded-full border transition-colors ${
                 searchMode === "all"
                   ? "text-white border-transparent"
-                  : "text-stone-600 dark:text-stone-300 border-stone-300 dark:border-stone-700"
+                  : "text-zinc-600 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700"
               }`}
               style={
                 searchMode === "all"
@@ -350,7 +353,7 @@ const Search = () => {
               className={`px-2.5 py-1 text-[11px] rounded-full border transition-colors ${
                 searchMode === "exact"
                   ? "text-white border-transparent"
-                  : "text-stone-600 dark:text-stone-300 border-stone-300 dark:border-stone-700"
+                  : "text-zinc-600 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700"
               }`}
               style={
                 searchMode === "exact"
@@ -364,13 +367,13 @@ const Search = () => {
           {/* Sermon filter dropdown */}
           {foundMatches.length > 0 && (
             <div
-              className="relative ml-auto w-full bg-stone-100 dark:bg-stone-900 rounded-full"
+              className="relative ml-auto w-full bg-zinc-100 dark:bg-zinc-900 rounded-full"
               ref={dropdownRef}
             >
               <button
                 type="button"
                 onClick={() => setShowSermonDropdown(!showSermonDropdown)}
-                className="flex items-center gap-1 px-2.5 mt-2 p-2  text-[11px] rounded-full border text-stone-600 dark:text-stone-300 border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors w-full"
+                className="flex items-center gap-1 px-2.5 mt-2 p-2  text-[11px] rounded-full border text-zinc-600 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors w-full"
               >
                 <span className="text-[10px]">
                   {selectedSermonFilter
@@ -391,7 +394,7 @@ const Search = () => {
 
               {/* Dropdown menu */}
               {showSermonDropdown && (
-                <div className="absolute left-0 h-[33rem]  mt-1 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-lg shadow-lg z-50 py-2 overflow-y-auto no-scrollbar w-full ">
+                <div className="absolute left-0 h-[33rem]  mt-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg z-50 py-2 overflow-y-auto no-scrollbar w-full ">
                   <button
                     type="button"
                     onClick={() => {
@@ -400,14 +403,14 @@ const Search = () => {
                     }}
                     className={`w-full text-left px-3 py-2 text-[12px] transition-colors ${
                       selectedSermonFilter === null
-                        ? "bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-semibold"
-                        : "text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
+                        ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-semibold"
+                        : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                     }`}
                   >
                     All sermons ({foundMatches.length})
                   </button>
 
-                  <div className="border-t border-stone-200 dark:border-stone-700  ">
+                  <div className="border-t border-zinc-200 dark:border-zinc-700  ">
                     {foundMatches.map((sermon) => (
                       <button
                         key={sermon.sermonId}
@@ -416,10 +419,10 @@ const Search = () => {
                           setSelectedSermonFilter(sermon.sermonId);
                           setShowSermonDropdown(false);
                         }}
-                        className={`w-full text-left px-3 py-2 text-[12px] transition-colors border-b border-stone-100 dark:border-stone-800 last:border-b-0 ${
+                        className={`w-full text-left px-3 py-2 text-[12px] transition-colors border-b border-zinc-100 dark:border-zinc-800 last:border-b-0 ${
                           selectedSermonFilter === sermon.sermonId
-                            ? "bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-semibold"
-                            : "text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
+                            ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-semibold"
+                            : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2">
@@ -439,7 +442,7 @@ const Search = () => {
             </div>
           )}
           {searchInput.length > 0 && searchInput.length < 2 && (
-            <p className="mt-2 text-[11px] text-stone-400 dark:text-stone-500">
+            <p className="mt-2 text-[11px] text-zinc-400 dark:text-zinc-500">
               Enter at least 2 characters, then press Enter or click Search
             </p>
           )}
@@ -457,7 +460,7 @@ const Search = () => {
               {Array.from({ length: 3 }).map((_, i) => (
                 <div
                   key={i}
-                  className="border-b border-stone-100 dark:border-stone-800 pb-3"
+                  className="border-b border-zinc-100 dark:border-zinc-800 pb-3"
                 >
                   <div className="mb-2">
                     <CompactSkeleton lines={1} width="large" height="medium" />
@@ -470,12 +473,12 @@ const Search = () => {
         ) : foundMatches.length > 0 ? (
           <div className="p-2">
             <div className="px-4 pt-3 pb-1">
-              <p className="text-[11px] text-stone-500 dark:text-stone-400">
-                <span className="font-semibold text-stone-700 dark:text-stone-200">
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                <span className="font-semibold text-zinc-700 dark:text-zinc-200">
                   {displayedTotalMatches}
                 </span>{" "}
                 match{displayedTotalMatches !== 1 ? "es" : ""} in{" "}
-                <span className="font-semibold text-stone-700 dark:text-stone-200">
+                <span className="font-semibold text-zinc-700 dark:text-zinc-200">
                   {displayedMatches.length}
                 </span>{" "}
                 sermon{displayedMatches.length !== 1 ? "s" : ""} for "
@@ -494,12 +497,12 @@ const Search = () => {
                 return (
                   <div
                     key={group.sermonId}
-                    className="rounded-lg border-x-0 border-t-0 border border-solid border-stone-100 dark:border-stone-800/60 overflow-hidden"
+                    className="rounded-lg border-x-0 border-t-0 border border-solid border-zinc-100 dark:border-zinc-800/60 overflow-hidden"
                   >
                     {shown.map((snippet, idx) => (
                       <div
                         key={idx}
-                        className="py-1.5 px-3 cursor-pointer  transition-colors duration-100 border-b border-stone-100 dark:border-stone-800/60 last:border-b-0"
+                        className="py-1.5 px-3 cursor-pointer  transition-colors duration-100 border-b border-zinc-100 dark:border-zinc-800/60 last:border-b-0"
                         onClick={() => handleSermonClick(group)}
                       >
                         <div className="flex items-start gap-2">
@@ -517,11 +520,11 @@ const Search = () => {
                                   e.stopPropagation();
                                   toggleExpand(group.sermonId);
                                 }}
-                                className="p-0.5 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors"
+                                className="p-0.5 hover:bg-zinc-200 dark:hover:bg-zinc-600 rounded transition-colors"
                               >
                                 <ChevronDown
                                   size={10}
-                                  className={`transition-transform text-stone-600 dark:text-stone-400 ${isExpanded ? "rotate-180" : ""}`}
+                                  className={`transition-transform text-zinc-600 dark:text-zinc-400 ${isExpanded ? "rotate-180" : ""}`}
                                 />
                               </button>
                             )}
@@ -531,11 +534,11 @@ const Search = () => {
                           <div className="text-[12px] leading-normal flex-1 min-w-0">
                             {idx === 0 && (
                               <div className="mb-0.5">
-                                <span className="font-bold text-stone-900 dark:text-stone-100 text-[11.5px] line-clamp-1">
+                                <span className="font-bold text-zinc-900 dark:text-zinc-100 text-[14px] line-clamp-1">
                                   {group.sermonTitle}
                                 </span>
                                 {(group.sermonYear || group.sermonLocation) && (
-                                  <span className="font-medium text-stone-500 dark:text-stone-400 text-[10px] ml-1.5">
+                                  <span className="font-medium text-zinc-500 dark:text-zinc-400 text-[12px] ml-1.5">
                                     {group.sermonLocation}
                                     {group.sermonYear
                                       ? ` ${group.sermonYear}`
@@ -564,15 +567,15 @@ const Search = () => {
               alt="No results"
               className="h-24 mb-4 opacity-40"
             />
-            <p className="text-[13px] text-stone-500 dark:text-stone-400 font-serif italic max-w-xs leading-relaxed mb-3">
+            <p className="text-[13px] text-zinc-500 dark:text-zinc-400 font-serif italic max-w-xs leading-relaxed mb-3">
               Search for quotes across all sermons
             </p>
             {searchInput && foundMatches.length === 0 && !isSearching && (
               <div className="text-center">
-                <p className="text-sm font-medium text-stone-600 dark:text-stone-400 mb-2">
+                <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-2">
                   No results for "{searchInput}"
                 </p>
-                <p className="text-[11px] text-stone-400 dark:text-stone-500">
+                <p className="text-[11px] text-zinc-400 dark:text-zinc-500">
                   Try shorter phrases or different keywords
                 </p>
               </div>

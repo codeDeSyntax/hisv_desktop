@@ -28,16 +28,16 @@ const FloatingControlButton = ({
       onClick={onToggle}
       className={`fixed right-10 top-16 z-40 w-10 h-10 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center backdrop-blur-sm ${
         isDarkMode
-          ? "bg-stone-800/90 hover:bg-stone-700 text-stone-200"
-          : "bg-white/90 hover:bg-stone-50 text-stone-700"
+          ? "bg-zinc-800/90 hover:bg-zinc-700 text-zinc-200"
+          : "bg-white/90 hover:bg-zinc-50 text-zinc-700"
       } border-2 ${
         showControlPanel
           ? isDarkMode
-            ? "border-stone-500 shadow-stone-500/50"
-            : "border-stone-400 shadow-stone-400/30"
+            ? "border-zinc-500 shadow-zinc-500/50"
+            : "border-zinc-400 shadow-zinc-400/30"
           : isDarkMode
-            ? "border-stone-700"
-            : "border-stone-300"
+            ? "border-zinc-700"
+            : "border-zinc-300"
       }`}
     >
       <InfoCircleFilled size={20} className="mx-auto" />

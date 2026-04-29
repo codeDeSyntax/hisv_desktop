@@ -100,47 +100,47 @@ const Help: React.FC = () => {
       {/* Minimal Help Button */}
       <div
         onClick={toggleHelp}
-        className="w-6 h-6 rounded-full flex items-center justify-center group pointer-events-none cursor-not-allowed hover:bg-gray-50 dark:hover:bg-bgray"
+        className="w-6 h-6 rounded-full flex items-center justify-center group pointer-events-none cursor-not-allowed hover:bg-zinc-50 dark:hover:bg-bzinc"
         aria-label="Help"
       >
-        <HelpCircle className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+        <HelpCircle className="h-5 w-5 text-zinc-600 dark:text-zinc-300" />
       </div>
 
       {/* Full Screen Help Modal */}
       {isOpen && (
-        <div className="fixed inset-0 bg-white dark:bg-ltgray z-50 overflow-y-auto no-scrollbar transition-all duration-200">
+        <div className="fixed inset-0 bg-white dark:bg-ltzinc z-50 overflow-y-auto no-scrollbar transition-all duration-200">
           <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
             {/* Header */}
             <div className="flex justify-between items-center mb-6 sm:mb-8">
-              <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                 <HelpCircle
                   size={20}
-                  className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white"
+                  className="w-4 h-4 text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white"
                 />
                 <span>Help Center</span>
               </h1>
               <button
                 onClick={toggleHelp}
-                className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                 aria-label="Close help"
               >
-                <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                <X className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
               </button>
             </div>
 
             {/* Help Content */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-              <div className="bg-gray-50 dark:bg-bgray/20 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden transition-all hover:shadow-sm dark:hover:shadow-gray-800/10">
+              <div className="bg-zinc-50 dark:bg-bzinc/20 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden transition-all hover:shadow-sm dark:hover:shadow-zinc-800/10">
                 <img
                   src="./something-lost.png"
                   className="w-full h-32 object-cover"
                   alt="Help Center"
                 />
                 <div className="p-4">
-                  <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+                  <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-2">
                     Help Center
                   </h2>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400">
                     Find answers to your questions and learn how to use the app
                     effectively.
                   </p>
@@ -149,9 +149,9 @@ const Help: React.FC = () => {
               {helpData.map((section, sectionIndex) => (
                 <div
                   key={sectionIndex}
-                  className="bg-gray-50 dark:bg-bgray/20 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden transition-all hover:shadow-sm dark:hover:shadow-gray-800/10"
+                  className="bg-zinc-50 dark:bg-bzinc/20 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden transition-all hover:shadow-sm dark:hover:shadow-zinc-800/10"
                 >
-                  <div className="px-4 py-3 flex items-center gap-3 border-b border-gray-200 dark:border-gray-800">
+                  <div className="px-4 py-3 flex items-center gap-3 border-b border-zinc-200 dark:border-zinc-800">
                     <div
                       className="p-1.5 rounded-md"
                       style={{
@@ -164,7 +164,7 @@ const Help: React.FC = () => {
                         style: { color: "var(--accent)" },
                       })}
                     </div>
-                    <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
                       {section.title}
                     </h2>
                   </div>
@@ -177,10 +177,10 @@ const Help: React.FC = () => {
                             style={{ color: "var(--accent)" }}
                           />
                           <div>
-                            <span className="inline-block bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded text-xs font-mono text-gray-800 dark:text-gray-200 mr-1.5 mb-1">
+                            <span className="inline-block bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-xs font-mono text-zinc-800 dark:text-zinc-200 mr-1.5 mb-1">
                               {item.key}
                             </span>
-                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                            <p className="text-xs text-zinc-600 dark:text-zinc-400">
                               {item.description}
                             </p>
                           </div>
@@ -193,8 +193,8 @@ const Help: React.FC = () => {
             </div>
 
             {/* Quick Access Section */}
-            <div className="mt-8 bg-gray-50 dark:bg-bgray/20 rounded-lg border border-gray-200 dark:border-gray-800 p-5">
-              <h2 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
+            <div className="mt-8 bg-zinc-50 dark:bg-bzinc/20 rounded-lg border border-zinc-200 dark:border-zinc-800 p-5">
+              <h2 className="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-3 flex items-center gap-2">
                 <FolderOpen
                   className="h-4 w-4"
                   style={{ color: "var(--accent)" }}
@@ -227,7 +227,7 @@ const Help: React.FC = () => {
                 ].map((item, index) => (
                   <div
                     key={index}
-                    className="bg-white dark:bg-ltgray rounded-md border border-gray-200 dark:border-gray-800 p-2.5 flex flex-col items-center text-center hover:shadow-xs dark:hover:shadow-gray-800/10 transition-all cursor-pointer"
+                    className="bg-white dark:bg-ltzinc rounded-md border border-zinc-200 dark:border-zinc-800 p-2.5 flex flex-col items-center text-center hover:shadow-xs dark:hover:shadow-zinc-800/10 transition-all cursor-pointer"
                   >
                     <div
                       className="p-1.5 rounded-md mb-1.5"
@@ -241,10 +241,10 @@ const Help: React.FC = () => {
                         style: { color: "var(--accent)" },
                       })}
                     </div>
-                    <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                    <span className="text-xs font-medium text-zinc-800 dark:text-zinc-200">
                       {item.label}
                     </span>
-                    <span className="text-[0.65rem] text-gray-500 dark:text-gray-500 mt-0.5">
+                    <span className="text-[0.65rem] text-zinc-500 dark:text-zinc-500 mt-0.5">
                       {item.shortcut}
                     </span>
                   </div>

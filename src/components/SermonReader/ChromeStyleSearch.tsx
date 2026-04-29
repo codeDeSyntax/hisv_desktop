@@ -105,13 +105,13 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
             stiffness: 350,
             damping: 28,
           }}
-          className="fixed top-20 right-8 z-50 bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl border border-stone-200 dark:border-stone-700 rounded-2xl shadow-2xl shadow-stone-900/10 dark:shadow-stone-950/50"
+          className="fixed top-20 right-8 z-50 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-2xl shadow-zinc-900/10 dark:shadow-zinc-950/50"
           style={{ minWidth: "380px", maxWidth: "420px" }}
         >
           {/* Main Search Container */}
           <div className="p-2">
             {/* Search Input Section */}
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-1">
               <div className="flex-1 relative">
                 <input
                   ref={inputRef}
@@ -124,7 +124,7 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
                   }}
                   onKeyDown={handleKeyDown}
                   placeholder="Search in sermon or paragraph number..."
-                  className="w-full px-4 py-3 text-sm border border-stone-200 dark:border-stone-700 rounded-xl bg-stone-50 dark:bg-stone-800/50 text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md placeholder:font-zilla font-zilla"
+                  className="w-full px-4 py-2 text-sm border border-zinc-200 dark:border-zinc-700 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md placeholder:font-zilla font-zilla"
                   style={{
                     backdropFilter: "blur(8px)",
                   }}
@@ -132,7 +132,7 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
                 {searchQuery && (
                   <button
                     onClick={handleClear}
-                    className="absolute bg-stone-200 dark:bg-stone-700 right-12 cursor-pointer top-1/2 transform -translate-y-1/2 p-1.5 rounded-lg text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700/50 transition-all duration-200"
+                    className="absolute bg-zinc-200 dark:bg-zinc-700 right-12 cursor-pointer top-1/2 transform -translate-y-1/2 p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 transition-all duration-200"
                   >
                     <X size={14} />
                   </button>
@@ -140,7 +140,7 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
 
                 <button
                   onClick={onClose}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 rounded-lg text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-700/50 cursor-pointer transition-all duration-200"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 rounded-lg text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700/50 cursor-pointer transition-all duration-200"
                   title="Close (Esc)"
                 >
                   <X size={16} />
@@ -150,7 +150,7 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
               {/* Close Button */}
               {/* <button
                 onClick={onClose}
-                className="p-2 z-20 rounded-xl bg-stone-100/50 dark:bg-amber-900/30 text-stone-500 dark:text-amber-400/70 hover:text-stone-700 dark:hover:text-amber-300 hover:bg-stone-200/50 dark:hover:bg-amber-800/40 transition-all duration-200 shadow-sm"
+                className="p-2 z-20 rounded-xl bg-zinc-100/50 dark:bg-amber-900/30 text-zinc-500 dark:text-amber-400/70 hover:text-zinc-700 dark:hover:text-amber-300 hover:bg-zinc-200/50 dark:hover:bg-amber-800/40 transition-all duration-200 shadow-sm"
                 title="Close (Esc)"
               >
                 <X size={18} />
@@ -160,13 +160,13 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
             {/* Results and Navigation Section */}
             {searchQuery && (
               <div
-                className="flex items-center justify-between p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50/50 dark:bg-stone-800/30"
+                className="flex items-center justify-between px-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/30"
                 style={{
                   backdropFilter: "blur(8px)",
                 }}
               >
                 {/* Results Counter */}
-                <div className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                <div className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   {searchResultsCount > 0 ? (
                     <span className="flex items-center gap-2">
                       <span
@@ -176,19 +176,19 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
                       <span className="font-semibold">
                         {currentSearchIndex}
                       </span>
-                      <span className="text-stone-500 dark:text-stone-400">
+                      <span className="text-zinc-500 dark:text-zinc-400">
                         of
                       </span>
                       <span className="font-semibold">
                         {searchResultsCount}
                       </span>
-                      <span className="text-stone-500 dark:text-stone-400">
+                      <span className="text-zinc-500 dark:text-zinc-400">
                         matches
                       </span>
                     </span>
                   ) : (
-                    <span className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
-                      <span className="w-2 h-2 bg-stone-400 dark:bg-stone-600 rounded-full"></span>
+                    <span className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
+                      <span className="w-2 h-2 bg-zinc-400 dark:bg-zinc-600 rounded-full"></span>
                       No results found
                     </span>
                   )}
@@ -199,14 +199,14 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={onNavigatePrevious}
-                      className="p-2 rounded-lg bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-all duration-200 shadow-sm hover:shadow-md"
                       title="Previous (Shift+Enter)"
                     >
                       <ChevronUp size={16} style={{ color: accentColor }} />
                     </button>
                     <button
                       onClick={onNavigateNext}
-                      className="p-2 rounded-lg bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-all duration-200 shadow-sm hover:shadow-md"
                       title="Next (Enter)"
                     >
                       <ChevronDown size={16} style={{ color: accentColor }} />

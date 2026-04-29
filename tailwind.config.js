@@ -12,8 +12,8 @@ export default {
         muted: "#8e8ea0", // ChatGPT secondary/muted text
         border: "#383838", // ChatGPT subtle borders
         accent: "var(--accent)", // dynamic accent – set by Theme provider
-        // Override warm stone shades → ChatGPT cool neutrals (affects all dark:bg-stone-* classes)
-        stone: {
+        // Override warm zinc shades → ChatGPT cool neutrals (affects all dark:bg-zinc-* classes)
+        zinc: {
           50: "#fafaf9",
           100: "#f5f5f4",
           200: "#e7e5e4",
@@ -29,6 +29,7 @@ export default {
       },
       fontFamily: {
         outfit: ['"Outfit"', "ui-sans-serif", "sans-serif"],
+        dscript: ['"Dancing Script"', "ui-sans-serif", "sans-serif"],
         cooper: ['"Cooper Black"', "sans-serif"],
         archivo: ['"Archivo Black"', "sans-serif"],
         zilla: ['"Zilla Slab"', "Palatino"],

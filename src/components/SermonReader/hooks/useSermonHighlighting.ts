@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   SelectionRange,
   HighlightsState,
@@ -23,26 +23,49 @@ export const useSermonHighlighting = (
   const [selectionOverlayRects, setSelectionOverlayRects] = useState<
     SelectionOverlayRect[]
   >([]);
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const selectionChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  /**
+   * Calculate text offset in container by extracting all visible text content.
+   * This approach is more robust for complex DOM structures with nested elements.
+   */
   const getTextOffsetInContainer = useCallback(
     (container: Node, targetNode: Node, nodeOffset: number) => {
+      // Extract all text content from the container in order
       let totalOffset = 0;
-      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+      let foundTarget = false;
 
-      let currentNode = walker.nextNode();
-      while (currentNode) {
-        const textNode = currentNode as Text;
-        const textLength = textNode.textContent?.length || 0;
-
-        if (textNode === targetNode) {
-          return totalOffset + Math.min(nodeOffset, textLength);
+      const processNode = (
+        node: Node,
+        searchNode: Node,
+        searchOffset: number,
+      ): number => {
+        if (node === searchNode) {
+          // Found the target node - return total offset + local offset
+          foundTarget = true;
+          return (
+            totalOffset +
+            Math.min(searchOffset, (node as Text).textContent?.length || 0)
+          );
         }
 
-        totalOffset += textLength;
-        currentNode = walker.nextNode();
-      }
+        if (node.nodeType === Node.TEXT_NODE) {
+          const textLength = (node as Text).textContent?.length || 0;
+          totalOffset += textLength;
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          // Process child nodes
+          for (let i = 0; i < node.childNodes.length; i++) {
+            const child = node.childNodes[i];
+            const result = processNode(child, searchNode, searchOffset);
+            if (foundTarget) return result;
+          }
+        }
 
-      return -1;
+        return -1;
+      };
+
+      return processNode(container, targetNode, nodeOffset);
     },
     [],
   );
@@ -100,7 +123,14 @@ export const useSermonHighlighting = (
 
   useEffect(() => {
     const updateSelectionPreview = () => {
-      setSelectionOverlayRects(getSelectionRects());
+      // Debounce updates to prevent rapid state changes and layout thrashing
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+
+      updateTimeoutRef.current = setTimeout(() => {
+        setSelectionOverlayRects(getSelectionRects());
+      }, 16); // ~60fps, batch updates
     };
 
     document.addEventListener("selectionchange", updateSelectionPreview);
@@ -108,6 +138,7 @@ export const useSermonHighlighting = (
     window.addEventListener("scroll", updateSelectionPreview, true);
 
     return () => {
+      if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
       document.removeEventListener("selectionchange", updateSelectionPreview);
       window.removeEventListener("resize", updateSelectionPreview);
       window.removeEventListener("scroll", updateSelectionPreview, true);
@@ -123,13 +154,17 @@ export const useSermonHighlighting = (
     { name: "Purple", color: "#e9d5ff", textColor: "#6b21a8" },
     { name: "Orange", color: "#fed7aa", textColor: "#c2410c" },
     { name: "Red", color: "#fecaca", textColor: "#dc2626" },
-    { name: "Gray", color: "#e5e7eb", textColor: "#374151" },
+    { name: "zinc", color: "#e5e7eb", textColor: "#374151" },
   ];
 
   // Handle text selection
   const handleTextSelection = useCallback(() => {
-    // Small delay to ensure selection is complete
-    setTimeout(() => {
+    // Debounce to avoid excessive state updates during active selection
+    if (selectionChangeTimeoutRef.current) {
+      clearTimeout(selectionChangeTimeoutRef.current);
+    }
+
+    selectionChangeTimeoutRef.current = setTimeout(() => {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0) {
         setSelectionOverlayRects([]);
@@ -189,10 +224,17 @@ export const useSermonHighlighting = (
         return;
       }
 
-      // Calculate text offsets within the paragraph
-      const paragraphText =
-        sermonParagraphs.find((p) => p.id === paragraphId)?.content || "";
+      // Get the actual paragraph text from our data
+      const paragraphData = sermonParagraphs.find((p) => p.id === paragraphId);
+      if (!paragraphData) {
+        setSelectionOverlayRects([]);
+        setShowColorPalette(false);
+        return;
+      }
 
+      const paragraphText = paragraphData.content;
+
+      // Calculate text offsets within the paragraph content
       const startOffset = getTextOffsetInContainer(
         paragraphContentElement,
         range.startContainer,
@@ -215,35 +257,34 @@ export const useSermonHighlighting = (
         return;
       }
 
+      // Validate that the selected text roughly matches the paragraph content
+      const selectedTextFromParagraph = paragraphText.substring(
+        startOffset,
+        endOffset,
+      );
+
       // Set selection info
       setSelectionRange({
         paragraphId,
         startOffset,
         endOffset,
-        text: paragraphText.substring(startOffset, endOffset),
+        text: selectedText,
       });
 
-      // Position the color palette
+      // Position the color palette above the selection
       const rect = range.getBoundingClientRect();
-
-      // Use viewport coordinates for fixed positioning
-      const paletteY = rect.top - 50; // Position above selection
-      const paletteX = rect.left + rect.width / 2; // Center horizontally on selection
+      const paletteY = rect.top - 50;
+      const paletteX = rect.left + rect.width / 2;
 
       setPalettePosition({
         x: paletteX,
-        y: Math.max(paletteY, 60), // Ensure it doesn't go above viewport
+        y: Math.max(paletteY, 60),
       });
 
       setSelectionOverlayRects(getSelectionRects());
       setShowColorPalette(true);
-    }, 10); // Small delay to ensure selection is stable
-  }, [
-    sermonParagraphs,
-    scrollContainerRef,
-    getTextOffsetInContainer,
-    getSelectionRects,
-  ]);
+    }, 8); // Small debounce to ensure selection is stable
+  }, [sermonParagraphs, getTextOffsetInContainer, getSelectionRects]);
 
   // Apply highlight
   const applyHighlight = useCallback(
@@ -261,6 +302,7 @@ export const useSermonHighlighting = (
 
         const existingHighlights = updated[paragraphId];
 
+        // Remove any overlapping highlights
         Object.keys(existingHighlights).forEach((key) => {
           const existing = existingHighlights[key];
           const isOverlapping =
@@ -272,7 +314,7 @@ export const useSermonHighlighting = (
           }
         });
 
-        // Always add or update the highlight (no toggle)
+        // Add the new highlight
         updated[paragraphId][highlightKey] = {
           startOffset,
           endOffset,
@@ -283,8 +325,13 @@ export const useSermonHighlighting = (
         return updated;
       });
 
-      // Clear selection and hide palette
-      window.getSelection()?.removeAllRanges();
+      // Clear selection without causing layout shift
+      const selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+      }
+
+      // Clear UI immediately and smoothly
       setSelectionOverlayRects([]);
       setShowColorPalette(false);
       setSelectionRange(null);
@@ -308,6 +355,16 @@ export const useSermonHighlighting = (
     },
     [],
   );
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current);
+      if (selectionChangeTimeoutRef.current) {
+        clearTimeout(selectionChangeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return {
     selectionRange,

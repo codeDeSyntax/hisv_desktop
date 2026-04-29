@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTheme } from "../../../Provider/Theme";
 
 interface PersistedNavigationState {
   sermonKey: string;
@@ -15,6 +16,7 @@ export const useSermonNavigation = (
   scrollContainerRef: React.RefObject<HTMLDivElement>,
   sermonId?: string | number,
 ) => {
+  const { accentColor } = useTheme();
   const sermonKey = sermonId == null ? null : String(sermonId);
 
   const [currentParagraph, setCurrentParagraph] = useState(() => {
@@ -59,11 +61,12 @@ export const useSermonNavigation = (
 
       const scrollTop = scrollContainer.scrollTop;
       const elementRelativeTop = elementRect.top - containerRect.top;
-      const centerOffset = (containerRect.height - elementRect.height) / 2;
-      const targetScroll = scrollTop + elementRelativeTop - centerOffset;
+      // Position element at 1/3 from top instead of center to keep header visible
+      const offsetFromTop = containerRect.height / 3;
+      const targetScroll = scrollTop + elementRelativeTop - offsetFromTop;
 
       scrollContainer.scrollTo({
-        top: targetScroll,
+        top: Math.max(0, targetScroll),
         behavior: "smooth",
       });
     },
@@ -153,7 +156,8 @@ export const useSermonNavigation = (
             `paragraph-${paragraphNumber}`,
           );
           if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            // Use our scroll container logic instead of scrollIntoView to avoid scrolling the window
+            scrollSearchElementToCenter(element);
             setCurrentParagraph(paragraphNumber);
             setSearchResultsCount(1);
             setCurrentSearchIndex(1);
@@ -220,15 +224,18 @@ export const useSermonNavigation = (
                 const parts = content.split(searchRegex);
 
                 parts.forEach((part, index) => {
-                  if (searchRegex.test(part)) {
+                  // When splitting with a capturing group, odd indices are matches
+                  if (index % 2 === 1) {
                     const highlight = document.createElement("span");
-                    const isDark =
-                      document.documentElement.classList.contains("dark");
                     highlight.className = "search-highlight";
-                    highlight.style.borderRadius = "8px";
-                    highlight.style.padding = "0 2px";
+                    highlight.style.display = "inline-block";
+                    highlight.style.boxDecorationBreak = "clone";
+                    highlight.style.borderRadius = "4px";
+                    highlight.style.padding = "2px 4px";
+                    highlight.style.margin = "0 1px";
                     highlight.style.fontWeight = "600";
-                    highlight.style.border = `1px solid ${isDark ? "#ffffff" : "#000000"}`;
+                    highlight.style.color = accentColor;
+                    highlight.style.backgroundColor = accentColor + "40";
                     highlight.textContent = part;
                     fragment.appendChild(highlight);
                   } else if (part) {
@@ -294,24 +301,25 @@ export const useSermonNavigation = (
         const container = scrollContainerRef.current;
 
         if (element && container) {
-          // Get the container's scroll parent (the overflow-y-auto div)
-          const scrollParent = container.parentElement;
+          // Get the container's scroll parent by finding the nearest overflow-y-auto div
+          const scrollParent = container.closest(
+            ".overflow-y-auto",
+          ) as HTMLElement;
 
           if (scrollParent) {
             // Calculate the element's position relative to the scroll parent
             const containerRect = scrollParent.getBoundingClientRect();
             const elementRect = element.getBoundingClientRect();
 
-            // Calculate scroll position to center the element
+            // Calculate scroll position - place element at 1/3 from top to keep header visible
             const scrollTop = scrollParent.scrollTop;
             const elementRelativeTop = elementRect.top - containerRect.top;
-            const centerOffset =
-              (containerRect.height - elementRect.height) / 2;
-            const targetScroll = scrollTop + elementRelativeTop - centerOffset;
+            const offsetFromTop = containerRect.height / 3;
+            const targetScroll = scrollTop + elementRelativeTop - offsetFromTop;
 
             // Smooth scroll to the calculated position
             scrollParent.scrollTo({
-              top: targetScroll,
+              top: Math.max(0, targetScroll),
               behavior: "smooth",
             });
 
@@ -350,6 +358,16 @@ export const useSermonNavigation = (
   const hideSearch = useCallback(() => {
     setIsSearchVisible(false);
   }, []);
+
+  useEffect(() => {
+    const existingHighlights = document.querySelectorAll(".search-highlight");
+    existingHighlights.forEach((el) => {
+      const highlight = el as HTMLElement;
+      highlight.style.color = accentColor;
+      highlight.style.border = `2px solid ${accentColor}`;
+      highlight.style.backgroundColor = `${accentColor}30`;
+    });
+  }, [accentColor]);
 
   // Handle scroll tracking for current paragraph
   useEffect(() => {

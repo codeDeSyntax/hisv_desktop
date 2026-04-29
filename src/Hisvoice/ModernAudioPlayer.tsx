@@ -142,7 +142,7 @@ const ModernAudioPlayer = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col gap-4 bg-stone-100/50 dark:bg-stone-800/30 p-4 md:p-6 rounded-2xl"
+          className="flex flex-col gap-4 bg-zinc-100/50 dark:bg-zinc-800/30 p-4 md:p-6 rounded-2xl"
         >
           {/* Top Section: Album Art + Info Side by Side */}
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
@@ -152,7 +152,7 @@ const ModernAudioPlayer = () => {
               transition={{ duration: 3, repeat: isPlaying ? Infinity : 0 }}
               className="w-full md:w-56 flex-shrink-0"
             >
-              <div className="relative aspect-square roundd-full overflow-hidden bg-gradient-to-br from-stone-200 to-stone-300 dark:from-stone-800 dark:to-stone-900 shadow-lg">
+              <div className="relative aspect-square roundd-full overflow-hidden bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900 shadow-lg">
                 <img
                   src="./wood7.png"
                   alt="Sermon Cover"
@@ -174,21 +174,19 @@ const ModernAudioPlayer = () => {
               {/* Top Info */}
               <div>
                 <div className="mb-1">
-                  <span className="text-[10px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
+                  <span className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                     Sermon
                   </span>
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-stone-900 dark:text-stone-100 mb-3 leading-tight">
+                <h1 className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-3 leading-tight">
                   {sermonTitle}
                 </h1>
-                <div className="flex items-center gap-2 text-xs text-stone-700 dark:text-stone-300">
+                <div className="flex items-center gap-2 text-xs text-zinc-700 dark:text-zinc-300">
                   {sermonDate && (
                     <span className="font-medium">{sermonDate}</span>
                   )}
                   {sermonDate && sermonLocation && (
-                    <span className="text-stone-400 dark:text-stone-500">
-                      •
-                    </span>
+                    <span className="text-zinc-400 dark:text-zinc-500">•</span>
                   )}
                   {sermonLocation && (
                     <span className="font-medium">{sermonLocation}</span>
@@ -207,13 +205,13 @@ const ModernAudioPlayer = () => {
                     shape="circle"
                     size="large"
                     type="primary"
-                    className="!w-11 !h-11 !bg-stone-800 dark:!bg-stone-700 hover:!bg-stone-900 dark:hover:!bg-stone-600 !border-none !shadow-md"
+                    className="!w-11 !h-11 !bg-zinc-800 dark:!bg-zinc-700 hover:!bg-zinc-900 dark:hover:!bg-zinc-600 !border-none !shadow-md"
                     icon={
                       isPlaying ? (
                         <Pause
                           size={18}
                           className={
-                            isDarkMode ? "text-stone-100" : "text-white"
+                            isDarkMode ? "text-zinc-100" : "text-white"
                           }
                           fill="currentColor"
                         />
@@ -222,7 +220,7 @@ const ModernAudioPlayer = () => {
                           size={18}
                           className={
                             isDarkMode
-                              ? "text-stone-100 ml-0.5"
+                              ? "text-zinc-100 ml-0.5"
                               : "text-white ml-0.5"
                           }
                           fill="currentColor"
@@ -237,12 +235,12 @@ const ModernAudioPlayer = () => {
                       onClick={skipBackward}
                       shape="circle"
                       type="text"
-                      className="!w-9 !h-9 hover:!bg-stone-300 dark:hover:!bg-stone-700"
+                      className="!w-9 !h-9 hover:!bg-zinc-300 dark:hover:!bg-zinc-700"
                       icon={
                         <SkipBack
                           size={16}
                           className={
-                            isDarkMode ? "text-stone-200" : "text-stone-800"
+                            isDarkMode ? "text-zinc-200" : "text-zinc-800"
                           }
                         />
                       }
@@ -255,12 +253,12 @@ const ModernAudioPlayer = () => {
                       onClick={skipForward}
                       shape="circle"
                       type="text"
-                      className="!w-9 !h-9 hover:!bg-stone-300 dark:hover:!bg-stone-700"
+                      className="!w-9 !h-9 hover:!bg-zinc-300 dark:hover:!bg-zinc-700"
                       icon={
                         <SkipForward
                           size={16}
                           className={
-                            isDarkMode ? "text-stone-200" : "text-stone-800"
+                            isDarkMode ? "text-zinc-200" : "text-zinc-800"
                           }
                         />
                       }
@@ -273,12 +271,12 @@ const ModernAudioPlayer = () => {
                       onClick={handleDownload}
                       shape="circle"
                       type="text"
-                      className="!w-9 !h-9 hover:!bg-stone-300 dark:hover:!bg-stone-700 !ml-1"
+                      className="!w-9 !h-9 hover:!bg-zinc-300 dark:hover:!bg-zinc-700 !ml-1"
                       icon={
                         <Download
                           size={16}
                           className={
-                            isDarkMode ? "text-stone-200" : "text-stone-800"
+                            isDarkMode ? "text-zinc-200" : "text-zinc-800"
                           }
                         />
                       }
@@ -309,7 +307,7 @@ const ModernAudioPlayer = () => {
                     }}
                     className="!mb-0"
                   />
-                  <div className="flex justify-between text-xs text-stone-800 dark:text-stone-200 font-medium">
+                  <div className="flex justify-between text-xs text-zinc-800 dark:text-zinc-200 font-medium">
                     <span>{formatTime(currentTime)}</span>
                     <span>{formatTime(duration)}</span>
                   </div>
@@ -322,20 +320,20 @@ const ModernAudioPlayer = () => {
                     shape="circle"
                     type="text"
                     size="small"
-                    className="!p-1.5 hover:!bg-stone-300 dark:hover:!bg-stone-700"
+                    className="!p-1.5 hover:!bg-zinc-300 dark:hover:!bg-zinc-700"
                     icon={
                       isMuted || volume === 0 ? (
                         <VolumeX
                           size={16}
                           className={
-                            isDarkMode ? "text-stone-200" : "text-stone-800"
+                            isDarkMode ? "text-zinc-200" : "text-zinc-800"
                           }
                         />
                       ) : (
                         <Volume2
                           size={16}
                           className={
-                            isDarkMode ? "text-stone-200" : "text-stone-800"
+                            isDarkMode ? "text-zinc-200" : "text-zinc-800"
                           }
                         />
                       )

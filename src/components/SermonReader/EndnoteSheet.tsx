@@ -56,7 +56,10 @@ function parseParagraphRange(p: string | number): [number, number] | null {
 }
 
 /** Check if a target paragraph number falls within a section's paragraph range. */
-function sectionContainsParagraph(sectionPara: string | number, target: number): boolean {
+function sectionContainsParagraph(
+  sectionPara: string | number,
+  target: number,
+): boolean {
   const range = parseParagraphRange(sectionPara);
   if (!range) return false;
   return target >= range[0] && target <= range[1];
@@ -175,22 +178,22 @@ const ReadMode: React.FC<ReadModeProps> = ({
       exit={{ opacity: 0, x: 30 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={`fixed inset-0 z-[60] flex flex-col ${
-        isDarkMode ? "bg-[#171717]" : "bg-stone-50"
+        isDarkMode ? "bg-[#171717]" : "bg-zinc-50"
       }`}
       onClick={(e) => e.stopPropagation()}
     >
       {/* Top bar */}
       <div
         className={`flex items-center gap-3 px-4 py-2.5 shrink-0 border-b ${
-          isDarkMode ? "border-stone-800" : "border-stone-200"
+          isDarkMode ? "border-zinc-800" : "border-zinc-200"
         }`}
       >
         <button
           onClick={onClose}
           className={`p-1.5 rounded-full transition-colors shrink-0 ${
             isDarkMode
-              ? "hover:bg-stone-800 text-stone-400"
-              : "hover:bg-stone-200 text-stone-500"
+              ? "hover:bg-zinc-800 text-zinc-400"
+              : "hover:bg-zinc-200 text-zinc-500"
           }`}
         >
           <ArrowLeft size={17} />
@@ -203,7 +206,7 @@ const ReadMode: React.FC<ReadModeProps> = ({
             {group.title || "Sermon"}
           </p>
           <p
-            className={`text-xs ${isDarkMode ? "text-stone-500" : "text-stone-400"}`}
+            className={`text-xs ${isDarkMode ? "text-zinc-500" : "text-zinc-400"}`}
           >
             {group.datecode}
           </p>
@@ -219,15 +222,17 @@ const ReadMode: React.FC<ReadModeProps> = ({
       <div className="flex-1 overflow-y-auto no-scrollbar pb-20">
         <div className="px- py-6 max-w-6xl mx-auto space-y-5">
           {sections.map((s) => {
-            const isHit = targetParaNums.some((t) => sectionContainsParagraph(s.Paragraph, t));
+            const isHit = targetParaNums.some((t) =>
+              sectionContainsParagraph(s.Paragraph, t),
+            );
             return (
               <div
                 key={s.Paragraph}
                 className={`flex gap-4 rounded-lg ${
                   isHit
                     ? isDarkMode
-                      ? "bg-stone-800/60"
-                      : "bg-stone-100/80"
+                      ? "bg-zinc-800/60"
+                      : "bg-zinc-100/80"
                     : ""
                 }`}
                 style={
@@ -262,7 +267,6 @@ const ReadMode: React.FC<ReadModeProps> = ({
                     fontSize: "50px",
                     lineHeight: "1.9",
                     color: isDarkMode ? "#e7e5e4" : "#1c1917",
-                    
                   }}
                 >
                   {isHit
@@ -306,7 +310,7 @@ const ContextViewer: React.FC<ContextViewerProps> = ({
   if (!sections.length) {
     return (
       <p
-        className={`text-xs italic px-1 py-2 ${isDarkMode ? "text-stone-500" : "text-stone-400"}`}
+        className={`text-xs italic px-1 py-2 ${isDarkMode ? "text-zinc-500" : "text-zinc-400"}`}
       >
         No paragraph content available.
       </p>
@@ -321,8 +325,8 @@ const ContextViewer: React.FC<ContextViewerProps> = ({
           onClick={onReadMode}
           className={`flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg transition-colors ${
             isDarkMode
-              ? "bg-stone-700 hover:bg-stone-600 text-stone-300"
-              : "bg-stone-100 hover:bg-stone-200 text-stone-600"
+              ? "bg-zinc-700 hover:bg-zinc-600 text-zinc-300"
+              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-600"
           }`}
         >
           <BookText size={11} style={{ color: accentColor }} />
@@ -332,7 +336,9 @@ const ContextViewer: React.FC<ContextViewerProps> = ({
 
       <div className="space-y-1">
         {sections.map((s) => {
-          const isHit = targetParaNums.some((t) => sectionContainsParagraph(s.Paragraph, t));
+          const isHit = targetParaNums.some((t) =>
+            sectionContainsParagraph(s.Paragraph, t),
+          );
           return (
             <div
               key={s.Paragraph}
@@ -359,7 +365,7 @@ const ContextViewer: React.FC<ContextViewerProps> = ({
               </span>
               <span
                 className={`text-[13px] leading-relaxed ${
-                  isDarkMode ? "text-stone-300" : "text-stone-700"
+                  isDarkMode ? "text-zinc-300" : "text-zinc-700"
                 }`}
               >
                 {isHit
@@ -418,11 +424,11 @@ const GroupCard: React.FC<GroupCardProps> = ({
       className={`rounded-xl border overflow-hidden transition-colors ${
         isDarkMode
           ? group.isPrimary
-            ? "border-stone-600 bg-stone-800/60"
-            : "border-stone-700 bg-stone-800/40"
+            ? "border-zinc-600 bg-zinc-800/60"
+            : "border-zinc-700 bg-zinc-800/40"
           : group.isPrimary
-            ? "border-stone-300 bg-stone-50"
-            : "border-stone-200 bg-white"
+            ? "border-zinc-300 bg-zinc-50"
+            : "border-zinc-200 bg-white"
       }`}
     >
       {/* ── Compact single-row header ── */}
@@ -447,7 +453,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
           )}
           <span
             className={`text-[11px] truncate font-bold ${
-              isDarkMode ? "text-stone-400" : "text-stone-500"
+              isDarkMode ? "text-zinc-400" : "text-zinc-500"
             }`}
           >
             {group.title || "Untitled Sermon"}
@@ -463,8 +469,8 @@ const GroupCard: React.FC<GroupCardProps> = ({
           disabled={isLoading}
           className={`shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-medium transition-all ${
             isDarkMode
-              ? "bg-stone-700 hover:bg-stone-600 text-stone-300"
-              : "bg-stone-100 hover:bg-stone-200 text-stone-600"
+              ? "bg-zinc-700 hover:bg-zinc-600 text-zinc-300"
+              : "bg-zinc-100 hover:bg-zinc-200 text-zinc-600"
           } disabled:opacity-50`}
         >
           {isLoading ? (
@@ -518,7 +524,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
                     </span>
                     <span
                       className={`text-[14px] leading-snug line-clamp-2 ${
-                        isDarkMode ? "text-stone-400" : "text-stone-500"
+                        isDarkMode ? "text-zinc-400" : "text-zinc-500"
                       }`}
                     >
                       {highlightTerms(
@@ -530,9 +536,10 @@ const GroupCard: React.FC<GroupCardProps> = ({
                   </div>
                   {totalMatches > 1 && (
                     <p
-                      className={`text-[11px] mt-1 ${isDarkMode ? "text-stone-500" : "text-stone-400"}`}
+                      className={`text-[11px] mt-1 ${isDarkMode ? "text-zinc-500" : "text-zinc-400"}`}
                     >
-                      +{totalMatches - 1} more match{totalMatches - 1 !== 1 ? "es" : ""} in this sermon
+                      +{totalMatches - 1} more match
+                      {totalMatches - 1 !== 1 ? "es" : ""} in this sermon
                     </p>
                   )}
                 </>
@@ -562,7 +569,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
                     </span>
                     <span
                       className={`text-[14px] leading-snug line-clamp-2 ${
-                        isDarkMode ? "text-stone-400" : "text-stone-500"
+                        isDarkMode ? "text-zinc-400" : "text-zinc-500"
                       }`}
                     >
                       {highlightTerms(
@@ -575,9 +582,10 @@ const GroupCard: React.FC<GroupCardProps> = ({
                 ))}
                 {remaining > 0 && (
                   <p
-                    className={`text-[11px] mt-1 ${isDarkMode ? "text-stone-500" : "text-stone-400"}`}
+                    className={`text-[11px] mt-1 ${isDarkMode ? "text-zinc-500" : "text-zinc-400"}`}
                   >
-                    +{remaining} more match{remaining !== 1 ? "es" : ""} in this sermon
+                    +{remaining} more match{remaining !== 1 ? "es" : ""} in this
+                    sermon
                   </p>
                 )}
               </>
@@ -597,7 +605,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
             className="overflow-hidden"
           >
             <div
-              className={`px-3 pb-3 ${isDarkMode ? "border-t border-stone-700" : "border-t border-stone-200"}`}
+              className={`px-3 pb-3 ${isDarkMode ? "border-t border-zinc-700" : "border-t border-zinc-200"}`}
             >
               <ContextViewer
                 sections={sections}
@@ -633,8 +641,7 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
     Map<string, SermonSection[]>
   >(new Map());
   const [loadingId, setLoadingId] = useState<string | null>(null);
-  const [searchMode, setSearchMode] =
-    useState<EndnoteSearchMode>("Auto");
+  const [searchMode, setSearchMode] = useState<EndnoteSearchMode>("Auto");
   const [readMode, setReadMode] = useState<{
     group: SermonGroup;
     sections: SermonSection[];
@@ -674,71 +681,80 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
       });
   }, [isOpen, endnoteData, searchMode]);
 
-  const loadContext = useCallback(async (group: SermonGroup) => {
-    setLoadingId(group.documentRecordId);
-    try {
-      const index = await getSermonIndex();
-      const sermonId = index.get(group.datecode);
-      // Fallback: use documentRecordId as SermonRecordId if numeric lookup fails
-      const sections = await getSermonContent(
-        sermonId,
-        sermonId === undefined ? group.documentRecordId : undefined,
-      );
+  const loadContext = useCallback(
+    async (group: SermonGroup) => {
+      setLoadingId(group.documentRecordId);
+      try {
+        const index = await getSermonIndex();
+        const sermonId = index.get(group.datecode);
+        // Fallback: use documentRecordId as SermonRecordId if numeric lookup fails
+        const sections = await getSermonContent(
+          sermonId,
+          sermonId === undefined ? group.documentRecordId : undefined,
+        );
 
-      // For primary matches, prefer the endnote's parsed paragraph number (the actual reference)
-      // over the search result's paragraph (which may be a different occurrence of the quote)
-      const endnotePara = endnoteData?.paragraph ? parseInt(endnoteData.paragraph, 10) : 0;
-      const searchPara = group.matches[0]?.paragraph ?? 0;
-      const targetPara = (group.isPrimary && endnotePara > 0) ? endnotePara : searchPara;
+        // For primary matches, prefer the endnote's parsed paragraph number (the actual reference)
+        // over the search result's paragraph (which may be a different occurrence of the quote)
+        const endnotePara = endnoteData?.paragraph
+          ? parseInt(endnoteData.paragraph, 10)
+          : 0;
+        const searchPara = group.matches[0]?.paragraph ?? 0;
+        const targetPara =
+          group.isPrimary && endnotePara > 0 ? endnotePara : searchPara;
 
-      // Find the section containing the target paragraph.
-      // API returns paragraph ranges like "325-328", so we must check if targetPara falls within each range.
-      let targetIndex = sections.findIndex((s) => sectionContainsParagraph(s.Paragraph, targetPara));
+        // Find the section containing the target paragraph.
+        // API returns paragraph ranges like "325-328", so we must check if targetPara falls within each range.
+        let targetIndex = sections.findIndex((s) =>
+          sectionContainsParagraph(s.Paragraph, targetPara),
+        );
 
-      // If not found in any range, find the closest section by range start
-      if (targetIndex === -1) {
-        let minDist = Infinity;
-        sections.forEach((s, i) => {
-          const range = parseParagraphRange(s.Paragraph);
-          if (!range) return;
-          // Distance from target to the nearest edge of the range
-          const dist = targetPara < range[0]
-            ? range[0] - targetPara
-            : targetPara > range[1]
-              ? targetPara - range[1]
-              : 0;
-          if (dist < minDist) {
-            minDist = dist;
-            targetIndex = i;
-          }
+        // If not found in any range, find the closest section by range start
+        if (targetIndex === -1) {
+          let minDist = Infinity;
+          sections.forEach((s, i) => {
+            const range = parseParagraphRange(s.Paragraph);
+            if (!range) return;
+            // Distance from target to the nearest edge of the range
+            const dist =
+              targetPara < range[0]
+                ? range[0] - targetPara
+                : targetPara > range[1]
+                  ? targetPara - range[1]
+                  : 0;
+            if (dist < minDist) {
+              minDist = dist;
+              targetIndex = i;
+            }
+          });
+        }
+
+        // Slice by array index: 3 before, 50 after the target
+        const before = 3;
+        const after = 50;
+        const startIdx = Math.max(0, targetIndex - before);
+        const endIdx = Math.min(sections.length, targetIndex + after + 1);
+        const context = sections.slice(startIdx, endIdx);
+
+        setGroupSections((prev) => {
+          const next = new Map(prev);
+          next.set(group.documentRecordId, context);
+          return next;
         });
+        setExpandedId(group.documentRecordId);
+      } catch {
+        // Store empty array so we show the "no content" message rather than re-loading
+        setGroupSections((prev) => {
+          const next = new Map(prev);
+          next.set(group.documentRecordId, []);
+          return next;
+        });
+        setExpandedId(group.documentRecordId);
+      } finally {
+        setLoadingId(null);
       }
-
-      // Slice by array index: 3 before, 50 after the target
-      const before = 3;
-      const after = 50;
-      const startIdx = Math.max(0, targetIndex - before);
-      const endIdx = Math.min(sections.length, targetIndex + after + 1);
-      const context = sections.slice(startIdx, endIdx);
-
-      setGroupSections((prev) => {
-        const next = new Map(prev);
-        next.set(group.documentRecordId, context);
-        return next;
-      });
-      setExpandedId(group.documentRecordId);
-    } catch {
-      // Store empty array so we show the "no content" message rather than re-loading
-      setGroupSections((prev) => {
-        const next = new Map(prev);
-        next.set(group.documentRecordId, []);
-        return next;
-      });
-      setExpandedId(group.documentRecordId);
-    } finally {
-      setLoadingId(null);
-    }
-  }, [endnoteData]);
+    },
+    [endnoteData],
+  );
 
   const toggleExpand = useCallback((docId: string) => {
     setExpandedId((prev) => (prev === docId ? null : docId));
@@ -775,8 +791,8 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
               transition={{ type: "spring", damping: 32, stiffness: 320 }}
               className={`fixed bottom-0 left-0 right-0 z-50 flex px-10 pb-10 flex-col rounded-t-2xl overflow-hidden min-h-[40vh] ${
                 isDarkMode
-                  ? "bg-[#1c1c1e] border-t border-stone-700"
-                  : "bg-white border-t border-stone-200"
+                  ? "bg-[#1c1c1e] border-t border-zinc-700"
+                  : "bg-white border-t border-zinc-200"
               }`}
               style={{ maxHeight: "78vh" }}
               onClick={(e) => e.stopPropagation()}
@@ -784,7 +800,7 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
               {/* Drag handle */}
               <div className="flex justify-center pt-2.5 pb-1 shrink-0">
                 <div
-                  className={`w-10 h-1 rounded-full ${isDarkMode ? "bg-stone-600" : "bg-stone-300"}`}
+                  className={`w-10 h-1 rounded-full ${isDarkMode ? "bg-zinc-600" : "bg-zinc-300"}`}
                 />
               </div>
 
@@ -802,15 +818,17 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                   </div>
                   {endnoteData?.datecode && (
                     <p
-                      className={`text-xs mt-0.5 truncate ${isDarkMode ? "text-stone-400" : "text-stone-500"}`}
+                      className={`text-xs mt-0.5 truncate ${isDarkMode ? "text-zinc-400" : "text-zinc-500"}`}
                     >
                       {endnoteData.datecode}
                       {endnoteData.title ? ` — ${endnoteData.title}` : ""}
                     </p>
                   )}
 
-                  <div className="mt-2 inline-flex rounded-lg border border-stone-200 dark:border-stone-700 overflow-hidden">
-                    {(["Auto", "ExactPhrase", "AllWords"] as EndnoteSearchMode[]).map((mode) => (
+                  <div className="mt-2 inline-flex rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                    {(
+                      ["Auto", "ExactPhrase", "AllWords"] as EndnoteSearchMode[]
+                    ).map((mode) => (
                       <button
                         key={mode}
                         onClick={() => setSearchMode(mode)}
@@ -818,8 +836,8 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                           searchMode === mode
                             ? "text-white"
                             : isDarkMode
-                              ? "bg-stone-800 text-stone-300 hover:bg-stone-700"
-                              : "bg-stone-50 text-stone-600 hover:bg-stone-100"
+                              ? "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                              : "bg-zinc-50 text-zinc-600 hover:bg-zinc-100"
                         }`}
                         style={
                           searchMode === mode
@@ -827,7 +845,11 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                             : undefined
                         }
                       >
-                        {mode === "ExactPhrase" ? "Exact Phrase" : mode === "AllWords" ? "All Words" : "Auto"}
+                        {mode === "ExactPhrase"
+                          ? "Exact Phrase"
+                          : mode === "AllWords"
+                            ? "All Words"
+                            : "Auto"}
                       </button>
                     ))}
                   </div>
@@ -836,8 +858,8 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                   onClick={onClose}
                   className={`p-1.5 rounded-full transition-colors ${
                     isDarkMode
-                      ? "hover:bg-stone-700 text-stone-400"
-                      : "hover:bg-stone-100 text-stone-500"
+                      ? "hover:bg-zinc-700 text-zinc-400"
+                      : "hover:bg-zinc-100 text-zinc-500"
                   }`}
                   aria-label="Close"
                 >
@@ -847,7 +869,7 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
 
               {/* Divider */}
               <div
-                className={`shrink-0 ${isDarkMode ? "border-t border-stone-700" : "border-t border-stone-100"}`}
+                className={`shrink-0 ${isDarkMode ? "border-t border-zinc-700" : "border-t border-zinc-100"}`}
               />
 
               {/* Scrollable body */}
@@ -863,7 +885,7 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                       }}
                     />
                     <p
-                      className={`text-sm ${isDarkMode ? "text-stone-400" : "text-stone-500"}`}
+                      className={`text-sm ${isDarkMode ? "text-zinc-400" : "text-zinc-500"}`}
                     >
                       Searching quotes…
                     </p>
@@ -875,13 +897,13 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                   <div className="flex flex-col items-center justify-center py-12 px-6 gap-3 text-center">
                     <AlertCircle size={24} className="text-rose-400" />
                     <p
-                      className={`text-sm ${isDarkMode ? "text-stone-300" : "text-stone-600"}`}
+                      className={`text-sm ${isDarkMode ? "text-zinc-300" : "text-zinc-600"}`}
                     >
                       {error}
                     </p>
                     {endnoteData?.datecode && (
                       <p
-                        className={`text-xs font-archivo ${isDarkMode ? "text-stone-500" : "text-stone-400"}`}
+                        className={`text-xs font-archivo ${isDarkMode ? "text-zinc-500" : "text-zinc-400"}`}
                       >
                         Sermon · {endnoteData.datecode}
                       </p>
@@ -896,12 +918,12 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                     <div className="flex items-center gap-1.5">
                       <Search size={11} style={{ color: accentColor }} />
                       <span
-                        className={`text-xs ${isDarkMode ? "text-stone-400" : "text-stone-500"}`}
+                        className={`text-xs ${isDarkMode ? "text-zinc-400" : "text-zinc-500"}`}
                       >
                         {searchResult.matches.length} result
                         {searchResult.matches.length !== 1 ? "s" : ""} ·{" "}
                         <span
-                          className={`italic ${isDarkMode ? "text-stone-500" : "text-stone-400"}`}
+                          className={`italic ${isDarkMode ? "text-zinc-500" : "text-zinc-400"}`}
                         >
                           &ldquo;
                           {searchResult.searchedText.length > 45
@@ -927,7 +949,11 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
                         key={group.documentRecordId}
                         group={group}
                         searchResult={searchResult}
-                        endnoteTargetParagraph={endnoteData?.paragraph ? parseInt(endnoteData.paragraph, 10) : 0}
+                        endnoteTargetParagraph={
+                          endnoteData?.paragraph
+                            ? parseInt(endnoteData.paragraph, 10)
+                            : 0
+                        }
                         endnoteQuoteText={endnoteData?.quoteText ?? null}
                         isDarkMode={isDarkMode}
                         accentColor={accentColor}

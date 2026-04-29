@@ -308,7 +308,7 @@ const TitleBar: React.FC = () => {
 
   return (
     <div className="z-50 w-screen " style={{ WebkitAppRegion: "drag" } as any}>
-      <div className="h-[4vh] flex items-center justify-between px-4 border-b border-stone-200 dark:border-stone-700 select-none relative bg-gray-50 dark:bg-stone-950">
+      <div className="h-[4vh] flex items-center justify-between px-4 border-b border-zinc-200 dark:border-zinc-700 select-none relative bg-zinc-50 dark:bg-zinc-950">
         {/* Left section - Current Sermon Tab + Recent Sermons */}
         <div
           className="flex items-center gap-1 flex-shrink-0 min-w-0"
@@ -318,7 +318,7 @@ const TitleBar: React.FC = () => {
           {selectedMessage && activeTab === "message" && (
             <div
               key={`current-${selectedMessage.id}`}
-              className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-t-lg cursor-default flex-shrink-0 max-w-[160px] min-w-[100px] group h-[85%] bg-white dark:bg-stone-800 border-t-2 border-l border-r border-l-stone-400 border-r-stone-400 dark:border-l-stone-500 dark:border-r-stone-500 text-stone-900 dark:text-stone-100 shadow-md"
+              className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-t-lg cursor-default flex-shrink-0 max-w-[160px] min-w-[100px] group h-[85%] bg-white dark:bg-zinc-800 border-t-2 border-l border-r border-l-zinc-400 border-r-zinc-400 dark:border-l-zinc-500 dark:border-r-zinc-500 text-zinc-900 dark:text-zinc-100 shadow-md"
               style={{ borderTopColor: accentColor }}
               title={selectedMessage.title}
             >
@@ -345,7 +345,7 @@ const TitleBar: React.FC = () => {
           {selectedMessage &&
             activeTab === "message" &&
             recentSermons.length > 0 && (
-              <div className="w-px h-4 bg-stone-300 dark:bg-stone-600 mx-1" />
+              <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-600 mx-1" />
             )}
 
           {/* Recent Sermons Tabs (max 4, excluding current) */}
@@ -365,11 +365,11 @@ const TitleBar: React.FC = () => {
                   }
                   setActiveTabId(sermon.id.toString());
                 }}
-                className="relative flex items-center gap-1.5 px-2 py-1 rounded-t-lg cursor-pointer flex-shrink-0 max-w-[140px] min-w-[100px] group h-[85%] bg-stone-100 dark:bg-stone-900 hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400"
+                className="relative flex items-center gap-1.5 px-2 py-1 rounded-t-lg cursor-pointer flex-shrink-0 max-w-[140px] min-w-[100px] group h-[85%] bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
                 title={sermon.title}
               >
                 {/* Indicator dot */}
-                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-stone-400 dark:bg-stone-600" />
+                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-zinc-400 dark:bg-zinc-600" />
 
                 {/* Sermon title */}
                 <span className="text-[10px] font-medium truncate flex-1">
@@ -390,7 +390,7 @@ const TitleBar: React.FC = () => {
 
         {/* Middle section - App name or active sermon info */}
         <div className="flex-1 flex items-center justify-center px-4 min-w-0">
-          <div className="text-sm text-center text-gray-900 dark:text-gray-300 font-cooper">
+          <div className="text-sm text-center text-zinc-900 dark:text-zinc-300 font-cooper">
             Brother Bob
           </div>
         </div>
@@ -409,13 +409,13 @@ const TitleBar: React.FC = () => {
           >
             <div
               onClick={() => setIsPresentationMode(!isPresentationMode)}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer hover:bg-gray-50 dark:hover:bg-primary"
+              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer hover:bg-zinc-50 dark:hover:bg-primary"
             >
               <PlaySquare
                 className={`w-4 h-4 transition-colors ${
                   isPresentationMode
-                    ? "text-stone-600 dark:text-stone-300"
-                    : "text-gray-600 dark:text-accent"
+                    ? "text-zinc-600 dark:text-zinc-300"
+                    : "text-zinc-600 dark:text-accent"
                 } group-hover:text-black dark:group-hover:text-white`}
               />
             </div>
@@ -433,9 +433,9 @@ const TitleBar: React.FC = () => {
           <Tooltip title="close">
             <div
               onClick={handleClose}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
+              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-zinc-50 dark:hover:bg-primary"
             >
-              <X className="w-4 h-4 text-gray-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
+              <X className="w-4 h-4 text-zinc-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
             </div>
           </Tooltip>
           {/* Minimize button */}
@@ -443,9 +443,9 @@ const TitleBar: React.FC = () => {
           <Tooltip title="minimize">
             <div
               onClick={handleMinimize}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
+              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-zinc-50 dark:hover:bg-primary"
             >
-              <Minus className="w-4 h-4 text-gray-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
+              <Minus className="w-4 h-4 text-zinc-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
             </div>
           </Tooltip>
           {/* Maximize button */}
@@ -453,9 +453,9 @@ const TitleBar: React.FC = () => {
           <Tooltip title="maximize">
             <div
               onClick={handleMaximize}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-gray-50 dark:hover:bg-primary"
+              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-zinc-50 dark:hover:bg-primary"
             >
-              <Square className="w-4 h-4 text-gray-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
+              <Square className="w-4 h-4 text-zinc-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
             </div>
           </Tooltip>
         </div>

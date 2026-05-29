@@ -1,19 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Home from "./Home";
 import PresentationView from "./PresentationView";
 import TitleBar from "@/shared/TitleBar";
 import { useSermonContext } from "@/Provider/Vsermons";
-import { motion, AnimatePresence } from "framer-motion";
+
+const isTypingTarget = (target: EventTarget | null) => {
+  if (!(target instanceof HTMLElement)) return false;
+
+  return Boolean(
+    target.closest(
+      'input, textarea, select, button, [contenteditable="true"], [role="textbox"]',
+    ),
+  );
+};
 
 const Hisvoice = () => {
   const { theme, isPresentationMode, setIsPresentationMode } =
     useSermonContext();
 
-  // Handle ESC key to exit presentation mode
+  // Handle keyboard presentation controls.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isPresentationMode) {
         setIsPresentationMode(false);
+        return;
+      }
+
+      if (
+        e.code === "Space" &&
+        !isPresentationMode &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        !isTypingTarget(e.target)
+      ) {
+        e.preventDefault();
+        setIsPresentationMode(true);
       }
     };
 

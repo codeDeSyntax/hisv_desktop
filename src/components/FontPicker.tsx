@@ -97,7 +97,7 @@ const FontPicker: React.FC = () => {
       >
         <Type className="w-4 h-4" />
         <span className="text-sm font-medium max-w-[120px] truncate">
-          {settings.fontFamily || "Zilla Slab"}
+          {settings.fontFamily || "Outfit"}
         </span>
         <ChevronDown
           className={`w-3 h-3 transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -159,7 +159,9 @@ const FontPicker: React.FC = () => {
                         : {}),
                     }}
                   >
-                    <span className="text-sm">{font}</span>
+                    <span className="text-sm" style={{ fontFamily: font }}>
+                      {font}
+                    </span>
                     {settings.fontFamily === font && (
                       <Check
                         className="w-4 h-4"

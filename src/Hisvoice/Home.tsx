@@ -170,8 +170,8 @@ const Home = memo(() => {
   const showFullWidthSermon = Boolean(selectedMessage);
 
   return (
-    <div className="h-[96vh] relative w-screen flex overflow-hidden bg-zinc-50 dark:bg-zinc-950">
-      <div className="h-full w-14 flex-shrink-0 bg-zinc-50/80 dark:bg-zinc-950/60 border-r border-zinc-200 dark:border-zinc-700/60 flex flex-col items-center py-3 gap-1 overflow-hidden z-20">
+    <div className="h-[96vh] relative w-screen flex overflow-hidden bg-stone-50 dark:bg-stone-950">
+      <div className="h-full w-14 flex-shrink-0 bg-stone-50/80 dark:bg-stone-950/60 border-r border-stone-200 dark:border-stone-700/60 flex flex-col items-center py-3 gap-1 overflow-hidden z-20">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = leftPanelView === item.id;
@@ -184,7 +184,7 @@ const Home = memo(() => {
                 className={`relative w-10 h-10 flex flex-col items-center justify-center rounded-2xl transition-colors duration-150 cursor-pointer border-0 outline-none group overflow-hidden ${
                   isActive
                     ? "shadow-[0_10px_20px_-12px_rgba(0,0,0,0.45)]"
-                    : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200"
+                    : "text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-200"
                 }`}
                 style={
                   isActive
@@ -199,7 +199,7 @@ const Home = memo(() => {
                   className={`absolute inset-0 rounded-2xl transition-colors duration-150 ${
                     isActive
                       ? "border"
-                      : "bg-gradient-to-br from-zinc-100 via-zinc-50 to-zinc-200/90 dark:from-zinc-800 dark:via-zinc-900 dark:to-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 group-hover:from-zinc-200 group-hover:via-zinc-100 group-hover:to-zinc-200 dark:group-hover:from-zinc-700 dark:group-hover:via-zinc-800 dark:group-hover:to-zinc-700"
+                      : "bg-gradient-to-br from-stone-100 via-stone-50 to-stone-200/90 dark:from-stone-800 dark:via-stone-900 dark:to-stone-800 border border-stone-200/80 dark:border-stone-700/80 group-hover:from-stone-200 group-hover:via-stone-100 group-hover:to-stone-200 dark:group-hover:from-stone-700 dark:group-hover:via-stone-800 dark:group-hover:to-stone-700"
                   }`}
                   style={
                     isActive
@@ -239,7 +239,7 @@ const Home = memo(() => {
         className={`relative flex-1 h-full overflow-hidden ${showFullWidthSermon ? "px-0 py-0" : "px-3 py-3"}`}
       >
         <div className="relative h-full w-full overflow-hidden shadow-lg">
-          <div className="relative w-full h-full bg-gradient-to-l from-zinc-50 via-white to-white dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900 overflow-hidden flex flex-col border border-zinc-300 dark:border-zinc-700 rounded-3xl">
+          <div className="relative w-full h-full bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 overflow-hidden flex flex-col border border-stone-300 dark:border-stone-700 rounded-3xl">
             <svg
               className="absolute right-0 top-0 h-full w-6 overflow-visible"
               viewBox="0 0 24 100"
@@ -247,18 +247,18 @@ const Home = memo(() => {
             >
               <path
                 d="M0,2 Q16,2 18,10 Q22,25 22,50 Q22,75 18,90 Q16,98 0,98"
-                className="fill-zinc-300 dark:fill-zinc-600"
+                className="fill-stone-300 dark:fill-stone-600"
               />
               <path
                 d="M0,3 Q14,3 16,12 Q20,27 20,50 Q20,73 16,88 Q14,97 0,97"
-                className="fill-zinc-200 dark:fill-zinc-700"
+                className="fill-stone-200 dark:fill-stone-700"
               />
               <path
                 d="M0,4 Q12,4 14,14 Q18,29 18,50 Q18,71 14,86 Q12,96 0,96"
-                className="fill-zinc-100 dark:fill-zinc-800"
+                className="fill-stone-100 dark:fill-stone-800"
               />
             </svg>
-            <div className="absolute right-4 top-8 bottom-8 w-4 bg-gradient-to-l from-zinc-50 via-white to-white dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900 rounded-r-full" />
+            <div className="absolute right-4 top-8 bottom-8 w-4 bg-gradient-to-l from-stone-50 via-white to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 rounded-r-full" />
 
             {selectedMessage ? (
               <Suspense fallback={null}>
@@ -277,8 +277,8 @@ const Home = memo(() => {
                           <div
                             className={`h-9 rounded-lg mx-auto animate-pulse ${
                               isDarkMode
-                                ? "bg-gradient-to-r from-zinc-800 via-zinc-700 to-zinc-800"
-                                : "bg-gradient-to-r from-zinc-200 via-zinc-100 to-zinc-200"
+                                ? "bg-gradient-to-r from-stone-800 via-stone-700 to-stone-800"
+                                : "bg-gradient-to-r from-stone-200 via-stone-100 to-stone-200"
                             }`}
                             style={{
                               backgroundSize: "200% 100%",
@@ -369,11 +369,15 @@ const Home = memo(() => {
                   x: { type: "spring", stiffness: 500, damping: 38, mass: 0.5 },
                   opacity: { duration: 0.12 },
                 }}
-                className="absolute left-0 top-0 bottom-0 z-30 w-[70%] overflow-hidden rounded-r-3xl border border-zinc-200 dark:border-zinc-700 bg-white/95 dark:bg-zinc-950/95 shadow-2xl backdrop-blur"
+                className={`absolute left-0 top-0 bottom-0 z-30 overflow-hidden border border-stone-200 dark:border-stone-700 bg-white/95 dark:bg-stone-950/95 shadow-2xl backdrop-blur ${
+                  leftPanelView === "home"
+                    ? "right-0 w-full rounded-none"
+                    : "w-[70%] rounded-r-3xl"
+                }`}
                 onMouseDown={(event) => event.stopPropagation()}
               >
                 <Suspense fallback={null}>
-                  <div className="h-full overflow-auto no-scrollbar bg-white/95 dark:bg-zinc-950/95">
+                  <div className="h-full overflow-auto no-scrollbar bg-white/95 dark:bg-stone-950/95">
                     {leftPanelView === "sermons" && (
                       <div className="h-full">
                         <SermonList onSermonSelect={closeSidePanel} />
@@ -388,10 +392,10 @@ const Home = memo(() => {
 
                     {leftPanelView === "bookmarks" && (
                       <div className="h-full flex flex-col overflow-hidden">
-                        <div className="flex-shrink-0 px-4 py-3 border-b border-zinc-100 dark:border-zinc-800">
+                        <div className="flex-shrink-0 px-4 py-3 border-b border-stone-100 dark:border-stone-800">
                           <div className="flex items-center gap-2">
-                            <BookMarked className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                            <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-200 tracking-wide">
+                            <BookMarked className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+                            <span className="text-sm font-semibold text-stone-700 dark:text-stone-200 tracking-wide">
                               Bookmarks
                             </span>
                           </div>
@@ -409,10 +413,10 @@ const Home = memo(() => {
 
                     {leftPanelView === "recents" && (
                       <div className="h-full flex flex-col overflow-hidden">
-                        <div className="flex-shrink-0 px-4 py-3 border-b border-zinc-100 dark:border-zinc-800">
+                        <div className="flex-shrink-0 px-4 py-3 border-b border-stone-100 dark:border-stone-800">
                           <div className="flex items-center gap-2">
-                            <History className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                            <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-200 tracking-wide">
+                            <History className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+                            <span className="text-sm font-semibold text-stone-700 dark:text-stone-200 tracking-wide">
                               Recent Activity
                             </span>
                           </div>

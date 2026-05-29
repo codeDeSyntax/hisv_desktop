@@ -138,7 +138,6 @@ const App = () => {
   return (
     <div
       className={`flex flex-col h-screen w-screen thin-scrollbar no-scrollbar bg-white dark:bg-ltzinc overflow-hidden`}
-      style={{ fontFamily: "Palatino" }}
     >
       <Hisvoice />
 

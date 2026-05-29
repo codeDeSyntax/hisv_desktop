@@ -32,7 +32,7 @@ const TabHome = () => {
           }
         }
       `}</style>
-      <div className="relative h-full overflow-y-auto no-scrollbar">
+      <div className="relative h-full w-full overflow-y-auto no-scrollbar">
         {/* Artistic Background - Morphing Gradient with Concentric Circles */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Simple gradient - dark corner to normal theme */}
@@ -110,17 +110,13 @@ const TabHome = () => {
               className="w-36 h-36 mb-2 opacity-70 mx-auto"
             />
             <h2
-              className="text-lg md:text-xl font-serif font-normal text-zinc-700 dark:text-zinc-200 mb-4 leading-relaxed max-w-2xl "
-              style={{ fontFamily: "COPPERPLATE GOTHIC" }}
+              className="text-lg md:text-xl font-normal text-zinc-700 dark:text-zinc-200 mb-4 leading-relaxed max-w-2xl"
             >
               And I saw another mighty angel come down from heaven, clothed with
               a cloud: and a rainbow was upon his head, and his face was as it
               were the sun, and his feet as pillars of fire
             </h2>
-            <p
-              className="text-sm text-zinc-600 dark:text-zinc-300 mb-8 font-serif"
-              style={{ fontFamily: "COPPERPLATE GOTHIC" }}
-            >
+            <p className="text-sm text-zinc-600 dark:text-zinc-300 mb-8">
               Revelation 10:1
             </p>
             <button

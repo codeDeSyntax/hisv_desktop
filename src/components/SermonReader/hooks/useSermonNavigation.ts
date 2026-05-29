@@ -436,8 +436,11 @@ export const useSermonNavigation = (
     const handleScroll = () => {
       if (!scrollContainerRef.current) return;
 
-      const scrollTop = scrollContainerRef.current.scrollTop;
-      const containerRect = scrollContainerRef.current.getBoundingClientRect();
+      const scrollParent = scrollContainerRef.current.closest(
+        ".overflow-y-auto",
+      ) as HTMLElement | null;
+      const activeScrollContainer = scrollParent ?? scrollContainerRef.current;
+      const containerRect = activeScrollContainer.getBoundingClientRect();
       const centerY = containerRect.top + containerRect.height / 2;
 
       let currentParagraphId = 0;
@@ -459,9 +462,13 @@ export const useSermonNavigation = (
       setCurrentParagraph(currentParagraphId);
     };
 
-    const scrollContainer = scrollContainerRef.current;
+    const scrollContainer =
+      (scrollContainerRef.current?.closest(
+        ".overflow-y-auto",
+      ) as HTMLElement | null) ?? scrollContainerRef.current;
     if (scrollContainer) {
       scrollContainer.addEventListener("scroll", handleScroll);
+      requestAnimationFrame(handleScroll);
       return () => scrollContainer.removeEventListener("scroll", handleScroll);
     }
   }, [sermonParagraphs, scrollContainerRef]);

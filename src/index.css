@@ -2,6 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/Outfit-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/Outfit-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/Outfit-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Outfit";
+  src: url("/fonts/Outfit-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --accent: #e8c968;
   --theme-sweep-x: 50vw;
@@ -72,7 +104,13 @@ body {
   color: #000;
 }
 
-p,h1,h2,h3,h4,h5,span {
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+span {
   margin: 0;
   padding: 0;
 }
@@ -100,9 +138,9 @@ div {
   border-width: 10px;
 }
 
-/* Custom text selection globally - zinc-themed instead of default blue */
+/* Custom text selection globally - stone-themed instead of default blue */
 ::selection {
-  background-color: rgba(168, 162, 158, 0.3); /* zinc-400 with transparency */
+  background-color: rgba(168, 162, 158, 0.3); /* stone-400 with transparency */
   color: inherit;
 }
 
@@ -113,7 +151,7 @@ div {
 
 /* Dark mode custom selection */
 .dark ::selection {
-  background-color: rgba(120, 113, 108, 0.4); /* zinc-600 with transparency */
+  background-color: rgba(120, 113, 108, 0.4); /* stone-600 with transparency */
   color: inherit;
 }
 

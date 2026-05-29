@@ -146,8 +146,7 @@ const SelectedSermon = ({
   const isTextSermon = selectedMessage?.type === "text";
   const isTextLoading =
     isTextSermon && sermonParagraphs.length === 0 && !selectedMessage?.sermon;
-  const shouldConstrainReadingWidth =
-    !isPresentationMode && isTextSermon && !isTextLoading;
+  const shouldConstrainReadingWidth = isTextSermon && !isTextLoading;
 
   // For very large sermons, we could use the async version
   // This is kept for future optimization if needed
@@ -491,16 +490,21 @@ const SelectedSermon = ({
     const savedSermon = recentSermons.find(
       (s: Sermon) => s.id === selectedMessage.id,
     );
+    const immediateParagraph = Number(
+      localStorage.getItem(`sermonCurrentParagraph:${selectedMessage.id}`),
+    );
+    const paragraphToRestore =
+      immediateParagraph > 0 ? immediateParagraph : savedSermon?.lastParagraph;
 
     // Only restore if this sermon exists in recentSermons AND has a valid lastParagraph > 0
     if (
-      savedSermon?.lastParagraph &&
-      savedSermon.lastParagraph > 0 &&
+      paragraphToRestore &&
+      paragraphToRestore > 0 &&
       sermonParagraphs.length > 0
     ) {
       // Wait for paragraphs to render, then restore position
       const timer = setTimeout(() => {
-        goToParagraph(savedSermon.lastParagraph);
+        goToParagraph(paragraphToRestore);
         setHasRestoredPosition(true);
         // Enable saving after restoration plus a 2-second buffer
         setTimeout(() => setCanSaveProgress(true), 2000);
@@ -553,12 +557,19 @@ const SelectedSermon = ({
       }
     };
 
+    saveLastParagraph();
     const interval = setInterval(saveLastParagraph, 3000); // Auto-save every 3 seconds
     return () => {
       clearInterval(interval);
       saveLastParagraph(); // Save on unmount
     };
-  }, [selectedMessage, currentParagraph, setRecentSermons]);
+  }, [
+    selectedMessage,
+    currentParagraph,
+    hasRestoredPosition,
+    canSaveProgress,
+    setRecentSermons,
+  ]);
 
   // Reset restoration flag when sermon changes
   useEffect(() => {
@@ -567,7 +578,13 @@ const SelectedSermon = ({
 
   useEffect(() => {
     currentParagraphRef.current = currentParagraph;
-  }, [currentParagraph]);
+    if (selectedMessage?.id && currentParagraph > 0) {
+      localStorage.setItem(
+        `sermonCurrentParagraph:${selectedMessage.id}`,
+        String(currentParagraph),
+      );
+    }
+  }, [currentParagraph, selectedMessage?.id]);
 
   useEffect(() => {
     searchQueryRef.current = searchQuery;
@@ -794,11 +811,17 @@ const SelectedSermon = ({
             {selectedMessage?.type === "text" ? (
               <div
                 key={`sermon-${selectedMessage.id}`}
-                className={`w-full min-w-0 ${isTextLoading ? "mx-auto max-w-6xl px-2 sm:px-4 lg:px-6" : ""}`}
+                className={`w-full min-w-0 pt-10 ${isTextLoading ? "mx-auto max-w-6xl px-2 sm:px-4 lg:px-6 " : ""}`}
                 style={{ maxWidth: "100%", overflowWrap: "break-word" }}
               >
                 {/* Sermon Header */}
-                <SermonHeader title={selectedMessage?.title || ""} />
+                <SermonHeader
+                  title={selectedMessage?.title || ""}
+                  date={selectedMessage?.date || selectedMessage?.year}
+                  location={selectedMessage?.location}
+                  fontSize={activeReaderFontSize}
+                  fontFamily={settings.fontFamily || "Outfit"}
+                />
 
                 {/* Sermon Content with Paragraphs */}
                 <div
@@ -806,13 +829,14 @@ const SelectedSermon = ({
                   style={{
                     // width: "100%",
                     // maxWidth: "100%",
+                    fontFamily: settings.fontFamily || "Outfit",
                     overflow: "hidden",
                   }}
                 >
                   {sermonParagraphs.length === 0 && !selectedMessage?.sermon ? (
                     /* Loading skeleton while sermon text is being fetched */
                     <div className="w-full  px-3  py-5 sm:py-6 space-y-6 animate-pulse">
-                      <div className="w-full  space-y-4 pb-5 border-b border-zinc-100/80 dark:border-zinc-800/70">
+                      <div className="w-full  space-y-4 pb-5 border-b border-stone-100/80 dark:border-stone-800/70">
                         <div
                           className="h-6 w-full rounded-full"
                           style={{ backgroundColor: skeletonBaseColor }}
@@ -851,7 +875,7 @@ const SelectedSermon = ({
                         {Array.from({ length: 12 }).map((_, i) => (
                           <div
                             key={i}
-                            className="w-full space-y-3 rounded-3xl border border-zinc-100/70 dark:border-zinc-800/50 bg-zinc-50/70 dark:bg-zinc-900/30 px-4 py-4 sm:px-5"
+                            className="w-full space-y-3 rounded-3xl border border-stone-100/70 dark:border-stone-800/50 bg-stone-50/70 dark:bg-stone-900/30 px-4 py-4 sm:px-5"
                           >
                             <div className="flex items-center justify-between gap-4">
                               <div
@@ -924,8 +948,8 @@ const SelectedSermon = ({
                             )
                               ? "text-white dark:text-black"
                               : isDarkMode
-                                ? "bg-zinc-800/90 hover:bg-zinc-700/95 text-zinc-200 border-zinc-700/80"
-                                : "bg-white/90 hover:bg-white text-zinc-700 border-zinc-200/80"
+                                ? "bg-stone-800/90 hover:bg-stone-700/95 text-stone-200 border-stone-700/80"
+                                : "bg-white/90 hover:bg-white text-stone-700 border-stone-200/80"
                           } ${
                             selectedMessage &&
                             isBookmarked(
@@ -934,8 +958,8 @@ const SelectedSermon = ({
                             )
                               ? "border-transparent shadow-lg"
                               : isDarkMode
-                                ? "border-zinc-700/80"
-                                : "border-zinc-200/80"
+                                ? "border-stone-700/80"
+                                : "border-stone-200/80"
                           }`}
                           style={
                             selectedMessage &&
@@ -989,7 +1013,7 @@ const SelectedSermon = ({
                         <div
                           className="sermon-selection-scope leading-normal  px-6  rounded-lg transition-all duration-200 border-l-4"
                           style={{
-                            fontFamily: settings.fontFamily || "Zilla Slab",
+                            fontFamily: settings.fontFamily || "Outfit",
                             fontWeight: settings.fontWeight,
                             fontSize: `${activeReaderFontSize}px`,
                             fontStyle: settings.fontStyle,
@@ -1002,14 +1026,7 @@ const SelectedSermon = ({
                             maxWidth: "100%",
                             overflow: "hidden",
                             boxSizing: "border-box",
-                            borderLeftColor:
-                              currentParagraph === paragraph.id
-                                ? accentColor
-                                : "transparent",
-                            backgroundColor:
-                              currentParagraph === paragraph.id
-                                ? accentColor + "15"
-                                : undefined,
+                            borderLeftColor: "transparent",
                           }}
                           onMouseUp={handleTextSelection}
                         >
@@ -1020,12 +1037,7 @@ const SelectedSermon = ({
                               fontSize: isPresentationMode
                                 ? `${Math.max(activeReaderFontSize * 0.8, 14)}px`
                                 : `${Math.max(activeReaderFontSize * 0.8, 12)}px`,
-                              color:
-                                currentParagraph === paragraph.id
-                                  ? accentColor
-                                  : isDarkMode
-                                    ? "#78716c"
-                                    : "#57534e",
+                              color: isDarkMode ? "#78716c" : "#57534e",
                             }}
                           >
                             {paragraph.id}.
@@ -1077,7 +1089,7 @@ const SelectedSermon = ({
                                 parts.push(
                                   <span
                                     key={`highlight-${index}`}
-                                    className={`cursor-pointer hover:opacity-80 ${isDarkMode ? "text-zinc-900" : ""}`}
+                                    className={`cursor-pointer hover:opacity-80 ${isDarkMode ? "text-stone-900" : ""}`}
                                     style={{
                                       backgroundColor: highlight.color,
                                       // padding: "2px 4px",

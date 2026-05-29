@@ -13,7 +13,12 @@ import {
   searchSermons,
   downloadDb,
   closeDb,
+  buildSearchIndex,
+  checkDbUpdate,
+  fetchLatestDbRelease,
+  getLocalDbReleaseMarker,
   GITHUB_DB_URL,
+  GITHUB_LATEST_RELEASE_API_URL,
 } from "./db.js";
 
 const require = createRequire(import.meta.url);
@@ -280,9 +285,14 @@ async function createMainWindow() {
 
   ipcMain.handle("db:status", () => ({
     exists: dbExists(),
+    isPackaged: app.isPackaged,
     path: getDbPath(),
     downloadUrl: GITHUB_DB_URL,
+    latestReleaseUrl: GITHUB_LATEST_RELEASE_API_URL,
+    localRelease: getLocalDbReleaseMarker(),
   }));
+
+  ipcMain.handle("db:check-update", () => checkDbUpdate());
 
   ipcMain.handle("db:get-sermons", () => {
     try {
@@ -319,16 +329,23 @@ async function createMainWindow() {
 
   ipcMain.handle("db:download", async (event) => {
     try {
-      await downloadDb(GITHUB_DB_URL, (progress) => {
+      const latest = await fetchLatestDbRelease().catch(() => null);
+      await downloadDb(latest?.downloadUrl ?? GITHUB_DB_URL, (progress) => {
         event.sender.send("db:download-progress", progress);
-      });
-      // Re-open DB after download
+      }, latest?.marker);
+      // Build heavier search structures locally after the lean DB is present.
+      setTimeout(() => {
+        const result = buildSearchIndex();
+        event.sender.send("db:index-status", result);
+      }, 0);
       return { success: true };
     } catch (err: any) {
       console.error("db:download error:", err);
       return { success: false, error: err?.message ?? String(err) };
     }
   });
+
+  ipcMain.handle("db:build-search-index", () => buildSearchIndex());
 
   // Handle external links
   mainWin.webContents.setWindowOpenHandler(({ url }) => {

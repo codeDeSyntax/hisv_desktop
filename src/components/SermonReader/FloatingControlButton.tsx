@@ -1,35 +1,44 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { BookOpen } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { useTheme } from "@/Provider/Theme";
-import { InfoCircleFilled, InfoCircleTwoTone } from "@ant-design/icons";
+import { InfoCircleFilled } from "@ant-design/icons";
 
 interface FloatingControlButtonProps {
   showControlPanel: boolean;
   onToggle: () => void;
   isVisible: boolean;
+  fontSize: number;
+  onDecreaseFontSize: () => void;
+  onIncreaseFontSize: () => void;
 }
 
 const FloatingControlButton = ({
   showControlPanel,
   onToggle,
   isVisible,
+  fontSize,
+  onDecreaseFontSize,
+  onIncreaseFontSize,
 }: FloatingControlButtonProps) => {
   const { isDarkMode } = useTheme();
 
   if (!isVisible) return null;
 
+  const buttonClass = `h-8 w-8 rounded-full transition-all duration-200 flex items-center justify-center ${
+    isDarkMode
+      ? "text-zinc-200 hover:bg-zinc-700"
+      : "text-zinc-700 hover:bg-zinc-100"
+  }`;
+
   return (
-    <motion.button
+    <motion.div
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      whileHover={{ scale: 1.08 }}
-      whileTap={{ scale: 0.92 }}
-      onClick={onToggle}
-      className={`fixed right-10 top-16 z-40 w-10 h-10 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center backdrop-blur-sm ${
+      className={`fixed right-10 top-16 z-40 flex items-center gap-1 rounded-full px-1.5 py-1 shadow-xl transition-all duration-300 backdrop-blur-sm ${
         isDarkMode
-          ? "bg-zinc-800/90 hover:bg-zinc-700 text-zinc-200"
-          : "bg-white/90 hover:bg-zinc-50 text-zinc-700"
+          ? "bg-zinc-800/90 text-zinc-200"
+          : "bg-white/90 text-zinc-700"
       } border-2 ${
         showControlPanel
           ? isDarkMode
@@ -40,8 +49,47 @@ const FloatingControlButton = ({
             : "border-zinc-300"
       }`}
     >
-      <InfoCircleFilled size={20} className="mx-auto" />
-    </motion.button>
+      <button
+        type="button"
+        onClick={onDecreaseFontSize}
+        className={buttonClass}
+        title="Decrease font size"
+        aria-label="Decrease font size"
+      >
+        <Minus size={16} />
+      </button>
+
+      <span className="min-w-8 text-center text-[11px] font-semibold tabular-nums">
+        {fontSize}
+      </span>
+
+      <button
+        type="button"
+        onClick={onIncreaseFontSize}
+        className={buttonClass}
+        title="Increase font size"
+        aria-label="Increase font size"
+      >
+        <Plus size={16} />
+      </button>
+
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`${buttonClass} ${
+          showControlPanel
+            ? isDarkMode
+              ? "bg-zinc-700"
+              : "bg-zinc-100"
+            : ""
+        }`}
+        title="Sermon info"
+        aria-label="Sermon info"
+        aria-pressed={showControlPanel}
+      >
+        <InfoCircleFilled size={18} className="mx-auto" />
+      </button>
+    </motion.div>
   );
 };
 

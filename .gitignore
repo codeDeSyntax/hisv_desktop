@@ -31,3 +31,7 @@ yarn.lock
 /playwright-report/
 /playwright/.cache/
 .qodo
+__pycache__/
+*.pyc
+reports/
+resources/

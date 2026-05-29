@@ -18,6 +18,9 @@ const FontSettingsPage = () => {
     useTheme();
 
   const [fontSize, setFontSize] = useState<number>(Number(settings.fontSize));
+  const [presentationFontSize, setPresentationFontSize] = useState<number>(
+    Number(settings.presentationFontSize ?? settings.fontSize ?? 36),
+  );
   const [fontWeight, setFontWeight] = useState(settings.fontWeight);
   const [fontStyle, setFontStyle] = useState(settings.fontStyle);
   const [readingWidth, setReadingWidth] = useState<number>(
@@ -32,6 +35,7 @@ const FontSettingsPage = () => {
     const next = {
       ...settings,
       fontSize: fontSize.toString(),
+      presentationFontSize: presentationFontSize.toString(),
       fontWeight,
       fontStyle,
       readingWidth: readingWidth.toString(),
@@ -41,7 +45,7 @@ const FontSettingsPage = () => {
     setShowSaveNotification(true);
     const t = setTimeout(() => setShowSaveNotification(false), 1800);
     return () => clearTimeout(t);
-  }, [fontSize, fontWeight, fontStyle, readingWidth]);
+  }, [fontSize, presentationFontSize, fontWeight, fontStyle, readingWidth]);
 
   useEffect(() => {
     window.ipcRenderer
@@ -118,6 +122,8 @@ const FontSettingsPage = () => {
           <ReadingSection
             fontSize={fontSize}
             setFontSize={setFontSize}
+            presentationFontSize={presentationFontSize}
+            setPresentationFontSize={setPresentationFontSize}
             fontWeight={fontWeight}
             setFontWeight={setFontWeight}
             fontStyle={fontStyle}

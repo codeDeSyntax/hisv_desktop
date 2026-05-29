@@ -137,7 +137,7 @@ const ModernAudioPlayer = () => {
         onPause={() => setIsPlaying(false)}
       />
 
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-3xl px-1 sm:px-3">
         {/* Main Player - Spotify Style */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

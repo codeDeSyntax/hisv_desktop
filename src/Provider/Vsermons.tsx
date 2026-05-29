@@ -45,6 +45,7 @@ interface SermonSettings {
   fontFamily: string;
   fontStyle: string;
   fontSize: string;
+  presentationFontSize: string;
   fontWeight: string;
   readingWidth: string;
 }
@@ -55,6 +56,8 @@ interface SearchNavigation {
   targetParagraphId: number;
   searchTerm: string;
 }
+
+type SearchIndexStatus = "idle" | "building" | "ready" | "error";
 
 // ── context type ──────────────────────────────────────────────────────────────
 interface SermonContextType {
@@ -118,6 +121,9 @@ interface SermonContextType {
   // Search navigation
   pendingSearchNav: SearchNavigation | null;
   setPendingSearchNav: (nav: SearchNavigation | null) => void;
+  searchIndexStatus: SearchIndexStatus;
+  searchIndexMessage: string;
+  buildSearchIndex: () => Promise<void>;
   navigateToSearchResult: (
     sermonId: string | number,
     paragraphId: number,
@@ -128,6 +134,28 @@ interface SermonContextType {
 // Create the context with an initial undefined value
 const SermonContext = createContext<SermonContextType | undefined>(undefined);
 
+interface DbStatusResponse {
+  exists: boolean;
+  isPackaged?: boolean;
+  path: string;
+  downloadUrl: string;
+  latestReleaseUrl?: string;
+  localRelease?: {
+    tagName: string;
+    publishedAt?: string;
+    assetName: string;
+    assetSize?: number;
+    assetUpdatedAt?: string;
+  } | null;
+}
+
+interface DbUpdateResponse {
+  checked: boolean;
+  updateAvailable: boolean;
+  reason?: string;
+  error?: string;
+}
+
 // Define props for the provider component
 interface SermonProviderProps {
   children: ReactNode;
@@ -135,6 +163,7 @@ interface SermonProviderProps {
 
 const SermonProvider = ({ children }: SermonProviderProps) => {
   const initRanRef = useRef(false);
+  const searchIndexBuildStartedRef = useRef(false);
   const [selectedMessage, setSelectedMessage] = useState<Sermon | null>(null);
   const [allSermons, setAllSermons] = useState<Sermon[]>([]);
   const [recentSermons, setRecentSermons] = useState<Sermon[]>([]);
@@ -155,6 +184,11 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const [prevScreen, setPrevScreen] = useState(activeTab);
   const [pendingSearchNav, setPendingSearchNav] =
     useState<SearchNavigation | null>(null);
+  const [searchIndexStatus, setSearchIndexStatus] =
+    useState<SearchIndexStatus>("idle");
+  const [searchIndexMessage, setSearchIndexMessage] = useState(
+    "Search index has not been prepared yet.",
+  );
   const [theme, setTheme] = useState(
     localStorage.getItem("vsermontheme") || "light",
   );
@@ -162,6 +196,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     fontFamily: "Inter",
     fontStyle: "normal",
     fontSize: "20",
+    presentationFontSize: "36",
     fontWeight: "normal",
     readingWidth: "100",
   });
@@ -212,6 +247,30 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     return Array.from(set);
   }, [allSermons]);
 
+  const buildSearchIndex = useCallback(async () => {
+    if (searchIndexBuildStartedRef.current) return;
+
+    searchIndexBuildStartedRef.current = true;
+    setSearchIndexStatus("building");
+    setSearchIndexMessage("Preparing sermon search...");
+
+    try {
+      const result = await ipc.invoke("db:build-search-index");
+      if (result?.success) {
+        setSearchIndexStatus("ready");
+        setSearchIndexMessage("Search is ready.");
+      } else {
+        throw new Error(result?.error ?? "Search index build failed");
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("Search index build error:", msg);
+      searchIndexBuildStartedRef.current = false;
+      setSearchIndexStatus("error");
+      setSearchIndexMessage("Search index could not be prepared.");
+    }
+  }, []);
+
   // ── Auto-fetch full sermon text when a text sermon without text is selected ──
   useEffect(() => {
     if (
@@ -242,6 +301,28 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   }, []);
 
   // ── DB-based sermon loading ─────────────────────────────────────────────────
+  useEffect(() => {
+    const handler = (
+      _event: unknown,
+      result: { success: boolean; error?: string },
+    ) => {
+      if (result?.success) {
+        searchIndexBuildStartedRef.current = true;
+        setSearchIndexStatus("ready");
+        setSearchIndexMessage("Search is ready.");
+      } else {
+        searchIndexBuildStartedRef.current = false;
+        setSearchIndexStatus("error");
+        setSearchIndexMessage("Search index could not be prepared.");
+      }
+    };
+
+    ipc.on("db:index-status", handler);
+    return () => {
+      ipc.off("db:index-status", handler);
+    };
+  }, []);
+
   const loadSermonsFromDb = useCallback(async () => {
     setDbStatus("ready");
     setLoadingMessage("Loading sermons…");
@@ -274,7 +355,8 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     setLoadingProgress(100);
     setLoading(false);
     setLoadingMessage("Ready!");
-  }, [setSelectedMessage]);
+    void buildSearchIndex();
+  }, [setSelectedMessage, buildSearchIndex]);
 
   const startDbDownload = useCallback(async () => {
     try {
@@ -317,7 +399,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
         setDbStatus("checking");
         setError(null);
 
-        const status = await ipc.invoke("db:status");
+        const status = (await ipc.invoke("db:status")) as DbStatusResponse;
 
         // ── First launch or missing DB: show blocking overlay and let user trigger download ──
         if (!status.exists) {
@@ -326,6 +408,24 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
           setDownloadProgress(0);
           setLoading(false);
           return;
+        }
+
+        setLoadingMessage("Checking for sermon library updates...");
+        const updateStatus = (await ipc.invoke(
+          "db:check-update",
+        )) as DbUpdateResponse;
+
+        if (updateStatus.updateAvailable) {
+          setLoadingMessage("Updating sermon library...");
+          await startDbDownload();
+          return;
+        }
+
+        if (!updateStatus.checked) {
+          console.warn(
+            "Sermon DB update check failed:",
+            updateStatus.error ?? updateStatus.reason,
+          );
         }
 
         await loadSermonsFromDb();
@@ -341,7 +441,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     };
 
     init();
-  }, [loadSermonsFromDb]);
+  }, [loadSermonsFromDb, startDbDownload]);
 
   // ── Search navigation ──────────────────────────────────────────────────────
   const navigateToSearchResult = (
@@ -487,6 +587,8 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
         fontFamily: parsedSettings.fontFamily,
         fontStyle: parsedSettings.fontStyle,
         fontSize: parsedSettings.fontSize,
+        presentationFontSize:
+          parsedSettings.presentationFontSize ?? parsedSettings.fontSize ?? "36",
         fontWeight: parsedSettings.fontWeight,
         readingWidth: parsedSettings.readingWidth ?? "100",
       });
@@ -553,6 +655,9 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       // Search navigation
       pendingSearchNav,
       setPendingSearchNav,
+      searchIndexStatus,
+      searchIndexMessage,
+      buildSearchIndex,
       navigateToSearchResult,
     }),
     [
@@ -599,6 +704,9 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       navigateToBookmark,
       pendingSearchNav,
       setPendingSearchNav,
+      searchIndexStatus,
+      searchIndexMessage,
+      buildSearchIndex,
       navigateToSearchResult,
     ],
   );

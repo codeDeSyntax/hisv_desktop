@@ -18,6 +18,7 @@ type DBInstance = ReturnType<typeof Database>;
 
 // ── configuration ─────────────────────────────────────────────────────────────
 const DB_FILENAME = "sermons.db";
+const DB_RELEASE_MARKER_FILENAME = "sermons-db-release.json";
 
 /**
  * URL to the pre-built database hosted on GitHub Releases.
@@ -28,13 +29,48 @@ export const GITHUB_DB_URL =
   process.env.HISVOICE_DB_URL ??
   "https://github.com/codeDeSyntax/hisv_desktop/releases/latest/download/sermons.db";
 
+export const GITHUB_LATEST_RELEASE_API_URL =
+  process.env.HISVOICE_RELEASE_API_URL ??
+  "https://api.github.com/repos/codeDeSyntax/hisv_desktop/releases/latest";
+
+interface GitHubReleaseAsset {
+  name: string;
+  browser_download_url: string;
+  size?: number;
+  updated_at?: string;
+}
+
+interface GitHubLatestRelease {
+  tag_name: string;
+  published_at?: string;
+  assets?: GitHubReleaseAsset[];
+}
+
+export interface DbReleaseMarker {
+  tagName: string;
+  publishedAt?: string;
+  assetName: string;
+  assetSize?: number;
+  assetUpdatedAt?: string;
+}
+
+export interface DbUpdateStatus {
+  checked: boolean;
+  updateAvailable: boolean;
+  reason?: string;
+  local?: DbReleaseMarker;
+  remote?: DbReleaseMarker;
+  downloadUrl?: string;
+  error?: string;
+}
+
 // ── path helpers ─────────────────────────────────────────────────────────────
 export function getDbPath(): string {
   if (!app.isPackaged) {
     // Dev: use the local pre-built db in the project's resources/ folder
     return path.join(process.env.APP_ROOT!, "resources", DB_FILENAME);
   }
-  // Production: db was downloaded to userData on first launch
+  // Production: db is downloaded to userData on first launch/update.
   return path.join(app.getPath("userData"), DB_FILENAME);
 }
 
@@ -47,12 +83,64 @@ export function dbExists(): boolean {
   }
 }
 
+function requestText(url: string, redirectsLeft = 10): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (redirectsLeft <= 0) {
+      reject(new Error("Too many redirects"));
+      return;
+    }
+
+    const mod = url.startsWith("https://") ? https : http;
+    const request = mod.get(
+      url,
+      {
+        headers: {
+          Accept: "application/vnd.github+json, application/json",
+          "User-Agent": "hisvoice-desktop",
+        },
+      },
+      (res) => {
+        if (
+          res.statusCode &&
+          res.statusCode >= 300 &&
+          res.statusCode < 400 &&
+          res.headers.location
+        ) {
+          res.resume();
+          requestText(res.headers.location, redirectsLeft - 1)
+            .then(resolve)
+            .catch(reject);
+          return;
+        }
+
+        if (res.statusCode !== 200) {
+          res.resume();
+          reject(new Error(`HTTP ${res.statusCode}: ${url}`));
+          return;
+        }
+
+        res.setEncoding("utf8");
+        let body = "";
+        res.on("data", (chunk: string) => {
+          body += chunk;
+        });
+        res.on("end", () => resolve(body));
+      },
+    );
+
+    request.setTimeout(10_000, () => {
+      request.destroy(new Error("Request timed out"));
+    });
+    request.on("error", reject);
+  });
+}
+
 // ── connection ────────────────────────────────────────────────────────────────
 let _db: DBInstance | null = null;
 
 export function openDb(): DBInstance {
   if (_db) return _db;
-  _db = new Database(getDbPath(), { readonly: true, fileMustExist: true });
+  _db = new Database(getDbPath(), { fileMustExist: true });
   _db.pragma("journal_mode = WAL");
   return _db;
 }
@@ -67,6 +155,105 @@ export function closeDb(): void {
 }
 
 // ── query helpers ─────────────────────────────────────────────────────────────
+function getDbReleaseMarkerPath(): string {
+  return path.join(path.dirname(getDbPath()), DB_RELEASE_MARKER_FILENAME);
+}
+
+export function getLocalDbReleaseMarker(): DbReleaseMarker | null {
+  try {
+    const markerPath = getDbReleaseMarkerPath();
+    if (!fs.existsSync(markerPath)) return null;
+    return JSON.parse(
+      fs.readFileSync(markerPath, "utf-8"),
+    ) as DbReleaseMarker;
+  } catch {
+    return null;
+  }
+}
+
+function writeLocalDbReleaseMarker(marker: DbReleaseMarker): void {
+  const markerPath = getDbReleaseMarkerPath();
+  fs.mkdirSync(path.dirname(markerPath), { recursive: true });
+  fs.writeFileSync(markerPath, JSON.stringify(marker, null, 2) + "\n", "utf-8");
+}
+
+export async function fetchLatestDbRelease(): Promise<{
+  marker: DbReleaseMarker;
+  downloadUrl: string;
+}> {
+  const body = await requestText(GITHUB_LATEST_RELEASE_API_URL);
+  const release = JSON.parse(body) as GitHubLatestRelease;
+  const dbAsset = release.assets?.find((asset) => asset.name === DB_FILENAME);
+
+  if (!release.tag_name) {
+    throw new Error("Latest GitHub release has no tag name");
+  }
+
+  if (!dbAsset?.browser_download_url) {
+    throw new Error(`Latest GitHub release has no ${DB_FILENAME} asset`);
+  }
+
+  return {
+    marker: {
+      tagName: release.tag_name,
+      publishedAt: release.published_at,
+      assetName: dbAsset.name,
+      assetSize: dbAsset.size,
+      assetUpdatedAt: dbAsset.updated_at,
+    },
+    downloadUrl: dbAsset.browser_download_url,
+  };
+}
+
+export async function checkDbUpdate(): Promise<DbUpdateStatus> {
+  if (!dbExists()) {
+    return {
+      checked: true,
+      updateAvailable: true,
+      reason: "missing",
+    };
+  }
+
+  try {
+    const local = getLocalDbReleaseMarker();
+    const latest = await fetchLatestDbRelease();
+    const remote = latest.marker;
+
+    if (!local?.tagName) {
+      return {
+        checked: true,
+        updateAvailable: true,
+        reason: "local-release-marker-missing",
+        remote,
+        downloadUrl: latest.downloadUrl,
+      };
+    }
+
+    const updateAvailable =
+      local.tagName !== remote.tagName ||
+      local.assetUpdatedAt !== remote.assetUpdatedAt ||
+      local.assetSize !== remote.assetSize;
+
+    return {
+      checked: true,
+      updateAvailable,
+      reason: updateAvailable ? "latest-release-changed" : "current",
+      local,
+      remote,
+      downloadUrl: latest.downloadUrl,
+    };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return {
+      checked: false,
+      updateAvailable: false,
+      reason: "check-failed",
+      local: getLocalDbReleaseMarker() ?? undefined,
+      error: message,
+    };
+  }
+}
+
 export interface SermonMeta {
   id: string;
   title: string;
@@ -135,6 +322,53 @@ function runLikeFallback(db: DBInstance, normalizedQuery: string): FTSResult[] {
     .all(`%${normalizedQuery}%`) as FTSResult[];
 }
 
+function hasTable(db: DBInstance, tableName: string): boolean {
+  const row = db
+    .prepare(
+      `SELECT name
+       FROM sqlite_master
+       WHERE type IN ('table', 'virtual table') AND name = ?
+       LIMIT 1`,
+    )
+    .get(tableName);
+  return Boolean(row);
+}
+
+function ensureSearchIndex(db: DBInstance): void {
+  if (!hasTable(db, "sermons_fts")) {
+    db.exec(`
+      CREATE VIRTUAL TABLE sermons_fts USING fts5(
+        title,
+        sermon_text,
+        content=sermons,
+        content_rowid=rowid
+      );
+    `);
+  }
+
+  const indexedCount = (db
+    .prepare("SELECT COUNT(*) AS n FROM sermons_fts")
+    .get() as { n: number }).n;
+  const sermonCount = (db
+    .prepare("SELECT COUNT(*) AS n FROM sermons")
+    .get() as { n: number }).n;
+
+  if (indexedCount !== sermonCount) {
+    db.exec(`INSERT INTO sermons_fts(sermons_fts) VALUES('rebuild')`);
+  }
+}
+
+export function buildSearchIndex(): { success: boolean; error?: string } {
+  try {
+    const db = openDb();
+    ensureSearchIndex(db);
+    return { success: true };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
+  }
+}
+
 /** Returns all sermons without the heavy sermon_text column (for fast startup). */
 export function getSermonsMeta(): SermonMeta[] {
   const db = openDb();
@@ -178,6 +412,8 @@ export function searchSermons(
   }
 
   try {
+    ensureSearchIndex(db);
+
     const ftsRows = db
       .prepare(
         `SELECT s.id, s.title, s.year, s.location, s.type,
@@ -217,14 +453,16 @@ let _downloading = false;
 export function downloadDb(
   url: string,
   onProgress: ProgressCallback,
+  releaseMarker?: DbReleaseMarker,
 ): Promise<void> {
   if (_downloading) return Promise.resolve();
   _downloading = true;
+  closeDb();
 
   return new Promise((resolve, reject) => {
-    // Production path — in dev this should never be called since dbExists()=true
-    const destPath = path.join(app.getPath("userData"), DB_FILENAME);
+    const destPath = getDbPath();
     const tmpPath = destPath + ".download";
+    fs.mkdirSync(path.dirname(destPath), { recursive: true });
 
     // Clean up any previous partial download; ignore errors (file may be locked)
     try {
@@ -286,7 +524,16 @@ export function downloadDb(
               try {
                 // Atomic rename: only replace DB after full download
                 if (fs.existsSync(destPath)) fs.unlinkSync(destPath);
+                if (fs.existsSync(destPath + "-wal")) {
+                  fs.unlinkSync(destPath + "-wal");
+                }
+                if (fs.existsSync(destPath + "-shm")) {
+                  fs.unlinkSync(destPath + "-shm");
+                }
                 fs.renameSync(tmpPath, destPath);
+                if (releaseMarker) {
+                  writeLocalDbReleaseMarker(releaseMarker);
+                }
                 onProgress(100);
                 _downloading = false;
                 resolve();

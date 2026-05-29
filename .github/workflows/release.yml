@@ -32,6 +32,9 @@ jobs:
       - name: Build app
         run: pnpm run build
 
+      - name: Build sermon database asset
+        run: pnpm run build-db
+
       - name: Verify sermon database asset exists
         shell: pwsh
         run: |

@@ -140,6 +140,14 @@ const SelectedSermon = ({
   const skeletonFaintColor = isDarkMode
     ? "rgba(120,113,108,.11)"
     : "rgba(214,211,209,.3)";
+  const activeReaderFontSize = isPresentationMode
+    ? Number(settings.presentationFontSize ?? settings.fontSize) || 36
+    : Number(settings.fontSize) || 20;
+  const isTextSermon = selectedMessage?.type === "text";
+  const isTextLoading =
+    isTextSermon && sermonParagraphs.length === 0 && !selectedMessage?.sermon;
+  const shouldConstrainReadingWidth =
+    !isPresentationMode && isTextSermon && !isTextLoading;
 
   // For very large sermons, we could use the async version
   // This is kept for future optimization if needed
@@ -614,10 +622,27 @@ const SelectedSermon = ({
     return () => clearTimeout(timer);
   }, [isPresentationMode, goToParagraph]);
 
-  // Ctrl +/- to adjust font size in presentation mode
-  useEffect(() => {
-    if (!isPresentationMode) return;
+  const adjustFontSize = useCallback(
+    (direction: "increase" | "decrease" | "reset") => {
+      const key = isPresentationMode ? "presentationFontSize" : "fontSize";
+      const fallback = isPresentationMode ? 36 : 20;
+      const current = Number(settings[key] ?? fallback) || fallback;
+      const next =
+        direction === "reset"
+          ? fallback
+          : direction === "increase"
+            ? Math.min(current + 2, 120)
+            : Math.max(current - 2, 12);
 
+      const updated = { ...settings, [key]: next.toString() };
+      setSettings(updated);
+      localStorage.setItem("sermonSettings", JSON.stringify(updated));
+    },
+    [isPresentationMode, settings, setSettings],
+  );
+
+  // Ctrl +/- adjusts font size in the reader.
+  useEffect(() => {
     const handleFontKey = (e: KeyboardEvent) => {
       if (!(e.ctrlKey || e.metaKey)) return;
 
@@ -628,26 +653,12 @@ const SelectedSermon = ({
       if (!isPlus && !isMinus && !isZero) return;
 
       e.preventDefault();
-
-      const current = Number(settings.fontSize) || 16;
-      let next: number;
-
-      if (isZero) {
-        next = 16; // reset to default
-      } else if (isPlus) {
-        next = Math.min(current + 2, 120);
-      } else {
-        next = Math.max(current - 2, 12);
-      }
-
-      const updated = { ...settings, fontSize: next.toString() };
-      setSettings(updated);
-      localStorage.setItem("sermonSettings", JSON.stringify(updated));
+      adjustFontSize(isZero ? "reset" : isPlus ? "increase" : "decrease");
     };
 
     document.addEventListener("keydown", handleFontKey);
     return () => document.removeEventListener("keydown", handleFontKey);
-  }, [isPresentationMode, settings, setSettings]);
+  }, [adjustFontSize]);
 
   const handleEndnoteClick = (paragraphText: string) => {
     const data = parseEndnote(paragraphText);
@@ -679,7 +690,7 @@ const SelectedSermon = ({
   };
 
   return (
-    <div className="bg-white dark:bg-background h-screen   relative  w-screen flex items-center justify-center">
+    <div className="bg-white dark:bg-background h-screen relative w-full flex items-stretch justify-stretch">
       <SaveNotification
         show={showSaveNotification}
         onClose={() => setShowSaveNotification(false)}
@@ -713,6 +724,9 @@ const SelectedSermon = ({
           showControlPanel={showControlPanel}
           onToggle={() => setShowControlPanel(!showControlPanel)}
           isVisible={true}
+          fontSize={activeReaderFontSize}
+          onDecreaseFontSize={() => adjustFontSize("decrease")}
+          onIncreaseFontSize={() => adjustFontSize("increase")}
         />
       )}
 
@@ -745,7 +759,7 @@ const SelectedSermon = ({
         onClose={() => setShowEndnoteSheet(false)}
       />
 
-      <div className="relative h-full flex flex-col justify-start items-stretch overflow-hidden px-0 sm:px-1">
+      <div className="relative h-full w-full min-w-0 flex flex-col justify-start items-stretch overflow-hidden px-0 sm:px-1">
         {/* Receipt Style Control Panel */}
         <ReceiptStylePanel
           show={showControlPanel}
@@ -755,7 +769,7 @@ const SelectedSermon = ({
 
         {/* Scrollable Content Area */}
         <div
-          className={`flex- w-full min-w-0   ${isPresentationMode ? "h-[95%]" : "h-[98%]"} overflow-y-auto overflow-x-hidden ${!isPresentationMode && "no-scrollbar"}`}
+          className={`flex-1 w-full min-w-0 ${isPresentationMode ? "h-[95%]" : "h-[98%]"} overflow-y-auto overflow-x-hidden ${!isPresentationMode && "no-scrollbar"}`}
           style={{
             scrollBehavior: "smooth",
             scrollbarColor: isDarkMode
@@ -768,7 +782,7 @@ const SelectedSermon = ({
             className="w-full min-w-0 px-0 sm:px-2"
             ref={scrollContainerRef}
             style={
-              !isPresentationMode
+              shouldConstrainReadingWidth
                 ? {
                     maxWidth: `${Number(settings.readingWidth) || 100}%`,
                     margin: "0 auto",
@@ -780,7 +794,7 @@ const SelectedSermon = ({
             {selectedMessage?.type === "text" ? (
               <div
                 key={`sermon-${selectedMessage.id}`}
-                className="w-full min-w-0"
+                className={`w-full min-w-0 ${isTextLoading ? "mx-auto max-w-6xl px-2 sm:px-4 lg:px-6" : ""}`}
                 style={{ maxWidth: "100%", overflowWrap: "break-word" }}
               >
                 {/* Sermon Header */}
@@ -977,9 +991,7 @@ const SelectedSermon = ({
                           style={{
                             fontFamily: settings.fontFamily || "Zilla Slab",
                             fontWeight: settings.fontWeight,
-                            fontSize: isPresentationMode
-                              ? `${settings.fontSize}px`
-                              : "16px",
+                            fontSize: `${activeReaderFontSize}px`,
                             fontStyle: settings.fontStyle,
                             color: isDarkMode ? "#d6d3d1" : "#000000",
                             overflowWrap: "break-word",
@@ -1006,8 +1018,8 @@ const SelectedSermon = ({
                             className="font-archivo font-bold mr-2 transition-colors duration-200"
                             style={{
                               fontSize: isPresentationMode
-                                ? `${Math.max(Number(settings.fontSize) * 0.8, 14)}px`
-                                : "14px",
+                                ? `${Math.max(activeReaderFontSize * 0.8, 14)}px`
+                                : `${Math.max(activeReaderFontSize * 0.8, 12)}px`,
                               color:
                                 currentParagraph === paragraph.id
                                   ? accentColor

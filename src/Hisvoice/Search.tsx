@@ -118,7 +118,8 @@ function groupFTSResults(rows: FTSRow[]): GroupedSermonMatch[] {
 
 // â”€â”€ component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const Search = ({ onSelect }: { onSelect?: () => void }) => {
-  const { navigateToSearchResult } = useSermonContext();
+  const { navigateToSearchResult, searchIndexStatus, searchIndexMessage } =
+    useSermonContext();
   const { isDarkMode, accentColor } = useTheme();
   const [searchInput, setSearchInput] = useState(
     () => persistedSearchViewState?.searchInput ?? "",
@@ -146,6 +147,9 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const cacheRef = useRef<Map<string, GroupedSermonMatch[]>>(new Map());
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const canSearch = searchIndexStatus === "ready" || searchIndexStatus === "error";
+  const isPreparingSearch =
+    searchIndexStatus === "idle" || searchIndexStatus === "building";
 
   useEffect(() => {
     persistedSearchViewState = {
@@ -188,6 +192,8 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
 
   // â”€â”€ search via FTS5 IPC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const doSearch = useCallback(async (term: string, mode: SearchMode) => {
+    if (!canSearch) return;
+
     const normalizedTerm = term.trim().replace(/\s+/g, " ");
     const key = `${mode}:${normalizedTerm.toLowerCase()}`;
     const cached = cacheRef.current.get(key);
@@ -217,7 +223,7 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
     } finally {
       setIsSearching(false);
     }
-  }, []);
+  }, [canSearch]);
 
   // Clear results when input is too short, but don't auto-search
   useEffect(() => {
@@ -243,6 +249,7 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
+        if (!canSearch) return;
         const trimmed = searchInput.trim();
         if (trimmed.length >= 2) {
           if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
@@ -251,12 +258,13 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
         }
       }
     },
-    [searchInput, doSearch, searchMode],
+    [searchInput, doSearch, searchMode, canSearch],
   );
 
   const handleSearchSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      if (!canSearch) return;
       const trimmed = searchInput.trim();
       if (trimmed.length >= 2) {
         if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
@@ -264,7 +272,7 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
         doSearch(trimmed, searchMode);
       }
     },
-    [searchInput, doSearch, searchMode],
+    [searchInput, doSearch, searchMode, canSearch],
   );
 
   const handleSermonClick = useCallback(
@@ -304,13 +312,18 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
             <div className="flex-1 relative">
               <input
                 type="text"
-                placeholder="Search quotes, phrases, keywords… (Press Enter to search)"
+                placeholder={
+                  isPreparingSearch
+                    ? "Preparing search..."
+                    : "Search quotes, phrases, keywords... (Press Enter to search)"
+                }
                 className="w-full pl-4 pr-10 py-2.5 text-[13px] bg-zinc-100 dark:bg-zinc-900 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition-colors duration-150"
                 onChange={handleSearchInput}
                 onKeyDown={handleKeyDown}
                 value={searchInput}
+                disabled={isPreparingSearch}
               />
-              {isSearching && (
+              {(isSearching || isPreparingSearch) && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   <div className="animate-spin rounded-full h-3.5 w-3.5 border-[1.5px] border-zinc-400 border-t-transparent" />
                 </div>
@@ -318,11 +331,11 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
             </div>
             <button
               type="submit"
-              disabled={isSearching}
+              disabled={isSearching || !canSearch}
               className="px-4 py-2.5 text-white text-[13px] font-medium rounded-xl transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ backgroundColor: accentColor }}
             >
-              {isSearching ? (
+              {isSearching || isPreparingSearch ? (
                 <div className="animate-spin rounded-full h-3.5 w-3.5 border-[1.5px] border-white border-t-transparent" />
               ) : (
                 "Search"
@@ -444,6 +457,16 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
           {searchInput.length > 0 && searchInput.length < 2 && (
             <p className="mt-2 text-[11px] text-zinc-400 dark:text-zinc-500">
               Enter at least 2 characters, then press Enter or click Search
+            </p>
+          )}
+          {isPreparingSearch && (
+            <p className="mt-2 text-[11px] text-zinc-400 dark:text-zinc-500">
+              {searchIndexMessage}
+            </p>
+          )}
+          {searchIndexStatus === "error" && (
+            <p className="mt-2 text-[11px] text-amber-600 dark:text-amber-400">
+              {searchIndexMessage} Search will try a slower fallback.
             </p>
           )}
         </form>

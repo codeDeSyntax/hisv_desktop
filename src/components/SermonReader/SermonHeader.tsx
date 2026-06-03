@@ -7,6 +7,7 @@ interface SermonHeaderProps {
   location?: string;
   fontSize: number;
   fontFamily?: string;
+  fontWeight?: React.CSSProperties["fontWeight"];
 }
 
 const SermonHeader = ({
@@ -15,6 +16,7 @@ const SermonHeader = ({
   location,
   fontSize,
   fontFamily,
+  fontWeight = 400,
 }: SermonHeaderProps) => {
   const { isDarkMode, accentColor } = useTheme();
   const titleFontSize = Math.max(fontSize * 1.25, fontSize + 4);
@@ -29,6 +31,7 @@ const SermonHeader = ({
           color: isDarkMode ? "#cbcbcb" : "black",
           fontSize: `${titleFontSize}px`,
           fontFamily: fontFamily || "Outfit",
+          fontWeight,
           lineHeight: 1.05,
         }}
       >
@@ -41,6 +44,7 @@ const SermonHeader = ({
             color: accentColor,
             fontSize: `${metaFontSize}px`,
             fontFamily: fontFamily || "Outfit",
+            fontWeight,
             lineHeight: 1.2,
           }}
         >

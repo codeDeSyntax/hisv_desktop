@@ -112,6 +112,7 @@ function highlightTerms(
         i % 2 === 1 ? (
           <mark
             key={i}
+            className="font-thin"
             style={{
               backgroundColor: accentColor + "35",
               color: accentColor,
@@ -178,7 +179,7 @@ const ReadMode: React.FC<ReadModeProps> = ({
       exit={{ opacity: 0, x: 30 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={`fixed inset-0 z-[60] flex flex-col ${
-        isDarkMode ? "bg-[#171717]" : "bg-zinc-50"
+        isDarkMode ? "bg-background" : "bg-zinc-50"
       }`}
       onClick={(e) => e.stopPropagation()}
     >
@@ -206,7 +207,7 @@ const ReadMode: React.FC<ReadModeProps> = ({
             {group.title || "Sermon"}
           </p>
           <p
-            className={`text-xs ${isDarkMode ? "text-zinc-500" : "text-zinc-400"}`}
+            className={`text-[15px] ${isDarkMode ? "text-zinc-500" : "text-zinc-400"}`}
           >
             {group.datecode}
           </p>
@@ -351,7 +352,7 @@ const ContextViewer: React.FC<ContextViewerProps> = ({
               }}
             >
               <span
-                className="font-archivo font-bold shrink-0 text-[11px] mt-0.5 select-none"
+                className=" font-bold shrink-0 text-[11px] mt-0.5 select-none"
                 style={{
                   color: isHit
                     ? accentColor
@@ -364,7 +365,7 @@ const ContextViewer: React.FC<ContextViewerProps> = ({
                 {s.Paragraph}.
               </span>
               <span
-                className={`text-[13px] leading-relaxed ${
+                className={`text-[16px] font-thin leading-relaxed ${
                   isDarkMode ? "text-zinc-300" : "text-zinc-700"
                 }`}
               >
@@ -421,7 +422,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
 
   return (
     <div
-      className={`rounded-xl border overflow-hidden transition-colors ${
+      className={` border overflow-hidden transition-colors border-solid border-x-0 border-t-0 ${
         isDarkMode
           ? group.isPrimary
             ? "border-zinc-600 bg-zinc-800/60"
@@ -435,14 +436,14 @@ const GroupCard: React.FC<GroupCardProps> = ({
       <div className="flex items-center gap-2 px-3 py-2 ">
         <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
           <span
-            className="font-archivo text-[11px] font-bold shrink-0"
+            className="font-archivo text-[15px] font-bold shrink-0"
             style={{ color: accentColor }}
           >
             {group.datecode}
           </span>
           {group.isPrimary && (
             <span
-              className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0"
+              className="text-[15px] font-bold px-1.5 py-0.5 rounded-full shrink-0"
               style={{
                 backgroundColor: accentColor + "20",
                 color: accentColor,
@@ -452,8 +453,8 @@ const GroupCard: React.FC<GroupCardProps> = ({
             </span>
           )}
           <span
-            className={`text-[11px] truncate font-bold ${
-              isDarkMode ? "text-zinc-400" : "text-zinc-500"
+            className={`text-[20px] truncate font-thin ${
+              isDarkMode ? "text-white" : "text-zinc-500"
             }`}
           >
             {group.title || "Untitled Sermon"}
@@ -467,7 +468,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
             else onLoadContext(group);
           }}
           disabled={isLoading}
-          className={`shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-medium transition-all ${
+          className={`shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px]  transition-all ${
             isDarkMode
               ? "bg-zinc-700 hover:bg-zinc-600 text-zinc-300"
               : "bg-zinc-100 hover:bg-zinc-200 text-zinc-600"
@@ -517,14 +518,14 @@ const GroupCard: React.FC<GroupCardProps> = ({
                 <>
                   <div className="flex items-start gap-2 min-w-0 py-0.5">
                     <span
-                      className="font-archivo font-bold shrink-0 text-[11px] select-none mt-0.5"
+                      className="font-archivo font-bold shrink-0 text-[14px] select-none mt-0.5"
                       style={{ color: accentColor, minWidth: "28px" }}
                     >
                       ¶{endnoteTargetParagraph}
                     </span>
                     <span
-                      className={`text-[14px] leading-snug line-clamp-2 ${
-                        isDarkMode ? "text-zinc-400" : "text-zinc-500"
+                      className={`!text-[18px] font-thin leading-snug line-clamp-3 ${
+                        isDarkMode ? "text-white" : "text-zinc-500"
                       }`}
                     >
                       {highlightTerms(
@@ -559,16 +560,16 @@ const GroupCard: React.FC<GroupCardProps> = ({
                     className="flex items-start gap-2 min-w-0 py-0.5"
                   >
                     <span
-                      className="font-archivo font-bold shrink-0 text-[11px] select-none mt-0.5"
+                      className=" font-bold shrink-0 text-[15px] select-none mt-0.5"
                       style={{
-                        color: isDarkMode ? "#78716c" : "#a8a29e",
+                        color: isDarkMode ? "#ffffff" : "#a8a29e",
                         minWidth: "28px",
                       }}
                     >
                       ¶{m.paragraph}
                     </span>
                     <span
-                      className={`text-[14px] leading-snug line-clamp-2 ${
+                      className={`text-[16px] leading-snug font-thin line-clamp-2 ${
                         isDarkMode ? "text-zinc-400" : "text-zinc-500"
                       }`}
                     >
@@ -789,23 +790,16 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 32, stiffness: 320 }}
-              className={`fixed bottom-0 left-0 right-0 z-50 flex px-10 pb-10 flex-col rounded-t-2xl overflow-hidden min-h-[40vh] ${
+              className={`fixed bottom-0 left-0 right-0 z-50 flex  pb-10 flex-col rounded-t-2xl overflow-hidden min-h-[44vh] w-full max-w-5xl mx-auto ${
                 isDarkMode
-                  ? "bg-[#1c1c1e] border-t border-zinc-700"
+                  ? "bg-primary border-t border-zinc-700"
                   : "bg-white border-t border-zinc-200"
               }`}
-              style={{ maxHeight: "78vh" }}
+              style={{ maxHeight: "80vh" }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Drag handle */}
-              <div className="flex justify-center pt-2.5 pb-1 shrink-0">
-                <div
-                  className={`w-10 h-1 rounded-full ${isDarkMode ? "bg-zinc-600" : "bg-zinc-300"}`}
-                />
-              </div>
-
               {/* Header */}
-              <div className="flex items-start justify-between px-4 pb-3 pt-1 shrink-0">
+              <div className="flex items-start px-10 justify-between  pb-3 pt-1 p-2 shrink-0 bg-background">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <BookOpen size={15} style={{ color: accentColor }} />
@@ -913,7 +907,7 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
 
                 {/* Results */}
                 {!loading && !error && searchResult && (
-                  <div className="px-4 py-3 space-y-3 pb-6">
+                  <div className="px-10 py-3 space-y-3 pb-6">
                     {/* Search meta */}
                     <div className="flex items-center gap-1.5">
                       <Search size={11} style={{ color: accentColor }} />

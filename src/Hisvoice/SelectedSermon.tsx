@@ -101,7 +101,6 @@ const SelectedSermon = ({
     showColorPalette,
     palettePosition,
     highlights,
-    selectionOverlayRects,
     highlightColors,
     handleTextSelection,
     applyHighlight,
@@ -143,6 +142,12 @@ const SelectedSermon = ({
   const activeReaderFontSize = isPresentationMode
     ? Number(settings.presentationFontSize ?? settings.fontSize) || 36
     : Number(settings.fontSize) || 20;
+  const activeFontWeight: React.CSSProperties["fontWeight"] =
+    settings.fontWeight === "thin"
+      ? 300
+      : settings.fontWeight === "bold"
+        ? 700
+        : 400;
   const isTextSermon = selectedMessage?.type === "text";
   const isTextLoading =
     isTextSermon && sermonParagraphs.length === 0 && !selectedMessage?.sermon;
@@ -707,33 +712,11 @@ const SelectedSermon = ({
   };
 
   return (
-    <div className="bg-white dark:bg-background h-screen relative w-full flex items-stretch justify-stretch">
+    <div className="bg-white dark:bg-primary h-screen relative w-full flex items-stretch justify-stretch">
       <SaveNotification
         show={showSaveNotification}
         onClose={() => setShowSaveNotification(false)}
       />
-
-      {selectionOverlayRects.length > 0 && (
-        <div className="pointer-events-none fixed inset-0 z-[55]">
-          {selectionOverlayRects.map((rect) => (
-            <div
-              key={rect.id}
-              className="absolute rounded-[3px]"
-              style={{
-                left: `${rect.x - 1}px`,
-                top: `${rect.y - 1}px`,
-                width: `${rect.width + 2}px`,
-                height: `${rect.height + 2}px`,
-                border: `2px solid ${accentColor}cc`,
-                backgroundColor: "transparent",
-                boxShadow: isDarkMode
-                  ? `0 0 0 1px ${accentColor}55`
-                  : `0 0 0 1px ${accentColor}44`,
-              }}
-            />
-          ))}
-        </div>
-      )}
 
       {/* Floating Control Button */}
       {selectedMessage?.type === "text" && (
@@ -821,6 +804,7 @@ const SelectedSermon = ({
                   location={selectedMessage?.location}
                   fontSize={activeReaderFontSize}
                   fontFamily={settings.fontFamily || "Outfit"}
+                  fontWeight={activeFontWeight}
                 />
 
                 {/* Sermon Content with Paragraphs */}
@@ -836,7 +820,7 @@ const SelectedSermon = ({
                   {sermonParagraphs.length === 0 && !selectedMessage?.sermon ? (
                     /* Loading skeleton while sermon text is being fetched */
                     <div className="w-full  px-3  py-5 sm:py-6 space-y-6 animate-pulse">
-                      <div className="w-full  space-y-4 pb-5 border-b border-stone-100/80 dark:border-stone-800/70">
+                      <div className="w-full  space-y-4 pb-5 border-b border-zinc-100/80 dark:border-zinc-800/70">
                         <div
                           className="h-6 w-full rounded-full"
                           style={{ backgroundColor: skeletonBaseColor }}
@@ -875,7 +859,7 @@ const SelectedSermon = ({
                         {Array.from({ length: 12 }).map((_, i) => (
                           <div
                             key={i}
-                            className="w-full space-y-3 rounded-3xl border border-stone-100/70 dark:border-stone-800/50 bg-stone-50/70 dark:bg-stone-900/30 px-4 py-4 sm:px-5"
+                            className="w-full space-y-3 rounded-3xl border border-zinc-100/70 dark:border-zinc-800/50 bg-zinc-50/70 dark:bg-zinc-900/30 px-4 py-4 sm:px-5"
                           >
                             <div className="flex items-center justify-between gap-4">
                               <div
@@ -940,7 +924,7 @@ const SelectedSermon = ({
                               );
                             }
                           }}
-                          className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-stone-300 dark:bg-stone-700 border px-3 py-1.5 text-[11px] font-semibold shadow-sm backdrop-blur-md transition-all duration-200 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 hover:-translate-y-0.5 hover:scale-[1.02] ${
+                          className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700 border px-3 py-1.5 text-[11px] font-semibold shadow-sm backdrop-blur-md transition-all duration-200 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 hover:-translate-y-0.5 hover:scale-[1.02] ${
                             selectedMessage &&
                             isBookmarked(
                               selectedMessage.id as any,
@@ -948,8 +932,8 @@ const SelectedSermon = ({
                             )
                               ? "text-white dark:text-black"
                               : isDarkMode
-                                ? "bg-stone-800/90 hover:bg-stone-700/95 text-stone-200 border-stone-700/80"
-                                : "bg-white/90 hover:bg-white text-stone-700 border-stone-200/80"
+                                ? "bg-zinc-800/90 hover:bg-zinc-700/95 text-zinc-200 border-zinc-700/80"
+                                : "bg-white/90 hover:bg-white text-zinc-700 border-zinc-200/80"
                           } ${
                             selectedMessage &&
                             isBookmarked(
@@ -958,8 +942,8 @@ const SelectedSermon = ({
                             )
                               ? "border-transparent shadow-lg"
                               : isDarkMode
-                                ? "border-stone-700/80"
-                                : "border-stone-200/80"
+                                ? "border-zinc-700/80"
+                                : "border-zinc-200/80"
                           }`}
                           style={
                             selectedMessage &&
@@ -1011,10 +995,10 @@ const SelectedSermon = ({
 
                         {/* Paragraph Content with inline number */}
                         <div
-                          className="sermon-selection-scope leading-normal  px-6  rounded-lg transition-all duration-200 border-l-4"
+                          className="sermon-selection-scope leading-normal  px-6  rounded-lg transition-all duration-200 border-l-4  "
                           style={{
                             fontFamily: settings.fontFamily || "Outfit",
-                            fontWeight: settings.fontWeight,
+                            fontWeight: activeFontWeight,
                             fontSize: `${activeReaderFontSize}px`,
                             fontStyle: settings.fontStyle,
                             color: isDarkMode ? "#d6d3d1" : "#000000",
@@ -1089,7 +1073,7 @@ const SelectedSermon = ({
                                 parts.push(
                                   <span
                                     key={`highlight-${index}`}
-                                    className={`cursor-pointer hover:opacity-80 ${isDarkMode ? "text-stone-900" : ""}`}
+                                    className={`cursor-pointer hover:opacity-80 ${isDarkMode ? "text-zinc-900" : ""}`}
                                     style={{
                                       backgroundColor: highlight.color,
                                       // padding: "2px 4px",

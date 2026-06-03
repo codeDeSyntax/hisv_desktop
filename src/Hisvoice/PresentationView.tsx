@@ -20,7 +20,7 @@ const PresentationView = () => {
   }, []);
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden bg-stone-50 dark:bg-background">
+    <div className="h-screen w-screen flex overflow-hidden bg-zinc-50 dark:bg-background">
       {/* Presentation Mode Hint */}
       <AnimatePresence>
         {showHint && (
@@ -49,7 +49,7 @@ const PresentationView = () => {
               />
             </Suspense>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-stone-400 dark:text-stone-600">
+            <div className="flex-1 flex items-center justify-center text-zinc-400 dark:text-zinc-600">
               <span className="text-lg">No sermon selected</span>
             </div>
           )}

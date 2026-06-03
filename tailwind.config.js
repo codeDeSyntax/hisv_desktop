@@ -5,14 +5,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#2f2f2f", // ChatGPT card/surface bg
-        background: "#171717", // ChatGPT deepest bg (sidebar)
-        surface: "#212121", // ChatGPT main chat area
+        primary: "#323232",
+        background: "#1d1d1d",
+        surface: "#323232",
         text: "#ececec", // ChatGPT primary text
         muted: "#8e8ea0", // ChatGPT secondary/muted text
-        border: "#383838", // ChatGPT subtle borders
+        border: "#454545",
         accent: "var(--accent)", // dynamic accent – set by Theme provider
         // Override warm zinc shades → ChatGPT cool neutrals (affects all dark:bg-zinc-* classes)
+        appDark: {
+          base: "#1d1d1d",
+          surface: "#323232",
+          border: "#454545",
+        },
         zinc: {
           50: "#fafaf9",
           100: "#f5f5f4",
@@ -21,10 +26,23 @@ export default {
           400: "#a8a29e",
           500: "#737373",
           600: "#525252",
-          700: "#3f3f3f", // ChatGPT hover/border surface
-          800: "#2f2f2f", // ChatGPT card / input bg
-          900: "#212121", // ChatGPT main bg
-          950: "#171717", // ChatGPT deepest / sidebar
+          700: "#454545",
+          800: "#323232",
+          900: "#1d1d1d",
+          950: "#1d1d1d",
+        },
+        zinc: {
+          50: "#fafaf9",
+          100: "#f5f5f4",
+          200: "#e7e5e4",
+          300: "#d6d3d1",
+          400: "#a8a29e",
+          500: "#78716c",
+          600: "#57534e",
+          700: "#454545",
+          800: "#323232",
+          900: "#1d1d1d",
+          950: "#1d1d1d",
         },
       },
       fontFamily: {

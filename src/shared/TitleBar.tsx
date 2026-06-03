@@ -308,7 +308,7 @@ const TitleBar: React.FC = () => {
 
   return (
     <div className="z-50 w-screen " style={{ WebkitAppRegion: "drag" } as any}>
-      <div className="h-[4vh] flex items-center justify-between px-4 border-b border-zinc-200 dark:border-zinc-700 select-none relative bg-zinc-50 dark:bg-zinc-950">
+      <div className="h-[5vh] flex items-center justify-between px-4  border-b border-zinc-200 dark:border-zinc-700 select-none relative bg-zinc-950 ">
         {/* Left section - Current Sermon Tab + Recent Sermons */}
         <div
           className="flex items-center gap-1 flex-shrink-0 min-w-0"

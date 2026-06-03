@@ -122,7 +122,7 @@ const ReadingSection: React.FC<{
         description="Normal or bold text while reading"
         control={
           <OptionButtons
-            options={["normal", "bold"] as const}
+            options={["thin","normal", "bold"] as const}
             value={fontWeight}
             onChange={setFontWeight}
             accentColor={accentColor}

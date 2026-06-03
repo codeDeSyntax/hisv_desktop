@@ -91,7 +91,7 @@ html.theme-sweep::view-transition-new(root) {
 }
 
 html {
-  background: #212121;
+  background: #1d1d1d;
 }
 
 body {
@@ -100,7 +100,7 @@ body {
   box-sizing: border-box;
   font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
-  background: #212121;
+  background: #1d1d1d;
   color: #000;
 }
 
@@ -138,9 +138,9 @@ div {
   border-width: 10px;
 }
 
-/* Custom text selection globally - stone-themed instead of default blue */
+/* Custom text selection globally - zinc-themed instead of default blue */
 ::selection {
-  background-color: rgba(168, 162, 158, 0.3); /* stone-400 with transparency */
+  background-color: rgba(168, 162, 158, 0.3); /* zinc-400 with transparency */
   color: inherit;
 }
 
@@ -151,7 +151,7 @@ div {
 
 /* Dark mode custom selection */
 .dark ::selection {
-  background-color: rgba(120, 113, 108, 0.4); /* stone-600 with transparency */
+  background-color: rgba(120, 113, 108, 0.4); /* zinc-600 with transparency */
   color: inherit;
 }
 
@@ -175,7 +175,11 @@ div {
 [data-paragraph-content="true"] ::selection,
 .sermon-selection-scope::selection,
 .sermon-selection-scope *::selection {
-  background-color: transparent !important;
+  background-color: color-mix(
+    in srgb,
+    var(--accent) 34%,
+    transparent
+  ) !important;
   color: inherit;
 }
 
@@ -183,7 +187,7 @@ div {
 [data-paragraph-content="true"] ::-moz-selection,
 .sermon-selection-scope::-moz-selection,
 .sermon-selection-scope *::-moz-selection {
-  background-color: transparent !important;
+  background-color: rgba(168, 162, 158, 0.35) !important;
   color: inherit;
 }
 

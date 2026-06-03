@@ -26,7 +26,7 @@ const ReceiptStylePanel = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className={`absolute inset-0 z-[60] backdrop-blur-[18px] backdrop-saturate-[1.2] ${
-              isDarkMode ? "bg-stone-950/18" : "bg-white/8"
+              isDarkMode ? "bg-zinc-950/18" : "bg-white/8"
             }`}
             onClick={onClose}
           />
@@ -42,16 +42,16 @@ const ReceiptStylePanel = ({
               <div
                 className={`relative max-h-[84%] w-full max-w-3xl overflow-y-auto rounded-2xl border py-3 shadow-2xl no-scrollbar ${
                   isDarkMode
-                    ? "border-stone-700/80 bg-stone-950 text-stone-100"
-                    : "border-stone-200 bg-white text-stone-950"
+                    ? "border-zinc-700/80 bg-zinc-950 text-zinc-100"
+                    : "border-zinc-200 bg-white text-zinc-950"
                 }`}
               >
                 <button
                   onClick={onClose}
                   className={`absolute right-2 top-2 z-10 rounded-lg p-1.5 transition-all duration-200 hover:scale-105 sm:right-3 sm:top-3 ${
                     isDarkMode
-                      ? "text-stone-400 hover:bg-stone-800/60 hover:text-stone-200"
-                      : "text-stone-500 hover:bg-stone-100 hover:text-stone-700"
+                      ? "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
+                      : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700"
                   }`}
                 >
                   <X size={18} />
@@ -72,7 +72,7 @@ const ReceiptStylePanel = ({
                       <div className="space-y-1 text-center">
                         <h1
                           className={`mx-auto w-full break-words text-center text-[clamp(1rem,1vw,1.2rem)] font-bold leading-snug tracking-wide scale-x-[1.1] origin-center ${
-                            isDarkMode ? "text-stone-100" : "text-stone-950"
+                            isDarkMode ? "text-zinc-100" : "text-zinc-950"
                           }`}
                         >
                           {sermon.title}
@@ -81,7 +81,7 @@ const ReceiptStylePanel = ({
 
                       <div
                         className={`h-px ${
-                          isDarkMode ? "bg-stone-700/80" : "bg-stone-200"
+                          isDarkMode ? "bg-zinc-700/80" : "bg-zinc-200"
                         }`}
                       />
 
@@ -95,7 +95,7 @@ const ReceiptStylePanel = ({
                           </div>
                           <div
                             className={`mt-0.5 origin-center scale-x-[1.08] break-words text-xs font-medium tracking-wide ${
-                              isDarkMode ? "text-stone-200" : "text-stone-800"
+                              isDarkMode ? "text-zinc-200" : "text-zinc-800"
                             }`}
                           >
                             {sermon.location || "N/A"}
@@ -111,7 +111,7 @@ const ReceiptStylePanel = ({
                           </div>
                           <div
                             className={`mt-0.5 origin-center scale-x-[1.08] break-words text-xs font-medium tracking-wide ${
-                              isDarkMode ? "text-stone-200" : "text-stone-800"
+                              isDarkMode ? "text-zinc-200" : "text-zinc-800"
                             }`}
                           >
                             {sermon.year || "N/A"}

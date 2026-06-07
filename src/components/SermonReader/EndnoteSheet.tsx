@@ -799,7 +799,7 @@ const EndnoteSheet: React.FC<EndnoteSheetProps> = ({
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="flex items-start px-10 justify-between  pb-3 pt-1 p-2 shrink-0 bg-background">
+              <div className="flex items-start px-10 justify-between  pb-3 pt-1 p-2 shrink-0 bg-zinc-100 dark:bg-background">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <BookOpen size={15} style={{ color: accentColor }} />

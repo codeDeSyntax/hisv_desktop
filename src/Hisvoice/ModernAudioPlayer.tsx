@@ -142,7 +142,7 @@ const ModernAudioPlayer = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col gap-4 bg-zinc-100/50 dark:bg-zinc-800/30 p-4 md:p-6 rounded-2xl"
+          className="flex flex-col gap-4 bg-transparent border-2 border-solid border-zinc-300 dark:border-zinc-700 p-4 md:p-6 rounded-2xl"
         >
           {/* Top Section: Album Art + Info Side by Side */}
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start">

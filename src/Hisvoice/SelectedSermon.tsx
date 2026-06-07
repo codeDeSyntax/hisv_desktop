@@ -144,7 +144,7 @@ const SelectedSermon = ({
     : Number(settings.fontSize) || 20;
   const activeFontWeight: React.CSSProperties["fontWeight"] =
     settings.fontWeight === "thin"
-      ? 300
+      ? 100
       : settings.fontWeight === "bold"
         ? 700
         : 400;
@@ -712,7 +712,7 @@ const SelectedSermon = ({
   };
 
   return (
-    <div className="bg-white dark:bg-primary h-screen relative w-full flex items-stretch justify-stretch">
+    <div className="bg-white dark:bg-zinc-800/50 h-screen relative w-full flex items-stretch justify-stretch">
       <SaveNotification
         show={showSaveNotification}
         onClose={() => setShowSaveNotification(false)}
@@ -809,7 +809,7 @@ const SelectedSermon = ({
 
                 {/* Sermon Content with Paragraphs */}
                 <div
-                  className="space-y-4 mt-3 b no-scrollbar "
+                  className="space-y-4 mt-3 pb-20 b no-scrollbar "
                   style={{
                     // width: "100%",
                     // maxWidth: "100%",
@@ -855,7 +855,7 @@ const SelectedSermon = ({
                         </div>
                       </div>
 
-                      <div className="w-full space-y-4">
+                      <div className="w-full space-y-4 ">
                         {Array.from({ length: 12 }).map((_, i) => (
                           <div
                             key={i}
@@ -995,7 +995,7 @@ const SelectedSermon = ({
 
                         {/* Paragraph Content with inline number */}
                         <div
-                          className="sermon-selection-scope leading-normal  px-6  rounded-lg transition-all duration-200 border-l-4  "
+                          className="sermon-selection-scope leading-normal font-thin   px-6  rounded-lg transition-all duration-200 border-l-4  "
                           style={{
                             fontFamily: settings.fontFamily || "Outfit",
                             fontWeight: activeFontWeight,
@@ -1073,7 +1073,7 @@ const SelectedSermon = ({
                                 parts.push(
                                   <span
                                     key={`highlight-${index}`}
-                                    className={`cursor-pointer hover:opacity-80 ${isDarkMode ? "text-zinc-900" : ""}`}
+                                    className={`cursor-pointer hover:opacity-80  ${isDarkMode ? "text-zinc-900" : ""}`}
                                     style={{
                                       backgroundColor: highlight.color,
                                       // padding: "2px 4px",

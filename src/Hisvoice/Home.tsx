@@ -240,24 +240,7 @@ const Home = memo(() => {
       >
         <div className="relative h-full w-full overflow-hidden shadow-lg">
           <div className="relative w-full h-full bg-gradient-to-l from-zinc-50 via-white to-white dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900 overflow-hidden flex flex-col border border-zinc-300 dark:border-zinc-700 rounded-l-3xl">
-            <svg
-              className="absolute right-0 top-0 h-full w-6 overflow-visible"
-              viewBox="0 0 24 100"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0,2 Q16,2 18,10 Q22,25 22,50 Q22,75 18,90 Q16,98 0,98"
-                className="fill-zinc-300 dark:fill-zinc-600"
-              />
-              <path
-                d="M0,3 Q14,3 16,12 Q20,27 20,50 Q20,73 16,88 Q14,97 0,97"
-                className="fill-zinc-200 dark:fill-zinc-700"
-              />
-              <path
-                d="M0,4 Q12,4 14,14 Q18,29 18,50 Q18,71 14,86 Q12,96 0,96"
-                className="fill-zinc-100 dark:fill-zinc-800"
-              />
-            </svg>
+           
             <div className="absolute right-4 top-8 bottom-8 w-4 bg-gradient-to-l from-zinc-50 via-white to-white dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900 rounded-r-full" />
 
             {selectedMessage ? (

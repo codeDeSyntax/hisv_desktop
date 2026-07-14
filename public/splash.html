@@ -69,23 +69,47 @@
         margin-bottom: 44px;
       }
 
-      .dots {
+      .loader-container {
         display: flex;
-        gap: 9px;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        width: 200px;
+        animation: fadeIn 0.5s ease-out 0.35s both;
       }
 
-      .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: rgba(200, 140, 80, 0.7);
-        animation: bounce 1.2s ease-in-out infinite;
+      .loader-track {
+        width: 100%;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 99px;
+        overflow: hidden;
+        position: relative;
       }
-      .dot:nth-child(2) {
-        animation-delay: 0.2s;
+
+      .loader-bar {
+        position: absolute;
+        height: 100%;
+        width: 40%;
+        background: linear-gradient(
+          90deg,
+          rgba(232, 201, 104, 0.1),
+          rgba(232, 201, 104, 1),
+          rgba(232, 201, 104, 0.1)
+        );
+        border-radius: 99px;
+        left: -40%;
+        animation: loading-slide 1.6s cubic-bezier(0.65, 0.05, 0.36, 1) infinite;
+        box-shadow: 0 0 10px rgba(232, 201, 104, 0.6);
       }
-      .dot:nth-child(3) {
-        animation-delay: 0.4s;
+
+      .loader-status {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        animation: pulse 2s ease-in-out infinite;
       }
 
       @keyframes float {
@@ -104,17 +128,21 @@
         }
       }
 
-      @keyframes bounce {
-        0%,
-        80%,
+      @keyframes loading-slide {
+        0% {
+          left: -40%;
+        }
+        50% {
+          width: 50%;
+        }
         100% {
-          transform: scale(0.7);
-          opacity: 0.4;
+          left: 100%;
         }
-        40% {
-          transform: scale(1);
-          opacity: 1;
-        }
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 1; }
       }
 
       @keyframes fadeIn {
@@ -131,7 +159,7 @@
       .logo-wrap,
       .app-name,
       .tagline,
-      .dots {
+      .loader-container {
         animation-fill-mode: both;
       }
       .logo-wrap {
@@ -145,9 +173,6 @@
       .tagline {
         animation: fadeIn 0.5s ease-out 0.25s both;
       }
-      .dots {
-        animation: fadeIn 0.5s ease-out 0.35s both;
-      }
     </style>
   </head>
   <body>
@@ -157,10 +182,11 @@
     </div>
     <div class="app-name">His Voice</div>
     <div class="tagline">Sermon Library</div>
-    <div class="dots">
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
+    <div class="loader-container">
+      <div class="loader-track">
+        <div class="loader-bar"></div>
+      </div>
+      <div class="loader-status">Initializing Library...</div>
     </div>
   </body>
 </html>

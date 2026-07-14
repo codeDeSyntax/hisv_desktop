@@ -32,8 +32,11 @@ jobs:
       - name: Build app
         run: pnpm run build
 
-      - name: Build sermon database asset
-        run: pnpm run build-db
+      - name: Fetch latest pre-built sermon database
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path resources
+          Invoke-WebRequest -Uri "https://github.com/codeDeSyntax/hisv_desktop/releases/latest/download/sermons.db" -OutFile "resources/sermons.db"
 
       - name: Verify sermon database asset exists
         shell: pwsh

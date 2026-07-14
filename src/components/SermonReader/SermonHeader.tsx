@@ -24,7 +24,7 @@ const SermonHeader = ({
   const metadata = [date, location].filter(Boolean).join(" · ");
 
   return (
-    <div className="w-full pt-6 pb-8 self-stretch flex flex-col justify-center items-center gap-3">
+    <div className="w-full pt-3 pb-8 self-stretch flex flex-col justify-center items-center gap-3">
       <h1
         className="w-full p-3    break-words text-center font-serif font-normal leading-[1.1] tracking-[-0.02em]"
         style={{

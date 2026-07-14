@@ -317,7 +317,7 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
                     ? "Preparing search..."
                     : "Search quotes, phrases, keywords... (Press Enter to search)"
                 }
-                className="w-full pl-4 pr-10 py-2.5 text-[13px] bg-zinc-100 dark:bg-zinc-900 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition-colors duration-150"
+                className="w-full pl-4 pr-10 py-2.5 text-[13px] bg-zinc-100 dark:bg-zinc-800 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition-colors duration-150"
                 onChange={handleSearchInput}
                 onKeyDown={handleKeyDown}
                 value={searchInput}
@@ -363,7 +363,7 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
             <button
               type="button"
               onClick={() => setSearchMode("exact")}
-              className={`px-2.5 py-1 text-[11px] rounded-full border transition-colors ${
+              className={`px-2.5 py-1 text-[11px] bg-neutral-300 dark:bg-black rounded-full border transition-colors ${
                 searchMode === "exact"
                   ? "text-white border-transparent"
                   : "text-zinc-600 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700"

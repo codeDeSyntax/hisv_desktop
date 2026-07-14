@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/shared/ThemeToggler";
 import { useTheme } from "@/Provider/Theme";
-import Help from "@/shared/Help";
+
 import UpdateManager from "@/shared/UpdateManager";
 import FontPicker from "@/components/FontPicker";
 import { useSermonContext } from "../Provider/Vsermons";
@@ -229,8 +229,8 @@ const TitleBar: React.FC = () => {
               <circle cx="6" cy="6" r="2.5" fill={accentColor} opacity="0.55" />
             </svg>
             <span
-              className="text-[11px] font-semibold tracking-widest uppercase"
-              style={{ color: isDarkMode ? "#a8a29e" : "#78716c", letterSpacing: "0.18em" }}
+              className="text-[11px] font-dscript font-semibold tracking-widest uppercase"
+              style={{ color: isDarkMode ? "#a8a29e" : "#78716c", letterSpacing: "0.18em",transform: "scaleY(1.12) scaleX(0.92)", }}
             >
               His Voice
             </span>
@@ -277,8 +277,7 @@ const TitleBar: React.FC = () => {
             {/* Theme toggle */}
             <ThemeToggle />
 
-            {/* Help */}
-            <Help />
+            
 
             {/* Update manager */}
             <UpdateManager />

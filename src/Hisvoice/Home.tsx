@@ -117,7 +117,7 @@ const Home = memo(() => {
 
       {/* ── Row 2: Horizontal NavBar ──────────────────────────── */}
       <div
-        className="w-full flex-shrink-0 h-10 flex items-center px-3 gap-0.5 border-t border-solid border-x-0 border-b-0 border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-950 z-30"
+        className="w-full flex-shrink-0 h-8 flex items-center px-3 gap-0.5 border-t border-solid border-x-0 border-b-0 border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-b from-neutral-200 via-white to-neutral-100 dark:from-neutral-900 dark:via-neutral-700 dark:to-neutral-800 z-30"
         style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
       >
         {navItems.map((item) => {
@@ -148,8 +148,8 @@ const Home = memo(() => {
 
               <Icon
                 style={{
-                  width: 13,
-                  height: 13,
+                  width: 16,
+                  height: 16,
                   color: isActive
                     ? accentColor
                     : isDarkMode
@@ -161,14 +161,14 @@ const Home = memo(() => {
                 }}
               />
               <span
-                className="text-[11px] font-medium transition-colors duration-150 whitespace-nowrap"
-                style={{
-                  color: isActive
-                    ? accentColor
-                    : isDarkMode
-                      ? "#78716c"
-                      : "#a8a29e",
-                }}
+                className="text-[11px] font-medium transition-colors duration-150 whitespace-nowrap text-neutral-700 dark:text-neutral-300"
+                // style={{
+                //   color: isActive
+                //     ? accentColor
+                //     : isDarkMode
+                //       ? "#78716c"
+                //       : "#ffffff",
+                // }}
               >
                 {item.label}
               </span>

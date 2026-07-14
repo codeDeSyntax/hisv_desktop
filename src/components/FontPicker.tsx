@@ -5,7 +5,10 @@ import { useSermonContext } from "@/Provider/Vsermons";
 import { useTheme } from "@/Provider/Theme";
 import { motion, AnimatePresence } from "framer-motion";
 
-const FONTS = ["Outfit", "Fraunces"];
+const FONTS = [
+  { name: "Outfit", label: "Outfit", desc: "Clean geometric sans" },
+  { name: "Fraunces", label: "Fraunces", desc: "Editorial serif display" },
+];
 
 const FontPicker: React.FC = () => {
   const { settings, setSettings } = useSermonContext();
@@ -49,50 +52,57 @@ const FontPicker: React.FC = () => {
       {isOpen && (
         <motion.div
           key="font-picker-dropdown"
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.13 }}
+          initial={{ opacity: 0, scale: 0.95, y: -4 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: -4 }}
+          transition={{ duration: 0.1, ease: [0.16, 1, 0.3, 1] }}
           style={{
             position: "fixed",
-            top: dropdownPos.top,
-            left: dropdownPos.left,
-            transform: "translateX(-100%)",
+            top: 40,
+            left: "70%",
+            transform: "translateX(-50%)",
             zIndex: 99999,
-            minWidth: 160,
+            minWidth: 200,
           }}
-          className={`rounded-xl shadow-2xl border py-1 ${
+          className={`rounded-xl shadow-xl border p-1 backdrop-blur-md ${
             isDarkMode
-              ? "bg-zinc-900 border-zinc-700/80"
-              : "bg-white border-zinc-200"
+              ? "bg-zinc-950/85 border-zinc-800/80"
+              : "bg-white/85 border-zinc-200/60"
           }`}
           // stop clicks from bubbling to the outside-click handler
           onMouseDown={(e) => e.stopPropagation()}
         >
           {FONTS.map((font) => {
-            const active = settings.fontFamily === font;
+            const active = settings.fontFamily === font.name;
             return (
               <div
-                key={font}
-                onClick={() => handleFontChange(font)}
-                className={`flex items-center justify-between gap-3 px-4 py-2.5 cursor-pointer transition-colors ${
+                key={font.name}
+                onClick={() => handleFontChange(font.name)}
+                className={`flex items-center justify-between gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 ${
                   active
                     ? isDarkMode
-                      ? "text-zinc-100"
-                      : "text-zinc-900"
+                      ? "text-white"
+                      : "text-zinc-950"
                     : isDarkMode
-                      ? "hover:bg-zinc-800/60 text-zinc-300"
-                      : "hover:bg-zinc-50 text-zinc-700"
+                      ? "hover:bg-zinc-800/50 text-zinc-400 hover:text-zinc-200"
+                      : "hover:bg-zinc-50 text-zinc-500 hover:text-zinc-800"
                 }`}
                 style={{
-                  fontFamily: font,
-                  ...(active ? { backgroundColor: accentColor + "20" } : {}),
+                  fontFamily: font.name,
+                  ...(active ? { backgroundColor: accentColor + "18" } : {}),
                 }}
               >
-                <span className="text-sm">{font}</span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[12px] font-semibold tracking-wide leading-normal">
+                    {font.label}
+                  </span>
+                  <span className="text-[9px] font-sans text-zinc-500 dark:text-zinc-500 font-normal truncate mt-0.5">
+                    {font.desc}
+                  </span>
+                </div>
                 {active && (
                   <Check
-                    className="w-[14px] h-[14px] flex-shrink-0"
+                    className="w-[12px] h-[12px] flex-shrink-0"
                     style={{ color: accentColor }}
                   />
                 )}
@@ -112,17 +122,20 @@ const FontPicker: React.FC = () => {
       <button
         ref={btnRef}
         onClick={handleOpen}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ${
+        className={`flex items-center gap-1.5 h-7 px-2.5 rounded-lg border border-solid text-xs font-semibold transition-all duration-150 cursor-pointer ${
           isDarkMode
-            ? "hover:bg-zinc-800 text-zinc-300"
-            : "hover:bg-zinc-100 text-zinc-700"
+            ? "bg-zinc-800/30 border-zinc-800 hover:bg-zinc-800/60 text-zinc-300 hover:text-zinc-100"
+            : "bg-zinc-100/40 border-zinc-200/50 hover:bg-zinc-100/80 text-zinc-600 hover:text-zinc-900"
         }`}
+        style={{
+          borderColor: isOpen ? accentColor : undefined,
+        }}
         title="Select Sermon Font"
       >
-        <Type className="w-[18px] h-[18px]" />
-        <span className="text-sm font-medium">{settings.fontFamily || "Outfit"}</span>
+        <Type className="w-[13px] h-[13px]" />
+        <span className="font-sans">{settings.fontFamily || "Outfit"}</span>
         <ChevronDown
-          className={`w-[14px] h-[14px] transition-transform duration-150 ${isOpen ? "rotate-180" : ""}`}
+          className={`w-[11px] h-[11px] text-zinc-400 dark:text-zinc-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 

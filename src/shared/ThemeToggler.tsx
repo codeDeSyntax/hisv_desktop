@@ -18,23 +18,24 @@ export const ThemeToggle: React.FC = () => {
     // >
     //   {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
     // </motion.button>
-    <Tooltip title="Toggle theme">
-      <div
+    <Tooltip title={isDarkMode ? "Light mode" : "Dark mode"}>
+      <button
         onClick={(e) => toggleDarkMode({ x: e.clientX, y: e.clientY })}
-        className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-zinc-50 dark:hover:bg-primary"
+        className="w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-all duration-150 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+        aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
       >
         {isDarkMode ? (
           <Sun
-            size={20}
-            className="w-4 h-4 text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white"
+            size={18}
+            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
           />
         ) : (
           <Moon
-            size={20}
-            className="w-4 h-4 text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white"
+            size={18}
+            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
           />
         )}
-      </div>
+      </button>
     </Tooltip>
   );
 };

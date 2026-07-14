@@ -70,9 +70,10 @@ export const ChromeStyleSearch: React.FC<ChromeStyleSearchProps> = ({
       onClose();
     } else if (e.key === "Enter") {
       if (!hasSearched) {
-        // First Enter: run the search
+        // First Enter: run the search, then clear the field
         onSearch(searchQuery);
         setHasSearched(true);
+        setSearchQuery("");
       } else if (e.shiftKey) {
         onNavigatePrevious();
       } else {

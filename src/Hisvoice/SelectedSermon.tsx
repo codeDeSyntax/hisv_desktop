@@ -803,7 +803,7 @@ const SelectedSermon = ({
                   date={selectedMessage?.date || selectedMessage?.year}
                   location={selectedMessage?.location}
                   fontSize={activeReaderFontSize}
-                  fontFamily={settings.fontFamily || "Outfit"}
+                  fontFamily={settings.fontFamily || "Fraunces"}
                   fontWeight={activeFontWeight}
                 />
 
@@ -813,7 +813,7 @@ const SelectedSermon = ({
                   style={{
                     // width: "100%",
                     // maxWidth: "100%",
-                    fontFamily: settings.fontFamily || "Outfit",
+                    fontFamily: settings.fontFamily || "Fraunces",
                     overflow: "hidden",
                   }}
                 >
@@ -997,7 +997,7 @@ const SelectedSermon = ({
                         <div
                           className="sermon-selection-scope leading-normal font-thin   px-6  rounded-lg transition-all duration-200 border-l-4  "
                           style={{
-                            fontFamily: settings.fontFamily || "Outfit",
+                            fontFamily: settings.fontFamily || "Fraunces",
                             fontWeight: activeFontWeight,
                             fontSize: `${activeReaderFontSize}px`,
                             fontStyle: settings.fontStyle,

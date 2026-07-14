@@ -1,184 +1,133 @@
 import React, { useState, useEffect, useRef } from "react";
+import ReactDOM from "react-dom";
 import { Type, ChevronDown, Check } from "lucide-react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { useTheme } from "@/Provider/Theme";
 import { motion, AnimatePresence } from "framer-motion";
 
+const FONTS = ["Outfit", "Fraunces"];
+
 const FontPicker: React.FC = () => {
   const { settings, setSettings } = useSermonContext();
   const { isDarkMode, accentColor } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [fontFamilies, setFontFamilies] = useState<string[]>([]);
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
 
-  // Load system fonts only when the dropdown is first opened
-  const loadSystemFonts = async () => {
-    if (fontsLoaded) return;
-    try {
-      if (window.ipcRenderer) {
-        const systemFonts = await window.ipcRenderer.invoke("get-system-fonts");
-        if (systemFonts && systemFonts.length > 0) {
-          setFontFamilies(systemFonts);
-          setFontsLoaded(true);
-        }
-      }
-    } catch (error) {
-      console.error("Error loading system fonts:", error);
-      setFontFamilies([
-        "Arial",
-        "Calibri",
-        "Cambria",
-        "Courier New",
-        "Georgia",
-        "Segoe UI",
-        "Times New Roman",
-        "Verdana",
-      ]);
-      setFontsLoaded(true);
+  const handleOpen = () => {
+    if (!isOpen && btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + 6,
+        left: rect.right, // will be shifted left via transform in the portal
+      });
     }
+    setIsOpen((v) => !v);
   };
 
-  // Close dropdown when clicking outside
+  // Close on outside click
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+    if (!isOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (btnRef.current && !btnRef.current.contains(e.target as Node)) {
         setIsOpen(false);
-        setSearchQuery("");
       }
     };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, [isOpen]);
 
   const handleFontChange = (font: string) => {
-    const newSettings = {
-      ...settings,
-      fontFamily: font,
-    };
+    const newSettings = { ...settings, fontFamily: font };
     setSettings(newSettings);
     localStorage.setItem("sermonSettings", JSON.stringify(newSettings));
     setIsOpen(false);
-    setSearchQuery("");
   };
 
-  const filteredFonts = fontFamilies.filter((font) =>
-    font.toLowerCase().includes(searchQuery.toLowerCase()),
+  const dropdown = (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          key="font-picker-dropdown"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.13 }}
+          style={{
+            position: "fixed",
+            top: dropdownPos.top,
+            left: dropdownPos.left,
+            transform: "translateX(-100%)",
+            zIndex: 99999,
+            minWidth: 160,
+          }}
+          className={`rounded-xl shadow-2xl border py-1 ${
+            isDarkMode
+              ? "bg-zinc-900 border-zinc-700/80"
+              : "bg-white border-zinc-200"
+          }`}
+          // stop clicks from bubbling to the outside-click handler
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          {FONTS.map((font) => {
+            const active = settings.fontFamily === font;
+            return (
+              <div
+                key={font}
+                onClick={() => handleFontChange(font)}
+                className={`flex items-center justify-between gap-3 px-4 py-2.5 cursor-pointer transition-colors ${
+                  active
+                    ? isDarkMode
+                      ? "text-zinc-100"
+                      : "text-zinc-900"
+                    : isDarkMode
+                      ? "hover:bg-zinc-800/60 text-zinc-300"
+                      : "hover:bg-zinc-50 text-zinc-700"
+                }`}
+                style={{
+                  fontFamily: font,
+                  ...(active ? { backgroundColor: accentColor + "20" } : {}),
+                }}
+              >
+                <span className="text-sm">{font}</span>
+                {active && (
+                  <Check
+                    className="w-[14px] h-[14px] flex-shrink-0"
+                    style={{ color: accentColor }}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 
   return (
     <div
-      ref={dropdownRef}
       className="relative"
       style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
     >
-      {/* Trigger Button */}
       <button
-        onClick={() => {
-          setIsOpen(!isOpen);
-          if (!isOpen) loadSystemFonts();
-        }}
-        className={`flex items-center gap-1.5 px-3 py-1 rounded transition-colors ${
+        ref={btnRef}
+        onClick={handleOpen}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ${
           isDarkMode
             ? "hover:bg-zinc-800 text-zinc-300"
             : "hover:bg-zinc-100 text-zinc-700"
         }`}
-        title="Select Font Family"
+        title="Select Sermon Font"
       >
-        <Type className="w-4 h-4" />
-        <span className="text-sm font-medium max-w-[120px] truncate">
-          {settings.fontFamily || "Outfit"}
-        </span>
+        <Type className="w-[18px] h-[18px]" />
+        <span className="text-sm font-medium">{settings.fontFamily || "Outfit"}</span>
         <ChevronDown
-          className={`w-3 h-3 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`w-[14px] h-[14px] transition-transform duration-150 ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
-      {/* Dropdown */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.15 }}
-            className={`absolute top-full right-0 mt-2 w-[420px] min-w-[200px] rounded-lg shadow-2xl border z-50 ${
-              isDarkMode
-                ? "bg-zinc-900 border-zinc-700"
-                : "bg-white border-zinc-200"
-            }`}
-          >
-            {/* Search Box */}
-            <div
-              className={`p-2 border-b ${isDarkMode ? "border-zinc-700" : "border-zinc-200"}`}
-            >
-              <input
-                type="text"
-                placeholder="Search fonts..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full px-3 py-1.5 text-sm rounded border outline-none ${
-                  isDarkMode
-                    ? "bg-zinc-800 border-zinc-700 text-zinc-200 placeholder-zinc-500"
-                    : "bg-white border-zinc-300 text-zinc-900 placeholder-zinc-400"
-                }`}
-                autoFocus
-              />
-            </div>
-
-            {/* Font List */}
-            <div className="max-h-[480px] overflow-y-auto no-scrollbar">
-              {filteredFonts.length > 0 ? (
-                filteredFonts.map((font) => (
-                  <div
-                    key={font}
-                    onClick={() => handleFontChange(font)}
-                    className={`w-full px-4 py-2.5 text-left flex items-center justify-between transition-colors ${
-                      settings.fontFamily === font
-                        ? isDarkMode
-                          ? "text-zinc-100"
-                          : "text-zinc-900"
-                        : isDarkMode
-                          ? "hover:bg-zinc-800/50 text-zinc-300"
-                          : "hover:bg-zinc-50 text-zinc-700"
-                    }`}
-                    style={{
-                      fontFamily: font,
-                      ...(settings.fontFamily === font
-                        ? { backgroundColor: accentColor + "18" }
-                        : {}),
-                    }}
-                  >
-                    <span className="text-sm" style={{ fontFamily: font }}>
-                      {font}
-                    </span>
-                    {settings.fontFamily === font && (
-                      <Check
-                        className="w-4 h-4"
-                        style={{ color: accentColor }}
-                      />
-                    )}
-                  </div>
-                ))
-              ) : (
-                <div className="px-4 py-8 text-center text-sm text-zinc-500">
-                  No fonts found
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Render dropdown through portal to escape TitleBar stacking context */}
+      {ReactDOM.createPortal(dropdown, document.body)}
     </div>
   );
 };

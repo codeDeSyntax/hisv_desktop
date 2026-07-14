@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import { RefreshCw } from "lucide-react";
+import { DownloadCloud, RefreshCw } from "lucide-react";
 import { useTheme } from "@/Provider/Theme";
 
 type UpdatePayload =
@@ -109,7 +109,7 @@ export default function UpdateManager() {
             )}
             {update.status === "checking" && (
               <>
-                <RefreshCw
+                <DownloadCloud
                   className="w-3.5 h-3.5 animate-spin"
                   style={{ color: accentColor }}
                 />
@@ -216,11 +216,14 @@ export default function UpdateManager() {
       <div
         ref={btnRef}
         onClick={() => setShow((s) => !s)}
-        className="relative w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer hover:bg-zinc-50 dark:hover:bg-primary"
+        className="relative w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-all duration-150 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+        title="App updates"
       >
-        <RefreshCw className="w-4 h-4 text-zinc-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
+        <DownloadCloud
+          className="w-[18px] h-[18px] text-zinc-500 dark:text-zinc-400 transition-colors"
+        />
         {hasDot && (
-          <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-amber-400" />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-amber-400" />
         )}
       </div>
       {panel}

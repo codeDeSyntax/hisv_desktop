@@ -13,6 +13,7 @@ import {
   FolderOpen,
   ArrowLeftRight,
 } from "lucide-react";
+import { Tooltip } from "antd";
 
 interface ShortcutItem {
   key: string;
@@ -97,14 +98,15 @@ const Help: React.FC = () => {
 
   return (
     <>
-      {/* Minimal Help Button */}
-      <div
-        onClick={toggleHelp}
-        className="w-6 h-6 rounded-full flex items-center justify-center group pointer-events-none cursor-not-allowed hover:bg-zinc-50 dark:hover:bg-bzinc"
-        aria-label="Help"
-      >
-        <HelpCircle className="h-5 w-5 text-zinc-600 dark:text-zinc-300" />
-      </div>
+      <Tooltip title="Keyboard shortcuts">
+        <div
+          onClick={toggleHelp}
+          className="w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-all duration-150 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          aria-label="Help"
+        >
+          <HelpCircle className="h-[18px] w-[18px] text-zinc-500 dark:text-zinc-400 transition-colors" />
+        </div>
+      </Tooltip>
 
       {/* Full Screen Help Modal */}
       {isOpen && (

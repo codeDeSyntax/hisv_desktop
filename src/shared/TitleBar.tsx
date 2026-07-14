@@ -1,28 +1,21 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
+  Mic,
+  MonitorPlay,
+  Sun,
+  Moon,
+  RefreshCw,
+  HelpCircle,
   X,
   Minus,
   Square,
-  HeartPulse,
-  LucideLibraryBig,
-  Archive,
-  CogIcon,
-  LucideHome,
-  Mic,
-  Presentation,
-  PlaySquare,
 } from "lucide-react";
-// import { useBibleContext } from "@/Provider/Bible";
-// import { useEastVoiceContext } from "@/Provider/EastVoice";
-import { MoreHorizontal } from "lucide-react";
 import { ThemeToggle } from "@/shared/ThemeToggler";
 import { useTheme } from "@/Provider/Theme";
-// import { useEvPresentationContext } from "@/Provider/EvPresent";
 import Help from "@/shared/Help";
 import UpdateManager from "@/shared/UpdateManager";
 import FontPicker from "@/components/FontPicker";
 import { useSermonContext } from "../Provider/Vsermons";
-import { HomeOutlined, HomeTwoTone, ReadFilled } from "@ant-design/icons";
 import { Tooltip } from "antd";
 import { Sermon } from "@/types/index.js";
 
@@ -33,7 +26,6 @@ const TitleBar: React.FC = () => {
     handleMinimize,
     isPresentationMode,
     setIsPresentationMode,
-    theme,
     activeTab,
     setActiveTab,
     selectedMessage,
@@ -42,35 +34,29 @@ const TitleBar: React.FC = () => {
     setSelectedMessage,
   } = useSermonContext();
   const { isDarkMode, accentColor } = useTheme();
-  const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
   // Sermon tabs state
   const [openTabs, setOpenTabs] = useState<Sermon[]>([]);
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
+  const [hoveredControl, setHoveredControl] = useState<"close" | "min" | "max" | null>(null);
 
   // Load persisted tabs on component mount
   useEffect(() => {
     const savedTabs = localStorage.getItem("openSermonTabs");
     const savedActiveTabId = localStorage.getItem("activeSermonTabId");
-
     if (savedTabs) {
       try {
         const parsedTabs = JSON.parse(savedTabs);
         setOpenTabs(parsedTabs);
-
-        if (savedActiveTabId) {
-          setActiveTabId(savedActiveTabId);
-        }
-      } catch (error) {
-        console.error("Error loading saved tabs:", error);
-        // Clear corrupted data
+        if (savedActiveTabId) setActiveTabId(savedActiveTabId);
+      } catch {
         localStorage.removeItem("openSermonTabs");
         localStorage.removeItem("activeSermonTabId");
       }
     }
   }, []);
 
-  // Persist tabs whenever they change
+  // Persist tabs
   useEffect(() => {
     if (openTabs.length > 0) {
       localStorage.setItem("openSermonTabs", JSON.stringify(openTabs));
@@ -79,7 +65,6 @@ const TitleBar: React.FC = () => {
     }
   }, [openTabs]);
 
-  // Persist active tab ID whenever it changes
   useEffect(() => {
     if (activeTabId) {
       localStorage.setItem("activeSermonTabId", activeTabId);
@@ -88,79 +73,32 @@ const TitleBar: React.FC = () => {
     }
   }, [activeTabId]);
 
-  const [selectedBg, setSelectedBg] = useState<string>('url("./wood6.jpg")');
-  const [nextBg, setNextBg] = useState<string>('url("./wood7.png")');
-  const [bgOpacity, setBgOpacity] = useState<number>(1);
-  // const [selectedPath, setSelectedPath] = useState<string>("");
+  const findSermonById = useCallback(
+    (sermonId: string | number) => {
+      return (
+        recentSermons.find((s) => s.id.toString() === sermonId.toString()) ||
+        allSermons?.find((s) => s.id.toString() === sermonId.toString())
+      );
+    },
+    [recentSermons, allSermons],
+  );
 
-  const ltImages = ['url("./wood7.png")', 'url("./wood6.jpg")'];
-
-  // check for selectedPath from local storage
-
-  //function choose path an set it to local storage
-
-  const randomImage = useCallback(() => {
-    const currentIndex = ltImages.indexOf(selectedBg);
-    let newIndex = currentIndex;
-
-    // Ensure we select a different image
-    while (newIndex === currentIndex) {
-      newIndex = Math.floor(Math.random() * ltImages.length);
-    }
-
-    setNextBg(ltImages[newIndex]);
-    // Start transition
-    setBgOpacity(0);
-  }, [selectedBg]);
-
-  useEffect(() => {
-    // Set up interval for image switching
-    const intervalId = setInterval(randomImage, 20000); // 5 minutes (300000 ms)
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
-  }, [randomImage]);
-
-  useEffect(() => {
-    // When opacity reaches 0, switch background and reset opacity
-    if (bgOpacity === 0) {
-      const transitionTimer = setTimeout(() => {
-        setSelectedBg(nextBg);
-        setBgOpacity(1);
-      }, 5000); // Matches transition duration
-
-      return () => clearTimeout(transitionTimer);
-    }
-  }, [bgOpacity, nextBg]);
-
-  // Load tabs from localStorage on mount
-  useEffect(() => {
-    const savedTabs = localStorage.getItem("sermonTabs");
-    const savedActiveTab = localStorage.getItem("activeSermonTab");
-    if (savedTabs) {
-      try {
-        const tabs = JSON.parse(savedTabs);
-        setOpenTabs(tabs);
-      } catch (error) {
-        console.error("Error loading saved tabs:", error);
+  const addSermonTab = (sermon: Sermon) => {
+    setOpenTabs((prevTabs) => {
+      const existingIndex = prevTabs.findIndex((tab) => tab.id === sermon.id);
+      if (existingIndex !== -1) {
+        const newTabs = [...prevTabs];
+        const existing = newTabs.splice(existingIndex, 1)[0];
+        newTabs.push(existing);
+        setActiveTabId(sermon.id.toString());
+        return newTabs;
       }
-    }
-    if (savedActiveTab) {
-      setActiveTabId(savedActiveTab);
-    }
-  }, []);
-
-  // Save tabs to localStorage when tabs change
-  useEffect(() => {
-    localStorage.setItem("sermonTabs", JSON.stringify(openTabs));
-  }, [openTabs]);
-
-  // Save active tab to localStorage when it changes
-  useEffect(() => {
-    if (activeTabId) {
-      localStorage.setItem("activeSermonTab", activeTabId);
-    }
-  }, [activeTabId]);
+      const newTabs = [...prevTabs, sermon];
+      if (newTabs.length > 7) newTabs.shift();
+      setActiveTabId(sermon.id.toString());
+      return newTabs;
+    });
+  };
 
   // Add sermon to tabs when selectedMessage changes
   useEffect(() => {
@@ -169,295 +107,215 @@ const TitleBar: React.FC = () => {
     }
   }, [selectedMessage, activeTab]);
 
-  // Tab management functions
-  const addSermonTab = (sermon: Sermon) => {
-    setOpenTabs((prevTabs) => {
-      // Check if tab already exists
-      const existingIndex = prevTabs.findIndex((tab) => tab.id === sermon.id);
-      if (existingIndex !== -1) {
-        // Move existing tab to the end and set as active
-        const newTabs = [...prevTabs];
-        const existingTab = newTabs.splice(existingIndex, 1)[0];
-        newTabs.push(existingTab);
-        setActiveTabId(sermon.id.toString());
-        return newTabs;
-      }
-
-      // Add new tab
-      const newTabs = [...prevTabs, sermon];
-
-      // Limit to 7 tabs (remove oldest if necessary)
-      if (newTabs.length > 7) {
-        newTabs.shift(); // Remove first (oldest) tab
-      }
-
-      setActiveTabId(sermon.id.toString());
-      return newTabs;
-    });
-  };
-
-  const closeSermonTab = (
-    sermonId: string | number,
-    event: React.MouseEvent,
-  ) => {
-    event.stopPropagation();
-
-    setOpenTabs((prevTabs) => {
-      const newTabs = prevTabs.filter((tab) => tab.id !== sermonId);
-
-      // If we closed the active tab, set a new active tab
-      if (activeTabId === sermonId.toString()) {
-        if (newTabs.length > 0) {
-          // Set the last tab as active
-          const newActiveTab = newTabs[newTabs.length - 1];
-          setActiveTabId(newActiveTab.id.toString());
-          setSelectedMessage(newActiveTab);
-        } else {
-          // No tabs left, go back to sermons list
-          setActiveTabId(null);
-          setSelectedMessage(null);
-          setActiveTab("sermons");
-        }
-      }
-
-      return newTabs;
-    });
-  };
-
-  const switchToTab = (sermon: Sermon) => {
-    setActiveTabId(sermon.id.toString());
-
-    // Try to get the most complete sermon data available
-    const fullSermon = findSermonById(sermon.id) || sermon;
-    setSelectedMessage(fullSermon);
-
-    if (activeTab !== "message") {
-      setActiveTab("message");
-    }
-  };
-
-  // Function to find sermon by ID from all available sermons
-  const findSermonById = (sermonId: string | number) => {
-    // First check recentSermons
-    let foundSermon = recentSermons.find(
-      (s) => s.id.toString() === sermonId.toString(),
-    );
-
-    // If not found in recents, check all sermons (if available in context)
-    if (!foundSermon && allSermons) {
-      foundSermon = allSermons.find(
-        (s) => s.id.toString() === sermonId.toString(),
-      );
-    }
-
-    return foundSermon;
-  };
-
-  // Clean up stale tabs (sermons that no longer exist)
-  const cleanupStaleTabs = () => {
-    setOpenTabs((prevTabs) => {
-      const validTabs = prevTabs.filter((tab) => {
-        const foundSermon = findSermonById(tab.id);
-        return foundSermon !== undefined;
-      });
-
-      // If the active tab was removed, reset active state
-      if (
-        activeTabId &&
-        !validTabs.find((tab) => tab.id.toString() === activeTabId)
-      ) {
-        setActiveTabId(null);
-        setSelectedMessage(null);
-      }
-
-      return validTabs;
-    });
-  };
-
   // Cleanup stale tabs when sermon data changes
   useEffect(() => {
     if (openTabs.length > 0) {
-      cleanupStaleTabs();
+      setOpenTabs((prevTabs) => {
+        const valid = prevTabs.filter((tab) => !!findSermonById(tab.id));
+        if (activeTabId && !valid.find((t) => t.id.toString() === activeTabId)) {
+          setActiveTabId(null);
+          setSelectedMessage(null);
+        }
+        return valid;
+      });
     }
   }, [allSermons, recentSermons]);
 
-  // Restore active tab from persisted data when component mounts
+  // Restore active tab on mount
   useEffect(() => {
     if (activeTabId && !selectedMessage && openTabs.length > 0) {
-      const activeTab = openTabs.find(
-        (tab) => tab.id.toString() === activeTabId,
-      );
-      if (activeTab) {
-        // Check if we have full sermon data or need to fetch it
-        const fullSermon = findSermonById(activeTab.id);
-        if (fullSermon) {
-          setSelectedMessage(fullSermon);
-          setActiveTab("message");
-        } else {
-          // Use the tab data we have (should be sufficient for basic display)
-          setSelectedMessage(activeTab);
-          setActiveTab("message");
-        }
+      const tab = openTabs.find((t) => t.id.toString() === activeTabId);
+      if (tab) {
+        const full = findSermonById(tab.id);
+        setSelectedMessage(full || tab);
+        setActiveTab("message");
       }
     }
   }, [activeTabId, openTabs, allSermons, recentSermons]);
 
-  const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
-  };
-
   return (
-    <div className="z-50 w-screen " style={{ WebkitAppRegion: "drag" } as any}>
-      <div className="h-[5vh] flex items-center justify-between px-4  border-b border-zinc-200 dark:border-zinc-700 select-none relative bg-zinc-50 dark:bg-zinc-950 ">
-        {/* Left section - Current Sermon Tab + Recent Sermons */}
+    <div className="z-50 w-screen" style={{ WebkitAppRegion: "drag" } as any}>
+      <div className="h-[4.5vh] min-h-[38px] flex items-center justify-between pl-3 pr-0 border-b border-zinc-200/80 dark:border-zinc-700/60 select-none relative bg-zinc-50 dark:bg-zinc-950 backdrop-blur-sm">
+
+        {/* ── Left: Sermon tabs ──────────────────────────────── */}
         <div
-          className="flex items-center gap-1 flex-shrink-0 min-w-0"
+          className="flex items-center gap-0.5 flex-shrink-0 min-w-0 h-full"
           style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
         >
-          {/* Current Sermon Tab - Always shown if a sermon is selected */}
+          {/* Active/current sermon tab */}
           {selectedMessage && activeTab === "message" && (
             <div
               key={`current-${selectedMessage.id}`}
-              className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-t-lg cursor-default flex-shrink-0 max-w-[160px] min-w-[100px] group h-[85%] bg-white dark:bg-zinc-800 border-t-2 border-l border-r border-l-zinc-400 border-r-zinc-400 dark:border-l-zinc-500 dark:border-r-zinc-500 text-zinc-900 dark:text-zinc-100 shadow-md"
-              style={{ borderTopColor: accentColor }}
+              className="relative flex items-center gap-1.5 px-3 py-0.5 cursor-default flex-shrink-0 max-w-[180px] min-w-[90px] h-[75%] rounded-lg overflow-hidden"
+              style={{
+                background: `linear-gradient(135deg, ${accentColor}18, ${accentColor}08)`,
+                border: `1px solid ${accentColor}35`,
+                boxShadow: `0 1px 8px ${accentColor}15`,
+              }}
               title={selectedMessage.title}
             >
-              {/* Active indicator dot - pulsing */}
-              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-green-600 dark:bg-green-500" />
+              {/* Accent top bar */}
+              <div
+                className="absolute top-0 left-0 right-0 h-[2px] rounded-full"
+                style={{ backgroundColor: accentColor }}
+              />
 
-              {/* Sermon title */}
-              <span className="text-[10px] font-semibold truncate flex-1">
-                {selectedMessage.title.length > 20
-                  ? selectedMessage.title.substring(0, 20) + "..."
+              {/* Active pulse dot */}
+              <div
+                className="w-1.5 h-1.5 rounded-full flex-shrink-0 animate-pulse"
+                style={{ backgroundColor: accentColor }}
+              />
+
+              <span
+                className="text-[10px] font-semibold truncate flex-1"
+                style={{ color: isDarkMode ? "#e7e5e4" : "#1c1917" }}
+              >
+                {selectedMessage.title.length > 22
+                  ? selectedMessage.title.substring(0, 22) + "…"
                   : selectedMessage.title}
               </span>
 
-              {/* Audio indicator if available */}
               {selectedMessage.audioUrl && (
-                <div className="flex-shrink-0">
-                  <Mic className="w-2.5 h-2.5" />
-                </div>
+                <Mic
+                  className="w-2.5 h-2.5 flex-shrink-0 opacity-60"
+                  style={{ color: accentColor }}
+                />
               )}
             </div>
           )}
 
-          {/* Separator between current and recent */}
-          {selectedMessage &&
-            activeTab === "message" &&
-            recentSermons.length > 0 && (
-              <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-600 mx-1" />
-            )}
+          {/* Separator */}
+          {selectedMessage && activeTab === "message" && recentSermons.length > 0 && (
+            <div className="w-px h-3 bg-zinc-300 dark:bg-zinc-700 mx-1.5 flex-shrink-0" />
+          )}
 
-          {/* Recent Sermons Tabs (max 4, excluding current) */}
+          {/* Recent sermon tabs (max 4, excluding current) */}
           {recentSermons
             .slice(0, 4)
-            .filter((sermon) => sermon.id !== selectedMessage?.id)
-            .map((sermon, index) => (
+            .filter((s) => s.id !== selectedMessage?.id)
+            .map((sermon) => (
               <div
                 key={sermon.id}
                 onClick={() => {
                   setSelectedMessage(sermon);
                   setActiveTab("message");
-                  // Add to open tabs if not already there
-                  const existingTab = openTabs.find((t) => t.id === sermon.id);
-                  if (!existingTab) {
+                  if (!openTabs.find((t) => t.id === sermon.id)) {
                     setOpenTabs((prev) => [...prev, sermon]);
                   }
                   setActiveTabId(sermon.id.toString());
                 }}
-                className="relative flex items-center gap-1.5 px-2 py-1 rounded-t-lg cursor-pointer flex-shrink-0 max-w-[140px] min-w-[100px] group h-[85%] bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                className="relative flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg cursor-pointer flex-shrink-0 max-w-[150px] min-w-[80px] h-[75%] transition-all duration-150 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 group"
                 title={sermon.title}
               >
-                {/* Indicator dot */}
-                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-zinc-400 dark:bg-zinc-600" />
-
-                {/* Sermon title */}
-                <span className="text-[10px] font-medium truncate flex-1">
+                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-zinc-300 dark:bg-zinc-600 group-hover:bg-zinc-400 dark:group-hover:bg-zinc-500 transition-colors" />
+                <span className="text-[10px] font-medium truncate flex-1 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-colors">
                   {sermon.title.length > 20
-                    ? sermon.title.substring(0, 20) + "..."
+                    ? sermon.title.substring(0, 20) + "…"
                     : sermon.title}
                 </span>
-
-                {/* Audio indicator if available */}
                 {sermon.audioUrl && (
-                  <div className="flex-shrink-0">
-                    <Mic className="w-2.5 h-2.5" />
-                  </div>
+                  <Mic className="w-2 h-2 flex-shrink-0 text-zinc-400 dark:text-zinc-600" />
                 )}
               </div>
             ))}
         </div>
 
-        {/* Middle section - App name or active sermon info */}
-        <div className="flex-1 flex items-center justify-center px-4 min-w-0">
-          <div className="text-sm text-center text-zinc-900 dark:text-zinc-300 font-cooper">
-            Brother Bob
+        {/* ── Centre: App brand ─────────────────────────────── */}
+        <div className="flex-1 flex items-center justify-center pointer-events-none px-4 min-w-0">
+          <div className="flex items-center gap-1.5">
+            {/* Decorative glyph using accent color */}
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <circle cx="6" cy="6" r="5" stroke={accentColor} strokeWidth="1.2" opacity="0.7" />
+              <circle cx="6" cy="6" r="2.5" fill={accentColor} opacity="0.55" />
+            </svg>
+            <span
+              className="text-[11px] font-semibold tracking-widest uppercase"
+              style={{ color: isDarkMode ? "#a8a29e" : "#78716c", letterSpacing: "0.18em" }}
+            >
+              His Voice
+            </span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <circle cx="6" cy="6" r="5" stroke={accentColor} strokeWidth="1.2" opacity="0.7" />
+              <circle cx="6" cy="6" r="2.5" fill={accentColor} opacity="0.55" />
+            </svg>
           </div>
         </div>
 
-        {/* Right section - Controls */}
+        {/* ── Right: Controls ───────────────────────────────── */}
         <div
-          className="space-x-2 flex items-center justify-center flex-shrink-0"
+          className="flex items-stretch h-full flex-shrink-0"
           style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
         >
-          {/* Font picker */}
-          <FontPicker />
+          {/* Utilities section (centered vertically inside h-full parent) */}
+          <div className="flex items-center gap-1.5 pr-3">
+            {/* Font picker */}
+            <FontPicker />
 
-          {/* presentation mode toggle */}
-          <Tooltip
-            title={isPresentationMode ? "Exit Presentation" : "Present Mode"}
-          >
-            <div
-              onClick={() => setIsPresentationMode(!isPresentationMode)}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer hover:bg-zinc-50 dark:hover:bg-primary"
-            >
-              <PlaySquare
-                className={`w-4 h-4 transition-colors ${
-                  isPresentationMode
-                    ? "text-zinc-600 dark:text-zinc-300"
-                    : "text-zinc-600 dark:text-accent"
-                } group-hover:text-black dark:group-hover:text-white`}
-              />
-            </div>
-          </Tooltip>
+            {/* Divider */}
+            <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800 mx-0.5" />
 
-          {/* theme toggler */}
-          <ThemeToggle />
+            {/* Presentation mode toggle */}
+            <Tooltip title={isPresentationMode ? "Exit Presentation" : "Presentation Mode"}>
+              <button
+                onClick={() => setIsPresentationMode(!isPresentationMode)}
+                className="w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-all duration-150 hover:bg-zinc-100 dark:hover:bg-zinc-800 group"
+                aria-label="Toggle presentation mode"
+              >
+                <MonitorPlay
+                  className="w-[18px] h-[18px] transition-colors"
+                  style={{
+                    color: isPresentationMode
+                      ? accentColor
+                      : isDarkMode
+                        ? "#78716c"
+                        : "#a8a29e",
+                  }}
+                />
+              </button>
+            </Tooltip>
 
-          <Help />
+            {/* Theme toggle */}
+            <ThemeToggle />
 
-          <UpdateManager />
+            {/* Help */}
+            <Help />
 
-          {/* Close button */}
+            {/* Update manager */}
+            <UpdateManager />
+          </div>
 
-          <Tooltip title="close">
-            <div
-              onClick={handleClose}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-zinc-50 dark:hover:bg-primary"
-            >
-              <X className="w-4 h-4 text-zinc-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
-            </div>
-          </Tooltip>
-          {/* Minimize button */}
-
-          <Tooltip title="minimize">
-            <div
+          {/* Windows-style Window controls */}
+          <div className="flex items-stretch h-full border-l border-zinc-200/80 dark:border-zinc-800/80">
+            {/* Minimize */}
+            <button
               onClick={handleMinimize}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-zinc-50 dark:hover:bg-primary"
+              className="w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 hover:bg-zinc-200 dark:hover:bg-zinc-800/60 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-none border-0 bg-transparent"
+              title="Minimize"
+              aria-label="Minimize"
             >
-              <Minus className="w-4 h-4 text-zinc-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
-            </div>
-          </Tooltip>
-          {/* Maximize button */}
+              <Minus className="w-[16px] h-[16px]" />
+            </button>
 
-          <Tooltip title="maximize">
-            <div
+            {/* Maximize */}
+            <button
               onClick={handleMaximize}
-              className="w-6 h-6 rounded-full flex items-center justify-center group cursor-pointer  hover:bg-zinc-50 dark:hover:bg-primary"
+              className="w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 hover:bg-zinc-200 dark:hover:bg-zinc-800/60 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-none border-0 bg-transparent"
+              title="Maximize"
+              aria-label="Maximize"
             >
-              <Square className="w-4 h-4 text-zinc-600 dark:text-accent group-hover:text-black dark:group-hover:text-white" />
-            </div>
-          </Tooltip>
+              <Square className="w-[12px] h-[12px] stroke-[1.5]" />
+            </button>
+
+            {/* Close */}
+            <button
+              onClick={handleClose}
+              className="w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 hover:bg-[#e81123] text-zinc-500 dark:text-zinc-400 hover:text-white rounded-none border-0 bg-transparent group"
+              title="Close"
+              aria-label="Close"
+            >
+              <X className="w-[16px] h-[16px]" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

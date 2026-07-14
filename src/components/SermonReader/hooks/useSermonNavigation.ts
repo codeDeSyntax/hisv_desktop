@@ -262,7 +262,7 @@ export const useSermonNavigation = (
         scrollToSearchIndex(1, results);
       }
     },
-    [sermonParagraphs, scrollToSearchIndex],
+    [sermonParagraphs, scrollToSearchIndex, accentColor],
   );
 
   // Navigate to next search result
@@ -369,12 +369,45 @@ export const useSermonNavigation = (
     });
   }, [accentColor]);
 
-  // Handle scroll tracking for current paragraph
+  // When the sermon changes, clear stale search state and DOM highlights immediately.
+  // This prevents the module-level persistedNavigationState from inheriting a stale
+  // searchQuery from the previous sermon, which would interfere with external search clicks.
   useEffect(() => {
     hasRestoredSearchRef.current = false;
     isHydratingRef.current = true;
+
+    // Reset all search state
+    setSearchQuery("");
+    setSearchResultsCount(0);
+    setCurrentSearchIndex(0);
+    setSearchResultElements(null);
+    setIsSearchVisible(false);
+
+    // Clear any leftover DOM highlights from the previous sermon
+    document.querySelectorAll(".search-highlight").forEach((el) => {
+      const parent = el.parentNode;
+      if (parent) {
+        parent.replaceChild(
+          document.createTextNode(el.textContent || ""),
+          el,
+        );
+        parent.normalize();
+      }
+    });
+
+    // Wipe the stale searchQuery from persistedNavigationState so hydration
+    // never restores a previous sermon's search term to the new sermon.
+    if (persistedNavigationState) {
+      persistedNavigationState = {
+        ...persistedNavigationState,
+        searchQuery: "",
+        currentSearchIndex: 0,
+        isSearchVisible: false,
+      };
+    }
   }, [sermonKey]);
 
+  // Restore search state when we return to a sermon that had an active search
   useEffect(() => {
     if (!sermonKey || sermonParagraphs.length === 0) return;
     if (hasRestoredSearchRef.current) return;
@@ -413,6 +446,7 @@ export const useSermonNavigation = (
     }, 120);
   }, [sermonKey, sermonParagraphs.length, handleSearch, scrollToSearchIndex]);
 
+  // Persist navigation state so we can restore it when returning to a sermon
   useEffect(() => {
     if (!sermonKey) return;
     if (isHydratingRef.current) return;

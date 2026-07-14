@@ -69,7 +69,7 @@ function RenderSnippet({
           return (
             <span
               key={i}
-              className="px-0.5 rounded font-semibold text-[12px]"
+              className="px-0.5 rounded font-thin text-[13px]"
               style={{
                 backgroundColor: accentColor + "25",
                 color: accentColor,
@@ -83,7 +83,7 @@ function RenderSnippet({
         return (
           <span
             key={i}
-            className="text-zinc-600 dark:text-zinc-400 text-[12px]"
+            className="text-zinc-600  dark:text-zinc-400 text-[14px]"
           >
             {plainPart}
           </span>
@@ -557,11 +557,11 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
                           <div className="text-[12px] leading-normal flex-1 min-w-0">
                             {idx === 0 && (
                               <div className="mb-0.5">
-                                <span className="font-bold text-zinc-900 dark:text-zinc-100 text-[14px] line-clamp-1">
+                                <span className="font-thin text-zinc-900 dark:text-zinc-100 text-[14px] line-clamp-1">
                                   {group.sermonTitle}
                                 </span>
                                 {(group.sermonYear || group.sermonLocation) && (
-                                  <span className="font-medium text-zinc-500 dark:text-zinc-400 text-[12px] ml-1.5">
+                                  <span className="font-thin text-zinc-500 dark:text-zinc-400 text-[14px] ml-1.5">
                                     {group.sermonLocation}
                                     {group.sermonYear
                                       ? ` ${group.sermonYear}`

@@ -193,7 +193,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     localStorage.getItem("vsermontheme") || "light",
   );
   const [settings, setSettings] = useState<SermonSettings>({
-    fontFamily: "Outfit",
+    fontFamily: "Fraunces",
     fontStyle: "normal",
     fontSize: "20",
     presentationFontSize: "36",
@@ -586,7 +586,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       setSettings({
         fontFamily:
           !parsedSettings.fontFamily || parsedSettings.fontFamily === "Inter"
-            ? "Outfit"
+            ? "Fraunces"
             : parsedSettings.fontFamily,
         fontStyle: parsedSettings.fontStyle,
         fontSize: parsedSettings.fontSize,

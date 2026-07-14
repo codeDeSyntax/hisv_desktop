@@ -119,7 +119,7 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
 
   return (
     <div
-      className={`${className} h-full flex flex-col gap-2 bg-transparent w-full max-w-2xl m-auto`}
+      className={`${className} h-full flex flex-col gap-2.5 bg-transparent w-full`}
       style={{ maxHeight }}
     >
       {showHeader && recentSermons.length > 0 && (
@@ -147,14 +147,14 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
 
       <div className="flex-shrink-0 relative">
         <Search
-          size={13}
+          size={12}
           className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"
         />
         <input
           placeholder="Search recents..."
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
-          className="w-full pl-8 pr-3 py-1.5 text-sm border-none bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full focus:outline-none focus:ring-2 focus:ring-accent text-zinc-700 dark:text-zinc-100 placeholder-zinc-400"
+          className="w-full pl-7 pr-3 py-1.5 text-xs border-none bg-zinc-100/80 dark:bg-zinc-800/60 rounded-lg focus:outline-none focus:ring-1 focus:ring-accent text-zinc-700 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-500"
           spellCheck={false}
         />
       </div>
@@ -191,10 +191,9 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
                     duration: 0.16,
                     delay: Math.min(index * 0.04, 0.28),
                   }}
-                  className="group relative rounded-lg border-solid border border-zinc-200 dark:border-zinc-700/60 bg-white dark:bg-zinc-800/40 px-3 py-2.5 cursor-pointer hover:shadow-sm transition-colors duration-150"
+                  className="group relative rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-900/40 px-3 py-2.5 cursor-pointer transition-all duration-150 hover:border-zinc-200 dark:hover:border-zinc-700"
                   onMouseEnter={(event) =>
-                    (event.currentTarget.style.borderColor =
-                      accentColor + "60")
+                    (event.currentTarget.style.borderColor = accentColor + "50")
                   }
                   onMouseLeave={(event) =>
                     (event.currentTarget.style.borderColor = "")
@@ -203,27 +202,27 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
                 >
                   <div className="flex items-start gap-2.5">
                     <div
-                      className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full"
+                      className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full"
                       style={{
                         background: isAudio
                           ? `${accentColor}18`
-                          : "rgba(113, 113, 122, 0.12)",
+                          : "rgba(113, 113, 122, 0.1)",
                         color: isAudio ? accentColor : undefined,
                       }}
                     >
                       {isAudio ? (
-                        <Mic2 size={14} className="ml-0.5" />
+                        <Mic2 size={12} className="ml-0.5" />
                       ) : (
                         <LetterText
-                          size={14}
-                          className="text-zinc-600 dark:text-zinc-300"
+                          size={12}
+                          className="text-zinc-500 dark:text-zinc-400"
                         />
                       )}
                     </div>
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-sm font-semibold leading-snug text-zinc-800 dark:text-zinc-100 line-clamp-2">
+                        <h3 className="text-[12px] font-semibold leading-snug text-zinc-800 dark:text-zinc-100 line-clamp-2">
                           {sermon.title}
                         </h3>
 
@@ -267,7 +266,7 @@ const ModularRecents: React.FC<ModularRecentsProps> = ({
                         )}
                       </div>
 
-                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] leading-none text-zinc-500 dark:text-zinc-400">
+                      <div className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] leading-none text-zinc-400 dark:text-zinc-500">
                         <span className="inline-flex items-center gap-1">
                           <CalendarDays size={11} />
                           {formatSermonDate(sermon)}

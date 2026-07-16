@@ -59,7 +59,7 @@ const FloatingControlButton = ({
       dragMomentum={false}
       dragElastic={0.06}
       dragConstraints={dragConstraints}
-      className="fixed right-10 top-20 z-40 flex items-center gap-1.5 rounded-xl px-2 py-1 shadow-lg backdrop-blur-md select-none bg-white/75 dark:bg-zinc-900/75 border border-solid"
+      className="fixed right-[45%] top-20 z-40 flex items-center gap-1.5 rounded-xl px-2 py-1 shadow-lg backdrop-blur-md select-none bg-white/75 dark:bg-zinc-900/75 border border-solid"
       style={{
         borderColor: showControlPanel ? accentColor : (isDarkMode ? "rgba(63, 63, 70, 0.4)" : "rgba(228, 228, 231, 0.8)"),
         boxShadow: showControlPanel

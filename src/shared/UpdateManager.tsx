@@ -216,11 +216,11 @@ export default function UpdateManager() {
       <div
         ref={btnRef}
         onClick={() => setShow((s) => !s)}
-        className="relative w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-all duration-150 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+        className="relative w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-all duration-150 hover:bg-[var(--tb-hover-bg,rgba(244,244,245,0.85))] dark:hover:bg-[var(--tb-hover-bg,rgba(39,39,42,0.8))]"
         title="App updates"
       >
         <DownloadCloud
-          className="w-[18px] h-[18px] text-zinc-500 dark:text-zinc-400 transition-colors"
+          className="w-[18px] h-[18px] text-[var(--tb-fg,#71717a)] hover:text-[var(--tb-fg-hover,#18181b)] transition-colors"
         />
         {hasDot && (
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-amber-400" />

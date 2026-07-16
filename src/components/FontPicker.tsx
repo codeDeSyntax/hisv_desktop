@@ -66,7 +66,7 @@ const FontPicker: React.FC = () => {
           }}
           className={`rounded-xl shadow-xl border p-1 backdrop-blur-md ${
             isDarkMode
-              ? "bg-zinc-950/85 border-zinc-800/80"
+              ? "bg-neutral-700 border-zinc-800/80"
               : "bg-white/85 border-zinc-200/60"
           }`}
           // stop clicks from bubbling to the outside-click handler
@@ -96,7 +96,7 @@ const FontPicker: React.FC = () => {
                   <span className="text-[12px] font-semibold tracking-wide leading-normal">
                     {font.label}
                   </span>
-                  <span className="text-[9px] font-sans text-zinc-500 dark:text-zinc-500 font-normal truncate mt-0.5">
+                  <span className="text-[9px] font-sans text-zinc-500 dark:text-neutral-300 font-normal truncate mt-0.5">
                     {font.desc}
                   </span>
                 </div>
@@ -124,18 +124,20 @@ const FontPicker: React.FC = () => {
         onClick={handleOpen}
         className={`flex items-center gap-1.5 h-7 px-2.5 rounded-lg border border-solid text-xs font-semibold transition-all duration-150 cursor-pointer ${
           isDarkMode
-            ? "bg-zinc-800/30 border-zinc-800 hover:bg-zinc-800/60 text-zinc-300 hover:text-zinc-100"
-            : "bg-zinc-100/40 border-zinc-200/50 hover:bg-zinc-100/80 text-zinc-600 hover:text-zinc-900"
+            ? "bg-zinc-800/30 hover:bg-zinc-800/60"
+            : "bg-zinc-100/40 hover:bg-zinc-100/85"
         }`}
         style={{
-          borderColor: isOpen ? accentColor : undefined,
+          borderColor: isOpen ? (accentColor || "var(--tb-border)") : "var(--tb-border, rgba(228, 228, 231, 0.4))",
+          backgroundColor: "var(--tb-hover-bg)",
+          color: "var(--tb-fg, inherit)",
         }}
         title="Select Sermon Font"
       >
-        <Type className="w-[13px] h-[13px]" />
-        <span className="font-sans">{settings.fontFamily || "Outfit"}</span>
+        <Type className="w-[13px] h-[13px] text-[var(--tb-fg)]" />
+        <span className="font-sans text-[var(--tb-fg)]">{settings.fontFamily || "Outfit"}</span>
         <ChevronDown
-          className={`w-[11px] h-[11px] text-zinc-400 dark:text-zinc-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          className={`w-[11px] h-[11px] text-[var(--tb-fg)] transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 

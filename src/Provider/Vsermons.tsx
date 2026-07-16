@@ -74,6 +74,7 @@ interface SermonContextType {
   downloadProgress: number;
   error: string | null;
   startDbDownload: () => Promise<void>;
+  skipDbUpdate: () => Promise<void>;
   recentSermons: Sermon[];
   setRecentSermons: (sermons: Sermon[]) => void;
   setSelectedMessage: (sermon: Sermon | null) => void;
@@ -387,6 +388,19 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
     }
   }, [loadSermonsFromDb]);
 
+  const skipDbUpdate = useCallback(async () => {
+    try {
+      setError(null);
+      await loadSermonsFromDb();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("Sermon skip update error:", msg);
+      setError("Failed to load local database.");
+      setDbStatus("error");
+      setLoading(false);
+    }
+  }, [loadSermonsFromDb]);
+
   useEffect(() => {
     if (initRanRef.current) return;
     initRanRef.current = true;
@@ -416,8 +430,9 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
         )) as DbUpdateResponse;
 
         if (updateStatus.updateAvailable) {
-          setLoadingMessage("Updating sermon library...");
-          await startDbDownload();
+          setLoadingMessage("Sermon library update available");
+          setDbStatus("update-available");
+          setLoading(false);
           return;
         }
 
@@ -625,6 +640,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       downloadProgress,
       error,
       startDbDownload,
+      skipDbUpdate,
       recentSermons,
       setRecentSermons,
       setSelectedMessage,
@@ -676,6 +692,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       downloadProgress,
       error,
       startDbDownload,
+      skipDbUpdate,
       recentSermons,
       setRecentSermons,
       setSelectedMessage,

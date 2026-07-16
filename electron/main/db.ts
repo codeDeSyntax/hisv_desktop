@@ -27,11 +27,11 @@ const DB_RELEASE_MARKER_FILENAME = "sermons-db-release.json";
  */
 export const GITHUB_DB_URL =
   process.env.HISVOICE_DB_URL ??
-  "https://github.com/codeDeSyntax/hisv_desktop/releases/latest/download/sermons.db";
+  "https://github.com/codeDeSyntax/hisvoice-data/releases/latest/download/sermon.db";
 
 export const GITHUB_LATEST_RELEASE_API_URL =
   process.env.HISVOICE_RELEASE_API_URL ??
-  "https://api.github.com/repos/codeDeSyntax/hisv_desktop/releases/latest";
+  "https://api.github.com/repos/codeDeSyntax/hisvoice-data/releases/latest";
 
 interface GitHubReleaseAsset {
   name: string;
@@ -183,14 +183,14 @@ export async function fetchLatestDbRelease(): Promise<{
 }> {
   const body = await requestText(GITHUB_LATEST_RELEASE_API_URL);
   const release = JSON.parse(body) as GitHubLatestRelease;
-  const dbAsset = release.assets?.find((asset) => asset.name === DB_FILENAME);
+  const dbAsset = release.assets?.find((asset) => asset.name === "sermon.db");
 
   if (!release.tag_name) {
     throw new Error("Latest GitHub release has no tag name");
   }
 
   if (!dbAsset?.browser_download_url) {
-    throw new Error(`Latest GitHub release has no ${DB_FILENAME} asset`);
+    throw new Error(`Latest GitHub release has no sermon.db asset`);
   }
 
   return {
@@ -229,10 +229,7 @@ export async function checkDbUpdate(): Promise<DbUpdateStatus> {
       };
     }
 
-    const updateAvailable =
-      local.tagName !== remote.tagName ||
-      local.assetUpdatedAt !== remote.assetUpdatedAt ||
-      local.assetSize !== remote.assetSize;
+    const updateAvailable = local.assetSize !== remote.assetSize;
 
     return {
       checked: true,
@@ -334,6 +331,27 @@ function hasTable(db: DBInstance, tableName: string): boolean {
   return Boolean(row);
 }
 
+function isSearchIndexBuilt(db: DBInstance): boolean {
+  try {
+    const row = db
+      .prepare("SELECT value FROM sermon_db_meta WHERE key = 'search_index_included'")
+      .get() as { value: string } | undefined;
+    return row?.value === "true";
+  } catch {
+    return false;
+  }
+}
+
+function markSearchIndexBuilt(db: DBInstance): void {
+  try {
+    db.prepare(
+      "INSERT OR REPLACE INTO sermon_db_meta (key, value, updated_at) VALUES ('search_index_included', 'true', datetime('now'))"
+    ).run();
+  } catch (err) {
+    console.error("Failed to mark search index as built:", err);
+  }
+}
+
 function ensureSearchIndex(db: DBInstance): void {
   if (!hasTable(db, "sermons_fts")) {
     db.exec(`
@@ -346,15 +364,9 @@ function ensureSearchIndex(db: DBInstance): void {
     `);
   }
 
-  const indexedCount = (db
-    .prepare("SELECT COUNT(*) AS n FROM sermons_fts")
-    .get() as { n: number }).n;
-  const sermonCount = (db
-    .prepare("SELECT COUNT(*) AS n FROM sermons")
-    .get() as { n: number }).n;
-
-  if (indexedCount !== sermonCount) {
+  if (!isSearchIndexBuilt(db)) {
     db.exec(`INSERT INTO sermons_fts(sermons_fts) VALUES('rebuild')`);
+    markSearchIndexBuilt(db);
   }
 }
 

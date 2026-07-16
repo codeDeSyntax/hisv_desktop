@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronDown } from "lucide-react";
 import { useSermonContext } from "@/Provider/Vsermons";
 import { useTheme } from "@/Provider/Theme.js";
@@ -132,7 +132,7 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
   );
   const [isSearching, setIsSearching] = useState(false);
   const [searchMode, setSearchMode] = useState<SearchMode>(
-    () => persistedSearchViewState?.searchMode ?? "all",
+    () => persistedSearchViewState?.searchMode ?? "exact",
   );
   const [expandedSermons, setExpandedSermons] = useState<
     Record<string, boolean>
@@ -557,7 +557,7 @@ const Search = ({ onSelect }: { onSelect?: () => void }) => {
                           <div className="text-[12px] leading-normal flex-1 min-w-0">
                             {idx === 0 && (
                               <div className="mb-0.5">
-                                <span className="font-thin text-zinc-900 dark:text-zinc-100 text-[14px] line-clamp-1">
+                                <span className="font-bold text-zinc-900 dark:text-zinc-100 text-[14px] line-clamp-1">
                                   {group.sermonTitle}
                                 </span>
                                 {(group.sermonYear || group.sermonLocation) && (

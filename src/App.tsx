@@ -16,11 +16,15 @@ const App = () => {
     downloadProgress,
     error,
     startDbDownload,
+    skipDbUpdate,
     handleClose,
   } = useSermonContext();
   const [showShortcutsToast, setShowShortcutsToast] = useState(false);
 
-  const showDbOverlay = dbStatus === "missing" || dbStatus === "downloading";
+  const showDbOverlay =
+    dbStatus === "missing" ||
+    dbStatus === "downloading" ||
+    dbStatus === "update-available";
 
   // Signal main process when data is ready — closes splash and shows main window
   useEffect(() => {
@@ -239,12 +243,16 @@ const App = () => {
               <h2 className="text-xl sm:text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
                 {dbStatus === "downloading"
                   ? "Preparing your sermon library"
-                  : "Sermon Library Needed"}
+                  : dbStatus === "update-available"
+                    ? "Sermon Library Update Available"
+                    : "Sermon Library Needed"}
               </h2>
               <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 {dbStatus === "downloading"
                   ? "Please keep this window open while we download your sermon library."
-                  : "To start reading and searching sermons, download the library once. It will be saved on this device for future use."}
+                  : dbStatus === "update-available"
+                    ? "A new version of the sermon library is available. Would you like to download it now or continue reading and update later?"
+                    : "To start reading and searching sermons, download the library once. It will be saved on this device for future use."}
               </p>
             </div>
 
@@ -269,18 +277,36 @@ const App = () => {
               <p className="mb-4 text-sm text-rose-500 text-center">{error}</p>
             )}
 
-            {dbStatus !== "downloading" && (
+            {dbStatus === "update-available" && (
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={() => void startDbDownload()}
-                  className="flex-1 py-2.5 px-4 rounded-xl text-white font-medium transition-opacity hover:opacity-90"
+                  className="flex-1 py-2.5 px-4 rounded-xl text-white font-medium transition-opacity hover:opacity-90 cursor-pointer"
+                  style={{ backgroundColor: "var(--accent)" }}
+                >
+                  Download Now
+                </button>
+                <button
+                  onClick={() => void skipDbUpdate()}
+                  className="flex-1 py-2.5 px-4 rounded-xl font-medium bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors cursor-pointer"
+                >
+                  Later
+                </button>
+              </div>
+            )}
+
+            {dbStatus === "missing" && (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => void startDbDownload()}
+                  className="flex-1 py-2.5 px-4 rounded-xl text-white font-medium transition-opacity hover:opacity-90 cursor-pointer"
                   style={{ backgroundColor: "var(--accent)" }}
                 >
                   Download Sermon Library
                 </button>
                 <button
                   onClick={handleClose}
-                  className="flex-1 py-2.5 px-4 rounded-xl font-medium bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors"
+                  className="flex-1 py-2.5 px-4 rounded-xl font-medium bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors cursor-pointer"
                 >
                   Close App
                 </button>

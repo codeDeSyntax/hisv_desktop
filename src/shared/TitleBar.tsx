@@ -133,10 +133,35 @@ const TitleBar: React.FC = () => {
     }
   }, [activeTabId, openTabs, allSermons, recentSermons]);
 
+  // Helper to determine if the accentColor is dark for proper text contrast
+  const isAccentDark = (() => {
+    if (!accentColor) return true;
+    const color = accentColor.replace("#", "");
+    if (color.length !== 6) return true;
+    const r = parseInt(color.substring(0, 2), 16);
+    const g = parseInt(color.substring(2, 4), 16);
+    const b = parseInt(color.substring(4, 6), 16);
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq < 160; // Dark background if YIQ < 160
+  })();
+
+  const brandColor = isAccentDark ? "rgba(255, 255, 255, 0.75)" : "rgba(0, 0, 0, 0.7)";
+  const decorationColor = isAccentDark ? "rgba(255, 255, 255, 0.45)" : "rgba(0, 0, 0, 0.4)";
+
   return (
     <div className="z-50 w-screen" style={{ WebkitAppRegion: "drag" } as any}>
-      <div className="h-[4.5vh] min-h-[38px] flex items-center justify-between pl-3 pr-0 border-b border-zinc-200/80 dark:border-zinc-700/60 select-none relative bg-zinc-50 dark:bg-zinc-950 backdrop-blur-sm">
-
+      <div
+        className="h-[4.5vh] min-h-[38px] flex items-center justify-between pl-3 pr-0 border-b select-none relative backdrop-blur-sm"
+        style={{
+          backgroundColor: accentColor,
+          borderColor: isAccentDark ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.1)",
+          // Expose CSS variables for child components to inherit automatically
+          ["--tb-hover-bg" as any]: isAccentDark ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.08)",
+          ["--tb-fg" as any]: isAccentDark ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.65)",
+          ["--tb-fg-hover" as any]: isAccentDark ? "#ffffff" : "#000000",
+          ["--tb-border" as any]: isAccentDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.12)",
+        }}
+      >
         {/* ── Left: Sermon tabs ──────────────────────────────── */}
         <div
           className="flex items-center gap-0.5 flex-shrink-0 min-w-0 h-full"
@@ -146,29 +171,22 @@ const TitleBar: React.FC = () => {
           {selectedMessage && activeTab === "message" && (
             <div
               key={`current-${selectedMessage.id}`}
-              className="relative flex items-center gap-1.5 px-3 py-0.5 cursor-default flex-shrink-0 max-w-[180px] min-w-[90px] h-[75%] rounded-lg overflow-hidden"
+              className="relative flex items-center gap-1.5 px-3 py-0.5 cursor-default flex-shrink-0 max-w-[180px] min-w-[90px] h-[75%] rounded-lg overflow-hidden border border-solid"
               style={{
-                background: `linear-gradient(135deg, ${accentColor}18, ${accentColor}08)`,
-                border: `1px solid ${accentColor}35`,
-                boxShadow: `0 1px 8px ${accentColor}15`,
+                background: isAccentDark ? "rgba(255, 255, 255, 0.16)" : "rgba(0, 0, 0, 0.1)",
+                borderColor: isAccentDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)",
               }}
               title={selectedMessage.title}
             >
-              {/* Accent top bar */}
-              <div
-                className="absolute top-0 left-0 right-0 h-[2px] rounded-full"
-                style={{ backgroundColor: accentColor }}
-              />
-
               {/* Active pulse dot */}
               <div
                 className="w-1.5 h-1.5 rounded-full flex-shrink-0 animate-pulse"
-                style={{ backgroundColor: accentColor }}
+                style={{ backgroundColor: isAccentDark ? "#ffffff" : "#000000" }}
               />
 
               <span
                 className="text-[10px] font-semibold truncate flex-1"
-                style={{ color: isDarkMode ? "#e7e5e4" : "#1c1917" }}
+                style={{ color: isAccentDark ? "#ffffff" : "#000000" }}
               >
                 {selectedMessage.title.length > 22
                   ? selectedMessage.title.substring(0, 22) + "…"
@@ -177,8 +195,8 @@ const TitleBar: React.FC = () => {
 
               {selectedMessage.audioUrl && (
                 <Mic
-                  className="w-2.5 h-2.5 flex-shrink-0 opacity-60"
-                  style={{ color: accentColor }}
+                  className="w-2.5 h-2.5 flex-shrink-0 opacity-75"
+                  style={{ color: isAccentDark ? "#ffffff" : "#000000" }}
                 />
               )}
             </div>
@@ -186,7 +204,10 @@ const TitleBar: React.FC = () => {
 
           {/* Separator */}
           {selectedMessage && activeTab === "message" && recentSermons.length > 0 && (
-            <div className="w-px h-3 bg-zinc-300 dark:bg-zinc-700 mx-1.5 flex-shrink-0" />
+            <div
+              className="w-px h-3 mx-1.5 flex-shrink-0"
+              style={{ backgroundColor: isAccentDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.1)" }}
+            />
           )}
 
           {/* Recent sermon tabs (max 4, excluding current) */}
@@ -204,17 +225,31 @@ const TitleBar: React.FC = () => {
                   }
                   setActiveTabId(sermon.id.toString());
                 }}
-                className="relative flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg cursor-pointer flex-shrink-0 max-w-[150px] min-w-[80px] h-[75%] transition-all duration-150 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 group"
+                className={`relative flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg cursor-pointer flex-shrink-0 max-w-[150px] min-w-[80px] h-[75%] transition-all duration-150 group ${
+                  isAccentDark
+                    ? "hover:bg-white/8 text-white/70 hover:text-white"
+                    : "hover:bg-black/6 text-black/70 hover:text-black"
+                }`}
                 title={sermon.title}
               >
-                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-zinc-300 dark:bg-zinc-600 group-hover:bg-zinc-400 dark:group-hover:bg-zinc-500 transition-colors" />
-                <span className="text-[10px] font-medium truncate flex-1 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-colors">
+                <div
+                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors ${
+                    isAccentDark
+                      ? "bg-white/30 group-hover:bg-white/60"
+                      : "bg-black/25 group-hover:bg-black/50"
+                  }`}
+                />
+                <span className="text-[10px] font-normal truncate flex-1 leading-none">
                   {sermon.title.length > 20
                     ? sermon.title.substring(0, 20) + "…"
                     : sermon.title}
                 </span>
                 {sermon.audioUrl && (
-                  <Mic className="w-2 h-2 flex-shrink-0 text-zinc-400 dark:text-zinc-600" />
+                  <Mic
+                    className={`w-2 h-2 flex-shrink-0 opacity-50 group-hover:opacity-80 transition-opacity ${
+                      isAccentDark ? "text-white" : "text-black"
+                    }`}
+                  />
                 )}
               </div>
             ))}
@@ -223,20 +258,24 @@ const TitleBar: React.FC = () => {
         {/* ── Centre: App brand ─────────────────────────────── */}
         <div className="flex-1 flex items-center justify-center pointer-events-none px-4 min-w-0">
           <div className="flex items-center gap-1.5">
-            {/* Decorative glyph using accent color */}
+            {/* Decorative glyph */}
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <circle cx="6" cy="6" r="5" stroke={accentColor} strokeWidth="1.2" opacity="0.7" />
-              <circle cx="6" cy="6" r="2.5" fill={accentColor} opacity="0.55" />
+              <circle cx="6" cy="6" r="5" stroke={decorationColor} strokeWidth="1.2" opacity="0.8" />
+              <circle cx="6" cy="6" r="2.5" fill={decorationColor} opacity="0.65" />
             </svg>
             <span
               className="text-[11px] font-dscript font-semibold tracking-widest uppercase"
-              style={{ color: isDarkMode ? "#a8a29e" : "#78716c", letterSpacing: "0.18em",transform: "scaleY(1.12) scaleX(0.92)", }}
+              style={{
+                color: brandColor,
+                letterSpacing: "0.18em",
+                transform: "scaleY(1.12) scaleX(0.92)",
+              }}
             >
               His Voice
             </span>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <circle cx="6" cy="6" r="5" stroke={accentColor} strokeWidth="1.2" opacity="0.7" />
-              <circle cx="6" cy="6" r="2.5" fill={accentColor} opacity="0.55" />
+              <circle cx="6" cy="6" r="5" stroke={decorationColor} strokeWidth="1.2" opacity="0.8" />
+              <circle cx="6" cy="6" r="2.5" fill={decorationColor} opacity="0.65" />
             </svg>
           </div>
         </div>
@@ -246,29 +285,32 @@ const TitleBar: React.FC = () => {
           className="flex items-stretch h-full flex-shrink-0"
           style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
         >
-          {/* Utilities section (centered vertically inside h-full parent) */}
+          {/* Utilities section */}
           <div className="flex items-center gap-1.5 pr-3">
             {/* Font picker */}
             <FontPicker />
 
             {/* Divider */}
-            <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800 mx-0.5" />
+            <div
+              className="w-px h-4 mx-0.5"
+              style={{ backgroundColor: isAccentDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.12)" }}
+            />
 
             {/* Presentation mode toggle */}
             <Tooltip title={isPresentationMode ? "Exit Presentation" : "Presentation Mode"}>
               <button
                 onClick={() => setIsPresentationMode(!isPresentationMode)}
-                className="w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-all duration-150 hover:bg-zinc-100 dark:hover:bg-zinc-800 group"
+                className={`w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-all duration-150 ${
+                  isAccentDark ? "hover:bg-white/10" : "hover:bg-black/8"
+                }`}
                 aria-label="Toggle presentation mode"
               >
                 <MonitorPlay
                   className="w-[18px] h-[18px] transition-colors"
                   style={{
                     color: isPresentationMode
-                      ? accentColor
-                      : isDarkMode
-                        ? "#78716c"
-                        : "#a8a29e",
+                      ? (isAccentDark ? "#ffffff" : "#000000")
+                      : (isAccentDark ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.5)"),
                   }}
                 />
               </button>
@@ -277,18 +319,23 @@ const TitleBar: React.FC = () => {
             {/* Theme toggle */}
             <ThemeToggle />
 
-            
-
             {/* Update manager */}
             <UpdateManager />
           </div>
 
           {/* Windows-style Window controls */}
-          <div className="flex items-stretch h-full border-l border-zinc-200/80 dark:border-zinc-800/80">
+          <div
+            className="flex items-stretch h-full border-l"
+            style={{ borderColor: isAccentDark ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.1)" }}
+          >
             {/* Minimize */}
             <button
               onClick={handleMinimize}
-              className="w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 hover:bg-zinc-200 dark:hover:bg-zinc-800/60 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-none border-0 bg-transparent"
+              className={`w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 border-0 bg-transparent rounded-none ${
+                isAccentDark
+                  ? "text-white/70 hover:bg-white/10 hover:text-white"
+                  : "text-black/75 hover:bg-black/8 hover:text-black"
+              }`}
               title="Minimize"
               aria-label="Minimize"
             >
@@ -298,7 +345,11 @@ const TitleBar: React.FC = () => {
             {/* Maximize */}
             <button
               onClick={handleMaximize}
-              className="w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 hover:bg-zinc-200 dark:hover:bg-zinc-800/60 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-none border-0 bg-transparent"
+              className={`w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 border-0 bg-transparent rounded-none ${
+                isAccentDark
+                  ? "text-white/70 hover:bg-white/10 hover:text-white"
+                  : "text-black/75 hover:bg-black/8 hover:text-black"
+              }`}
               title="Maximize"
               aria-label="Maximize"
             >
@@ -308,7 +359,11 @@ const TitleBar: React.FC = () => {
             {/* Close */}
             <button
               onClick={handleClose}
-              className="w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 hover:bg-[#e81123] text-zinc-500 dark:text-zinc-400 hover:text-white rounded-none border-0 bg-transparent group"
+              className={`w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 border-0 bg-transparent rounded-none ${
+                isAccentDark
+                  ? "text-white/70 hover:bg-[#e81123] hover:text-white"
+                  : "text-black/75 hover:bg-[#e81123] hover:text-white"
+              }`}
               title="Close"
               aria-label="Close"
             >

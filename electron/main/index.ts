@@ -3,6 +3,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import os from "node:os";
+import fs from "node:fs";
 import { getSystemFonts } from "./fonts.js";
 import { update } from "./update.js";
 import {
@@ -330,9 +331,13 @@ async function createMainWindow() {
   ipcMain.handle("db:download", async (event) => {
     try {
       const latest = await fetchLatestDbRelease().catch(() => null);
-      await downloadDb(latest?.downloadUrl ?? GITHUB_DB_URL, (progress) => {
-        event.sender.send("db:download-progress", progress);
-      }, latest?.marker);
+      await downloadDb(
+        latest?.downloadUrl ?? GITHUB_DB_URL,
+        (progress) => {
+          event.sender.send("db:download-progress", progress);
+        },
+        latest?.marker,
+      );
       // Build heavier search structures locally after the lean DB is present.
       setTimeout(() => {
         const result = buildSearchIndex();
@@ -346,6 +351,46 @@ async function createMainWindow() {
   });
 
   ipcMain.handle("db:build-search-index", () => buildSearchIndex());
+
+  // ── EODH: list PDF files ─────────────────────────────────────────────────
+  ipcMain.handle("eodh:list-pdfs", () => {
+    const eodhFolder = app.isPackaged
+      ? path.join(app.getPath("userData"), "eodh")
+      : path.join(process.env.APP_ROOT!, "resources", "eodh");
+
+    try {
+      fs.mkdirSync(eodhFolder, { recursive: true });
+      const files = fs
+        .readdirSync(eodhFolder)
+        .filter((f) => f.toLowerCase().endsWith(".pdf"))
+        .sort()
+        .map((f) => ({
+          name: f.replace(/\.pdf$/i, "").replace(/[-_]/g, " "),
+          filename: f,
+          path: path.join(eodhFolder, f),
+        }));
+      return files;
+    } catch {
+      return [];
+    }
+  });
+
+  ipcMain.handle("eodh:read-pdf", (_event, filePath: string) => {
+    try {
+      return fs.readFileSync(filePath);
+    } catch {
+      return null;
+    }
+  });
+
+  // ── EODH: open folder in explorer ───────────────────────────────────────
+  ipcMain.handle("eodh:open-folder", () => {
+    const folder = app.isPackaged
+      ? path.join(app.getPath("userData"), "eodh")
+      : path.join(process.env.APP_ROOT!, "resources", "eodh");
+    fs.mkdirSync(folder, { recursive: true });
+    shell.openPath(folder);
+  });
 
   // Handle external links
   mainWin.webContents.setWindowOpenHandler(({ url }) => {

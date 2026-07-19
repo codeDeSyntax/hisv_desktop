@@ -345,3 +345,40 @@ div {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ── EODH / PDF.js text layer ───────────────────────────────────────────────
+   Positions transparent text spans exactly over the PDF canvas so that text
+   is selectable and search highlights are visible.
+────────────────────────────────────────────────────────────────────────────── */
+.eodh-text-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  line-height: 1;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.eodh-text-layer span {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+.eodh-text-layer span::selection {
+  background: rgba(100, 150, 255, 0.28);
+  color: transparent;
+}
+
+.eodh-text-layer mark {
+  background: inherit;
+  color: transparent;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+

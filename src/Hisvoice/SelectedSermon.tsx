@@ -649,11 +649,12 @@ const SelectedSermon = ({
       const key = isPresentationMode ? "presentationFontSize" : "fontSize";
       const fallback = isPresentationMode ? 36 : 20;
       const current = Number(settings[key] ?? fallback) || fallback;
+      const maxSize = isPresentationMode ? 120 : 86;
       const next =
         direction === "reset"
           ? fallback
           : direction === "increase"
-            ? Math.min(current + 2, 120)
+            ? Math.min(current + 2, maxSize)
             : Math.max(current - 2, 12);
 
       const updated = { ...settings, [key]: next.toString() };
@@ -712,7 +713,7 @@ const SelectedSermon = ({
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-800/50 h-screen relative w-full flex items-stretch justify-stretch">
+    <div className="bg-white dark:bg-neutral-800/50 h-screen relative w-full flex items-stretch justify-stretch">
       <SaveNotification
         show={showSaveNotification}
         onClose={() => setShowSaveNotification(false)}
@@ -769,7 +770,7 @@ const SelectedSermon = ({
 
         {/* Scrollable Content Area */}
         <div
-          className={`flex-1 w-full min-w-0 ${isPresentationMode ? "h-[95%]" : "h-[98%]"} overflow-y-auto overflow-x-hidden ${!isPresentationMode && "no-scrollbar"}`}
+          className={`flex-1 w-full min-w-0 ${isPresentationMode ? "h-[95%]" : "h-[86%]"} overflow-y-auto overflow-x-hidden ${!isPresentationMode && "no-scrollbar"}`}
           style={{
             scrollBehavior: "smooth",
             scrollbarColor: isDarkMode
@@ -910,88 +911,65 @@ const SelectedSermon = ({
                           overflow: "hidden",
                         }}
                       >
-                        {/* Bookmark badge */}
-                        <button
-                          onClick={() => {
-                            if (selectedMessage) {
-                              toggleBookmark(
-                                selectedMessage.id as any,
-                                selectedMessage.title,
-                                paragraph.id,
-                                paragraph.content,
-                                selectedMessage.location,
-                                selectedMessage.year?.toString(),
-                              );
-                            }
-                          }}
-                          className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700 border px-3 py-1.5 text-[11px] font-semibold shadow-sm backdrop-blur-md transition-all duration-200 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 hover:-translate-y-0.5 hover:scale-[1.02] ${
+                        {/* Bookmark — sleek floating icon */}
+                        {(() => {
+                          const bkd = !!(
                             selectedMessage &&
                             isBookmarked(
                               selectedMessage.id as any,
                               paragraph.id,
                             )
-                              ? "text-white dark:text-black"
-                              : isDarkMode
-                                ? "bg-zinc-800/90 hover:bg-zinc-700/95 text-zinc-200 border-zinc-700/80"
-                                : "bg-white/90 hover:bg-white text-zinc-700 border-zinc-200/80"
-                          } ${
-                            selectedMessage &&
-                            isBookmarked(
-                              selectedMessage.id as any,
-                              paragraph.id,
-                            )
-                              ? "border-transparent shadow-lg"
-                              : isDarkMode
-                                ? "border-zinc-700/80"
-                                : "border-zinc-200/80"
-                          }`}
-                          style={
-                            selectedMessage &&
-                            isBookmarked(
-                              selectedMessage.id as any,
-                              paragraph.id,
-                            )
-                              ? {
-                                  backgroundColor: accentColor,
-                                  borderColor: accentColor,
+                          );
+                          return (
+                            <button
+                              onClick={() => {
+                                if (selectedMessage) {
+                                  toggleBookmark(
+                                    selectedMessage.id as any,
+                                    selectedMessage.title,
+                                    paragraph.id,
+                                    paragraph.content,
+                                    selectedMessage.location,
+                                    selectedMessage.year?.toString(),
+                                  );
                                 }
-                              : undefined
-                          }
-                          aria-pressed={
-                            !!(
-                              selectedMessage &&
-                              isBookmarked(
-                                selectedMessage.id as any,
-                                paragraph.id,
-                              )
-                            )
-                          }
-                          title={
-                            selectedMessage &&
-                            isBookmarked(
-                              selectedMessage.id as any,
-                              paragraph.id,
-                            )
-                              ? "Remove bookmark"
-                              : "Add bookmark"
-                          }
-                        >
-                          {selectedMessage &&
-                          isBookmarked(
-                            selectedMessage.id as any,
-                            paragraph.id,
-                          ) ? (
-                            <>
-                              <BookmarkCheck size={13} />
-                              <span>BKD</span>
-                            </>
-                          ) : (
-                            <>
-                              <Bookmark size={13} />
-                              <span>BK</span>
-                            </>
-                          )}
-                        </button>
+                              }}
+                              className="absolute right-2 top-2 z-10 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 cursor-pointer border-0 outline-none"
+                              style={{
+                                backgroundColor: bkd
+                                  ? accentColor
+                                  : isDarkMode
+                                    ? "rgba(39,39,42,0.75)"
+                                    : "rgba(255,255,255,0.80)",
+                                boxShadow: bkd
+                                  ? `0 0 0 1.5px ${accentColor}60, 0 2px 8px ${accentColor}30`
+                                  : isDarkMode
+                                    ? "0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.35)"
+                                    : "0 0 0 1px rgba(0,0,0,0.07), 0 2px 6px rgba(0,0,0,0.10)",
+                                backdropFilter: "blur(6px)",
+                                transform: bkd ? "scale(1.08)" : "scale(1)",
+                              }}
+                              aria-pressed={bkd}
+                              title={
+                                bkd ? "Remove bookmark" : "Bookmark paragraph"
+                              }
+                            >
+                              {bkd ? (
+                                <BookmarkCheck
+                                  className="text-white h-6 w-6"
+                                  style={{ color: "#ffffff", strokeWidth: 2.2 }}
+                                />
+                              ) : (
+                                <Bookmark
+                                  className="text-white h-6 w-6"
+                                  style={{
+                                    strokeWidth: 1.8,
+                                  }}
+                                />
+                              )}
+                            </button>
+                          );
+                        })()}
 
                         {/* Paragraph Content with inline number */}
                         <div

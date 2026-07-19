@@ -19,6 +19,9 @@ import {
   Clock,
   Settings2,
   LayoutDashboard,
+  RefreshCw,
+  FolderOpen,
+  ArrowLeft,
 } from "lucide-react";
 
 // Lazy load heavy components — only compiled by Vite when the tab is first opened
@@ -29,6 +32,7 @@ const ModularRecents = lazy(() => import("@/components/ModularRecents"));
 const FontSettingsPage = lazy(() => import("./Settings"));
 const TabHome = lazy(() => import("./Tabhome"));
 const Search = lazy(() => import("./Search"));
+const EODH = lazy(() => import("./EODH"));
 
 const Home = memo(() => {
   const [leftPanelView, setLeftPanelView] = useState<
@@ -42,7 +46,7 @@ const Home = memo(() => {
   >("sermons");
   const [background, setBackground] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const { setSelectedMessage, selectedMessage, loading } = useSermonContext();
+  const { setSelectedMessage, selectedMessage, loading, isEodhMode, setIsEodhMode } = useSermonContext();
   const { isDarkMode, accentColor } = useTheme();
 
   useEffect(() => {
@@ -117,71 +121,223 @@ const Home = memo(() => {
 
       {/* ── Row 2: Horizontal NavBar ──────────────────────────── */}
       <div
-        className="w-full flex-shrink-0 h-8 flex items-center px-3 gap-0.5 border-t border-solid border-x-0 border-b-0 border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-b from-neutral-200 via-white to-neutral-100 dark:from-neutral-900 dark:via-neutral-700 dark:to-neutral-800 z-30"
+        className="w-full flex-shrink-0 h-8 flex items-center px-2 gap-0.5 border-t border-solid border-x-0 border-b-0 border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-b from-white via-neutral-50 to-neutral-100 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-700 z-30"
         style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
       >
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = leftPanelView === item.id && isPanelOpen;
-
-          return (
-            <motion.button
-              key={item.id}
-              onClick={() => switchView(item.id as any)}
-              whileTap={{ scale: 0.93 }}
-              className="relative flex items-center gap-1.5 px-3 h-7 rounded-lg cursor-pointer border-0 outline-none transition-all duration-150 flex-shrink-0"
-              style={{
-                background: isActive
-                  ? `color-mix(in srgb, ${accentColor} 13%, transparent)`
-                  : undefined,
-              }}
+        <AnimatePresence mode="wait" initial={false}>
+          {isEodhMode ? (
+            /* ── EODH mode controls ───────────────────────────── */
+            <motion.div
+              key="eodh-controls"
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -8 }}
+              transition={{ duration: 0.14 }}
+              className="flex items-center gap-1 flex-1"
             >
-              {/* Bottom accent indicator */}
-              {isActive && (
-                <motion.div
-                  layoutId="navBarPill"
-                  className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
-                  style={{ backgroundColor: accentColor }}
-                  transition={{ type: "spring", stiffness: 500, damping: 35, mass: 0.6 }}
-                />
-              )}
-
-              <Icon
+              {/* ← Back to Reading */}
+              <motion.button
+                onClick={() => setIsEodhMode(false)}
+                whileTap={{ scale: 0.93 }}
+                className="flex items-center gap-1.5 px-2.5 h-7 rounded-lg cursor-pointer border-0 outline-none transition-all duration-150 flex-shrink-0"
                 style={{
-                  width: 16,
-                  height: 16,
-                  color: isActive
-                    ? accentColor
-                    : isDarkMode
-                      ? "#78716c"
-                      : "#a8a29e",
-                  strokeWidth: isActive ? 2.3 : 1.7,
-                  flexShrink: 0,
-                  transition: "color 0.15s, stroke-width 0.15s",
+                  backgroundColor: isDarkMode
+                    ? "rgba(255,255,255,0.07)"
+                    : "rgba(0,0,0,0.05)",
+                }}
+                title="Exit EODH and return to reading"
+              >
+                <ArrowLeft
+                  size={13}
+                  style={{ color: isDarkMode ? "#a8a29e" : "#78716c" }}
+                />
+                <span className="text-[11px] font-medium text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
+                  Reading
+                </span>
+              </motion.button>
+
+              {/* Divider */}
+              <div
+                className="w-px h-4 mx-1 flex-shrink-0"
+                style={{
+                  backgroundColor: isDarkMode
+                    ? "rgba(255,255,255,0.10)"
+                    : "rgba(0,0,0,0.10)",
                 }}
               />
-              <span
-                className="text-[11px] font-medium transition-colors duration-150 whitespace-nowrap text-neutral-700 dark:text-neutral-300"
-                // style={{
-                //   color: isActive
-                //     ? accentColor
-                //     : isDarkMode
-                //       ? "#78716c"
-                //       : "#ffffff",
-                // }}
+
+              {/* Refresh list */}
+              <motion.button
+                onClick={() => window.dispatchEvent(new Event("eodh:refresh"))}
+                whileTap={{ scale: 0.93 }}
+                className="flex items-center gap-1.5 px-2.5 h-7 rounded-lg cursor-pointer border-0 outline-none transition-all duration-150 flex-shrink-0"
+                style={{ backgroundColor: "transparent" }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = isDarkMode
+                    ? "rgba(255,255,255,0.07)"
+                    : "rgba(0,0,0,0.05)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")
+                }
+                title="Refresh PDF list"
               >
-                {item.label}
-              </span>
-            </motion.button>
-          );
-        })}
+                <RefreshCw
+                  size={13}
+                  style={{ color: isDarkMode ? "#a8a29e" : "#78716c" }}
+                />
+                <span className="text-[11px] font-medium text-neutral-600 dark:text-neutral-400">
+                  Refresh
+                </span>
+              </motion.button>
+
+              {/* Open folder */}
+              <motion.button
+                onClick={() =>
+                  window.ipcRenderer.invoke("eodh:open-folder").catch(() => {})
+                }
+                whileTap={{ scale: 0.93 }}
+                className="flex items-center gap-1.5 px-2.5 h-7 rounded-lg cursor-pointer border-0 outline-none transition-all duration-150 flex-shrink-0"
+                style={{ backgroundColor: "transparent" }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = isDarkMode
+                    ? "rgba(255,255,255,0.07)"
+                    : "rgba(0,0,0,0.05)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")
+                }
+                title="Open EODH folder in Explorer"
+              >
+                <FolderOpen
+                  size={13}
+                  style={{ color: isDarkMode ? "#a8a29e" : "#78716c" }}
+                />
+                <span className="text-[11px] font-medium text-neutral-600 dark:text-neutral-400">
+                  Open Folder
+                </span>
+              </motion.button>
+            </motion.div>
+          ) : (
+            /* ── Normal nav items ─────────────────────────────── */
+            <motion.div
+              key="normal-nav"
+              initial={{ opacity: 0, x: 8 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 8 }}
+              transition={{ duration: 0.14 }}
+              className="flex items-center gap-0.5 flex-1"
+            >
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = leftPanelView === item.id && isPanelOpen;
+
+                return (
+                  <motion.button
+                    key={item.id}
+                    onClick={() => switchView(item.id as any)}
+                    whileTap={{ scale: 0.93 }}
+                    className="relative flex items-center gap-1.5 px-3 h-7 rounded-lg cursor-pointer border-0 outline-none transition-all duration-150 flex-shrink-0"
+                    style={{
+                      background: isActive
+                        ? `color-mix(in srgb, ${accentColor} 13%, transparent)`
+                        : undefined,
+                    }}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="navBarPill"
+                        className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
+                        style={{ backgroundColor: accentColor }}
+                        transition={{ type: "spring", stiffness: 500, damping: 35, mass: 0.6 }}
+                      />
+                    )}
+                    <Icon
+                      style={{
+                        width: 16,
+                        height: 16,
+                        color: isActive
+                          ? accentColor
+                          : isDarkMode
+                          ? "#78716c"
+                          : "#a8a29e",
+                        strokeWidth: isActive ? 2.3 : 1.7,
+                        flexShrink: 0,
+                        transition: "color 0.15s, stroke-width 0.15s",
+                      }}
+                    />
+                    <span className="text-[11px] font-medium transition-colors duration-150 whitespace-nowrap text-neutral-700 dark:text-neutral-300">
+                      {item.label}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── EODH toggle — always at far right ─────────────── */}
+        <motion.button
+          onClick={() => setIsEodhMode(!isEodhMode)}
+          whileTap={{ scale: 0.93 }}
+          className="flex items-center gap-1.5 px-3 h-7 rounded-lg cursor-pointer border-0 outline-none transition-all duration-200 flex-shrink-0 ml-1"
+          style={{
+            background: isEodhMode
+              ? accentColor
+              : isDarkMode
+              ? "rgba(255,255,255,0.05)"
+              : "rgba(0,0,0,0.05)",
+          }}
+          title={isEodhMode ? "Exit EODH" : "Open EODH Library"}
+        >
+          <span
+            className="text-[11px] font-bold tracking-widest uppercase"
+            style={{ color: isEodhMode ? "#ffffff" : accentColor }}
+          >
+            EODH
+          </span>
+        </motion.button>
       </div>
 
       {/* ── Content area (full width) ─────────────────────────── */}
       <div className="relative flex-1 overflow-hidden">
         <div className="relative h-full w-full overflow-hidden">
+
+          {/* ── EODH view (takes over full workspace) ─────────── */}
+          <AnimatePresence>
+            {isEodhMode && (
+              <motion.div
+                key="eodh-view"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="absolute inset-0 z-50"
+              >
+                <Suspense
+                  fallback={
+                    <div className="flex items-center justify-center h-full">
+                      <div
+                        className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
+                        style={{
+                          borderColor: `${accentColor}30`,
+                          borderTopColor: accentColor,
+                        }}
+                      />
+                    </div>
+                  }
+                >
+                  <EODH />
+                </Suspense>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ── Normal sermon workspace ─────────────────────────── */}
           <div
-            className={`relative w-full h-full overflow-hidden flex flex-col ${
+            className={`relative w-full h-full overflow-hidden flex flex-col transition-opacity duration-200 ${
+              isEodhMode ? "opacity-0 pointer-events-none" : "opacity-100"
+            } ${
               showFullWidthSermon
                 ? ""
                 : "bg-gradient-to-b from-zinc-50 via-white to-white dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900"

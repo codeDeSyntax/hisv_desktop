@@ -1,15 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  Mic,
-  MonitorPlay,
-  Sun,
-  Moon,
-  RefreshCw,
-  HelpCircle,
-  X,
-  Minus,
-  Square,
-} from "lucide-react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Mic, X, Minus, Square, ScreenShare } from "lucide-react";
 import { ThemeToggle } from "@/shared/ThemeToggler";
 import { useTheme } from "@/Provider/Theme";
 
@@ -18,6 +8,7 @@ import FontPicker from "@/components/FontPicker";
 import { useSermonContext } from "../Provider/Vsermons";
 import { Tooltip } from "antd";
 import { Sermon } from "@/types/index.js";
+import { DashOutlined } from "@ant-design/icons";
 
 const TitleBar: React.FC = () => {
   const {
@@ -38,7 +29,11 @@ const TitleBar: React.FC = () => {
   // Sermon tabs state
   const [openTabs, setOpenTabs] = useState<Sermon[]>([]);
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
-  const [hoveredControl, setHoveredControl] = useState<"close" | "min" | "max" | null>(null);
+
+  // Shimmer animation state
+  const [shimmerVisible, setShimmerVisible] = useState(false);
+  const shimmerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const shimmerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load persisted tabs on component mount
   useEffect(() => {
@@ -54,6 +49,27 @@ const TitleBar: React.FC = () => {
         localStorage.removeItem("activeSermonTabId");
       }
     }
+  }, []);
+
+  // Shimmer interval effect
+  useEffect(() => {
+    const triggerShimmer = () => {
+      setShimmerVisible(true);
+      shimmerTimeoutRef.current = setTimeout(() => {
+        setShimmerVisible(false);
+      }, 900);
+    };
+
+    // First shimmer after a brief delay on mount
+    shimmerTimeoutRef.current = setTimeout(triggerShimmer, 1500);
+
+    // Then repeat every 7 seconds
+    shimmerIntervalRef.current = setInterval(triggerShimmer, 7000);
+
+    return () => {
+      if (shimmerTimeoutRef.current) clearTimeout(shimmerTimeoutRef.current);
+      if (shimmerIntervalRef.current) clearInterval(shimmerIntervalRef.current);
+    };
   }, []);
 
   // Persist tabs
@@ -112,7 +128,10 @@ const TitleBar: React.FC = () => {
     if (openTabs.length > 0) {
       setOpenTabs((prevTabs) => {
         const valid = prevTabs.filter((tab) => !!findSermonById(tab.id));
-        if (activeTabId && !valid.find((t) => t.id.toString() === activeTabId)) {
+        if (
+          activeTabId &&
+          !valid.find((t) => t.id.toString() === activeTabId)
+        ) {
           setActiveTabId(null);
           setSelectedMessage(null);
         }
@@ -145,48 +164,81 @@ const TitleBar: React.FC = () => {
     return yiq < 160; // Dark background if YIQ < 160
   })();
 
-  const brandColor = isAccentDark ? "rgba(255, 255, 255, 0.75)" : "rgba(0, 0, 0, 0.7)";
-  const decorationColor = isAccentDark ? "rgba(255, 255, 255, 0.45)" : "rgba(0, 0, 0, 0.4)";
+  // Contrast-aware color tokens — strong enough to read, not too dim
+  const iconColor = isAccentDark
+    ? "rgba(255,255,255,0.92)"
+    : "rgba(0,0,0,0.88)";
+  const iconDimColor = isAccentDark
+    ? "rgba(255,255,255,0.65)"
+    : "rgba(0,0,0,0.60)";
+  const brandColor = isAccentDark
+    ? "rgba(255,255,255,0.95)"
+    : "rgba(0,0,0,0.90)";
+  const decorationColor = isAccentDark
+    ? "rgba(255,255,255,0.50)"
+    : "rgba(0,0,0,0.40)";
 
   return (
     <div className="z-50 w-screen" style={{ WebkitAppRegion: "drag" } as any}>
+      {/* Shimmer animation keyframes */}
+      <style>{`
+        @keyframes tb-shimmer {
+          0%   { transform: translateX(-100%) skewX(-15deg); opacity: 0; }
+          15%  { opacity: 1; }
+          85%  { opacity: 1; }
+          100% { transform: translateX(400%) skewX(-15deg); opacity: 0; }
+        }
+        .tb-shimmer-run {
+          animation: tb-shimmer 0.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+      `}</style>
+
       <div
-        className="h-[4.5vh] min-h-[38px] flex items-center justify-between pl-3 pr-0 border-b select-none relative backdrop-blur-sm"
+        className="h-[4vh] min-h-[35px] flex items-center justify-between pl-3 pr-0 border-none select-none relative overflow-hidden backdrop-blur-sm"
         style={{
-          backgroundColor: accentColor,
-          borderColor: isAccentDark ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.1)",
-          // Expose CSS variables for child components to inherit automatically
-          ["--tb-hover-bg" as any]: isAccentDark ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.08)",
-          ["--tb-fg" as any]: isAccentDark ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.65)",
-          ["--tb-fg-hover" as any]: isAccentDark ? "#ffffff" : "#000000",
-          ["--tb-border" as any]: isAccentDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.12)",
+          backgroundColor: accentColor + "88",
         }}
       >
+        {/* ── Shimmer sweep ──────────────────────────────────────── */}
+        <div
+          className={`pointer-events-none absolute inset-y-0 left-0 w-1/4 ${shimmerVisible ? "tb-shimmer-run" : "opacity-0"}`}
+          style={{
+            background: isAccentDark
+              ? "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 40%, rgba(255,255,255,0.32) 50%, rgba(255,255,255,0.18) 60%, transparent 100%)"
+              : "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 40%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.25) 60%, transparent 100%)",
+            zIndex: 1,
+          }}
+        />
+
         {/* ── Left: Sermon tabs ──────────────────────────────── */}
         <div
-          className="flex items-center gap-0.5 flex-shrink-0 min-w-0 h-full"
+          className="flex items-center gap-0.5 flex-shrink-0 min-w-0 h-full relative z-10"
           style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
         >
           {/* Active/current sermon tab */}
           {selectedMessage && activeTab === "message" && (
             <div
               key={`current-${selectedMessage.id}`}
-              className="relative flex items-center gap-1.5 px-3 py-0.5 cursor-default flex-shrink-0 max-w-[180px] min-w-[90px] h-[75%] rounded-lg overflow-hidden border border-solid"
+              className="relative flex items-center gap-1.5 px-3 py-0.5 cursor-default flex-shrink-0 max-w-[180px] min-w-[90px] h-[75%] rounded-lg overflow-hidden border-none "
               style={{
-                background: isAccentDark ? "rgba(255, 255, 255, 0.16)" : "rgba(0, 0, 0, 0.1)",
-                borderColor: isAccentDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)",
+                background: isAccentDark
+                  ? "rgba(255,255,255,0.18)"
+                  : "rgba(0,0,0,0.11)",
+                borderColor: isAccentDark
+                  ? "rgba(255,255,255,0.10)"
+                  : "rgba(0,0,0,0.07)",
               }}
               title={selectedMessage.title}
             >
               {/* Active pulse dot */}
               <div
                 className="w-1.5 h-1.5 rounded-full flex-shrink-0 animate-pulse"
-                style={{ backgroundColor: isAccentDark ? "#ffffff" : "#000000" }}
+                style={{ backgroundColor: iconColor }}
               />
 
               <span
-                className="text-[10px] font-semibold truncate flex-1"
-                style={{ color: isAccentDark ? "#ffffff" : "#000000" }}
+                className="text-[10px] font-semibold truncate flex-1 text-white"
+                // style={{ color: iconColor }}
               >
                 {selectedMessage.title.length > 22
                   ? selectedMessage.title.substring(0, 22) + "…"
@@ -196,19 +248,25 @@ const TitleBar: React.FC = () => {
               {selectedMessage.audioUrl && (
                 <Mic
                   className="w-2.5 h-2.5 flex-shrink-0 opacity-75"
-                  style={{ color: isAccentDark ? "#ffffff" : "#000000" }}
+                  style={{ color: iconColor }}
                 />
               )}
             </div>
           )}
 
           {/* Separator */}
-          {selectedMessage && activeTab === "message" && recentSermons.length > 0 && (
-            <div
-              className="w-px h-3 mx-1.5 flex-shrink-0"
-              style={{ backgroundColor: isAccentDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.1)" }}
-            />
-          )}
+          {selectedMessage &&
+            activeTab === "message" &&
+            recentSermons.length > 0 && (
+              <div
+                className="w-px h-3 mx-1.5 flex-shrink-0"
+                style={{
+                  backgroundColor: isAccentDark
+                    ? "rgba(255,255,255,0.18)"
+                    : "rgba(0,0,0,0.12)",
+                }}
+              />
+            )}
 
           {/* Recent sermon tabs (max 4, excluding current) */}
           {recentSermons
@@ -225,30 +283,26 @@ const TitleBar: React.FC = () => {
                   }
                   setActiveTabId(sermon.id.toString());
                 }}
-                className={`relative flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg cursor-pointer flex-shrink-0 max-w-[150px] min-w-[80px] h-[75%] transition-all duration-150 group ${
-                  isAccentDark
-                    ? "hover:bg-white/8 text-white/70 hover:text-white"
-                    : "hover:bg-black/6 text-black/70 hover:text-black"
-                }`}
+                className="relative flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg cursor-pointer flex-shrink-0 max-w-[150px] min-w-[80px] h-[75%] transition-all duration-150 group"
+                style={{ WebkitAppRegion: "no-drag" } as any}
                 title={sermon.title}
               >
                 <div
-                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors ${
-                    isAccentDark
-                      ? "bg-white/30 group-hover:bg-white/60"
-                      : "bg-black/25 group-hover:bg-black/50"
-                  }`}
+                  className="w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors"
+                  style={{ backgroundColor: iconDimColor }}
                 />
-                <span className="text-[10px] font-normal truncate flex-1 leading-none">
+                <span
+                  className="text-[10px] font-normal truncate flex-1 leading-none transition-colors duration-150 text-white dark:text-neutral-50"
+                  // style={{ color: iconDimColor }}
+                >
                   {sermon.title.length > 20
                     ? sermon.title.substring(0, 20) + "…"
                     : sermon.title}
                 </span>
                 {sermon.audioUrl && (
                   <Mic
-                    className={`w-2 h-2 flex-shrink-0 opacity-50 group-hover:opacity-80 transition-opacity ${
-                      isAccentDark ? "text-white" : "text-black"
-                    }`}
+                    className="w-2 h-2 flex-shrink-0 transition-opacity"
+                    style={{ color: iconDimColor, opacity: 0.75 }}
                   />
                 )}
               </div>
@@ -256,86 +310,103 @@ const TitleBar: React.FC = () => {
         </div>
 
         {/* ── Centre: App brand ─────────────────────────────── */}
-        <div className="flex-1 flex items-center justify-center pointer-events-none px-4 min-w-0">
+        <div className="flex-1 flex items-center justify-center pointer-events-none px-4 min-w-0 relative z-10">
           <div className="flex items-center gap-1.5">
-            {/* Decorative glyph */}
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <circle cx="6" cy="6" r="5" stroke={decorationColor} strokeWidth="1.2" opacity="0.8" />
-              <circle cx="6" cy="6" r="2.5" fill={decorationColor} opacity="0.65" />
-            </svg>
+            <DashOutlined style={{ color: decorationColor, fontSize: 11 }} />
             <span
-              className="text-[11px] font-dscript font-semibold tracking-widest uppercase"
+              className="text-[11px] font-semibold -tracking-tight uppercase"
               style={{
-                color: brandColor,
-                letterSpacing: "0.18em",
+                color: "white",
                 transform: "scaleY(1.12) scaleX(0.92)",
               }}
             >
               His Voice
             </span>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <circle cx="6" cy="6" r="5" stroke={decorationColor} strokeWidth="1.2" opacity="0.8" />
-              <circle cx="6" cy="6" r="2.5" fill={decorationColor} opacity="0.65" />
-            </svg>
+            <DashOutlined style={{ color: decorationColor, fontSize: 11 }} />
           </div>
         </div>
 
         {/* ── Right: Controls ───────────────────────────────── */}
         <div
-          className="flex items-stretch h-full flex-shrink-0"
+          className="flex items-stretch h-full flex-shrink-0 relative z-10"
           style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
         >
           {/* Utilities section */}
-          <div className="flex items-center gap-1.5 pr-3">
+          <div className="flex items-center gap-1 pr-3 bg-white dark:bg-neutral-900 px-3">
             {/* Font picker */}
             <FontPicker />
 
             {/* Divider */}
             <div
               className="w-px h-4 mx-0.5"
-              style={{ backgroundColor: isAccentDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.12)" }}
+              style={{
+                backgroundColor: isAccentDark
+                  ? "rgba(255,255,255,0.18)"
+                  : "rgba(0,0,0,0.14)",
+              }}
             />
 
             {/* Presentation mode toggle */}
-            <Tooltip title={isPresentationMode ? "Exit Presentation" : "Presentation Mode"}>
+            <Tooltip
+              title={
+                isPresentationMode ? "Exit Presentation" : "Presentation Mode"
+              }
+            >
               <button
                 onClick={() => setIsPresentationMode(!isPresentationMode)}
-                className={`w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-all duration-150 ${
-                  isAccentDark ? "hover:bg-white/10" : "hover:bg-black/8"
-                }`}
+                className="p-1 rounded-md flex items-center justify-center cursor-pointer transition-all duration-150"
+                style={
+                  {
+                    "--hover-bg": isAccentDark
+                      ? "rgba(255,255,255,0.13)"
+                      : "rgba(0,0,0,0.09)",
+                  } as any
+                }
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = isAccentDark
+                    ? "rgba(255,255,255,0.13)"
+                    : "rgba(0,0,0,0.09)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")
+                }
                 aria-label="Toggle presentation mode"
               >
-                <MonitorPlay
-                  className="w-[18px] h-[18px] transition-colors"
-                  style={{
-                    color: isPresentationMode
-                      ? (isAccentDark ? "#ffffff" : "#000000")
-                      : (isAccentDark ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.5)"),
-                  }}
-                />
+                <ScreenShare className="w-5 h-5 transition-colors text-black dark:text-white" />
               </button>
             </Tooltip>
 
-            {/* Theme toggle */}
-            <ThemeToggle />
+            {/* Theme toggle — pass isAccentDark so it can pick the right icon color */}
+            <ThemeToggle isAccentDark={isAccentDark} iconColor={iconColor} />
 
             {/* Update manager */}
-            <UpdateManager />
+            <UpdateManager isAccentDark={isAccentDark} iconColor={iconColor} />
           </div>
 
           {/* Windows-style Window controls */}
           <div
             className="flex items-stretch h-full border-l"
-            style={{ borderColor: isAccentDark ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.1)" }}
+            style={{
+              borderColor: isAccentDark
+                ? "rgba(255,255,255,0.12)"
+                : "rgba(0,0,0,0.10)",
+            }}
           >
             {/* Minimize */}
             <button
               onClick={handleMinimize}
-              className={`w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 border-0 bg-transparent rounded-none ${
-                isAccentDark
-                  ? "text-white/70 hover:bg-white/10 hover:text-white"
-                  : "text-black/75 hover:bg-black/8 hover:text-black"
-              }`}
+              className="w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 text-white border-0 bg-transparent rounded-none"
+              // style={{ color: iconDimColor }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = isAccentDark
+                  ? "rgba(255,255,255,0.12)"
+                  : "rgba(0,0,0,0.09)";
+                e.currentTarget.style.color = iconColor;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = iconDimColor;
+              }}
               title="Minimize"
               aria-label="Minimize"
             >
@@ -345,11 +416,18 @@ const TitleBar: React.FC = () => {
             {/* Maximize */}
             <button
               onClick={handleMaximize}
-              className={`w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 border-0 bg-transparent rounded-none ${
-                isAccentDark
-                  ? "text-white/70 hover:bg-white/10 hover:text-white"
-                  : "text-black/75 hover:bg-black/8 hover:text-black"
-              }`}
+              className="w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 text-white  border-0 bg-transparent rounded-none"
+              // style={{ color: iconDimColor }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = isAccentDark
+                  ? "rgba(255,255,255,0.12)"
+                  : "rgba(0,0,0,0.09)";
+                e.currentTarget.style.color = iconColor;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = iconDimColor;
+              }}
               title="Maximize"
               aria-label="Maximize"
             >
@@ -359,11 +437,16 @@ const TitleBar: React.FC = () => {
             {/* Close */}
             <button
               onClick={handleClose}
-              className={`w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 border-0 bg-transparent rounded-none ${
-                isAccentDark
-                  ? "text-white/70 hover:bg-[#e81123] hover:text-white"
-                  : "text-black/75 hover:bg-[#e81123] hover:text-white"
-              }`}
+              className="w-12 h-full flex items-center justify-center cursor-pointer transition-colors duration-100 text-white  border-0 bg-transparent rounded-none"
+              // style={{ color: iconDimColor }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#e81123";
+                e.currentTarget.style.color = "#ffffff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = iconDimColor;
+              }}
               title="Close"
               aria-label="Close"
             >

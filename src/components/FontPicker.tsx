@@ -122,22 +122,19 @@ const FontPicker: React.FC = () => {
       <button
         ref={btnRef}
         onClick={handleOpen}
-        className={`flex items-center gap-1.5 h-7 px-2.5 rounded-lg border border-solid text-xs font-semibold transition-all duration-150 cursor-pointer ${
+        className={`flex items-center gap-1.5 h-7 px-2.5 rounded-lg border-none  text-xs font-semibold transition-all duration-150 cursor-pointer ${
           isDarkMode
-            ? "bg-zinc-800/30 hover:bg-zinc-800/60"
-            : "bg-zinc-100/40 hover:bg-zinc-100/85"
+            ? "bg-neutral-800 hover:bg-neutral-800/60"
+            : "bg-neutral-100 hover:bg-neutral-100/85"
         }`}
-        style={{
-          borderColor: isOpen ? (accentColor || "var(--tb-border)") : "var(--tb-border, rgba(228, 228, 231, 0.4))",
-          backgroundColor: "var(--tb-hover-bg)",
-          color: "var(--tb-fg, inherit)",
-        }}
+       
         title="Select Sermon Font"
       >
-        <Type className="w-[13px] h-[13px] text-[var(--tb-fg)]" />
-        <span className="font-sans text-[var(--tb-fg)]">{settings.fontFamily || "Outfit"}</span>
+        <Type className="w-[13px] h-[13px] text-black dark:text-white" />
+        <span className="font-sans text-black dark:text-white" >{settings.fontFamily || "Outfit"}</span>
         <ChevronDown
-          className={`w-[11px] h-[11px] text-[var(--tb-fg)] transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          className={`w-[11px] h-[11px] text-black dark:text-white transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          
         />
       </button>
 

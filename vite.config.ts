@@ -37,6 +37,7 @@ export default defineConfig(({ command }) => {
           manualChunks: {
             vendor: ["react", "react-dom"],
             antd: ["antd"],
+            pdfjs: ["pdfjs-dist"],
           },
         },
       },
@@ -111,7 +112,9 @@ export default defineConfig(({ command }) => {
         "@ant-design/icons",
         "framer-motion",
         "lucide-react",
+        "pdfjs-dist",
       ],
+      exclude: ["pdfjs-dist/build/pdf.worker.min.mjs"],
     },
   };
 });

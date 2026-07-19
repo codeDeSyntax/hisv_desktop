@@ -40,7 +40,7 @@ const SermonHeader = ({
       </h1>
       {metadata && (
         <p
-          className="px-2  text-center bg-neutral-400 font-serif font-medium leading-[1.4] tracking-normal mt-3"
+          className="px-2  text-center bg-neutral-400 dark:text-neutral-50 font-serif font-medium leading-[1.4] tracking-normal mt-3"
           style={{
             // color: isDarkMode
             //   ? "rgba(203,203,203,0.75)"
@@ -48,7 +48,7 @@ const SermonHeader = ({
             fontSize: `${metaFontSize * 0.8}px`,
           transform: "scaleY(1.12) scaleX(0.92)",
             lineHeight: 1.4,
-            // backgroundColor:"white"
+            backgroundColor:accentColor + "30"
           }}
         >
           {metadata}

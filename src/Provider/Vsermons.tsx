@@ -97,6 +97,8 @@ interface SermonContextType {
   setIsCollapsed: (collapsed: boolean) => void;
   isPresentationMode: boolean;
   setIsPresentationMode: (mode: boolean) => void;
+  isEodhMode: boolean;
+  setIsEodhMode: (mode: boolean) => void;
   // Bookmark functions
   bookmarks: Bookmark[];
   setBookmarks: (bookmarks: Bookmark[]) => void;
@@ -177,6 +179,7 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
   const [isPresentationMode, setIsPresentationMode] = useState<boolean>(false);
+  const [isEodhMode, setIsEodhMode] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("home");
   const [randomSermons, setRandomSermons] = useState<Sermon[]>([]);
@@ -661,6 +664,8 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       setIsCollapsed,
       isPresentationMode,
       setIsPresentationMode,
+      isEodhMode,
+      setIsEodhMode,
       theme,
       setTheme,
       // Bookmark functions
@@ -713,6 +718,8 @@ const SermonProvider = ({ children }: SermonProviderProps) => {
       setIsCollapsed,
       isPresentationMode,
       setIsPresentationMode,
+      isEodhMode,
+      setIsEodhMode,
       theme,
       setTheme,
       bookmarks,

@@ -1,6 +1,6 @@
 {
   "name": "his-voice",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "main": "dist-electron/main/index.js",
   "description": "Electron Vite React boilerplate.",
   "author": "dlcentimemessage>",
@@ -34,7 +34,8 @@
     "better-sqlite3": "^12.6.2",
     "electron-updater": "^6.1.8",
     "framer-motion": "^11.5.4",
-    "lucide-react": "^0.441.0"
+    "lucide-react": "^0.441.0",
+    "pdfjs-dist": "^6.1.200"
   },
   "devDependencies": {
     "@electron/rebuild": "^4.0.3",

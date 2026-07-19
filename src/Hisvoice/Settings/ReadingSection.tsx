@@ -64,7 +64,7 @@ const ReadingSection: React.FC<{
           <input
             type="range"
             min="12"
-            max="120"
+            max="86"
             value={fontSize}
             onChange={(e) => setFontSize(Number(e.target.value))}
             className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-zinc-200 dark:bg-zinc-700"
@@ -72,7 +72,7 @@ const ReadingSection: React.FC<{
           />
           <div className="flex justify-between mt-1.5 text-[10px] text-zinc-400 dark:text-zinc-500">
             <span>12px</span>
-            <span>120px</span>
+            <span>86px</span>
           </div>
         </div>
       </div>
@@ -122,7 +122,7 @@ const ReadingSection: React.FC<{
         description="Normal or bold text while reading"
         control={
           <OptionButtons
-            options={["thin","normal", "bold"] as const}
+            options={["thin", "normal", "bold"] as const}
             value={fontWeight}
             onChange={setFontWeight}
             accentColor={accentColor}

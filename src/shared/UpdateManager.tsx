@@ -13,12 +13,19 @@ type UpdatePayload =
   | { status: "up-to-date" }
   | { status: "error"; message: string };
 
-export default function UpdateManager() {
+interface UpdateManagerProps {
+  isAccentDark?: boolean;
+  iconColor?: string;
+}
+
+export default function UpdateManager({ isAccentDark = true, iconColor }: UpdateManagerProps = {}) {
   const btnRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(false);
   const [update, setUpdate] = useState<UpdatePayload>({ status: "idle" });
   const { accentColor } = useTheme();
+
+  const resolvedIconColor = iconColor ?? (isAccentDark ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.60)");
 
   // Subscribe to update events on mount
   useEffect(() => {
@@ -216,11 +223,14 @@ export default function UpdateManager() {
       <div
         ref={btnRef}
         onClick={() => setShow((s) => !s)}
-        className="relative w-8 h-8 rounded-md flex items-center justify-center cursor-pointer transition-all duration-150 hover:bg-[var(--tb-hover-bg,rgba(244,244,245,0.85))] dark:hover:bg-[var(--tb-hover-bg,rgba(39,39,42,0.8))]"
+        className="relative  rounded-md flex items-center justify-center cursor-pointer transition-all duration-150"
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = isAccentDark ? "rgba(255,255,255,0.13)" : "rgba(0,0,0,0.09)")}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         title="App updates"
       >
         <DownloadCloud
-          className="w-[18px] h-[18px] text-[var(--tb-fg,#71717a)] hover:text-[var(--tb-fg-hover,#18181b)] transition-colors"
+          className="w-5 h-5 transition-colors text-black dark:text-white"
+         
         />
         {hasDot && (
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-amber-400" />

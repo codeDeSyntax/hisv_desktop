@@ -121,12 +121,17 @@ class ThumbnailCache {
 
 // ── Text Content Cache (per-PDF) ────────────────────────────────────────────
 class TextContentCacheStore {
-  private cache = new Map<string, { index: PageTextIndex; timestamp: number; size: number }>();
+  private cache = new Map<
+    string,
+    { index: PageTextIndex; timestamp: number; size: number }
+  >();
 
   set(filePath: string, textIndex: PageTextIndex): void {
     const size = JSON.stringify(textIndex).length;
     if (currentCacheSize + size > MAX_CACHE_SIZE) {
-      const oldest = Array.from(this.cache.entries()).sort((a, b) => a[1].timestamp - b[1].timestamp)[0];
+      const oldest = Array.from(this.cache.entries()).sort(
+        (a, b) => a[1].timestamp - b[1].timestamp,
+      )[0];
       if (oldest) {
         this.cache.delete(oldest[0]);
         currentCacheSize -= oldest[1].size;
@@ -175,12 +180,17 @@ interface SearchIndex {
 }
 
 class SearchIndexCache {
-  private cache = new Map<string, { index: SearchIndex; timestamp: number; size: number }>();
+  private cache = new Map<
+    string,
+    { index: SearchIndex; timestamp: number; size: number }
+  >();
 
   set(filePath: string, index: SearchIndex): void {
     const size = JSON.stringify(index).length;
     if (currentCacheSize + size > MAX_CACHE_SIZE) {
-      const oldest = Array.from(this.cache.entries()).sort((a, b) => a[1].timestamp - b[1].timestamp)[0];
+      const oldest = Array.from(this.cache.entries()).sort(
+        (a, b) => a[1].timestamp - b[1].timestamp,
+      )[0];
       if (oldest) {
         this.cache.delete(oldest[0]);
         currentCacheSize -= oldest[1].size;

@@ -9,6 +9,13 @@
     output: "release/${version}",
   },
   files: ["dist-electron", "dist"],
+  extraResources: [
+    {
+      from: "resources/eodh",
+      to: "resources/eodh",
+      filter: ["**/*"],
+    },
+  ],
   win: {
     icon: "public/hisv.png",
     target: [

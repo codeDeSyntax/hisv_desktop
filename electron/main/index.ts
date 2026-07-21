@@ -354,23 +354,45 @@ async function createMainWindow() {
 
   // ── EODH: list PDF files ─────────────────────────────────────────────────
   ipcMain.handle("eodh:list-pdfs", () => {
-    const eodhFolder = app.isPackaged
-      ? path.join(app.getPath("userData"), "eodh")
-      : path.join(process.env.APP_ROOT!, "resources", "eodh");
+    // In dev:        APP_ROOT/resources/eodh  (process.resourcesPath points inside Electron binary)
+    // In production: <install>/resources/eodh (extraResources copies to: "eodh")
+    const devFolder        = path.join(process.env.APP_ROOT!, "resources", "eodh");
+    const bundledFolder    = path.join(process.resourcesPath, "eodh");           // packaged
+    const userFolder       = path.join(app.getPath("userData"), "eodh");         // user-added
+
+    const hasPdfs = (folder: string) => {
+      try {
+        return fs.existsSync(folder) &&
+               fs.readdirSync(folder).some((f) => f.toLowerCase().endsWith(".pdf"));
+      } catch { return false; }
+    };
+
+    // Priority: user folder → bundled (packaged) → dev source folder
+    let eodhFolder: string;
+    if (hasPdfs(userFolder)) {
+      eodhFolder = userFolder;
+    } else if (hasPdfs(bundledFolder)) {
+      eodhFolder = bundledFolder;
+    } else if (hasPdfs(devFolder)) {
+      eodhFolder = devFolder;
+    } else {
+      // Ensure the user folder exists so users can drop PDFs there
+      try { fs.mkdirSync(userFolder, { recursive: true }); } catch {}
+      eodhFolder = userFolder;
+    }
 
     try {
-      fs.mkdirSync(eodhFolder, { recursive: true });
-      const files = fs
+      return fs
         .readdirSync(eodhFolder)
         .filter((f) => f.toLowerCase().endsWith(".pdf"))
         .sort()
         .map((f) => ({
-          name: f.replace(/\.pdf$/i, "").replace(/[-_]/g, " "),
+          name:     f.replace(/\.pdf$/i, "").replace(/[-_]/g, " "),
           filename: f,
-          path: path.join(eodhFolder, f),
+          path:     path.join(eodhFolder, f),
         }));
-      return files;
-    } catch {
+    } catch (err) {
+      console.error("eodh:list-pdfs error:", err);
       return [];
     }
   });
@@ -385,11 +407,16 @@ async function createMainWindow() {
 
   // ── EODH: open folder in explorer ───────────────────────────────────────
   ipcMain.handle("eodh:open-folder", () => {
-    const folder = app.isPackaged
-      ? path.join(app.getPath("userData"), "eodh")
-      : path.join(process.env.APP_ROOT!, "resources", "eodh");
-    fs.mkdirSync(folder, { recursive: true });
-    shell.openPath(folder);
+    const bundledFolder = path.join(process.resourcesPath, "eodh");
+    const userFolder    = path.join(app.getPath("userData"), "eodh");
+
+    // Ensure user folder exists, then open it so users can add/remove PDFs
+    try {
+      fs.mkdirSync(userFolder, { recursive: true });
+      shell.openPath(userFolder);
+    } catch {
+      try { shell.openPath(bundledFolder); } catch {}
+    }
   });
 
   // Handle external links

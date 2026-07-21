@@ -12,7 +12,7 @@
   extraResources: [
     {
       from: "resources/eodh",
-      to: "resources/eodh",
+      to: "eodh",
       filter: ["**/*"],
     },
   ],

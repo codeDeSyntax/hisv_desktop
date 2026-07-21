@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 const FONTS = [
   { name: "Outfit", label: "Outfit", desc: "Clean geometric sans" },
   { name: "Fraunces", label: "Fraunces", desc: "Editorial serif display" },
+  { name: "Lora", label: "Lora", desc: "Contemporary reading serif" },
+  { name: "Merriweather", label: "Merriweather", desc: "Sturdy screen reading serif" },
 ];
 
 const FontPicker: React.FC = () => {

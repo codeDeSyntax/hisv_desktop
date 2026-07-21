@@ -34,4 +34,5 @@ yarn.lock
 __pycache__/
 *.pyc
 reports/
-resources/
+resources/*
+!resources/eodh/

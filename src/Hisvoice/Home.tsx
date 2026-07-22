@@ -121,7 +121,7 @@ const Home = memo(() => {
 
       {/* ── Row 2: Horizontal NavBar ──────────────────────────── */}
       <div
-        className="w-full flex-shrink-0 h-8 flex items-center px-2 gap-0.5 border-t border-solid border-x-0 border-b-0 border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-b from-white via-neutral-50 to-neutral-100 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-700 z-30"
+        className="w-full flex-shrink-0 h-8 flex items-center px-2 gap-0.5 border-t border-solid border-x-0 border-b-0 border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-b from-white via-neutral-50 to-neutral-100 dark:from-neutral-900 dark:via-neutral-800/50 dark:to-neutral-700/50 z-30"
         style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
       >
         <AnimatePresence mode="wait" initial={false}>

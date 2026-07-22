@@ -3,6 +3,8 @@ import React, {
   useRef,
   useState,
   useCallback,
+  useMemo,
+  memo,
   forwardRef,
   useImperativeHandle,
 } from "react";
@@ -29,6 +31,7 @@ interface Props {
   scale: number;
   currentPage: number;
   searchQuery: string;
+  activeMatchPage: number; // 1-based page number of the currently focused match
   accentColor: string;
   isDarkMode: boolean;
   onLoad: (totalPages: number) => void;
@@ -90,6 +93,7 @@ const PDFViewer = forwardRef<PDFViewerHandle, Props>((props, ref) => {
     scale,
     currentPage,
     searchQuery,
+    activeMatchPage,
     accentColor,
     isDarkMode,
     onLoad,
@@ -104,6 +108,12 @@ const PDFViewer = forwardRef<PDFViewerHandle, Props>((props, ref) => {
   // High-performance background page-parsing queue control state
   const [maxLoadedPage, setMaxLoadedPage] = useState(2);
 
+  // ── Pre-built text index for instant search ──────────────────────────────
+  // Populated progressively in the background once pdfDoc is ready.
+  // Key: page number (1-based), Value: lowercased full-text string.
+  const textIndexRef = useRef<Map<number, string>>(new Map());
+  const textIndexReadyRef = useRef<boolean>(false);
+
   const { settings } = useSermonContext();
   const activeFontWeight =
     settings.fontWeight === "thin"
@@ -117,22 +127,43 @@ const PDFViewer = forwardRef<PDFViewerHandle, Props>((props, ref) => {
   useImperativeHandle(ref, () => ({
     goToPage: (page: number) => {
       const element = document.getElementById(`page-${page}`);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      const scrollContainer = element?.closest(".overflow-auto");
+      if (element && scrollContainer) {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const elRect = element.getBoundingClientRect();
+        const relativeTop = elRect.top - containerRect.top + scrollContainer.scrollTop;
+        scrollContainer.scrollTo({
+          top: relativeTop,
+          behavior: "smooth",
+        });
       }
     },
     nextPage: () => {
       const nextPageNum = Math.min(currentPage + 1, pdfDoc?.numPages ?? 1);
       const element = document.getElementById(`page-${nextPageNum}`);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      const scrollContainer = element?.closest(".overflow-auto");
+      if (element && scrollContainer) {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const elRect = element.getBoundingClientRect();
+        const relativeTop = elRect.top - containerRect.top + scrollContainer.scrollTop;
+        scrollContainer.scrollTo({
+          top: relativeTop,
+          behavior: "smooth",
+        });
       }
     },
     prevPage: () => {
       const prevPageNum = Math.max(currentPage - 1, 1);
       const element = document.getElementById(`page-${prevPageNum}`);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      const scrollContainer = element?.closest(".overflow-auto");
+      if (element && scrollContainer) {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const elRect = element.getBoundingClientRect();
+        const relativeTop = elRect.top - containerRect.top + scrollContainer.scrollTop;
+        scrollContainer.scrollTo({
+          top: relativeTop,
+          behavior: "smooth",
+        });
       }
     },
   }));
@@ -140,6 +171,8 @@ const PDFViewer = forwardRef<PDFViewerHandle, Props>((props, ref) => {
   // Reset page loaders when switching book
   useEffect(() => {
     setMaxLoadedPage(2);
+    textIndexRef.current = new Map();
+    textIndexReadyRef.current = false;
   }, [filePath]);
 
   // ── Load PDF document — reuse cache if available ──────────────────────────
@@ -179,31 +212,66 @@ const PDFViewer = forwardRef<PDFViewerHandle, Props>((props, ref) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filePath]);
 
-  // ── Search matching pages compilation ──────────────────────────────────────
+  // ── Background text-index builder ────────────────────────────────────────
+  // Runs once after pdfDoc is ready. Fills textIndexRef page-by-page so that
+  // search lookups are instant synchronous Map.get() calls, not async page fetches.
+  useEffect(() => {
+    if (!pdfDoc) return;
+    let cancelled = false;
+    textIndexReadyRef.current = false;
+
+    (async () => {
+      const index = new Map<number, string>();
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        if (cancelled) return;
+        try {
+          const pg = await pdfDoc.getPage(i);
+          const content = await pg.getTextContent();
+          const text = (content.items as any[])
+            .map((it) => it.str ?? "")
+            .join(" ")
+            .toLowerCase();
+          index.set(i, text);
+        } catch {
+          index.set(i, "");
+        }
+      }
+      if (!cancelled) {
+        textIndexRef.current = index;
+        textIndexReadyRef.current = true;
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [pdfDoc]);
+
+  // ── Search matching pages — uses pre-built index for instant results ───────
   useEffect(() => {
     if (!pdfDoc || !searchQuery.trim()) {
       onSearchResults([], 0);
       return;
     }
-    let cancelled = false;
     const q = searchQuery.toLowerCase();
     const matches: number[] = [];
 
-    (async () => {
-      for (let i = 1; i <= pdfDoc.numPages; i++) {
-        if (cancelled) break;
-        const pg = await pdfDoc.getPage(i);
-        const content = await pg.getTextContent();
-        const text = (content.items as any[])
-          .map((it) => it.str ?? "")
-          .join(" ")
-          .toLowerCase();
-        if (text.includes(q)) matches.push(i);
-      }
-      if (!cancelled) onSearchResults(matches, matches.length);
-    })();
+    // If index is already built, search is fully synchronous — zero lag
+    if (textIndexReadyRef.current) {
+      textIndexRef.current.forEach((text, pageNum) => {
+        if (text.includes(q)) matches.push(pageNum);
+      });
+      matches.sort((a, b) => a - b);
+      onSearchResults(matches, matches.length);
+      return;
+    }
 
-    return () => { cancelled = true; };
+    // Index still building — search only already-indexed pages and report partial results;
+    // a full re-run happens once the index finishes (via the build effect above triggering
+    // a state change that causes re-render, re-running this effect).
+    textIndexRef.current.forEach((text, pageNum) => {
+      if (text.includes(q)) matches.push(pageNum);
+    });
+    matches.sort((a, b) => a - b);
+    onSearchResults(matches, matches.length);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pdfDoc, searchQuery]);
 
@@ -236,9 +304,9 @@ const PDFViewer = forwardRef<PDFViewerHandle, Props>((props, ref) => {
 
   return (
     <div
-      className="relative w-full mx-auto transition-all duration-300 bg-white"
+      className="relative w-full mx-auto transition-colors duration-300"
       style={{
-        // backgroundColor: isDarkMode ? " #18181b" : "#ffffff",
+        backgroundColor: isDarkMode ? "#18181b" : "#ffffff",
         fontSize: `${baseFontSize}px`,
         lineHeight: "1.3",
         color: isDarkMode ? "#d6d3d1" : "#000000",
@@ -258,12 +326,13 @@ const PDFViewer = forwardRef<PDFViewerHandle, Props>((props, ref) => {
             pdfDoc={pdfDoc!}
             scale={scale}
             searchQuery={searchQuery}
+            isActiveMatchPage={pageNum === activeMatchPage}
             accentColor={accentColor}
             isDarkMode={isDarkMode}
             settings={settings}
             activeFontWeight={activeFontWeight}
             onPageInViewport={handlePageInViewport}
-            isVisible={pageNum <= maxLoadedPage}
+            isVisible={pageNum <= maxLoadedPage || pageNum === activeMatchPage}
             onLoadComplete={() => {
               setMaxLoadedPage((prev) => Math.max(prev, pageNum + 1));
             }}
@@ -280,6 +349,7 @@ interface PageBlockProps {
   pdfDoc: PDFDocumentProxy;
   scale: number;
   searchQuery: string;
+  isActiveMatchPage: boolean;
   accentColor: string;
   isDarkMode: boolean;
   settings: any;
@@ -289,11 +359,12 @@ interface PageBlockProps {
   onLoadComplete: () => void;
 }
 
-const PDFPageBlock: React.FC<PageBlockProps> = ({
+const PDFPageBlock: React.FC<PageBlockProps> = memo(({
   pageNum,
   pdfDoc,
   scale,
   searchQuery,
+  isActiveMatchPage,
   accentColor,
   isDarkMode,
   settings,
@@ -303,6 +374,7 @@ const PDFPageBlock: React.FC<PageBlockProps> = ({
   onLoadComplete,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null); // 1px sentinel at top of page
   const [paragraphs, setParagraphs] = useState<RebuiltParagraph[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -312,21 +384,52 @@ const PDFPageBlock: React.FC<PageBlockProps> = ({
     onPageInViewportRef.current = onPageInViewport;
   }, [onPageInViewport]);
 
-  // Setup IntersectionObserver ONLY for page viewport tracking in the toolbar
+  // ── Scroll to the first <mark> when this page becomes the active match ───
+  // Depends on `paragraphs` so it only runs once text is actually rendered.
   useEffect(() => {
-    const el = containerRef.current;
+    if (!isActiveMatchPage || !searchQuery.trim() || !paragraphs) return;
+    // One rAF so the new marks are painted before we scroll
+    const raf = requestAnimationFrame(() => {
+      const container = containerRef.current;
+      if (!container) return;
+      const mark = container.querySelector("mark");
+      const scrollContainer = container.closest(".overflow-auto");
+      if (mark && scrollContainer) {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const markRect = mark.getBoundingClientRect();
+        const relativeTop =
+          markRect.top -
+          containerRect.top +
+          scrollContainer.scrollTop -
+          containerRect.height / 2;
+        scrollContainer.scrollTo({
+          top: relativeTop,
+          behavior: "smooth",
+        });
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [isActiveMatchPage, searchQuery, paragraphs]);
+
+  // Setup IntersectionObserver ONLY for page viewport tracking in the toolbar
+  // ── Sentinel-based page tracking (fires instantly, works on any page height) ──
+  // We observe a 1px div at the top of the page block. When it enters the
+  // top 60% of the viewport, this page is declared the current page.
+  useEffect(() => {
+    const el = sentinelRef.current;
     if (!el) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
+        if (entry.isIntersecting) {
           onPageInViewportRef.current(pageNum);
         }
       },
       {
         root: null,
-        rootMargin: "-25% 0px -45% 0px", // Trigger when page is in focus center of viewport
-        threshold: [0, 0.5],
+        // Fire when the sentinel crosses the top 60% of the viewport
+        rootMargin: "0px 0px -40% 0px",
+        threshold: 0,
       }
     );
 
@@ -537,13 +640,23 @@ const PDFPageBlock: React.FC<PageBlockProps> = ({
     if (!q) return <>{text}</>;
     const escaped = q.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     const parts = text.split(new RegExp(`(${escaped})`, "gi"));
+    // Derive a readable highlight background from the accent colour
+    const highlightBg = accentColor + "55"; // ~33% opacity tint of accent
+    const highlightBorder = accentColor + "99";
     return (
       <>
         {parts.map((part, i) =>
           part.toLowerCase() === q.toLowerCase() ? (
             <mark
               key={i}
-              style={{ color: "inherit", borderRadius: 2, padding: "0 1px" }}
+              style={{
+                backgroundColor: highlightBg,
+                color: isDarkMode ? "#ffffff" : "#000000",
+                borderRadius: 2,
+                padding: "0 2px",
+                boxShadow: `0 0 0 1px ${highlightBorder}`,
+                fontWeight: 600,
+              }}
             >
               {part}
             </mark>
@@ -559,11 +672,13 @@ const PDFPageBlock: React.FC<PageBlockProps> = ({
     <div
       ref={containerRef}
       id={`page-${pageNum}`}
-      className="relative w-full transition-all duration-300"
+      className="relative w-full transition-colors duration-300 bg-neutral-50 dark:bg-neutral-800/80"
       style={{
         minHeight: paragraphs === null ? "120px" : "auto",
       }}
     >
+      {/* Sentinel: 1px element at the top — observed for page tracking */}
+      <div ref={sentinelRef} style={{ position: "absolute", top: 0, height: 1, width: "100%", pointerEvents: "none" }} />
       {isLoading && (
         <div className="flex items-center justify-center py-8">
           <div
@@ -657,7 +772,8 @@ const PDFPageBlock: React.FC<PageBlockProps> = ({
       )}
     </div>
   );
-};
+});
 
+PDFPageBlock.displayName = "PDFPageBlock";
 PDFViewer.displayName = "PDFViewer";
 export default PDFViewer;

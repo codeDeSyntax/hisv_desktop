@@ -58,7 +58,6 @@ const EODH: React.FC = () => {
   const [pageInputVal, setPageInputVal] = useState("1");
   const [scale, setScale] = useState(() => {
     const saved = localStorage.getItem("eodhReaderScale");
-    console.log("[EODH] Stored scale value in localStorage:", saved);
     return saved ? parseFloat(saved) : 1.25;
   });
   const [scalePercent, setScalePercent] = useState(() => {
@@ -70,10 +69,22 @@ const EODH: React.FC = () => {
   // Search state
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  // Debounced version of searchQuery — this is what PDFViewer actually uses
+  // so expensive index lookups only fire after typing pauses (300ms).
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [searchMatchPages, setSearchMatchPages] = useState<number[]>([]);
   const [searchMatchCount, setSearchMatchCount] = useState(0);
   const [searchMatchIndex, setSearchMatchIndex] = useState(0);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Debounce the search query
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearchQuery(searchQuery), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  // The currently focused match page (for scroll-to-mark in PDFViewer)
+  const activeMatchPage = searchMatchPages[searchMatchIndex] ?? 0;
 
   const [isBookDropdownOpen, setIsBookDropdownOpen] = useState(false);
   const bookBtnRef = useRef<HTMLButtonElement>(null);
@@ -106,6 +117,8 @@ const EODH: React.FC = () => {
   };
 
   const searchRef = useRef<HTMLInputElement>(null);
+  const isPageInputFocused = useRef(false); // prevents scroll updates overwriting typed value
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // ── load PDF list ──────────────────────────────────────────────────────────
   const loadPdfList = useCallback(() => {
@@ -140,6 +153,7 @@ const EODH: React.FC = () => {
     setTotalPages(0);
     setSearchInput("");
     setSearchQuery("");
+    setDebouncedSearchQuery("");
     setSearchMatchPages([]);
     setSearchMatchCount(0);
     setSearchMatchIndex(0);
@@ -175,21 +189,36 @@ const EODH: React.FC = () => {
 
   // ── page navigation ───────────────────────────────────────────────────────
   const goToPage = (page: number) => {
-    const clamped = Math.min(Math.max(page, 1), totalPages);
+    const clamped = Math.min(Math.max(page, 1), totalPages || page);
     setCurrentPage(clamped);
     setPageInputVal(String(clamped));
+
+    // Scroll to the page element — retry until it appears in the DOM (lazy pages
+    // take a moment to load and mount their content).
+    let attempts = 0;
+    const tryScroll = () => {
+      const el = document.getElementById(`page-${clamped}`);
+      const container = scrollContainerRef.current;
+      if (el && container) {
+        const containerRect = container.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        const relativeTop = elRect.top - containerRect.top + container.scrollTop;
+        container.scrollTo({
+          top: relativeTop,
+          behavior: "smooth",
+        });
+      } else if (attempts++ < 15) {
+        setTimeout(tryScroll, 80);
+      }
+    };
+    requestAnimationFrame(tryScroll);
   };
 
   // ── search ────────────────────────────────────────────────────────────────
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSearchQuery(searchInput);
-    setSearchMatchIndex(0);
-  };
-
   const clearSearch = () => {
     setSearchInput("");
     setSearchQuery("");
+    setDebouncedSearchQuery("");
     setSearchMatchPages([]);
     setSearchMatchCount(0);
     setSearchMatchIndex(0);
@@ -245,7 +274,7 @@ const EODH: React.FC = () => {
       <div
         className="flex flex-col h-full w-full overflow-hidden bg-neutral-50 dark:bg-neutral-800/50"
       >
-        <div className="flex-1 overflow-y-auto px-6 py-5 no-scrollbar">
+        <div className="flex-1 overflow-y-auto px-6 py-5 custom-scrollbar">
           {isLoadingList ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
               {Array.from({ length: 10 }).map((_, i) => (
@@ -352,15 +381,13 @@ const EODH: React.FC = () => {
   // ── PDF VIEWER VIEW ───────────────────────────────────────────────────────
   return (
     <div
-      className="flex h-full w-full overflow-hidden bg-neutral-50 dark:bg-neutral-900"
-      // style={{ backgroundColor: surfaceBg }}
+      className="flex h-full w-full overflow-hidden bg-neutral-50 dark:bg-neutral-800/50 transition-colors duration-300"
     >
       {/* ── Main viewer ──────────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-neutral-50 dark:bg-neutral-900">
+      <div className="flex-1 flex flex-col overflow-hidden  transition-colors duration-300">
         {/* ── Viewer toolbar ────────────────────────────────────────────── */}
         <div
-          className="flex items-center gap-2 px-3 py-1.5 border-b flex-shrink-0 bg-neutral-50 dark:bg-neutral-900"
-          // style={{ backgroundColor: panelBg, borderColor }}
+          className="flex items-center gap-2 px-3 py-1.5 border-b flex-shrink-0 bg-neutral-50 dark:bg-neutral-800/50 transition-colors duration-300"
         >
           <button
             onClick={closePdf}
@@ -435,10 +462,9 @@ const EODH: React.FC = () => {
           {/* Inline search bar */}
           <AnimatePresence>
             {isSearchOpen && (
-              <motion.form
-                onSubmit={handleSearchSubmit}
+              <motion.div
                 initial={{ width: 0, opacity: 0 }}
-                animate={{ width: 200, opacity: 1 }}
+                animate={{ width: 240, opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 className="flex items-center gap-1 overflow-hidden flex-shrink-0"
@@ -446,7 +472,16 @@ const EODH: React.FC = () => {
                 <input
                   ref={searchRef}
                   value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSearchInput(val);
+                    setSearchQuery(val);
+                    setSearchMatchIndex(0);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") { e.preventDefault(); nextSearchMatch(); }
+                    if (e.key === "Escape") { e.preventDefault(); clearSearch(); setIsSearchOpen(false); }
+                  }}
                   placeholder="Find in document…"
                   className="flex-1 text-[11px] h-6 px-2 rounded-md border outline-none min-w-0"
                   style={{
@@ -462,13 +497,14 @@ const EODH: React.FC = () => {
                     {searchMatchIndex + 1}/{searchMatchCount}
                   </span>
                 )}
-                {searchMatchCount > 1 && (
+                {searchMatchCount > 0 && (
                   <>
                     <button
                       type="button"
                       onClick={prevSearchMatch}
                       className="w-5 h-5 rounded flex items-center justify-center cursor-pointer border-0"
                       style={{ color: mutedText, backgroundColor: "transparent" }}
+                      title="Previous match"
                     >
                       <ChevronLeft size={12} />
                     </button>
@@ -477,22 +513,22 @@ const EODH: React.FC = () => {
                       onClick={nextSearchMatch}
                       className="w-5 h-5 rounded flex items-center justify-center cursor-pointer border-0"
                       style={{ color: mutedText, backgroundColor: "transparent" }}
+                      title="Next match (Enter)"
                     >
                       <ChevronRight size={12} />
                     </button>
                   </>
                 )}
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={clearSearch}
-                    className="w-5 h-5 rounded flex items-center justify-center cursor-pointer border-0"
-                    style={{ color: mutedText, backgroundColor: "transparent" }}
-                  >
-                    <X size={11} />
-                  </button>
-                )}
-              </motion.form>
+                <button
+                  type="button"
+                  onClick={() => { clearSearch(); setIsSearchOpen(false); }}
+                  className="w-5 h-5 rounded flex items-center justify-center cursor-pointer border-0"
+                  style={{ color: mutedText, backgroundColor: "transparent" }}
+                  title="Close search (Esc)"
+                >
+                  <X size={11} />
+                </button>
+              </motion.div>
             )}
           </AnimatePresence>
 
@@ -568,15 +604,23 @@ const EODH: React.FC = () => {
               <input
                 value={pageInputVal}
                 onChange={(e) => setPageInputVal(e.target.value)}
+                onFocus={() => { isPageInputFocused.current = true; }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     const v = parseInt(pageInputVal, 10);
                     if (!isNaN(v)) goToPage(v);
+                    (e.target as HTMLInputElement).blur();
+                  }
+                  if (e.key === "Escape") {
+                    setPageInputVal(String(currentPage));
+                    (e.target as HTMLInputElement).blur();
                   }
                 }}
                 onBlur={() => {
+                  isPageInputFocused.current = false;
                   const v = parseInt(pageInputVal, 10);
                   if (!isNaN(v)) goToPage(v);
+                  else setPageInputVal(String(currentPage)); // restore on invalid input
                 }}
                 className="w-8 text-center h-6 rounded-md border outline-none text-[11px]"
                 style={{
@@ -602,7 +646,10 @@ const EODH: React.FC = () => {
         </div>
 
         {/* ── Document container ─────────────────────────────────────────── */}
-        <div className="flex-1 overflow-auto flex justify-center py-6 px-4 no-scrollbar bg-neutral-50 dark:bg-neutral-900">
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 overflow-auto flex justify-center py-6 px-4 custom-scrollbar bg-neutral-50 dark:bg-neutral-800/50"
+        >
           <Suspense
             fallback={
               <div className="flex items-center justify-center h-40">
@@ -618,13 +665,17 @@ const EODH: React.FC = () => {
               filePath={selectedPdf.path}
               scale={scale}
               currentPage={currentPage}
-              searchQuery={searchQuery}
+              searchQuery={debouncedSearchQuery}
+              activeMatchPage={activeMatchPage}
               accentColor={accentColor}
               isDarkMode={isDarkMode}
               onLoad={(total) => setTotalPages(total)}
               onPageChange={(page) => {
                 setCurrentPage(page);
-                setPageInputVal(String(page));
+                // Don't overwrite a value the user is actively typing
+                if (!isPageInputFocused.current) {
+                  setPageInputVal(String(page));
+                }
               }}
               onSearchResults={(pages, total) => {
                 setSearchMatchPages(pages);
